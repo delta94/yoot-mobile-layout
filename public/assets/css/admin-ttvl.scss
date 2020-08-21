@@ -1,0 +1,219 @@
+
+label.button{
+    display: inline-block;
+    border: 1px solid rgb(169, 169, 169);
+    border-radius: 3px;
+    margin-right: 5px;
+    &:last-child{
+        margin-right: 0;
+    }
+    >input, button{
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 5px 10px;
+        line-height: 1;
+    }
+    &.default{
+        background-color: #f4f4f4;
+        border-color: #ddd;
+        >input{
+            color: #444;
+        }
+        &:hover{
+            color: #333;
+            background-color: #d4d4d4;
+            border-color: #8c8c8c;
+        }
+    }
+    &.primary{
+        background-color: #3c8dbc;
+        border-color: #367fa9;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #204d74;
+            border-color: #122b40;
+        }
+    }
+    &.success{
+        background-color: #00a65a;
+        border-color: #008d4c;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #398439;
+            border-color: #255625;
+        }
+    }
+    &.info{
+        background-color: #00c0ef;
+        border-color: #00acd6;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #269abc;
+            border-color: #1b6d85;
+        }
+    }
+    &.danger{
+        background-color: #dd4b39;
+        border-color: #d73925;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #ac2925;
+            border-color: #761c19;
+        }
+    }
+    &.warning{
+        background-color: #f39c12;
+        border-color: #e08e0b;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #d58512;
+            border-color: #985f0d;
+        }
+    }
+}
+
+a.button{
+    display: inline-block;
+    border: 1px solid rgb(169, 169, 169);
+    border-radius: 3px;
+    margin-right: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px 10px;
+    &:last-child{
+        margin-right: 0;
+    }
+    &.default{
+        background-color: #f4f4f4;
+        border-color: #ddd;
+        >input{
+            color: #444;
+        }
+        &:hover{
+            color: #333;
+            background-color: #d4d4d4;
+            border-color: #8c8c8c;
+        }
+    }
+    &.primary{
+        background-color: #3c8dbc;
+        border-color: #367fa9;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #204d74;
+            border-color: #122b40;
+        }
+    }
+    &.success{
+        background-color: #00a65a;
+        border-color: #008d4c;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #398439;
+            border-color: #255625;
+        }
+    }
+    &.info{
+        background-color: #00c0ef;
+        border-color: #00acd6;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #269abc;
+            border-color: #1b6d85;
+        }
+    }
+    &.danger{
+        background-color: #dd4b39;
+        border-color: #d73925;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #ac2925;
+            border-color: #761c19;
+        }
+    }
+    &.warning{
+        background-color: #f39c12;
+        border-color: #e08e0b;
+        >input{
+            color: #fff;
+        }
+        &:hover{
+            background-color: #d58512;
+            border-color: #985f0d;
+        }
+    }
+}
+
+div.code{
+    background: #282c34;
+    color: #ffffff;
+    border-radius: 10px;
+    tab-size: 1.5em;
+    margin: 15px;
+    &.react{
+        pre{
+            font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace;
+            height: auto !important;
+            margin: 1rem 0;
+            font-size: 14px;
+            line-height: 20px;
+            display: block;
+            width: 100%;
+            overflow: auto;
+            padding: 15px;
+            code{
+                font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace;
+                span{
+                    font-size: 1em;
+                    &.line{
+                        display: block;
+                    }
+                }
+                .tag {
+                    color: #fc929e;
+                }
+                .punctuation{   //kết thúc câu ví dụ: < > / {}; <span className="punctuation">{"<"}</span>
+                    color: #5FB3B3;
+                }
+                .attr-name {
+                    color: #c5a5c5;
+                }
+                .attr-value {
+                    color: #8dc891;
+                }
+                .function {
+                    color: #79b6f2;
+                }
+                .class-name {
+                    color: #FAC863;
+                }
+                .token.comment {
+                    color: #999999;
+                }
+            }
+        }
+    }
+    .title{
+        padding: 5px 0;
+        border-bottom: 0.5px solid #fff;
+    }
+}

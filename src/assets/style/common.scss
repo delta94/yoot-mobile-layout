@@ -1,0 +1,81 @@
+html,span,p,label{
+    font-size: 13px;
+}
+body{
+    margin: 0px;
+}
+ul{
+    padding: 0px;
+    list-style-type: none;
+    margin: 0px;
+}
+
+.custom-tab{
+    box-shadow: none !important;
+    padding: 5px;
+    border-radius: 7px;
+    background: #e8e9ed !important;
+    .tab-header{
+        min-height: 40px !important;
+        > div > div{
+            position: relative;
+            > span:last-child{
+                height: 100%;
+                z-index: 0;
+                background: #fff !important;
+                border-radius: 6px;
+            }
+            > div{
+                position: relative;
+                z-index: 1;
+                button{
+                    min-height: 40px !important;
+                    > span{
+                        color: #484848 !important;
+                        text-transform: none !important;
+                        font-family: Roboto-Medium;
+                    }
+                    > span:last-child{
+                        display: none;  
+                    }
+                }
+            }
+        }
+    }
+}
+.tab-content{
+    padding: 15px;
+    font-family: Roboto-Regular;
+    fieldset{
+        border-radius: 7px;
+        border-width: 1px !important;
+        border-color: rgba(0, 0, 0, 0.15);
+    }
+    input{
+        padding: 13px !important;
+        font-family: Roboto-Regular;
+        color: #444;
+        letter-spacing: 0.3px;
+    }
+    .password-option{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top:10px;
+        margin-bottom: 10px;
+        > div span{
+            color: #666;
+        }
+    }
+    .bt-submit{
+        width: 100%;
+        border-radius: 6px;
+        box-shadow: none;
+        min-height: 40px;
+        background: #ff5a5a;
+        > span{
+            text-transform: none !important;
+            color: #fff;
+        }
+    }
+}

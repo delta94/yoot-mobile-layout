@@ -1,0 +1,60 @@
+.view-modal{
+    
+    > div {
+        
+        > div{
+            background: rgba(0,0,0,0.8);
+        }
+    }
+
+    .custom-modal-header{
+        > button{
+            color: #fff;
+        }
+    }
+
+    .viewer-content{
+        .viewer-detail{
+            width: 100%;
+            height: calc(100vh - 300px);
+            text-align: center;
+            
+            img{
+                max-height: 100%;
+                max-width: 100%;
+            }
+        }
+
+        .viewer-thum{
+            width: 100%;
+            height: 150px;
+            margin-top: 20px;
+            overflow-y: scroll;
+            text-align: center;
+            padding: 10px;
+
+            > ul{
+                > li{
+                    display: inline-block;
+                    height: 100px;
+                    background: rgba(255,255,255,0.1);
+                    margin: 5px;
+                    padding: 7px;
+                    cursor: pointer;
+                    transition: all 0.1s ease-in-out;
+
+                    &:hover,&.active{
+                        background: #fff;
+                    }
+
+
+                    img{
+                        height: 100%;
+                        border: 1px solid #ccc;
+                    }
+                }
+            }
+
+        }
+    }
+}

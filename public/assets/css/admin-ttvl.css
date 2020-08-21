@@ -1,0 +1,164 @@
+label.button {
+  display: inline-block;
+  border: 1px solid darkgray;
+  border-radius: 3px;
+  margin-right: 5px; }
+  label.button:last-child {
+    margin-right: 0; }
+  label.button > input, label.button button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    line-height: 1; }
+  label.button.default {
+    background-color: #f4f4f4;
+    border-color: #ddd; }
+    label.button.default > input {
+      color: #444; }
+    label.button.default:hover {
+      color: #333;
+      background-color: #d4d4d4;
+      border-color: #8c8c8c; }
+  label.button.primary {
+    background-color: #3c8dbc;
+    border-color: #367fa9; }
+    label.button.primary > input {
+      color: #fff; }
+    label.button.primary:hover {
+      background-color: #204d74;
+      border-color: #122b40; }
+  label.button.success {
+    background-color: #00a65a;
+    border-color: #008d4c; }
+    label.button.success > input {
+      color: #fff; }
+    label.button.success:hover {
+      background-color: #398439;
+      border-color: #255625; }
+  label.button.info {
+    background-color: #00c0ef;
+    border-color: #00acd6; }
+    label.button.info > input {
+      color: #fff; }
+    label.button.info:hover {
+      background-color: #269abc;
+      border-color: #1b6d85; }
+  label.button.danger {
+    background-color: #dd4b39;
+    border-color: #d73925; }
+    label.button.danger > input {
+      color: #fff; }
+    label.button.danger:hover {
+      background-color: #ac2925;
+      border-color: #761c19; }
+  label.button.warning {
+    background-color: #f39c12;
+    border-color: #e08e0b; }
+    label.button.warning > input {
+      color: #fff; }
+    label.button.warning:hover {
+      background-color: #d58512;
+      border-color: #985f0d; }
+
+a.button {
+  display: inline-block;
+  border: 1px solid darkgray;
+  border-radius: 3px;
+  margin-right: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px 10px; }
+  a.button:last-child {
+    margin-right: 0; }
+  a.button.default {
+    background-color: #f4f4f4;
+    border-color: #ddd; }
+    a.button.default > input {
+      color: #444; }
+    a.button.default:hover {
+      color: #333;
+      background-color: #d4d4d4;
+      border-color: #8c8c8c; }
+  a.button.primary {
+    background-color: #3c8dbc;
+    border-color: #367fa9; }
+    a.button.primary > input {
+      color: #fff; }
+    a.button.primary:hover {
+      background-color: #204d74;
+      border-color: #122b40; }
+  a.button.success {
+    background-color: #00a65a;
+    border-color: #008d4c; }
+    a.button.success > input {
+      color: #fff; }
+    a.button.success:hover {
+      background-color: #398439;
+      border-color: #255625; }
+  a.button.info {
+    background-color: #00c0ef;
+    border-color: #00acd6; }
+    a.button.info > input {
+      color: #fff; }
+    a.button.info:hover {
+      background-color: #269abc;
+      border-color: #1b6d85; }
+  a.button.danger {
+    background-color: #dd4b39;
+    border-color: #d73925; }
+    a.button.danger > input {
+      color: #fff; }
+    a.button.danger:hover {
+      background-color: #ac2925;
+      border-color: #761c19; }
+  a.button.warning {
+    background-color: #f39c12;
+    border-color: #e08e0b; }
+    a.button.warning > input {
+      color: #fff; }
+    a.button.warning:hover {
+      background-color: #d58512;
+      border-color: #985f0d; }
+
+div.code {
+  background: #282c34;
+  color: #ffffff;
+  border-radius: 10px;
+  tab-size: 1.5em;
+  margin: 15px; }
+  div.code.react pre {
+    font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace;
+    height: auto !important;
+    margin: 1rem 0;
+    font-size: 14px;
+    line-height: 20px;
+    display: block;
+    width: 100%;
+    overflow: auto;
+    padding: 15px; }
+    div.code.react pre code {
+      font-family: source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace; }
+      div.code.react pre code span {
+        font-size: 1em; }
+        div.code.react pre code span.line {
+          display: block; }
+      div.code.react pre code .tag {
+        color: #fc929e; }
+      div.code.react pre code .punctuation {
+        color: #5FB3B3; }
+      div.code.react pre code .attr-name {
+        color: #c5a5c5; }
+      div.code.react pre code .attr-value {
+        color: #8dc891; }
+      div.code.react pre code .function {
+        color: #79b6f2; }
+      div.code.react pre code .class-name {
+        color: #FAC863; }
+      div.code.react pre code .token.comment {
+        color: #999999; }
+  div.code .title {
+    padding: 5px 0;
+    border-bottom: 0.5px solid #fff; }
+
+/*# sourceMappingURL=admin-ttvl.css.map */

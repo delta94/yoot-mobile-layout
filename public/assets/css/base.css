@@ -1,0 +1,65 @@
+/*===== Font size PC =====*/
+@media (min-width: 768px) {
+  body {
+    font-size: 14px; } }
+/*===== Format content =====*/
+body {
+  color: #333333;
+  word-wrap: break-word;
+  font-size: 14px;
+  font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif; }
+
+:after, :before {
+  box-sizing: border-box; }
+
+.wrapper {
+  width: 100%;
+  margin: 0 auto;
+  min-width: 320px; }
+  .wrapper:before, .wrapper:after {
+    content: " ";
+    display: table; }
+
+@media (min-width: 1000px) {
+  body .wrapper {
+    width: 100%; } }
+
+
+.row {
+  margin-right: -15px;
+  margin-left: -15px; }
+  .row:before {
+    display: table;
+    content: " ";
+    clear: both; }
+  .row:after {
+    display: table;
+    content: " ";
+    clear: both; }
+
+.box:before {
+  display: table;
+  content: " ";
+  clear: both; }
+.box:after {
+  display: table;
+  content: " ";
+  clear: both; }
+
+.content {
+  width: 100%;
+  margin: 0 auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  box-sizing: border-box; }
+
+.intention {
+  width: 100%; }
+
+.wrapper {
+  height: auto;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto; }
+
+/*# sourceMappingURL=base.css.map */

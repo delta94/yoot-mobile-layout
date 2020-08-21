@@ -1,0 +1,253 @@
+.custom-user-select{
+    position: relative;
+    background: #fff;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 4px;
+    min-height: 37px;
+    
+    &.view{
+        // border: none !important;
+        > .input{
+            display: none !important
+        }
+    }
+    .user-selected{
+        width: 100%;
+    }
+    &.unlimit-height{
+        height: unset !important;
+        > div{
+            > div:nth-child(1){
+                // height: 37px;
+                > div{
+                    height: 100%;
+
+                    > div{
+                        height: 100%;
+                        input{
+                            padding: 0px !important;
+                        }
+                    }
+                    
+                }
+            }
+            > div{
+                > div:nth-child(3){
+                    height: unset !important;
+                }
+            }
+            
+        }
+    }
+    img{
+        display: inline-block;
+        box-sizing: border-box;
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        animation: fadeIn 0.3s ease-in-out
+    }
+    > div{
+        position: relative;
+        display: inline-block;
+        height: 100%;
+    }
+    > div:first-child{
+        height: 37px;
+        border-radius: 4px;
+    }
+    > div.edit::after,
+    > div.error::after{
+        content: "";
+        border-bottom: 1px solid #02C0EF;
+        width: 100%;
+        height: 1px;
+        background: #ccc;
+        position: absolute;
+        top: calc(100% - 1px);
+        left: 0px;
+        animation: active 0.3s ease-in-out;
+    }
+    > div.edit.error::after{
+        border-bottom: 1px solid rgb(239, 69, 2);
+    }
+    > div.edit{
+        &.outline{
+            border-radius: 3px;
+            > div{
+                height: 100%;
+                > div{
+                    height: 100%;
+                    min-height: 100% !important;
+                    > div{
+                        height: 100%;
+                        input{
+                            padding: 0px !important;
+                        }
+                    }
+                }
+                > div:nth-child(3){
+                    height: unset !important;
+                    min-height: unset !important;
+                    max-height: unset !important;
+                    margin-top: 5px;
+                }
+            }
+            &::after{
+                display: none;
+            }
+        }
+        >div:first-child{
+            > div:nth-child(3){
+                min-height: 500px !important;
+                margin-bottom: 20px !important;
+                > div{
+                    height: 500px !important;
+                    max-height: 500px !important;
+                }
+            }
+        }
+        > div{
+            > span{
+                display: none;
+            }
+            > div{
+                border: none;
+                background: none;
+                box-shadow: none;
+                
+                > div {
+                    // padding-left: 10px;
+                    > span{
+                        // display: none;
+                    }
+                    > div{
+                        margin-left: 0px;
+                    }
+                }
+            }
+            > div:nth-child(3){
+                box-shadow: 0px 0px 3px #ccc;
+                background: #fff;
+                border-radius: 3px;
+                overflow: hidden;
+                padding: 1px;
+                margin: 2px 0px;
+                padding-top: 0px;
+            }
+        }
+    }
+    .left{
+        display: inline-block !important;
+        width: 50px !important;
+        height: 50px !important;
+        vertical-align: middle;
+        > div.avatar{
+            width: 100%;
+            height: 100%;
+            background-size: cover !important;
+            background-position: 50% 50%;
+            border-radius: 50%;
+        }
+    }
+    .right{
+        display: inline-block !important;
+        width: calc(100% - 50px) !important;
+        vertical-align: middle;
+        padding-left: 20px;
+        > span.user-info{
+            display: inline-block;
+            width: 100%;
+            > span{
+                height: 100%;
+                &.name{
+                    font-weight: bold;
+                }
+                &.email{
+                    float:right;
+                }
+            }
+        }
+    }
+    .user-selected{
+        border-top: 1px solid #e0e0e0;
+        // padding: 20px;
+        .left{
+            display: inline-block !important;
+            width: 50px !important;
+            height: 50px !important;
+            vertical-align: middle;
+            > div.avatar{
+                width: 100%;
+                height: 100%;
+                background-size: cover !important;
+                background-position: 50% 50%;
+                border-radius: 50%;
+            }
+        }
+        
+        &.border-none{
+            border: none;
+        }
+    }
+}
+.lazy-load{
+    min-width: 100%;
+    min-height: 50px;
+    padding: 16px;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    .avatar{
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 40px;
+    }
+    .lazy-info{
+        height: 100%;
+        width: calc(100% - 50px) !important;
+        .lazy-head{
+            width: 50%;
+            height: 8px;
+            margin: 5px 0px;
+            min-width: 250px;
+            border-radius: 10px;
+        }
+        .lazy-bottom{
+            width: 30%;
+            height: 5px;
+            margin: 7px 0px;
+            min-width: 150px;
+            border-radius: 10px;
+        }
+    }
+}
+.loading{
+    border: none !important;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    background: #f6f7f8;
+    background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+    background-size: 800px 104px;
+    height: 96px;
+    position: relative;
+}
+
+.custom-option{
+    > div{
+        padding: 0px !important;
+    }
+}
+
+
+@keyframes placeHolderShimmer{
+    0%{
+        background-position: -468px 0
+    }
+    100%{
+        background-position: 468px 0
+    }
+}

@@ -1,0 +1,48 @@
+.custom-modal{
+    z-index: 11000 !important;
+    .custom-modal-header{
+        font-size: 15px;
+        font-weight: bold;
+        border: none;
+
+        .close-bt{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+    }
+    
+    .custom-modal-content{
+        border: none;
+    }
+
+    .custom-modal-actions{
+        margin-top: 20px;
+        width: 100%;
+        text-align: right;
+
+        button{
+            font-size: 14px !important;
+            border-radius: 2px;
+            margin-bottom: 10px;
+        }
+        button:nth-child(2){
+            background: #2098f3;
+            border-radius: 2px;
+            color: #fff;
+        }
+    }
+}
+
+@keyframes active {
+    from {width: 0px}
+    to {width: 100%;}
+}
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+@keyframes expand{
+    from {height: 0px;}
+    to {height: 30px;}
+}

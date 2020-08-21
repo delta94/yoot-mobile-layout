@@ -1,0 +1,10 @@
+.page-item{
+    outline: none;
+    .page-link.disable{
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    .page-link.blank{
+        pointer-events: none;
+    }
+}

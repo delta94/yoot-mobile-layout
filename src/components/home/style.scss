@@ -1,0 +1,55 @@
+.home-page{
+    .container{
+        display: inline-block;
+        width: 100%;
+    }
+    .home-slider{
+        .slide-item{
+            img{
+                width: 100%;
+            }
+        }
+
+        .slick-dots{
+            bottom: 10px;
+        }
+    }
+    .home-menu{
+        width: 100%;
+        padding: 10px;
+        background: #fff;
+        box-sizing: border-box;
+        > div{
+            background: #fff
+        }
+        ul{
+            display: grid;
+            width: 100%;
+            grid-template-columns: repeat(3,1fr);
+            grid-column-gap: 1px;
+            grid-row-gap: 1px;
+            background: rgba(0,0,0,0.05);
+            li{
+                display: block;
+                text-align: center;
+                width: 100%;
+                padding: 15px 0px;
+                background: #fff;
+                span{
+                    font-size: 1.1rem;
+                    display: inline-block;
+                    width: 100%;
+                    text-align: center;
+                    font-family: Roboto-Medium;
+                    margin-top: 10px;
+                    color: rgba(0,0,0,0.6);
+                }
+            }
+        }
+    }
+    .member-list{
+        padding: 10px;
+        min-height: 1000px;
+        margin-top: 20px;
+    }
+}

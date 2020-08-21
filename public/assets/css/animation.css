@@ -1,0 +1,111 @@
+body .animate-spin {
+  animation: animate-w3-spin 2s infinite linear; }
+@keyframes animate-w3-spin {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(359deg); } }
+body .animate-fading {
+  animation: animate-fading 10s infinite; }
+@keyframes animate-fading {
+  0% {
+    opacity: 0; }
+  50% {
+    opacity: 1; }
+  100% {
+    opacity: 0; } }
+body .animate-zoom {
+  animation: animate-zoom 0.6s; }
+@keyframes animate-zoom {
+  from {
+    transform: scale(0); }
+  to {
+    transform: scale(1); } }
+body .animate-fade-in {
+  animation: animate-fade-in 0.6s; }
+@-webkit-keyframes animate-fade-in {
+  from {
+    opacity: 0; }
+  to {
+    opacity: 1; } }
+@keyframes animate-fade-in {
+  from {
+    opacity: 0; }
+  to {
+    opacity: 1; } }
+body .animate-top-down {
+  animation: animate-top-down 0.6s; }
+@-webkit-keyframes animate-top-down {
+  from {
+    opacity: 0;
+    margin-top: -10px; }
+  to {
+    opacity: 1;
+    margin-top: 0; } }
+@keyframes animate-top-down {
+  from {
+    opacity: 0;
+    margin-top: -10px; }
+  to {
+    opacity: 1;
+    margin-top: 0; } }
+body .animate-bottom-up {
+  animation: animate-bottom-up 0.6s; }
+@-webkit-keyframes animate-bottom-up {
+  from {
+    opacity: 0;
+    margin-bottom: -10px; }
+  to {
+    opacity: 1;
+    margin-bottom: 0; } }
+@keyframes animate-bottom-up {
+  from {
+    opacity: 0;
+    margin-bottom: -10px; }
+  to {
+    opacity: 1;
+    margin-bottom: 0; } }
+body .animate-left-right {
+  animation: animate-left-right 0.6s; }
+@-webkit-keyframes animate-left-right {
+  from {
+    opacity: 0;
+    margin-left: -10px; }
+  to {
+    opacity: 1;
+    margin-left: 0; } }
+@keyframes animate-left-right {
+  from {
+    opacity: 0;
+    margin-left: -10px; }
+  to {
+    opacity: 1;
+    margin-left: 0; } }
+body .animate-right-left {
+  animation: animate-right-left 0.6s; }
+@-webkit-keyframes animate-right-left {
+  from {
+    opacity: 0;
+    margin-right: -10px; }
+  to {
+    opacity: 1;
+    margin-right: 0; } }
+@keyframes animate-right-left {
+  from {
+    opacity: 0;
+    margin-right: -10px; }
+  to {
+    opacity: 1;
+    margin-right: 0; } }
+body .animate-loading {
+  animation: animate-loading 0.6s; }
+@keyframes animate-loading {
+  0% {
+    transform: rotate(0deg); }
+  50% {
+    background: #85d6de none repeat scroll 0 0;
+    transform: rotate(180deg); }
+  100% {
+    transform: rotate(360deg); } }
+
+/*# sourceMappingURL=animation.css.map */

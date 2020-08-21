@@ -1,0 +1,72 @@
+- Channel
+
+- Đối tác
++ Tạo đối tác
+  . Thông báo PM, Leader PM, Data Manager, Legal
+
++ Duyệt đối tác
+  . Thông báo PM, Leader PM, Data Manager, Legal (+++)
+
++ YCCN Thay đổi Owner
+  . Mới: thông báo DM, Legal
+  . Cập nhật: thông báo PM, DM, Legal (+)
+  . Bỏ thông báo BOD(+), bỏ LPM (+)
+
++ YCCN Thay đổi PM 
+  . Mới: PM nhận, thông báo DM (+)
+  . Cập nhật: thông báo PMs, DM
+  . Bỏ thông báo BOD(+), bỏ LPM (+), Legal (+)
+
++ YCCN Thay đổi OP 
+  . Mới: PM nhận, thông báo DM (+)
+  . Cập nhật: thông báo PMs, DM
+  . Bỏ thông báo BOD(+), bỏ LPM (+), Legal (+)
+
+- Hợp đồng
+
++ Legal toàn quyền
+
++ HĐ mới
+  . Thông báo PM,  Data Manager, AO (+)
+
++ Cập nhật HĐ
+  . AO được phép cập nhật thông tin chuyển phát
+  . Thông báo PM, Data Manager, Legal (+++)
+
+- Kênh
+
++  YCCN tỷ lệ
+  . BOD chấp nhận k được thay đổi
+  . Leader PM Chập nhận k cho thay đổi
+
++  YCCN Unlink
+  . BOD, LPM, DM, Legal, PM 
+  . BOD chấp nhật k được thay đổi
+  . Leader PM Chập nhận k cho thay đổi
+
+
++ YCCN thông tin thanh toán
+  . Mới: thông báo, PM, Legal
+  . Cập nhật: thông báo DM, PM, Legal
+  . Bỏ thông báo BOD(+), bỏ LPM (+)
+
++ YCCN thông tin liên hệ
+  . Mới: thông báo, PM, Legal
+  . Cập nhật: thông báo DM, PM, Legal
+  . Bỏ thông báo BOD(+), bỏ LPM (+)
+
+- Kênh
+  + Tạo kênh:
+    . Thông báo PM, Leader PM, Data Manager, Legal
+  + Đổi trạng thái 
+    . Thông báo PM, Leader PM, Data Manager, Legal
+
+
+
+- Feedback
+
+- Thông báo tạo mới đối tác không vào details
+- Tạo thông báo khi thay đổi status 'Đối tác Nguyen Van B vừa được cập nhật trạng thái {status}'
+
++ Tạo YCCN Đối tac> Thay đổi quản lý, optimize
+select list PM 
