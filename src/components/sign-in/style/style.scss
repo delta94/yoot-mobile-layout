@@ -81,29 +81,5 @@
       text-decoration: underline;
     }
   }
-  .gender-select{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 40px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 6px;
-    padding: 0px 10px;
-    .title{
-      color: #777;
-    }
-    .options{
-      span{
-        padding: 5px 25px;
-        display: inline-block;
-        margin-left: 10px;
-        background: rgba(0, 0, 0, 0.05);
-        border-radius: 4px;
-        &.active{
-          background: #ff5a5a;
-          color: #fff;
-        }
-      }
-    }
-  }
+  
 }

@@ -1,106 +1,132 @@
 import React from "react";
-import Select from 'react-select';
 import "./style.scss";
+import {
+    KeyboardArrowDown as KeyboardArrowDownIcon,
+    Check as CheckIcon,
+    HighlightOff as HighlightOffIcon
+} from '@material-ui/icons'
+import {
+    Drawer, Button, TextField,
+    InputAdornment
+} from '@material-ui/core'
+import {
+    cleanAccents
+} from '../../../utils/app'
+const search = require('../../../assets/images/find.png')
 class Index extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            labelWidth: "0px"
+            showOptions: false,
+            currentValue: null
         }
     }
 
-    _onValueChange(value) {
-        this.props.onChange(value)
-    }
-
-    componentDidMount() {
-        if (!this.props.allowNull) {
-            if (!this.props.value)
-                this.props.onChange(this.props.options[0])
-            else
-                this.props.onChange(this.props.value)
+    handleSelect(item) {
+        let { onSelected, haveConfirm } = this.props
+        if (haveConfirm && item != null) {
+            this.setState({
+                currentValue: item
+            })
+        } else {
+            if (onSelected) onSelected(item)
+            this.setState({
+                showOptions: false,
+                search: ''
+            })
         }
     }
-
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.value != this.props.value)
-            if (!nextProps.allowNull) {
-                if (!nextProps.value)
-                    nextProps.onChange(nextProps.options[0])
-                else
-                    nextProps.onChange(nextProps.value)
-            }
+    handleConfirm() {
+        let { onSelected } = this.props
+        if (onSelected) {
+            let {
+                currentValue
+            } = this.state
+            onSelected(currentValue)
+        }
+        this.setState({
+            showOptions: false,
+            search: ''
+        })
     }
 
     render() {
         let {
-            labelWidth
+            showOptions,
+            currentValue,
+            searchKey
         } = this.state
-
         let {
-            name,
             options,
             value,
-            label,
-            allowNull,
-            errors,
-            className,
-            displayName,
-            outLine,
-            isMulti,
-            placeholder
+            placeholder,
+            height,
+            title,
+            clearable,
+            style,
+            haveConfirm,
+            optionStyle,
+            searchable
         } = this.props
+        if (searchable && searchKey != '' && searchKey && options && options.length > 0)
+            options = options.filter(item => cleanAccents(item.label.toLowerCase()).indexOf(cleanAccents(searchKey.toLowerCase())) >= 0)
 
         return (
-            <div className={"custom-select " + (this.props.className ? this.props.className : "") + (this.props.edit ? "" : " view")}>
-                <div
-                    className={(this.props.edit ? ("edit" + (outLine ? " outline" : "")) : "")}
-                    id={(this.props.id) ? this.props.id : ""}
-                    style={{ width: "calc(100% - " + labelWidth + ")" }}
-                    // id={name}
-                    name={name}
-                >
+            <div className="mobile-custom-select" style={style}>
+                <div className="display-value" >
                     {
-                        label ? <label>
-                            {
-                                label
-                            }
-                        </label> : ""
+                        value ? <span style={{ width: clearable ? "calc(100% - 70px)" : "calc(100% - 40px)" }} onClick={() => this.setState({ showOptions: true })}>{value.label}</span> : <span style={{ opacity: 0.4, width: clearable ? "calc(100% - 70px)" : "calc(100% - 40px)" }} onClick={() => this.setState({ showOptions: true })}>{placeholder}</span>
                     }
+                    <KeyboardArrowDownIcon style={{ opacity: 0.6 }} onClick={() => this.setState({ showOptions: true })} />
                     {
-                        this.props.edit ?
-                            <Select
-                                className="select"
-                                options={options}
-                                value={value}
-                                onChange={(value) => this._onValueChange(value)}
-                                placeholder={placeholder ? placeholder : "Chọn tuỳ chọn"}
-                                isClearable={allowNull ? true : false}
-                                allowNull={allowNull}
-                                isMulti={isMulti}
-                            />
-                            : <span
-                            >
-                                {
-                                    value ? value.label : ""
-                                }
-                            </span>
+                        clearable && value ? <HighlightOffIcon style={{ opacity: 0.4, position: "absolute", right: "60px", width: "20px", height: "20px" }} onClick={() => this.handleSelect(null)} /> : ""
                     }
-                    {
-                        !allowNull && errors && (
-                            <div
-                                id={"validator-for-" + (className ? className : "") + "-container"}
-                                className={"text-danger show " + (className ? className : "")}
-                            >
-                                <pre id={"validator-for-"}>{errors}</pre>
-                                <a href id={"validator-name-" + className} hidden>
-                                    {displayName}
-                                </a>
-                            </div>
-                        )}
                 </div>
+                <Drawer anchor="bottom" className="mobile-custom-select-modal" open={showOptions} onClose={() => this.setState({ showOptions: false })}>
+                    <div className="modal-header">
+                        <label>{title ? title : ""}</label>
+                        {
+                            searchable ? <TextField
+                                variant="outlined"
+                                placeholder="Tìm kiếm"
+                                style={{
+                                    width: "calc(100% - 20px)",
+                                    marginLeft: "10px",
+                                }}
+                                value={searchKey}
+                                onChange={e => this.setState({ searchKey: e.target.value })}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <img src={search} />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            /> : ""
+                        }
+                    </div>
+                    <div className="select-list" style={{ height: height ? height : "unset" }}>
+                        <ul>
+                            {
+                                options ? options.map((item, index) => <li key={index} onClick={() => this.handleSelect(item)} style={optionStyle}>
+                                    <span>{item.label ? item.label : ""}</span>
+                                    {
+                                        (value && value.value == item.value) || (currentValue && currentValue.value == item.value) ? <div className="check-icon">
+                                            <CheckIcon style={{ color: "royalblue", width: "20px" }} />
+                                        </div> : ""
+                                    }
+                                </li>) : ""
+                            }
+                        </ul>
+                    </div>
+                    <div className="action">
+                        <Button onClick={() => this.setState({ showOptions: false })}>Đóng</Button>
+                        {
+                            haveConfirm ? <Button onClick={() => this.handleConfirm()}>Xác nhận</Button> : ""
+                        }
+                    </div>
+                </Drawer>
             </div>
 
         );

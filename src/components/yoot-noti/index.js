@@ -3,11 +3,13 @@ import './style.scss'
 import {
   addHeaderContent,
   addFooterContent,
+  toggleHeader,
+  toggleUserDetail
 } from '../../actions/app'
 import { connect } from 'react-redux'
 
 const noti = require('../../assets/images/notification.png')
-const profileBw = require('../../assets/images/profile-bw.png')
+const profileBw = require('../../assets/images/profileBw@2x.png')
 const settingBw = require('../../assets/images/setting-bw.png')
 const home = require('../../assets/images/home.png')
 
@@ -20,6 +22,7 @@ class Index extends React.Component {
   componentWillMount() {
     this.props.addHeaderContent(renderHeader())
     this.props.addFooterContent(renderFooter(this.props.history))
+    this.props.toggleHeader(true)
   }
   render() {
     return (
@@ -39,6 +42,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   addHeaderContent: (headerContent) => dispatch(addHeaderContent(headerContent)),
   addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
+  toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
+  toggleUserDetail: (isShow) => dispatch(toggleUserDetail(isShow))
 });
 
 export default connect(

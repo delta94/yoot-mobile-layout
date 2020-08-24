@@ -1,0 +1,40 @@
+.setting-page{
+    padding: 10px;
+    > div{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 50px;
+        >span{
+            font-family: Roboto-Regular;
+            color: #555;
+            display: flex;
+            align-items: center;
+            > span{
+                font-family: Roboto-Regular;
+                color: #aaa;
+            }
+        }
+    }
+    > button{
+        margin-top: 50px;
+    }
+}
+.auto-play-setting{
+    .detail-content{
+        padding: 20px;
+        box-sizing: border-box;
+        .auto-option{
+            li{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                height: 40px;
+            }
+        }
+        > button{
+            margin-top: 50px;
+        }
+    }
+    
+}
