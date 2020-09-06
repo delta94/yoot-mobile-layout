@@ -6,6 +6,7 @@
     "@material-ui/core": "^3.9.4",
     "@material-ui/icons": "^3.0.1",
     "@material-ui/lab": "^4.0.0-alpha.45",
+    "fontsource-roboto": "^3.0.3",
     "html2canvas": "^1.0.0-alpha.12",
     "jquery": "^3.3.1",
     "moment": "^2.22.2",

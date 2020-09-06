@@ -18,9 +18,13 @@ import {
   ChevronLeft as ChevronLeftIcon
 } from '@material-ui/icons'
 import { connect } from 'react-redux'
+import RecipeReviewCard from "../job-list";
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const DISC = require('../../assets/icon/DISC@1x.png')
+const behavior = require('../../assets/icon/Hướng nghiệp/Pesonality@1x.png')
+const accordantjob = require('../../assets/icon/Hướng nghiệp/Job@1x.png')
+const relatedmajor = require('../../assets/icon/Hướng nghiệp/school@1x.png')
 
 
 class Index extends React.Component {
@@ -37,21 +41,33 @@ class Index extends React.Component {
   render() {
     return (
       <div className="career-guidance-page" >
-        <div onClick={() => this.props.toggleStyleTestDrawer(true)}>
-          Phong cách hành vi
+        <div className="career-guidance-banner">
+          <img src="https://huongnghiepsongan.com/wp-content/uploads/2020/07/marci-angeles-YCF18toz3ds-unsplash.jpg"/>
         </div>
-        <div onClick={() => this.props.toggleYourJobDrawer(true)}>
-          Công việc phù hợp
+        <div className="listItem">
+          <div className="_blank">
+          </div>
+          <div className="item behavior" onClick={() => this.props.toggleStyleTestDrawer(true)}>
+            <img src={behavior}/>
+            <span>Phong cách hành vi</span>
+          </div>
+          <div className="_blank_">
+          </div>
+          <div className="item accordant-job" onClick={() => this.props.toggleYourJobDrawer(true)}>
+            <img src={accordantjob}/>
+            <span>Công việc phù hợp</span>
+          </div>
+          <div className="item related-major">
+            <img src={relatedmajor}/>
+            <span>Ngành học tương ứng</span>
+          </div>
+          {
+            renderStyleTestDrawer(this)
+          }
+          {
+            renderYourJobDrawer(this)
+          }
         </div>
-        <div>
-          Ngành học tương ứng
-        </div>
-        {
-          renderStyleTestDrawer(this)
-        }
-        {
-          renderYourJobDrawer(this)
-        }
       </div>
     );
   }
@@ -163,6 +179,17 @@ const renderYourJobDrawer = (component) => {
           </div>
           <div className="filter"></div>
           <div style={{ overflow: "scroll" }}>
+            <div className="jobList-Noti">
+              <div className="divContent">
+                <i class="fas fa-play"></i>
+                <p className="content">Trang công việc được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những công việc mà bạn muốn tìm hiểu nhé.</p>
+              </div>
+              <p className="quote">
+                <img src={DISC}/>
+                <span>Phù hợp với phong cách hành vi.</span>
+              </p>
+            </div>
+            <RecipeReviewCard/>
           </div>
 
         </div> : ""

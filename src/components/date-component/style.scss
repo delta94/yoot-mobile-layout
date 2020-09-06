@@ -1,0 +1,51 @@
+.datepicker{
+    bottom:8%;
+    font-size:1.3rem;
+    background:#fff !important;
+    &.ios{
+        width:95%;
+        margin:0 10px;
+        border-radius: 11px;
+        .datepicker-viewport::after{
+            background:-webkit-gradient(linear,left top, left bottom,from(#fff),color-stop(52%, rgba(245, 245, 245, 0)),color-stop(48%, rgba(245, 245, 245, 0)),to(#fff)) !important;
+        }
+    }
+    .datepicker-scroll{
+        li{
+            font-size:1.5rem !important;
+        }
+    }
+    .datepicker-header{
+        opacity:0.75;
+        line-height: 3em;
+        border-bottom: 1px solid #e1e1e1;
+    }
+    .datepicker-content{
+        padding:10px 5% 60px 5%;
+        .datepicker-col-1:first-child{
+            text-align:left;
+        }
+        .datepicker-col-1:last-child{
+            text-align:right;
+        }
+    }
+    .datepicker-navbar{
+        top:unset !important;
+        bottom:-16%;
+        border-bottom:none !important;
+        border-top: 1px solid #e1e1e1;
+        .datepicker-navbar-btn{
+            width:100%;
+            padding:0;
+            background:#fff;
+            margin-top:10px;
+            border-radius:11px;
+            height:2.25em;
+            line-height: 2em;
+        }
+        .datepicker-navbar-btn:last-child{
+            height:2.5em;
+            line-height: 2.5em;
+        }
+    }
+}
