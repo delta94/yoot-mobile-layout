@@ -11,7 +11,8 @@ import {
 import {
   IconButton,
   Drawer,
-  Avatar
+  Avatar,
+  Button
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon
@@ -19,6 +20,8 @@ import {
 import { connect } from 'react-redux'
 
 const coin = require('../../assets/icon/Coins_Y.png')
+const DISC = require('../../assets/icon/DISC@1x.png')
+
 
 class Index extends React.Component {
   constructor(props) {
@@ -33,7 +36,7 @@ class Index extends React.Component {
   }
   render() {
     return (
-      <div className="home-page" >
+      <div className="career-guidance-page" >
         <div onClick={() => this.props.toggleStyleTestDrawer(true)}>
           Phong cách hành vi
         </div>
@@ -118,6 +121,9 @@ const renderStyleTestDrawer = (component) => {
           </div>
           <div className="filter"></div>
           <div style={{ overflow: "scroll" }}>
+            <div className="style-reward">
+              <Button><img src={DISC} /> Tìm hiểu DISC</Button>
+            </div>
           </div>
 
         </div> : ""
