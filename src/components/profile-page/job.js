@@ -13,7 +13,7 @@ import {
     ChevronLeft as ChevronLeftIcon
 } from '@material-ui/icons'
 
-const job = require('../../assets/images/job.png')
+const job = require('../../assets/icon/job@1x.png')
 
 
 export class Index extends React.Component {

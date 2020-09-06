@@ -82,11 +82,11 @@ export const confirmSubmit = (title, message, onOK, onCANCEL) => {
     message: message,
     buttons: [
       {
-        label: "HUỶ",
+        label: "Không",
         onClick: onCANCEL ? () => onCANCEL() : ""
       },
       {
-        label: "CÓ",
+        label: "Có",
         onClick: onOK ? () => onOK() : ""
       }
     ]

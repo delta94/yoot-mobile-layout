@@ -15,7 +15,7 @@ import {
 import CustomSelect from '../common/select'
 import Switch from 'react-ios-switch';
 
-const school = require('../../assets/images/school.png')
+const school = require('../../assets/icon/Education.png')
 
 const schools = [
     {

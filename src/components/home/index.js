@@ -4,8 +4,12 @@ import {
   addHeaderContent,
   addFooterContent,
   toggleHeader,
-  toggleFooter
+  toggleFooter,
+  toggleUserPageDrawer
 } from '../../actions/app'
+import {
+  setCurrenUserDetail
+} from '../../actions/user'
 import { connect } from 'react-redux'
 import { StickyContainer, Sticky } from 'react-sticky';
 import Slider from "react-slick";
@@ -17,21 +21,21 @@ import {
 } from '@material-ui/core'
 import SwipeableViews from 'react-swipeable-views';
 
-const noti = require('../../assets/images/noti.png')
-const profileBw = require('../../assets/images/profileBw@2x.png')
-const settingBw = require('../../assets/images/setting-bw.png')
-const home = require('../../assets/images/home.png')
-const yootLogo = require('../../assets/images/logo@3x.png')
-const community = require('../../assets/images/community.png')
-const skill = require('../../assets/images/skill.png')
-const job1 = require('../../assets/images/job-1.png')
-const job = require('../../assets/images/job.png')
-const house = require('../../assets/images/house.png')
-const teach = require('../../assets/images/teach.png')
-const coin = require('../../assets/images/angry.png')
-const like = require('../../assets/images/like.png')
-const follower = require('../../assets/images/follower.png')
-const donePractice = require('../../assets/images/done-practice.png')
+const noti = require('../../assets/icon/NotiBw@1x.png')
+const profileBw = require('../../assets/icon/ProfileBW.png')
+const settingBw = require('../../assets/icon/seting1@1x.png')
+const home = require('../../assets/icon/home@1x.png')
+const yootLogo = require('../../assets/icon/Logo_y@1x.png')
+const community = require('../../assets/icon/community@1x.png')
+const skill = require('../../assets/icon/Skill.png')
+const job1 = require('../../assets/icon/Vocational_guidance.png')
+const job = require('../../assets/icon/job@1x.png')
+const house = require('../../assets/icon/Motel.png')
+const teach = require('../../assets/icon/teach.png')
+const coin = require('../../assets/icon/Coins_Y.png')
+const like = require('../../assets/icon/like@1x.png')
+const follower = require('../../assets/icon/Follower@1x.png')
+const donePractice = require('../../assets/icon/DonePractive@1x.png')
 
 
 const settings = {
@@ -45,85 +49,348 @@ const settings = {
 
 const member = [
   {
-    fullName: "Trần Phông",
-    avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
+    coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
+    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
+    fullName: "Nguyễn Thị Vân Anh",
+    point: 20,
+    liked: 1231,
+    folow: 221,
+    posted: 2533,
+    birthday: new Date(),
+    gender: "Nam",
+    friends: [
+      {
+        coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
+        avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
+        fullName: "Nguyễn Thị Vân Anh 1",
+        point: 111,
+        liked: 111,
+        folow: 111,
+        posted: 111,
+        birthday: new Date(),
+        gender: "Nam",
+        friends: [
+          {
+            coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
+            avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
+            fullName: "Nguyễn Thị Vân Anh 11",
+            point: 111,
+            liked: 111,
+            folow: 111,
+            posted: 111,
+            birthday: new Date(),
+            gender: "Nam",
+            friends: [
+
+            ],
+            folowing: [
+              {
+                avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+                fullName: "Apple Ánh"
+              },
+              {
+                avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+                fullName: "Võ Gia Huy"
+              },
+              {
+                avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+                fullName: "Quynh"
+              }
+            ],
+            folowed: [
+              {
+                avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+                fullName: "Võ Gia Huy"
+              },
+              {
+                avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+                fullName: "Apple Ánh"
+              },
+              {
+                avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+                fullName: "Quynh"
+              }
+            ],
+            jobs: [
+              {
+                position: "Nhân viên Thiết kế",
+                company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+                description: "Không có mô tả",
+                start: "10/20/2019",
+                end: "10/20/2020"
+              }
+            ],
+            studies: [
+              {
+                majors: "Nhân viên Thiết kế",
+                school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+                className: "D15_MT3DH",
+                graduate: "Khá",
+                masv: "DH12283",
+                start: "1999",
+                end: "2004",
+                isFinish: true
+              }
+            ],
+            address: "33 Kinh Dương Vương, Bình Chánh, HCM",
+            email: "btcvn07@gmail.com",
+            skills: ["Quản lý thời gian", "Lãnh đạo"],
+            hopies: "Ca hát, thể thao",
+            orderSkills: "Ca hát",
+            mutualFriendCount: 2
+
+          }
+
+        ],
+        folowing: [
+          {
+            avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+            fullName: "Apple Ánh"
+          },
+          {
+            avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+            fullName: "Võ Gia Huy"
+          },
+          {
+            avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+            fullName: "Quynh"
+          }
+        ],
+        folowed: [
+          {
+            avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+            fullName: "Võ Gia Huy"
+          },
+          {
+            avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+            fullName: "Apple Ánh"
+          },
+          {
+            avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+            fullName: "Quynh"
+          }
+        ],
+        jobs: [
+          {
+            position: "Nhân viên Thiết kế",
+            company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+            description: "Không có mô tả",
+            start: "10/20/2019",
+            end: "10/20/2020"
+          }
+        ],
+        studies: [
+          {
+            majors: "Nhân viên Thiết kế",
+            school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+            className: "D15_MT3DH",
+            graduate: "Khá",
+            masv: "DH12283",
+            start: "1999",
+            end: "2004",
+            isFinish: true
+          }
+        ],
+        address: "33 Kinh Dương Vương, Bình Chánh, HCM",
+        email: "btcvn07@gmail.com",
+        skills: ["Quản lý thời gian", "Lãnh đạo"],
+        hopies: "Ca hát, thể thao",
+        orderSkills: "Ca hát",
+        mutualFriendCount: 2
+      },
+      {
+        coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
+        avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
+        fullName: "Nguyễn Thị Vân Anh 2",
+        point: 222,
+        liked: 222,
+        folow: 222,
+        posted: 222,
+        birthday: new Date(),
+        gender: "Nam",
+        friends: [
+
+        ],
+        folowing: [
+          {
+            avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+            fullName: "Apple Ánh"
+          },
+          {
+            avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+            fullName: "Võ Gia Huy"
+          },
+          {
+            avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+            fullName: "Quynh"
+          }
+        ],
+        folowed: [
+          {
+            avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+            fullName: "Võ Gia Huy"
+          },
+          {
+            avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+            fullName: "Apple Ánh"
+          },
+          {
+            avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+            fullName: "Quynh"
+          }
+        ],
+        jobs: [
+          {
+            position: "Nhân viên Thiết kế",
+            company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+            description: "Không có mô tả",
+            start: "10/20/2019",
+            end: "10/20/2020"
+          }
+        ],
+        studies: [
+          {
+            majors: "Nhân viên Thiết kế",
+            school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+            className: "D15_MT3DH",
+            graduate: "Khá",
+            masv: "DH12283",
+            start: "1999",
+            end: "2004",
+            isFinish: true
+          }
+        ],
+        address: "33 Kinh Dương Vương, Bình Chánh, HCM",
+        email: "btcvn07@gmail.com",
+        skills: ["Quản lý thời gian", "Lãnh đạo"],
+        hopies: "Ca hát, thể thao",
+        orderSkills: "Ca hát",
+        mutualFriendCount: 20
+      },
+    ],
+    folowing: [
+      {
+        avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+        fullName: "Apple Ánh"
+      },
+      {
+        avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+        fullName: "Võ Gia Huy"
+      },
+      {
+        avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+        fullName: "Quynh"
+      }
+    ],
+    folowed: [
+      {
+        avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+        fullName: "Võ Gia Huy"
+      },
+      {
+        avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+        fullName: "Apple Ánh"
+      },
+      {
+        avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+        fullName: "Quynh"
+      }
+    ],
+    jobs: [
+      {
+        position: "Nhân viên Thiết kế",
+        company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+        description: "Không có mô tả",
+        start: "10/20/2019",
+        end: "10/20/2020"
+      }
+    ],
+    studies: [
+      {
+        majors: "Nhân viên Thiết kế",
+        school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+        className: "D15_MT3DH",
+        graduate: "Khá",
+        masv: "DH12283",
+        start: "1999",
+        end: "2004",
+        isFinish: true
+      }
+    ],
+    address: "33 Kinh Dương Vương, Bình Chánh, HCM",
+    email: "btcvn07@gmail.com",
+    skills: ["Quản lý thời gian", "Lãnh đạo"],
+    hopies: "Ca hát, thể thao",
+    orderSkills: "Ca hát"
   },
   {
-    fullName: "Trần Phông",
-    avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
+    coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
+    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
+    fullName: "Bảo Ngọc",
+    point: 20,
+    liked: 1231,
+    folow: 221,
+    posted: 2533,
+    birthday: new Date(),
+    gender: "Nam",
+    friends: [
+
+    ],
+    folowing: [
+      {
+        avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+        fullName: "Apple Ánh"
+      },
+      {
+        avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+        fullName: "Võ Gia Huy"
+      },
+      {
+        avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+        fullName: "Quynh"
+      }
+    ],
+    folowed: [
+      {
+        avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
+        fullName: "Võ Gia Huy"
+      },
+      {
+        avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
+        fullName: "Apple Ánh"
+      },
+      {
+        avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
+        fullName: "Quynh"
+      }
+    ],
+    jobs: [
+      {
+        position: "Nhân viên Thiết kế",
+        company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+        description: "Không có mô tả",
+        start: "10/20/2019",
+        end: "10/20/2020"
+      }
+    ],
+    studies: [
+      {
+        majors: "Nhân viên Thiết kế",
+        school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
+        className: "D15_MT3DH",
+        graduate: "Khá",
+        masv: "DH12283",
+        start: "1999",
+        end: "2004",
+        isFinish: true
+      }
+    ],
+    address: "33 Kinh Dương Vương, Bình Chánh, HCM",
+    email: "btcvn07@gmail.com",
+    skills: ["Quản lý thời gian", "Lãnh đạo"],
+    hopies: "Ca hát, thể thao",
+    orderSkills: "Ca hát"
   },
-  {
-    fullName: "Trần Phông",
-    avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
-  },
-  {
-    fullName: "Trần Phông",
-    avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
-  },
-  {
-    fullName: "Trần Phông",
-    avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
-  },
-  {
-    fullName: "Trần Phông",
-    avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
-  },
-  {
-    fullName: "Trần Phông",
-    avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
-  },
-  {
-    fullName: "Trần Phông",
-    avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
-  },
-  {
-    fullName: "Trần Phông",
-    avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
-  },
-  {
-    fullName: "Trần Phông",
-    avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg",
-    point: 5502,
-    liked: 1422,
-    folow: 31,
-    posted: 872
-  }
 ]
 
 const groups = [
@@ -319,15 +586,15 @@ class Index extends React.Component {
                 <div className="home-menu">
                   <div>
                     <ul>
-                      <li>
+                      <li onClick={() => this.props.history.push("/community")}>
                         <img src={community}></img>
                         <span>Cộng đồng</span>
                       </li>
-                      <li>
+                      <li onClick={() => this.props.history.push("/skills")}>
                         <img src={skill}></img>
                         <span>Kỹ năng</span>
                       </li>
-                      <li>
+                      <li onClick={() => this.props.history.push("/career-guidance")}>
                         <img src={job1}></img>
                         <span>Hướng nghiệp</span>
                       </li>
@@ -372,7 +639,10 @@ class Index extends React.Component {
               <TabPanel value={tabIndex} index={0} className="content-box">
                 <div className="top-members">
                   {
-                    member.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} >
+                    member.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} onClick={() => {
+                      this.props.setCurrenUserDetail(item)
+                      this.props.toggleUserPageDrawer(true)
+                    }}>
                       <div className="member-avatar">
                         <Avatar aria-label="recipe" className="avatar">
                           <img src={item.avatar} style={{ width: "100%" }} />
@@ -462,7 +732,9 @@ const mapDispatchToProps = dispatch => ({
   addHeaderContent: (headerContent) => dispatch(addHeaderContent(headerContent)),
   addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
-  toggleFooter: (isShow) => dispatch(toggleFooter(isShow))
+  toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
+  toggleUserPageDrawer: (isShow) => dispatch(toggleUserPageDrawer(isShow)),
+  setCurrenUserDetail: (user) => dispatch(setCurrenUserDetail(user))
 });
 
 export default connect(

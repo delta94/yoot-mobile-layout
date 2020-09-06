@@ -3,6 +3,12 @@ html,span,p,label{
 }
 body{
     margin: 0px;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 ul{
     padding: 0px;
@@ -30,6 +36,42 @@ ul{
                 z-index: 1;
                 button{
                     min-height: 40px !important;
+                    > span{
+                        color: #484848 !important;
+                        text-transform: none !important;
+                        font-family: Roboto-Medium;
+                    }
+                    > span:last-child{
+                        display: none;  
+                    }
+                }
+            }
+        }
+    }
+}
+.custom-tab-1{
+    box-shadow: none !important;
+    background: #fff !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    .tab-header{
+        min-height: 40px !important;
+        > div > div{
+            position: relative;
+            > span:last-child{
+                height: 3px;
+                z-index: 0;
+                background: #e42726 !important;
+            }
+            > div{
+                position: relative;
+                z-index: 1;
+                button{
+                    min-height: 50px !important;
+                    &[aria-selected=true]{
+                        span{
+                            color: #e42726 !important;
+                        }
+                    }
                     > span{
                         color: #484848 !important;
                         text-transform: none !important;
@@ -72,6 +114,24 @@ ul{
     font-family: Roboto-Regular;
     color: #c0c0c0;
 }
+// input[type="color"],
+// input[type="date"],
+// input[type="datetime"],
+// input[type="datetime-local"],
+// input[type="email"],
+// input[type="month"],
+// input[type="number"],
+// input[type="password"],
+// input[type="search"],
+// input[type="tel"],
+// input[type="text"],
+// input[type="time"],
+// input[type="url"],
+// input[type="week"],
+// select:focus,
+// textarea {
+//   font-size: 16px !important;
+// }
 .red{
     color: #ff5a5a;
 }
@@ -107,22 +167,79 @@ input{
       }
     }
 }
+#react-confirm-alert{
+    .react-confirm-alert-overlay{
+        background: rgba(0, 0, 0, 0.2);
+        z-index: 999999999999999 !important;
+        .react-confirm-alert{
+            width: calc(100vw - 40px);
+            border-radius: 15px !important;
+            overflow: hidden;
+            .react-confirm-alert-body{
+                padding: 0px !important;
+                width: 100%;
+                text-align: center;
+                padding-top: 20px;
+                > h1{
+                    font-size: 1.3rem;
+                    color: #000;
+                    font-family: Roboto-Medium;
+                    font-weight: normal;
+                    margin-bottom: 5px;
+                    margin-top: 20px;
+                    display: inline-block;
+                    width: 100%;
+                }
+                .react-confirm-alert-button-group{
+                    display: flex;
+                    align-items: center;
+                    height: 45px;
+                    border-top: 1px solid rgba(0,0,0,0.1);
+                    button{
+                        width: 100%;
+                        margin-right: 0px;
+                        height: 100%;
+                        background: #fff;
+                        border-radius: 0px;
+                        font-family: Roboto-Regular;
+                        font-size: 1.2rem;
+                        color: royalblue;
+                        &:last-child{
+                            border-left: 1px solid rgba(0,0,0,0.1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+.react-confirm-alert-blur{
+    filter: blur(0);
+}
 .bt-submit{
     width: 100% !important;
     border-radius: 6px !important;
     box-shadow: none !important;
-    min-height: 40px !important;
+    min-height: 30px !important;
     background: #ff5a5a !important;
     > span{
         text-transform: none !important;
         color: #fff !important;
+    }
+    &.outline{
+        background: #fff !important;
+        // border: 1px solid #ff5a5a !important;
+        box-shadow: 0px 0px 2px #ff5a5a !important;
+        > span{
+            color: #ff5a5a !important;
+        }
     }
 }
 .bt-cancel{
     width: 100% !important;
     border-radius: 6px !important;
     box-shadow: none !important;
-    min-height: 40px !important;
+    min-height: 30px !important;
     background: #f0f0f0 !important;
     > span{
         text-transform: none !important;

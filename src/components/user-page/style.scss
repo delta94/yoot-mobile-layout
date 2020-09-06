@@ -1,0 +1,59 @@
+.user-page{
+    .user-info{
+        .user-name{
+            font-size: 1.5rem;
+        }
+    }
+}
+.friend-actions{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    button{
+        width: fit-content !important;
+        margin: 0px 5px !important;
+        padding: 0px 20px !important;
+        min-height: 35px !important;
+    }
+    .bt-more{
+        border-radius: 7px;
+        padding: 3px;
+        padding: 0px 10px !important;
+    }
+}
+.user-menu{
+    > div:last-child{
+        min-height: 300px;
+    }
+    .menu-header{
+        justify-content: center;
+        position: relative;
+        button{
+            position: absolute;
+            left: 10px;
+        }
+    }
+    .menu-list{
+        li{
+            height: unset !important;
+            button{
+                >span{
+                    >span{
+                        > span{
+                            display: inline-block;
+                            width: 100%;
+                            font-family: Roboto-Medium;
+                            color: #444;
+                            &:last-child{
+                                font-size: 0.95rem;
+                                font-family: Roboto-Regular;
+                                color: #777;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -8,10 +8,14 @@
         background-size: cover !important;
         background-position: 50% 50% !important;
         background-repeat: no-repeat !important;
-        > button{
+        > div{
+            width: fit-content;
             position: absolute;
             bottom: 10px;
             right: 10px;
+        }
+        input{
+            display: none !important;
         }
     }
     .user-avatar{
@@ -26,6 +30,15 @@
         background-size: cover !important;
         background-position: 50% 50% !important;
         position: relative;
+        > div{
+            width: fit-content;
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+        }
+        input{
+            display: none !important;
+        }
         > button{
             position: absolute;
             bottom: 0px;
@@ -52,6 +65,10 @@
             width: fit-content;
             border-radius: 25px;
             margin: 5px auto;
+            img{
+                width: 18px;
+                margin-left: 5px;
+            }
             span{
                 font-size: 0.9rem;
                 font-family: Roboto-Regular;
@@ -104,16 +121,22 @@
             li{
                 display: flex;
                 align-items: center;
-                height: 30px;
+                height: 35px;
+
+                img{
+                    width: 20px;
+                }
                 span{
                     font-family: Roboto-Regular;
                     margin-left: 10px;
                     &.title{
                         color: rgba(0,0,0,0.5);
                     }
-                    &.value{
+                    b{
                         font-family: Roboto-Medium;
                         margin-left: 3px;
+                        color: rgba(0,0,0,0.7);
+                        font-weight: normal;
                     }
                 }
             }
@@ -170,6 +193,15 @@
                     margin-top: 10px;
                     display: inline-block
                 }
+                .mutual-friend-count{
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+                    font-family: Roboto-Regular;
+                    font-size: 0.9rem;
+                    color: #777;
+                    margin-top: 5px;
+                }
             }
         }
         .search-friend{
@@ -179,8 +211,9 @@
             display: flex;
             align-items: center;
             img{
-                width: 25px;
-                height: 25px;
+                width: 15px;
+                height: 15px;
+                margin-right: 5px;
             }
             span{
                 font-family: Roboto-Regular;
@@ -213,6 +246,9 @@
                 border-radius: 7px;
                 margin-right: 10px;
                 padding: 0px 20px 0px 5px;
+                img{
+                    width: 20px;
+                }
                 span{
                     font-family: Roboto-Medium;
                     margin-left: 20px;
@@ -562,7 +598,7 @@
      }
 }
 .friends-for-block-form{
-    .detail-header{
+    .drawer-header{
         border-bottom: none !important;
     }
     .content-form{
@@ -570,9 +606,75 @@
         box-sizing: border-box;
         .search-box{
             margin: 0px !important;
+            img{
+                width: 17px;
+            }
             fieldset{
                 border: none !important;
                 background: rgba(0,0,0,0.07);
+            }
+        }
+    }
+}
+.image-box{
+    padding: 10px;
+    
+}
+.image-list{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    li{
+        height: 100px;
+        background-size: cover !important;
+        background-position: 50% 50% !important;
+        background-repeat: no-repeat !important;
+    }
+}
+.album {
+    ul{
+        display: grid;
+        grid-template-columns: repeat(2,1fr);
+        grid-column-gap: 10px;
+        grid-row-gap: 10px;
+        li{
+            height: 150px;
+            >div{
+                border: 1px solid rgba(0,0,0,0.2);
+                height: calc(100% - 35px);
+                padding: 3px;
+                box-sizing: border-box;
+                > div{
+                    height: 100%;
+                    background-repeat: no-repeat !important;
+                    background-size: cover !important;
+                    background-position: 50% 50% !important;
+                }
+            }
+            > span{
+                display: flex;
+                align-items: center;
+                width: 100%;
+                height: 35px;
+                color: #777;
+                font-family:  Roboto-Regular;
+            }
+            &.add-bt{
+                > div{
+                    border: 1px solid #f44645;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    > svg{
+                        width: 40px;
+                        height: 40px;
+                        color: #f44645;
+                    }
+                }
+                > span{
+                    color: #f44645;
+                }
             }
         }
     }

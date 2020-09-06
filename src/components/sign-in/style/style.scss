@@ -11,8 +11,8 @@
     position: relative;
     z-index: 1;
     img{
-      width: 50vw;
-      height: auto;
+      height: 7vh;
+      width: auto;
     }
   }
   .sign-in-bg{
@@ -24,18 +24,17 @@
     z-index: 0;
     overflow: hidden;
     img{
-      width: 100vw;
-      height: auto;
-      margin-top: -25vw;
+      width: auto;
+      height: 30vh;
     }
   }
   .sign-in-form{
     background: #fff;
     width: 100%;
-    min-height: calc(100vh - 80vw);
+    min-height: calc(100vh - 40vh);
     position: absolute;
     z-index: 2;
-    top: 80vw;
+    top: 40vh;
     left: 0px;
     border-radius: 25px 25px 0px 0px;
     text-align: center;
@@ -43,7 +42,7 @@
       box-shadow: none !important;
       margin-top: 20px;
       padding: 5px;
-      width: calc(100vw - 30px);
+      width: calc(100% - 30px);
       margin-left: 15px;
       border-radius: 8px;
       background: #e8e9ed;

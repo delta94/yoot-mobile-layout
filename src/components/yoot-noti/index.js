@@ -4,14 +4,15 @@ import {
   addHeaderContent,
   addFooterContent,
   toggleHeader,
+  toggleFooter,
   toggleUserDetail
 } from '../../actions/app'
 import { connect } from 'react-redux'
 
-const noti = require('../../assets/images/notification.png')
-const profileBw = require('../../assets/images/profileBw@2x.png')
-const settingBw = require('../../assets/images/setting-bw.png')
-const home = require('../../assets/images/home.png')
+const noti = require('../../assets/icon/NotiBw1.png')
+const profileBw = require('../../assets/icon/ProfileBW.png')
+const settingBw = require('../../assets/icon/seting1@1x.png')
+const home = require('../../assets/icon/home1@1x.png')
 
 class Index extends React.Component {
   constructor(props) {
@@ -23,6 +24,7 @@ class Index extends React.Component {
     this.props.addHeaderContent(renderHeader())
     this.props.addFooterContent(renderFooter(this.props.history))
     this.props.toggleHeader(true)
+    this.props.toggleFooter(true)
   }
   render() {
     return (
@@ -43,6 +45,7 @@ const mapDispatchToProps = dispatch => ({
   addHeaderContent: (headerContent) => dispatch(addHeaderContent(headerContent)),
   addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
+  toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
   toggleUserDetail: (isShow) => dispatch(toggleUserDetail(isShow))
 });
 

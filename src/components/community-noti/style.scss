@@ -1,0 +1,40 @@
+.noti-item{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    &.action{
+        align-items: flex-start !important
+    }
+    .avatar{
+        width: 50px;
+        height: 50px;
+        border: none;
+        margin-right: 10px;
+        img{
+            width: 100%;
+        }
+    }
+    .message{
+        display: flex;
+        width: 100%;
+        font-family: Roboto-Regular;
+        color: #444;
+    }
+    .time{
+        display: flex;
+        width: 100%;
+        font-family: Roboto-Light;
+        color: #444;
+        margin-top: 5px;
+    }
+    .actions{
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+        button{
+            width: fit-content !important;
+            margin-right: 10px;
+        }
+    }
+}

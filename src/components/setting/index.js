@@ -4,6 +4,7 @@ import {
   addHeaderContent,
   addFooterContent,
   toggleHeader,
+  toggleFooter
 } from '../../actions/app'
 import {
   NavigateNext as NavigateNextIcon,
@@ -18,10 +19,10 @@ import {
   IconButton
 } from "@material-ui/core";
 
-const noti = require('../../assets/images/noti.png')
-const profileBw = require('../../assets/images/profileBw@2x.png')
-const settingBw = require('../../assets/images/setting.png')
-const home = require('../../assets/images/home.png')
+const noti = require('../../assets/icon/NotiBw@1x.png')
+const profileBw = require('../../assets/icon/ProfileBW.png')
+const settingBw = require('../../assets/icon/seting@1x.png')
+const home = require('../../assets/icon/home1@1x.png')
 
 class Index extends React.Component {
   constructor(props) {
@@ -36,6 +37,7 @@ class Index extends React.Component {
     this.props.addHeaderContent(renderHeader())
     this.props.addFooterContent(renderFooter(this.props.history))
     this.props.toggleHeader(true)
+    this.props.toggleFooter(true)
   }
   render() {
     let {
@@ -80,6 +82,7 @@ const mapDispatchToProps = dispatch => ({
   addHeaderContent: (headerContent) => dispatch(addHeaderContent(headerContent)),
   addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
+  toggleFooter: (isShow) => dispatch(toggleFooter(isShow))
 });
 
 export default connect(
@@ -126,8 +129,8 @@ const renderAutoPlaySettingDrawer = (component) => {
   } = component.state
   return (
     <Drawer anchor="bottom" className="auto-play-setting" open={showAutoPlaySetting} onClose={() => component.setState({ showAutoPlaySetting: false })}>
-      <div className="user-detail">
-        <div className="detail-header">
+      <div className="drawer-detail">
+        <div className="drawer-header">
           <div className="direction" onClick={() => component.setState({ showAutoPlaySetting: false })}>
             <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
               <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
@@ -136,7 +139,6 @@ const renderAutoPlaySettingDrawer = (component) => {
           </div>
         </div>
         <div className="filter">
-
         </div>
         <div className="detail-content" style={{ overflow: "scroll", width: "100vw" }}>
           <ul className="auto-option">

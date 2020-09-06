@@ -5,8 +5,6 @@ import {
 } from "../constants/localStorageKeys";
 
 import { connectedRouterRedirect } from "redux-auth-wrapper/history4/redirect";
-import { getDate } from "../utils/common";
-import { MetubRoles } from "../constants/constants";
 
 export const isSignedIn = () =>
   window.localStorage.getItem(ACCESS_TOKEN) !== null;
@@ -27,29 +25,6 @@ export const setCurrentUser = user => {
   _currentUser = user;
   window.localStorage.setItem(USER_INFO, JSON.stringify(user));
 };
-
-export const isInRole = (role, exceptionFunction) => {
-  const user = getCurrentUser();
-  var isInRole = false
-  if (!user || !user.roles) signOut();
-  isInRole = user.roles.includes(role);
-  if (exceptionFunction) {
-    isInRole = (user.roles.includes(role) && exceptionFunction());
-  } else {
-    isInRole = user.roles.includes(role);
-  }
-  if (user.roleCode === MetubRoles.ADMIN || user.roleCode === role) isInRole = true
-  return isInRole
-};
-
-export const isInAccessibleFeatures = (role) => {
-  var user = getCurrentUser();
-  var isInAccessibleFeatures = false
-  if (!user || !user.accessibleFeatures) signOut();
-  isInAccessibleFeatures = user.accessibleFeatures.includes(role);
-  if (user.roleCode === MetubRoles.ADMIN) isInAccessibleFeatures = true
-  return isInAccessibleFeatures
-}
 
 export const signOut = () => {
   window.localStorage.clear()

@@ -35,6 +35,10 @@
                 width: 100%;
                 padding: 15px 0px;
                 background: #fff;
+                img{
+                    width: 40px;
+                    height: 40px;
+                }
                 span{
                     font-size: 1.1rem;
                     display: inline-block;
@@ -110,6 +114,9 @@
                 margin-top: 5px;
                 color: #fff;
                 width: fit-content;
+                img{
+                    width: 18px;
+                }
                 > span{
                     font-size: 0.9rem;
                     font-family: Roboto-Regular;

@@ -1,0 +1,509 @@
+.skills-page{
+    min-height: calc(100vh - 131px);
+    background: #f2f3f7;
+    padding: 10px;
+    box-sizing: border-box;
+    .source-item{
+        margin-bottom: 10px;
+        > div{
+            border-radius: 10px;
+            overflow: hidden;
+            height: 40vw;
+            background-size: cover !important;
+            background-position: 50% 50% !important;
+            background-repeat: no-repeat !important;
+            padding: 10px;
+            box-sizing: border-box; 
+            display: grid;
+            align-items: flex-end;
+            > div{
+                .reward{
+                    margin-bottom: 10px;
+                    display: flex;
+                    align-items: center;
+                    > span{
+                        margin-right: 10px;
+                        background: rgb(255, 90, 89);
+                        color: #fff;
+                        font-family: Roboto-Medium;
+                        display: flex;
+                        height: 25px;
+                        padding: 0px 10px;
+                        border-radius: 5px;
+                        width: fit-content;
+                        align-items: center;
+                        &:last-child{
+                            margin-right: 0px;
+                        }
+                    }
+                }
+                .source-name{
+                    background: rgba(0,0,0,0.7);
+                    font-family: Roboto-Medium;
+                    color: #fff;
+                    display: flex;
+                    align-items: center;
+                    height: 30px;
+                    border-radius: 40px;
+                    padding: 0px 20px;
+                    width: fit-content;
+                }
+            }
+            
+        }
+        
+    }
+}
+
+.source-item-page{
+    .lesson-video{
+        margin-top: 15px;
+        background: #fff;
+        .source-name{
+            display: flex;
+            padding: 0px 10px;
+            font-family: Roboto-Medium;
+            font-size: 1.2rem;
+            color: rgb(245, 71, 70);
+        }
+        .reward{
+            padding: 0px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 7px;
+            box-sizing: border-box;
+            > span{
+                display: flex;
+                align-items: center;
+                font-family: Roboto-Regular;
+                &.reward-point{
+                    color: #2aabe1;
+                }
+                > span{
+                    margin-left: 3px;
+                }
+                img{
+                    width: 17px;
+                    margin-left: 5px;
+                }
+            }
+        }
+        .proccess{
+            padding: 10px;
+            .proccess-bar{
+                background: #e9e9e9;
+                height: 6px;
+                border-radius: 6px !important;
+                > div{
+                    background: #2aabe1;
+                }
+            }
+            > span{
+                display: flex;
+                width: 100%;
+                align-items: center;
+                justify-content: center;
+                margin-top: 10px;
+                img{
+                    width: 15px;
+                    margin-left: 5px;
+                }
+            }
+        }
+        .video{
+            > div{
+                width: 100% !important;
+                height: fit-content !important;
+            }
+        }
+        .lesson-name{
+            display: flex;
+            align-items: center;
+            height: 60px;
+            padding: 0px 20px;
+            svg{
+                color: rgb(245, 71, 70);
+                margin-right: 10px;
+                font-size: 3rem;
+            }
+            > span{
+                font-family: Roboto-Regular;
+                font-size: 1.2rem;
+                color: rgb(245, 71, 70);
+                font-weight: bold;
+            }
+        }
+    }
+    .lesson-list{
+        padding: 10px;
+        background: #f2f3f7;
+        > label{
+            font-family: Roboto-Medium;
+            margin-bottom: 10px;
+            display: flex;
+        }
+        .document,
+        .lesson{
+            margin-bottom: 10px;
+            .name{
+                > svg{
+                    font-size: 2.5rem;
+                    margin-right: 10px;
+                    color: rgb(245, 71, 70);
+                }
+                > span{
+                    font-family: Roboto-Regular;
+                    font-weight: bold;
+                }
+            }
+            li{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: #fff;
+                padding: 7px 10px;
+                border-radius: 7px;
+                box-shadow: 0px 0px 1px rgba(0,0,0,0.2);
+                margin-bottom: 10px;
+                > div:first-child{
+                    display: flex;
+                    align-items: center;
+                    width: fit-content;
+                }
+                > div.process{
+                    width: 22px;
+                    height: 22px;
+                    border: 4px solid #e9e9e9;
+                    border-radius: 30px;
+                    position: relative;
+                    svg{
+                        width: 30px;
+                        height: 30px;
+                        position: absolute;
+                        top: -4px;
+                        left: -4px;
+                        color: rgb(245, 71, 70);
+                    }
+                }
+                img{
+                    width: 25px;
+                    margin-right: 10px;
+                }
+                > span{
+                    font-family: Roboto-Regular;
+                }
+            }
+        }
+    }
+}
+.exercise-item-page{
+    .exercise-header{
+        background: #fff;
+        padding-bottom: 10px;
+    }
+    .lesson-info{
+        display: flex;
+        padding: 10px;
+        box-sizing: border-box;
+        align-items: center;
+        label{
+            font-family: Roboto-Medium;
+            font-size: 1.2rem;
+            color: rgb(245, 71, 70);
+        }
+        .bg{
+            min-width: 150px;
+            height: 110px;
+            background-size: cover !important;
+            background-repeat: no-repeat !important;
+            background-position: 50% 50% !important;
+            border-radius: 10px;
+            margin-left: 20px;
+        }
+    }
+    .menu{
+        padding: 0px 10px;
+    }
+    .lesson-list{
+        .tab-content{
+            padding: 0px;
+        }
+        .exercise-list{
+            > label{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 40px;
+                font-family: Roboto-Regular;
+            }
+            .exercise-item{
+                box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+                width: calc(100% - 20px);
+                border-radius: 10px;
+                margin-left: 10px;
+                padding: 10px;
+                box-sizing: border-box;
+                margin-bottom: 10px;
+                > div{
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    > label{
+                        font-family: Roboto-Medium;
+                        font-size: 1.1rem;
+                    }
+                    .reward{
+                        display: flex;
+                        align-items: center;
+                        img{
+                            width: 15px;
+                        }
+                    }
+                }
+                > img{
+                    width: 100%;
+                    margin-top: 10px;
+                    box-shadow: 0px 0px 1px rgba(0,0,0,0.1);
+                }
+                > button{
+                    margin-top: 10px;
+                }
+            }
+        }
+    }
+    .history{
+        padding: 10px;
+        .notification{
+            padding: 7px;
+            background: #f5fafd;
+            border-radius: 10px;
+            > span{
+                color: #53a6dc;
+                font-family: Roboto-Regular;
+            }
+        }
+        .reports{
+            border-radius: 7px;
+            padding: 10px;
+            border: 1px solid rgba(0,0,0,0.1);
+            margin-top: 10px;
+            > label{
+                font-family: Roboto-Medium;
+                font-size: 1.2rem;
+                display: flex;
+                justify-content: center;
+                color: #d03c32;
+                height: 30px;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .tasks{
+                .task-header{
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    .task-name{
+                        font-family: Roboto-Regular;
+                        font-weight: bold;
+                    }
+                    .task-actions{
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 10px;
+                        button{
+                            margin-right: 10px;
+                            &:last-child{
+                                margin-right: 0px;
+                            }
+                            > span{
+                                font-family: Roboto-Regular;
+                                white-space: nowrap;
+                                padding: 0px 10px;
+                            }
+                        }
+                    }
+                    
+                }
+                .task-content{
+                    video{
+                        width: 100% ;
+                    }
+                }
+                .assess{
+                    text-align: center;
+                    > span{
+                        font-family: Roboto-Regular;
+                        color: #aaa;
+                        display: inline-block;
+                        margin: 10px 0px;
+                        text-align: left;
+                        width: 100%;
+                    }
+                    > div{
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        .assessor{
+                            display: flex;
+                            align-items: center;
+                            .avatar{
+                                img{
+                                    width: 40%;
+                                }
+                            }
+                            > span{
+                                font-family:  Roboto-Regular;
+                                margin-left: 10px
+                            }
+                        }
+                        .status{
+                            color: #53a6dc;
+                        }
+                    }
+                    > img{
+                        width: 30px;
+                        display: inline-block;
+                        margin: 10px auto;
+                    }
+                    
+                }
+                > li{
+                    text-align: center;
+                }
+                > li > button{
+                    background: #53a6dc;
+                    padding: 7px 20px;
+                    > span{
+                        text-transform: none;
+                        color: #fff;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.apply-drawer{
+    .drawer-header{
+        border-bottom: none !important;
+    }
+    .apply-form{
+        padding: 0px 10px;
+        text-align: center;
+        > label{
+            font-family: Roboto-Medium;
+            font-size: 1.2rem;
+            color: #d03c32;
+            display: flex;
+            align-items: center;
+            height: 40px;
+        }
+        > img{
+            width: 100%;
+            margin: 20px 0px;
+        }
+        > span{
+            font-family: Roboto-Medium;
+            font-size: 1.2rem;
+            display: inline-block;
+            width: 100%;
+            text-align: left;
+        }
+        .bt-upload{
+            margin: 20px 0px;
+            padding: 15px 10px;
+            display: flex;
+            align-items: center;
+            background: #fbf2f3;
+            border-radius: 10px;
+            border: 1px dotted #d03c32;
+            > span{
+                font-family: Roboto-Medium;
+                color: #d03c32;
+                display: inline-block;
+                width: 100%;
+                text-align: left;
+            }
+            img{
+                width: 20px;
+                margin-right: 10px;
+            }
+        }
+
+        button{
+            width: 120px !important;
+            margin: 0px auto;
+        }
+        #bt-select-video{
+            outline: none !important;
+            input{
+                display: none !important;
+            }
+        }
+    }
+}
+
+.add-assess-drawer{
+    > div:last-child{
+        width: calc(100% - 20px);
+        margin-left: 10px;
+        min-height: 70vh;
+        height: 70vh;
+        bottom: calc(50vh - 35vh);
+        border-radius: 10px;
+    }
+    .drawer-detail{
+        height: 100%;
+        grid-template-rows: min-content auto min-content ;
+        .drawer-header{
+            padding-left: 10px;
+            padding-right: 0px;
+            .direction{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+        .drawer-content{
+            width: 100%;
+            .assess-list{
+                li{
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 10px;
+                    border-bottom: 1px solid rgba(0,0,0,0.07);
+                    > div{
+                        display: flex;
+                        align-items: center;
+                        > span{
+                            font-family: Roboto-Medium;
+                            margin-left: 10px;
+                        }
+                        .avatar{
+                            img{
+                                width: 100%;
+                            }
+                        }
+                    }
+                    button{
+                        width: fit-content !important;
+                    }
+                }
+            }
+        }
+        .actions{
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px;
+            button{
+                width: fit-content !important;
+                margin-left: 10px;
+            }
+        }
+    }
+}
