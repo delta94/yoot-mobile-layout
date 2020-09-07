@@ -32,7 +32,7 @@ var job_dict = [
 ]
 const styles = theme => ({
   root: {
-    marginBottom: '15px',
+    marginBottom: '10px',
     boxShadow: 'none',
   },
   mediaDiv: {
