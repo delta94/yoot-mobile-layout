@@ -1,12 +1,94 @@
-.career-guidance-page{
-    .career-guidance-banner{
-        overflow: hidden;
-        margin-bottom: 25px;
-        img{
-            max-width: 100%;
+.career-guidance-banner{
+    overflow: hidden;
+    margin-bottom: 25px;
+    img{
+        max-width: 100%;
+    }
+}
+.job-list-drawer{
+    .filter{
+        position: relative;
+        margin:10px;
+        font-family: Roboto-Medium;
+        .searchBox{
+            border-radius: 7px;
+            border: none;
+            box-shadow: none;
+            width: 95%;
+            height: 30px !important;
+            font-size: 12px !important;
+            color: rgba(0, 0, 0, 0.54);
+            background-color: #f1f1f1;
+            border: none;
+            margin:auto;
+            font-weight:300;
+            &:focus,&:active{
+                outline:none;
+            }
+            &::placeholder {
+                color: rgba(0, 0, 0, 0.54);
+                font-weight:300;
+            }
+        }
+        .btn-search{
+            position: absolute;
+            right: 3px;
+            bottom: 0px;
+            .searchBtn{
+                border: none;
+                background: none;
+                img{
+                    max-width:16px;
+                }
+            }
         }
     }
-    .listItem{
+}
+
+.style-test-drawer{
+    .style-reward{
+        text-align: center;
+        padding: 15px 10px;
+        > button{
+            box-shadow: 0px 1px 5px rgba(0,0,0,0.2);
+            padding: 10px 30px;
+            border-radius: 7px;
+            > span{
+                text-transform: none !important;
+                font-family: Roboto-Medium;
+                margin-left: 5px;
+                display: flex;
+                align-items: center;
+                color: #444;
+                img{
+                    width: 20px;
+                    margin-right: 10px;
+                }
+            }
+            
+        }
+        .title{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            > span{
+                color: #ff5a5a;
+                font-family: Roboto-Medium;
+            }
+            > button{
+                background: #53a6dc;
+                span{
+                    color: #fff;
+                    font-family: Roboto-Medium;
+                    text-transform: none;
+                }
+            }
+        }
+    }
+}
+
+.listItem{
         display:grid;
         grid-template-areas:
             '_blank behavior behavior _blank_'
@@ -49,42 +131,3 @@
             
         }
     }
-    
-}
-.filter{
-    position: relative;
-    margin:10px;
-    font-family: Roboto-Medium;
-    .searchBox{
-        border-radius: 7px;
-        border: none;
-        box-shadow: none;
-        width: 95%;
-        height: 30px !important;
-        font-size: 12px !important;
-        color: rgba(0, 0, 0, 0.54);
-        background-color: #f1f1f1;
-        border: none;
-        margin:auto;
-        font-weight:300;
-        &:focus,&:active{
-            outline:none;
-        }
-        &::placeholder {
-            color: rgba(0, 0, 0, 0.54);
-            font-weight:300;
-        }
-    }
-    .btn-search{
-        position: absolute;
-        right: 3px;
-        bottom: 0px;
-        .searchBtn{
-            border: none;
-            background: none;
-            img{
-                max-width:16px;
-            }
-        }
-    }
-}

@@ -19,7 +19,8 @@ import {
     TOGGLE_CREATE_GROUP_DRAWER,
     TOGGLE_GROUP_INVITE_DRAWER,
     TOGGLE_STYLE_TEST_DRAWER,
-    TOGGLE_YOUR_JOB_DRAWER
+    TOGGLE_YOUR_JOB_DRAWER,
+    TOGGLE_DISC_DRAWER
 } from '../actions/app'
 
 const initialState = {
@@ -45,7 +46,8 @@ const initialState = {
     showCreateGroupDrawer: false,
     showGroupInviteDrawer: false,
     showStyleTestPage: false,
-    showYourJobPage: false
+    showYourJobPage: false,
+    showDISCDrawer: false
 };
 
 export default (state = initialState, action) => {
@@ -159,6 +161,11 @@ export default (state = initialState, action) => {
         case TOGGLE_YOUR_JOB_DRAWER: {
             return Object.assign({}, state, {
                 showYourJobPage: action.payload,
+            });
+        }
+        case TOGGLE_DISC_DRAWER: {
+            return Object.assign({}, state, {
+                showDISCDrawer: action.payload,
             });
         }
 
