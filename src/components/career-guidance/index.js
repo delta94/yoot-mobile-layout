@@ -54,20 +54,20 @@ class Index extends React.Component {
             <img src={studentImg} />
               Sinh viên
             </div>
-            {
-              renderScholarDrawer(this)
-            }
-            {
-              renderStyleTestDrawer(this)
-            }
-            {
-              renderYourJobDrawer(this)
-            }
-            {
-              renderDISCDrawer(this)
-            }
-          </div>
+          {
+            renderScholarDrawer(this)
+          }
+          {
+            renderStyleTestDrawer(this)
+          }
+          {
+            renderYourJobDrawer(this)
+          }
+          {
+            renderDISCDrawer(this)
+          }
         </div>
+      </div>
     );
   }
 }
@@ -297,8 +297,8 @@ const renderYourJobDrawer = (component) => {
               </button>
             </div>
           </div>
-          <div style={{ overflow: "scroll", background:"#f2f3f7" }}>
-            <div style={{padding: "1px 0 10px 0",background: "white",marginBottom: "10px"}}>
+          <div style={{ overflow: "scroll", background: "#f2f3f7" }}>
+            <div style={{ padding: "1px 0 10px 0", background: "white", marginBottom: "10px" }}>
               <div className="jobList-Noti">
                 <div className="divContent">
                   <i class="fas fa-play"></i>
@@ -320,9 +320,7 @@ const renderYourJobDrawer = (component) => {
 }
 
 const renderStyleChartDrawer = (component) => {
-  let {
-    value = [5, 4, 3, 3]
-  }
+  let value = [5, 4, 3, 3]
   return (
     <div>
       {/* <svg height="210" width="500">
