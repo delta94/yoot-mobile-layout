@@ -63,7 +63,7 @@ const styles = theme => ({
   chip: {
     margin: '10px',
     padding: "0 25px",
-    background: '#f1f1f1',
+    background: '#f2f3f7',
     height: '25px',
     color: 'rgba(0, 0, 0, 0.75)',
     borderRadius: '8px',

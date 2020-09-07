@@ -27,7 +27,7 @@ const behavior = require('../../assets/icon/Hướng nghiệp/Pesonality@1x.png'
 const accordantjob = require('../../assets/icon/Hướng nghiệp/Job@1x.png')
 const relatedmajor = require('../../assets/icon/Hướng nghiệp/school@1x.png')
 const searchBtn = require('../../assets/icon/Find@1x.png')
-
+const studentImg = require('../../assets/icon/Hướng nghiệp/Book.png')
 class Index extends React.Component {
   constructor(props) {
     super(props);
@@ -45,25 +45,29 @@ class Index extends React.Component {
         <div className="career-guidance-banner" onClick={() => this.setState({ showScholarDrawer: true })}>
           <img src="https://huongnghiepsongan.com/wp-content/uploads/2020/07/marci-angeles-YCF18toz3ds-unsplash.jpg" />
         </div>
-        <div className="scholar-bt" onClick={() => this.setState({ showScholarDrawer: true })}>
-          Học sinh
+        <div className="btn-action">
+          <div className="item scholar-bt" onClick={() => this.setState({ showScholarDrawer: true })}>
+            <img src={studentImg} />
+              Học sinh
+            </div>
+          <div className="item student-bt">
+            <img src={studentImg} />
+              Sinh viên
+            </div>
+            {
+              renderScholarDrawer(this)
+            }
+            {
+              renderStyleTestDrawer(this)
+            }
+            {
+              renderYourJobDrawer(this)
+            }
+            {
+              renderDISCDrawer(this)
+            }
+          </div>
         </div>
-        <div className="student-bt">
-          Sinh viên
-        </div>
-        {
-          renderScholarDrawer(this)
-        }
-        {
-          renderStyleTestDrawer(this)
-        }
-        {
-          renderYourJobDrawer(this)
-        }
-        {
-          renderDISCDrawer(this)
-        }
-      </div>
     );
   }
 }
@@ -290,16 +294,18 @@ const renderYourJobDrawer = (component) => {
               </button>
             </div>
           </div>
-          <div style={{ overflow: "scroll" }}>
-            <div className="jobList-Noti">
-              <div className="divContent">
-                <i class="fas fa-play"></i>
-                <p className="content">Trang công việc được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những công việc mà bạn muốn tìm hiểu nhé.</p>
+          <div style={{ overflow: "scroll", background:"#f2f3f7" }}>
+            <div style={{padding: "1px 0 10px 0",background: "white",marginBottom: "10px"}}>
+              <div className="jobList-Noti">
+                <div className="divContent">
+                  <i class="fas fa-play"></i>
+                  <p className="content">Trang công việc được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những công việc mà bạn muốn tìm hiểu nhé.</p>
+                </div>
+                <p className="quote">
+                  <img src={DISC} />
+                  <span>Phù hợp với phong cách hành vi.</span>
+                </p>
               </div>
-              <p className="quote">
-                <img src={DISC} />
-                <span>Phù hợp với phong cách hành vi.</span>
-              </p>
             </div>
             <YourJobs />
           </div>
