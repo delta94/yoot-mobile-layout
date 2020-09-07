@@ -25,7 +25,7 @@ const DISC = require('../../assets/icon/DISC@1x.png')
 const behavior = require('../../assets/icon/Hướng nghiệp/Pesonality@1x.png')
 const accordantjob = require('../../assets/icon/Hướng nghiệp/Job@1x.png')
 const relatedmajor = require('../../assets/icon/Hướng nghiệp/school@1x.png')
-
+const searchBtn = require('../../assets/icon/Find@1x.png')
 
 class Index extends React.Component {
   constructor(props) {
@@ -135,7 +135,8 @@ const renderStyleTestDrawer = (component) => {
               </Avatar>
             </div>
           </div>
-          <div className="filter"></div>
+          <div className="filter">
+          </div>
           <div style={{ overflow: "scroll" }}>
             <div className="style-reward">
               <Button><img src={DISC} /> Tìm hiểu DISC</Button>
@@ -177,7 +178,14 @@ const renderYourJobDrawer = (component) => {
               </Avatar>
             </div>
           </div>
-          <div className="filter"></div>
+          <div className="filter">
+              <input type="text" name="search" className="searchBox" placeholder="Vui lòng chọn công việc phù hợp"/>
+              <div className="btn-search">
+                <button type="submit" className="searchBtn">
+                  <img src={searchBtn}/>
+                </button>
+              </div>
+          </div>
           <div style={{ overflow: "scroll" }}>
             <div className="jobList-Noti">
               <div className="divContent">
