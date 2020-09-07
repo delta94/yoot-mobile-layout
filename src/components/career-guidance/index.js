@@ -54,20 +54,20 @@ class Index extends React.Component {
             <img src={studentImg} />
               Sinh viên
             </div>
-            {
-              renderScholarDrawer(this)
-            }
-            {
-              renderStyleTestDrawer(this)
-            }
-            {
-              renderYourJobDrawer(this)
-            }
-            {
-              renderDISCDrawer(this)
-            }
-          </div>
+          {
+            renderScholarDrawer(this)
+          }
+          {
+            renderStyleTestDrawer(this)
+          }
+          {
+            renderYourJobDrawer(this)
+          }
+          {
+            renderDISCDrawer(this)
+          }
         </div>
+      </div>
     );
   }
 }
@@ -209,6 +209,9 @@ const renderStyleTestDrawer = (component) => {
                 <Button>Trắc nghiệm lại</Button>
               </div>
             </div>
+            {
+              renderStyleChartDrawer(component)
+            }
           </div>
 
         </div> : ""
@@ -294,8 +297,8 @@ const renderYourJobDrawer = (component) => {
               </button>
             </div>
           </div>
-          <div style={{ overflow: "scroll", background:"#f2f3f7" }}>
-            <div style={{padding: "1px 0 10px 0",background: "white",marginBottom: "10px"}}>
+          <div style={{ overflow: "scroll", background: "#f2f3f7" }}>
+            <div style={{ padding: "1px 0 10px 0", background: "white", marginBottom: "10px" }}>
               <div className="jobList-Noti">
                 <div className="divContent">
                   <i class="fas fa-play"></i>
@@ -313,5 +316,55 @@ const renderYourJobDrawer = (component) => {
         </div> : ""
       }
     </Drawer>
+  )
+}
+
+const renderStyleChartDrawer = (component) => {
+  let value = [5, 4, 3, 3]
+  return (
+    <div>
+      {/* <svg height="210" width="500">
+        <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
+      </svg> */}
+      <table>
+        <thead>
+          <tr>
+            <th><span>D</span></th>
+            <th><span>I</span></th>
+            <th><span>S</span></th>
+            <th><span>C</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span>0</span></td><td><span>0</span></td><td><span>0</span></td><td><span>0</span></td></tr>
+          <tr><td><span> </span></td><td><span> </span></td><td><span>1</span></td><td><span>1</span></td></tr>
+          <tr><td><span>1</span></td><td><span> </span></td><td><span> </span></td><td><span> </span></td></tr>
+          <tr><td><span> </span></td><td><span>1</span></td><td><span>2</span></td><td><span> </span></td></tr>
+          <tr><td><span> </span></td><td><span> </span></td><td><span> </span></td><td><span>2</span></td></tr>
+          <tr><td><span>2</span></td><td><span> </span></td><td><span> </span></td><td><span> </span></td></tr>
+          <tr><td><span> </span></td><td><span>2</span></td><td><span>3</span></td><td><span>3</span></td></tr>
+          <tr><td><span>3</span></td><td><span> </span></td><td><span> </span></td><td><span> </span></td></tr>
+          <tr><td><span> </span></td><td><span>3</span></td><td><span>4</span></td><td><span>4</span></td></tr>
+          <tr><td><span>4</span></td><td><span> </span></td><td><span> </span></td><td><span> </span></td></tr>
+          <tr><td><span> </span></td><td><span> </span></td><td><span>5</span></td><td><span>5</span></td></tr>
+          <tr><td><span>5</span></td><td><span>4</span></td><td><span> </span></td><td><span> </span></td></tr>
+          <tr><td><span> </span></td><td><span> </span></td><td><span>6</span></td><td><span>6</span></td></tr>
+          <tr><td><span>6</span></td><td><span>5</span></td><td><span> </span></td><td><span>7</span></td></tr>
+          <tr><td><span> </span></td><td><span> </span></td><td><span>7</span></td><td><span> </span></td></tr>
+          <tr><td><span>7</span></td><td><span>6</span></td><td><span> </span></td><td><span>8</span></td></tr>
+          <tr><td><span>8</span></td><td><span> </span></td><td><span>8</span></td><td><span> </span></td></tr>
+          <tr><td><span>9</span></td><td><span>7</span></td><td><span> </span></td><td><span>9</span></td></tr>
+          <tr><td><span>10</span></td><td><span> </span></td><td><span>9</span></td><td><span> </span></td></tr>
+          <tr><td><span>11</span></td><td><span>8</span></td><td><span> </span></td><td><span>10</span></td></tr>
+          <tr><td><span>12</span></td><td><span> </span></td><td><span>10</span></td><td><span> </span></td></tr>
+          <tr><td><span>13</span></td><td><span>9</span></td><td><span>11</span></td><td><span>11</span></td></tr>
+          <tr><td><span>14</span></td><td><span> </span></td><td><span>12</span></td><td><span>12</span></td></tr>
+          <tr><td><span>15</span></td><td><span>10</span></td><td><span> </span></td><td><span>13</span></td></tr>
+          <tr><td><span>16</span></td><td><span>11</span></td><td><span>13</span></td><td><span> </span></td></tr>
+          <tr><td><span>17</span></td><td><span>12</span></td><td><span>14</span></td><td><span>14</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
   )
 }
