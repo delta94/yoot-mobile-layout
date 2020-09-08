@@ -18,8 +18,10 @@ import {
 import {
   ChevronLeft as ChevronLeftIcon
 } from '@material-ui/icons'
+import StyleChart from './styleChart'
 import { connect } from 'react-redux'
 import YourJobs from "../job-list";
+import $ from 'jquery'
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const DISC = require('../../assets/icon/DISC@1x.png')
@@ -38,6 +40,11 @@ class Index extends React.Component {
     this.props.addHeaderContent(renderHeader(this))
     this.props.toggleHeader(true)
     this.props.toggleFooter(false)
+  }
+  componentDidMount() {
+    let value = [5, 4, 3, 3]
+    let point1 = $("#style-table")
+    console.log("point1", point1)
   }
   render() {
     return (
@@ -209,9 +216,7 @@ const renderStyleTestDrawer = (component) => {
                 <Button>Trắc nghiệm lại</Button>
               </div>
             </div>
-            {
-              renderStyleChartDrawer(component)
-            }
+            <StyleChart />
           </div>
 
         </div> : ""
@@ -316,55 +321,5 @@ const renderYourJobDrawer = (component) => {
         </div> : ""
       }
     </Drawer>
-  )
-}
-
-const renderStyleChartDrawer = (component) => {
-  let value = [5, 4, 3, 3]
-  return (
-    <div>
-      {/* <svg height="210" width="500">
-        <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
-      </svg> */}
-      <table>
-        <thead>
-          <tr>
-            <th><span>D</span></th>
-            <th><span>I</span></th>
-            <th><span>S</span></th>
-            <th><span>C</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td><span>0</span></td><td><span>0</span></td><td><span>0</span></td><td><span>0</span></td></tr>
-          <tr><td><span> </span></td><td><span> </span></td><td><span>1</span></td><td><span>1</span></td></tr>
-          <tr><td><span>1</span></td><td><span> </span></td><td><span> </span></td><td><span> </span></td></tr>
-          <tr><td><span> </span></td><td><span>1</span></td><td><span>2</span></td><td><span> </span></td></tr>
-          <tr><td><span> </span></td><td><span> </span></td><td><span> </span></td><td><span>2</span></td></tr>
-          <tr><td><span>2</span></td><td><span> </span></td><td><span> </span></td><td><span> </span></td></tr>
-          <tr><td><span> </span></td><td><span>2</span></td><td><span>3</span></td><td><span>3</span></td></tr>
-          <tr><td><span>3</span></td><td><span> </span></td><td><span> </span></td><td><span> </span></td></tr>
-          <tr><td><span> </span></td><td><span>3</span></td><td><span>4</span></td><td><span>4</span></td></tr>
-          <tr><td><span>4</span></td><td><span> </span></td><td><span> </span></td><td><span> </span></td></tr>
-          <tr><td><span> </span></td><td><span> </span></td><td><span>5</span></td><td><span>5</span></td></tr>
-          <tr><td><span>5</span></td><td><span>4</span></td><td><span> </span></td><td><span> </span></td></tr>
-          <tr><td><span> </span></td><td><span> </span></td><td><span>6</span></td><td><span>6</span></td></tr>
-          <tr><td><span>6</span></td><td><span>5</span></td><td><span> </span></td><td><span>7</span></td></tr>
-          <tr><td><span> </span></td><td><span> </span></td><td><span>7</span></td><td><span> </span></td></tr>
-          <tr><td><span>7</span></td><td><span>6</span></td><td><span> </span></td><td><span>8</span></td></tr>
-          <tr><td><span>8</span></td><td><span> </span></td><td><span>8</span></td><td><span> </span></td></tr>
-          <tr><td><span>9</span></td><td><span>7</span></td><td><span> </span></td><td><span>9</span></td></tr>
-          <tr><td><span>10</span></td><td><span> </span></td><td><span>9</span></td><td><span> </span></td></tr>
-          <tr><td><span>11</span></td><td><span>8</span></td><td><span> </span></td><td><span>10</span></td></tr>
-          <tr><td><span>12</span></td><td><span> </span></td><td><span>10</span></td><td><span> </span></td></tr>
-          <tr><td><span>13</span></td><td><span>9</span></td><td><span>11</span></td><td><span>11</span></td></tr>
-          <tr><td><span>14</span></td><td><span> </span></td><td><span>12</span></td><td><span>12</span></td></tr>
-          <tr><td><span>15</span></td><td><span>10</span></td><td><span> </span></td><td><span>13</span></td></tr>
-          <tr><td><span>16</span></td><td><span>11</span></td><td><span>13</span></td><td><span> </span></td></tr>
-          <tr><td><span>17</span></td><td><span>12</span></td><td><span>14</span></td><td><span>14</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-
   )
 }
