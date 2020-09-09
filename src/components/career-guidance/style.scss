@@ -67,6 +67,13 @@
             }
             
         }
+        
+    }
+    .chart{
+        padding: 10px;
+    }
+    .result{
+        padding: 10px;
         .title{
             display: flex;
             justify-content: space-between;
@@ -84,6 +91,71 @@
                     text-transform: none;
                 }
             }
+        }
+        .description{
+            padding: 10px;
+            background: #ededed;
+            border-radius: 10px;
+            margin-top: 10px;
+            > span{
+                display: inline-block;
+                width: 100%;
+                font-family: Roboto-Regular;
+                color: #555;
+                line-height: 18px;
+                b{
+                    color: #000;
+                    font-family: Roboto-Medium;
+                    font-weight: normal;
+                }
+            }
+        }
+        > table{
+            width: 100%;
+            background: #ededed;
+            margin-top: 20px;
+            th, td{
+                text-align: center;
+                background: #fff;
+                line-height: 20px;
+                font-family: Roboto-Regular;
+                b{
+                    font-family: Roboto-Medium;
+                }
+            }
+            tbody{
+                tr:nth-child(1){
+                    td,th{
+                        background: #ededed;
+                    }
+                }
+            }
+        }
+    }
+    .your-job-bt{
+        background: #eee04c;
+        margin: 10px auto;
+        width: 60%;
+        margin-left: 20%;
+        span{
+            color: #fff;
+            text-transform: none;
+            font-family: Roboto-Medium;
+        }
+    }
+    .your-lesson{
+        margin-top: 10px;
+        background: #fff;
+        border-top: 10px solid #ededed;
+        padding: 10px;
+        > label{
+            color: #53a6dc;
+            font-family: Roboto-Medium;
+        }
+        .skills-page{
+            background: #fff;
+            min-height: fit-content;
+            padding: 10px 0px !important;
         }
     }
 }
@@ -178,6 +250,131 @@
             margin: 10px 0;
             &.danger{
                 color: #d23a35;
+            }
+        }
+    }
+}
+
+.test-page{
+    padding: 10px;
+    > label{
+        font-family: Roboto-Medium;
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .description{
+        padding: 10px;
+        border-radius: 10px;
+        background: #ededed;
+        margin-bottom: 10px;
+        > span{
+            display: inline-block;
+            width: 100%;
+            line-height: 19px;
+            font-family: Roboto-Regular;
+            b{
+                font-family: Roboto-Medium;
+            }
+        }
+    }
+    .question{
+        margin-bottom: 20px;
+        .tutorial{
+            display: flex;
+            background: #ededed;
+            height: 50px;
+            position: relative;
+            z-index: 2;
+            > span{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0px 20px;
+                font-family: Roboto-Regular;
+                > span{
+                    text-align: center;
+                    b{
+                        font-family: Roboto-Medium;
+                    }
+                }
+                &.red{
+                    min-width: 44px;
+                    min-height: 44px;
+                    padding: 0px;
+                    border: 3px solid #ff5a5a;
+                    font-family: Roboto-Medium;
+                    &:last-child{
+                        border-left: none !important;
+                    }
+                }
+            }
+        }
+        .current-question{
+            display: flex;
+            border: 3px solid #ededed;
+            border-top: none;
+            position: relative;
+            z-index: 1;
+            > span{
+                min-width: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: Roboto-Medium;
+                position: relative;
+            }
+            table{
+                background: #ededed;
+                margin-right: -3px;
+                margin-top: -3px;
+                margin-bottom: -3px;
+                position: relative;
+                z-index: 0;
+                width: calc(100% - 47px);
+                box-sizing: border-box;
+                tbody{
+                    tr{
+                        td{
+                            font-family: Roboto-Regular;
+                            background: #fff;
+                            padding: 10px;
+                            &.radio{
+                                width: 44px;
+                                box-sizing: border-box;
+                                text-align: center;
+                                padding: 0px;
+                                button{
+                                    padding: 0px;
+                                    height: 100%;
+                                    width: 100%;
+                                    min-width: 1px;
+                                    .radio-bt{
+                                        display: block;
+                                        width: 13px;
+                                        height: 13px;
+                                        border: 2px solid #ededed;
+                                        border-radius: 13px;
+                                        &.active{
+                                            border: 2px solid #ff5a5a;
+                                            background: #ff5a5a;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .actions{
+            display: flex;
+            margin-top: 20px;
+            align-items: center;
+            justify-content: space-between;
+            button{
+                background: #ededed;
+                color: #ff5a5a;
             }
         }
     }

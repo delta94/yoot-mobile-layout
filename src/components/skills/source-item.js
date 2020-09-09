@@ -119,7 +119,7 @@ export default connect(
 const renderHeader = (component) => {
   return (
     <div className="app-header">
-      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.props.history.push('/skills')}>
+      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.props.history.goBack()}>
         <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
       </IconButton>
       <label>Khoá học</label>

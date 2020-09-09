@@ -25,6 +25,7 @@ export const TOGGLE_GROUP_INVITE_DRAWER = "app@TOGGLE_GROUP_INVITE_DRAWER"
 export const TOGGLE_STYLE_TEST_DRAWER = "app@TOGGLE_STYLE_TEST_DRAWER"
 export const TOGGLE_YOUR_JOB_DRAWER = "app@TOGGLE_YOUR_JOB_DRAWER"
 export const TOGGLE_DISC_DRAWER = "app@TOGGLE_DISC_DRAWER"
+export const TOGGLE_YOUR_MAJORS_DRAWER = "app@TOGGLE_YOUR_MAJORS_DRAWER"
 
 
 export const toggleHeader = (isShow) => {
@@ -222,6 +223,16 @@ export const toggleDISCDrawer = (isShow) => {
         })
     }
 }
+export const toggleYourMajorsDrawer = (isShow) => {
+    return dispatch => {
+        dispatch({
+            type: TOGGLE_YOUR_MAJORS_DRAWER,
+            payload: isShow,
+        })
+    }
+}
+
+
 
 
 

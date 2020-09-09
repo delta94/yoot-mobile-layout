@@ -20,7 +20,8 @@ import {
     TOGGLE_GROUP_INVITE_DRAWER,
     TOGGLE_STYLE_TEST_DRAWER,
     TOGGLE_YOUR_JOB_DRAWER,
-    TOGGLE_DISC_DRAWER
+    TOGGLE_DISC_DRAWER,
+    TOGGLE_YOUR_MAJORS_DRAWER
 } from '../actions/app'
 
 const initialState = {
@@ -47,7 +48,8 @@ const initialState = {
     showGroupInviteDrawer: false,
     showStyleTestPage: false,
     showYourJobPage: false,
-    showDISCDrawer: false
+    showDISCDrawer: false,
+    showYourMajorsPage: false
 };
 
 export default (state = initialState, action) => {
@@ -168,6 +170,13 @@ export default (state = initialState, action) => {
                 showDISCDrawer: action.payload,
             });
         }
+        case TOGGLE_YOUR_MAJORS_DRAWER: {
+            return Object.assign({}, state, {
+                showYourMajorsPage: action.payload,
+            });
+        }
+
+
 
         default:
             return state;

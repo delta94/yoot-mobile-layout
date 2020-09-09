@@ -7,7 +7,8 @@ import {
   toggleFooter,
   toggleStyleTestDrawer,
   toggleYourJobDrawer,
-  toggleDISCDrawer
+  toggleDISCDrawer,
+  toggleYourMajorsDrawer
 } from '../../actions/app'
 import {
   IconButton,
@@ -21,6 +22,7 @@ import {
 import StyleChart from './styleChart'
 import { connect } from 'react-redux'
 import YourJobs from "../job-list";
+import Test from './test'
 import $ from 'jquery'
 
 const coin = require('../../assets/icon/Coins_Y.png')
@@ -75,6 +77,9 @@ class Index extends React.Component {
           {
             renderDISCDrawer(this)
           }
+          {
+            renderYourMajorsDrawer(this)
+          }
         </div>
       </div>
     );
@@ -94,7 +99,8 @@ const mapDispatchToProps = dispatch => ({
   toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
   toggleStyleTestDrawer: (isShow) => dispatch(toggleStyleTestDrawer(isShow)),
   toggleYourJobDrawer: (isShow) => dispatch(toggleYourJobDrawer(isShow)),
-  toggleDISCDrawer: (isShow) => dispatch(toggleDISCDrawer(isShow))
+  toggleDISCDrawer: (isShow) => dispatch(toggleDISCDrawer(isShow)),
+  toggleYourMajorsDrawer: (isShow) => dispatch(toggleYourMajorsDrawer(isShow))
 });
 
 export default connect(
@@ -164,7 +170,7 @@ const renderScholarDrawer = (component) => {
                 <img src={accordantjob} />
                 <span>Công việc phù hợp</span>
               </div>
-              <div className="item related-major">
+              <div className="item related-major" onClick={() => component.props.toggleYourMajorsDrawer(true)}>
                 <img src={relatedmajor} />
                 <span>Ngành học tương ứng</span>
               </div>
@@ -180,6 +186,9 @@ const renderScholarDrawer = (component) => {
 
 
 const renderStyleTestDrawer = (component) => {
+  let {
+    isTestTing
+  } = component.state
   let {
     showStyleTestPage,
     profile
@@ -213,12 +222,92 @@ const renderStyleTestDrawer = (component) => {
           <div style={{ overflow: "scroll" }}>
             <div className="style-reward">
               <Button onClick={() => component.props.toggleDISCDrawer(true)}><img src={DISC} /> Tìm hiểu DISC</Button>
-              <div className="title">
-                <span>Kết quả:</span>
-                <Button>Trắc nghiệm lại</Button>
+            </div>
+            {
+              isTestTing ? "" : <div className='result'>
+                <div className="title">
+                  <span>Kết quả:</span>
+                  <Button onClick={() => component.setState({ isTestTing: true })}>Trắc nghiệm lại</Button>
+                </div>
+                <div className="description">
+                  <span>- <b>Thuộc nhóm: </b> SCI</span>
+                  <span>- <b>Mô tả:</b> Cẩn thận, rụt rè, trầm lặng, tập trung, dễ bằng lòng, chú trọng chi tiết, mềm dẻo, thấu đáo, chính xác, điềm tĩnh, lô-gic, ngăn nắp và chính xác.</span>
+                  <span>- <b>Nhóm ngành nghề: </b>Chuyên gia, chăm sóc, tâm lý, tư vấn, giao tiếp 1-1, kiên nhẫn lắng nghe, trung thực và thương lượng.</span>
+                </div>
+                <table cellSpacing={"3px"}>
+                  <thead>
+                    <tr>
+                      <td></td>
+                      <td><b>1</b></td>
+                      <td><b>2</b></td>
+                      <td><b>3</b></td>
+                      <td><b>4</b></td>
+                      <td><b>5</b></td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th></th>
+                      <th className="red"><b>D</b></th>
+                      <th className="red"><b>I</b></th>
+                      <th className="red"><b>S</b></th>
+                      <th className="red"><b>C</b></th>
+                      <th></th>
+                    </tr>
+                    <tr>
+                      <td><b>MOST</b></td>
+                      <td>4</td>
+                      <td>6</td>
+                      <td>4</td>
+                      <td>7</td>
+                      <td>3</td>
+                    </tr>
+                    <tr>
+                      <td><b>LEAST</b></td>
+                      <td>6</td>
+                      <td>4</td>
+                      <td>3</td>
+                      <td>3</td>
+                      <td>8</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            }
+            {
+              isTestTing ? "" : <div className="chart">
+                <StyleChart />
+
+              </div>
+            }
+            {
+              isTestTing ? "" : <Button className="your-job-bt" onClick={() => component.props.toggleYourJobDrawer(true)}>Công việc phù hợp</Button>
+            }
+            {
+              isTestTing ? <Test /> : ""
+            }
+            <div className="your-lesson">
+              <label>Những bạn thuộc nhóm tính cách SCI thường học những khoá học sau đây:</label>
+              <div className="skills-page" >
+                {
+                  <ul>
+                    {
+                      sources.map((source, index) => <li className="source-item" onClick={() => component.props.history.push("/skills/1219")}>
+                        <div style={{ background: "url(" + source.background + ")" }}>
+                          <div>
+                            <div className="reward">
+                              <span>{source.lessonCount} bài</span>
+                              <span>{source.documentsCount} tài liệu</span>
+                            </div>
+                            <span className="source-name">{source.name}</span>
+                          </div>
+                        </div>
+                      </li>)
+                    }
+                  </ul>
+                }
               </div>
             </div>
-            <StyleChart />
           </div>
 
         </div> : ""
@@ -258,7 +347,7 @@ const renderDISCDrawer = (component) => {
           </div>
           <div className="filter"></div>
           <div className="about-DISC" style={{ overflow: "scroll", background: '#f2f3f7' }}>
-            <div className="banner" style={{ paddingBottom: "10px", background: '#fff', marginBottom:'10px'}}>
+            <div className="banner" style={{ paddingBottom: "10px", background: '#fff', marginBottom: '10px' }}>
               <img src="https://material-ui.com/static/images/cards/paella.jpg" style={{ width: "100%" }}></img>
             </div>
             <div className="video-item">
@@ -362,3 +451,61 @@ const renderYourJobDrawer = (component) => {
     </Drawer>
   )
 }
+
+
+const renderYourMajorsDrawer = (component) => {
+  let {
+    showYourMajorsPage,
+    profile
+  } = component.props
+  return (
+    <Drawer anchor="bottom" className="job-list-drawer" open={showYourMajorsPage} onClose={() => component.props.toggleYourMajorsDrawer(false)}>
+      {
+        profile ? <div className="drawer-detail">
+          <div className="drawer-header">
+            <div className="direction" onClick={() => component.props.toggleYourMajorsDrawer(false)}>
+              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+              </IconButton>
+              <label>Ngành học</label>
+            </div>
+            <div className="user-reward">
+              <div className="profile">
+                <span className="user-name">{profile.fullName}</span>
+                <span className="point">
+                  <span>Điển YOOT: {profile.point}</span>
+                  <img src={coin} />
+                </span>
+              </div>
+              <Avatar aria-label="recipe" className="avatar">
+                <img src={profile.avatar} style={{ width: "100%" }} />
+              </Avatar>
+            </div>
+          </div>
+          <div className="filter">
+
+          </div>
+          <div style={{ overflow: "scroll", background: "#f2f3f7" }}>
+
+          </div>
+
+        </div> : ""
+      }
+    </Drawer>
+  )
+}
+
+const sources = [
+  {
+    name: "Nghệ thuật Diễn Thuyết Truyền Cảm Hứng",
+    background: "https://andrews.edu.vn/wp-content/uploads/Prensention_mbaandrews.jpg",
+    documentsCount: 1,
+    lessonCount: 10
+  },
+  {
+    name: "Kỹ năng giao tiếp hiệu quả",
+    background: "https://www.sprc.org/sites/default/files/styles/featured_image_large/public/SPRC_EllyStout_DirCorner_Cropped_node_6.jpg?itok=aqVkwAEq",
+    documentsCount: 1,
+    lessonCount: 10
+  }
+]
