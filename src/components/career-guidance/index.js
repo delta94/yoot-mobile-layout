@@ -29,7 +29,9 @@ const behavior = require('../../assets/icon/Hướng nghiệp/Pesonality@1x.png'
 const accordantjob = require('../../assets/icon/Hướng nghiệp/Job@1x.png')
 const relatedmajor = require('../../assets/icon/Hướng nghiệp/school@1x.png')
 const searchBtn = require('../../assets/icon/Find@1x.png')
-const studentImg = require('../../assets/icon/Hướng nghiệp/Book.png')
+const scholarImg = require('../../assets/icon/HS.png')
+const studentImg = require('../../assets/icon/SV.png')
+
 class Index extends React.Component {
   constructor(props) {
     super(props);
@@ -54,7 +56,7 @@ class Index extends React.Component {
         </div>
         <div className="btn-action">
           <div className="item scholar-bt" onClick={() => this.setState({ showScholarDrawer: true })}>
-            <img src={studentImg} />
+            <img src={scholarImg} />
               Học sinh
             </div>
           <div className="item student-bt">
@@ -255,8 +257,45 @@ const renderDISCDrawer = (component) => {
             </div>
           </div>
           <div className="filter"></div>
-          <div style={{ overflow: "scroll" }}>
-
+          <div className="about-DISC" style={{ overflow: "scroll", background: '#f2f3f7' }}>
+            <div className="banner" style={{ paddingBottom: "10px", background: '#fff', marginBottom:'10px'}}>
+              <img src="https://material-ui.com/static/images/cards/paella.jpg" style={{ width: "100%" }}></img>
+            </div>
+            <div className="video-item">
+              <p className="title danger">Video tổng quan về DISC - Bộ phong cách hành vi</p>
+              <video controls>
+                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+              </video>
+              <p></p>
+            </div>
+            <div className="video-item">
+              <p className="title">Những điểm mạnh và cần cải thiện của từng nhóm:</p>
+              <video controls>
+                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+              </video>
+              <p className="title">Người chủng D</p>
+            </div>
+            <div className="video-item">
+              <p className="title"></p>
+              <video controls>
+                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+              </video>
+              <p className="title">Người chủng I</p>
+            </div>
+            <div className="video-item">
+              <p className="title"></p>
+              <video controls>
+                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+              </video>
+              <p className="title">Người chủng S</p>
+            </div>
+            <div className="video-item">
+              <p className="title"></p>
+              <video controls>
+                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+              </video>
+              <p className="title">Người chủng C</p>
+            </div>
           </div>
 
         </div> : ""

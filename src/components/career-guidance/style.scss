@@ -164,3 +164,21 @@
         }
     }
 }
+.about-DISC{
+    .video-item{
+        background: rgb(255, 255, 255);
+        display: grid;
+        margin-bottom: 10px;
+        video{
+            width: 100%;
+        }
+        p.title{
+            font-family: Roboto-Medium;
+            padding: 15px 10px;
+            margin: 10px 0;
+            &.danger{
+                color: #d23a35;
+            }
+        }
+    }
+}
