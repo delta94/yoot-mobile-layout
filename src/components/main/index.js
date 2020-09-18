@@ -48,13 +48,21 @@ import {
   toggleGroupInviteDrawer
 } from '../../actions/app'
 import {
+  setCurrenUserDetail,
+  setUserProfile,
+  getFolowedMe,
+  getMeFolowing
+} from '../../actions/user'
+import {
   GroupPrivacies
 } from '../../constants/constants'
 import SwipeableViews from 'react-swipeable-views';
 import moment from 'moment'
 import Slider from "react-slick";
 import Dropzone from 'react-dropzone'
-import { objToArray } from "../../utils/common";
+import { objToArray, showNotification } from "../../utils/common";
+import { get } from "../../api";
+import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const search = require('../../assets/icon/Find@1x.png')
@@ -81,6 +89,22 @@ class Main extends React.Component {
     }
   }
 
+  getProfile() {
+    get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
+      if (result.result == 1) {
+        this.props.setUserProfile(result.content.user)
+        this.props.getFolowedMe(0)
+        this.props.getMeFolowing(0)
+      } else {
+        showNotification("", <span className="app-noti-message">{result.message}</span>, null)
+      }
+
+    })
+  }
+
+  componentWillMount() {
+    this.getProfile()
+  }
   render() {
     let {
       userDetailFolowTabIndex
@@ -92,6 +116,7 @@ class Main extends React.Component {
       headerContent,
       footerContent,
     } = this.props
+
     return (
       <div className="wrapper">
         <div className={"fix-header " + (showHeader ? "showed" : "hided") + (window.location.pathname == '/videos' ? " dask-mode" : "")} >
@@ -101,9 +126,9 @@ class Main extends React.Component {
           {
             profile ? <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{profile.fullName}</span>
+                <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điển YOOT: {profile.point}</span>
+                  <span>Điển YOOT: {profile.mempoint}</span>
                   <img src={coin} />
                 </span>
               </div>
@@ -196,7 +221,11 @@ const mapDispatchToProps = dispatch => ({
   toggleReportDrawer: (isShow) => dispatch(toggleReportDrawer(isShow)),
   toggleGroupDrawer: (isShow) => dispatch(toggleGroupDrawer(isShow)),
   toggleCreateGroupDrawer: (isShow) => dispatch(toggleCreateGroupDrawer(isShow)),
-  toggleGroupInviteDrawer: (isShow) => dispatch(toggleGroupInviteDrawer(isShow))
+  toggleGroupInviteDrawer: (isShow) => dispatch(toggleGroupInviteDrawer(isShow)),
+  setUserProfile: (user) => dispatch(setUserProfile(user)),
+  getFolowedMe: (currentpage) => dispatch(getFolowedMe(currentpage)),
+  getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage))
+
 });
 
 export default connect(
@@ -237,11 +266,13 @@ const renderUserDetailDrawer = (component) => {
   let {
     showUserDetail,
     userDetail,
+    profile
   } = component.props
+  console.log("profile", profile)
   return (
     <Drawer anchor="bottom" className="drawer-detail" open={showUserDetail} onClose={() => component.props.toggleUserDetail(false)}>
       {
-        userDetail ? <div className="drawer-detail">
+        profile ? <div className="drawer-detail">
           <div className="drawer-header">
             <div className="direction" onClick={() => component.props.toggleUserDetail(false)}>
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
@@ -251,14 +282,14 @@ const renderUserDetailDrawer = (component) => {
             </div>
             <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{userDetail.fullName}</span>
+                <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điển YOOT: {userDetail.point}</span>
+                  <span>Điển YOOT: {profile.mempoint}</span>
                   <img src={coin} />
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={userDetail.avatar} style={{ width: "100%" }} />
+                <img src={profile.avatar} style={{ width: "100%" }} />
               </Avatar>
             </div>
           </div>
@@ -274,8 +305,8 @@ const renderUserDetailDrawer = (component) => {
                 aria-label="full width tabs example"
                 className="tab-header"
               >
-                <Tab label="Người theo dõi" {...a11yProps(0)} className="tab-item" />
-                <Tab label="Đang theo dõi" {...a11yProps(1)} className="tab-item" />
+                <Tab label={"Người theo dõi " + (profile.foloweds ? ("(" + profile.foloweds.length + ")") : "")} {...a11yProps(0)} className="tab-item" />
+                <Tab label={"Đang theo dõi " + (profile.folowings ? ("(" + profile.folowings.length + ")") : "")} {...a11yProps(1)} className="tab-item" />
               </Tabs>
             </AppBar>
             <SwipeableViews
@@ -286,13 +317,13 @@ const renderUserDetailDrawer = (component) => {
               <TabPanel value={userDetailFolowTabIndex} index={0} className="content-box">
                 <div className="folowed-list">
                   {
-                    userDetail.folowed && userDetail.folowed.length > 0 ? <ul>
+                    profile.foloweds && profile.foloweds.length > 0 ? <ul>
                       {
-                        userDetail.folowed.map((item, index) => <li className="small-user-layout" key={index}>
+                        profile.foloweds.map((item, index) => <li className="small-user-layout" key={index}>
                           <Avatar aria-label="recipe" className="avatar">
-                            <img src={item.avatar} style={{ width: "100%" }} />
+                            <img src={item.friendavatar} style={{ width: "100%" }} />
                           </Avatar>
-                          <span className="user-name">{item.fullName}</span>
+                          <span className="user-name">{item.friendname}</span>
                           <Button style={{ background: "#f44645", color: "#fff" }}>Theo dõi</Button>
                         </li>)
                       }
@@ -303,13 +334,13 @@ const renderUserDetailDrawer = (component) => {
               <TabPanel value={userDetailFolowTabIndex} index={1} >
                 <div className="folowing-list">
                   {
-                    userDetail.folowing && userDetail.folowing.length > 0 ? <ul>
+                    profile.folowings && profile.folowings.length > 0 ? <ul>
                       {
-                        userDetail.folowing.map((item, index) => <li className="small-user-layout" key={index}>
+                        profile.folowings.map((item, index) => <li className="small-user-layout" key={index}>
                           <Avatar aria-label="recipe" className="avatar">
-                            <img src={item.avatar} style={{ width: "100%" }} />
+                            <img src={item.friendavatar} style={{ width: "100%" }} />
                           </Avatar>
-                          <span className="user-name">{item.fullName}</span>
+                          <span className="user-name">{item.friendname}</span>
                           <Button style={{ background: "rgba(0,0,0,0.05)" }}>Bỏ theo dõi</Button>
                         </li>)
                       }
@@ -318,7 +349,7 @@ const renderUserDetailDrawer = (component) => {
                 </div>
               </TabPanel>
             </SwipeableViews>
-            <div className="job-reward info-box">
+            {/* <div className="job-reward info-box">
               <label>Công việc</label>
               {
                 userDetail.jobs[0] ? <span>Từng làm tại <b>{userDetail.jobs[0].position}</b> tại <b>{userDetail.jobs[0].company}</b></span> : "-/-"
@@ -371,7 +402,7 @@ const renderUserDetailDrawer = (component) => {
             </div>
             <div className="job-reward info-box">
               <label>Đang theo dõi <span>Xem tất cả</span></label>
-            </div>
+            </div> */}
           </div>
 
         </div> : ""
@@ -385,6 +416,9 @@ const renderUserPageDrawer = (component) => {
     showUserPage,
     userDetail,
   } = component.props
+
+  console.log("userDetail", userDetail)
+
   return (
     <Drawer anchor="bottom" className="user-page-drawer" open={showUserPage} onClose={() => component.props.toggleUserPageDrawer(false)}>
       {
@@ -398,7 +432,7 @@ const renderUserPageDrawer = (component) => {
             </div>
             <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{userDetail.fullName}</span>
+                <span className="user-name">{userDetail.fullname}</span>
                 <span className="point">
                   <span>Điển YOOT: {userDetail.point}</span>
                   <img src={coin} />
@@ -411,7 +445,7 @@ const renderUserPageDrawer = (component) => {
           </div>
           <div className="filter"></div>
           <div style={{ overflow: "scroll" }}>
-            <UserPage userDetail={userDetail} />
+            {/* <UserPage userDetail={userDetail} /> */}
           </div>
 
         </div> : ""

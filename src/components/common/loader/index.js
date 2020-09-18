@@ -1,19 +1,28 @@
 import React from 'react';
-import "./style.scss"
+import $ from 'jquery'
+import './style.scss'
 
-import './style.scss';
+const loading = require('../../../assets/images/loading.png')
 
 export class Loader extends React.Component {
+    componentDidMount() {
+        $(".bg-overlay").parent().css("position", "relative");
+    }
 
     render() {
+        let {
+            type,
+            isFullScreen
+        } = this.props
+        if (isFullScreen) {
+            $("body").css("overflow", "hidden")
+        }
         return (
-            <div className="loader-content">
-                <div className="loader">
-                    <svg className="circular" viewBox="25 25 50 50">
-                        <circle className="path" cx="50" cy="50" r="20" fill="none" strokeWidth="2" strokeMiterlimit="10" />
-                    </svg>
+            <div className={"bg-overlay " + type + (isFullScreen ? " full-screen" : "")}>
+                <div>
+                    <img className={"spinner-img"} src={loading} />
                 </div>
-            </div >
+            </div>
         )
     }
 }

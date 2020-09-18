@@ -19,7 +19,8 @@ import {
 import { StickyContainer, Sticky } from 'react-sticky';
 import ReactPlayer from 'react-player'
 
-const noti = require('../../assets/icon/NotiBw@1x.png')
+const practice = require('../../assets/icon/practice.png')
+const evaluate = require('../../assets/icon/evaluate.png')
 const Newfeed = require('../../assets/icon/Newfeed@1x.png')
 const Coins_Y = require('../../assets/icon/Coins_Y.png')
 const pdf_download = require('../../assets/icon/pdf-download.png')
@@ -135,11 +136,11 @@ const renderFooter = (history) => {
           <span style={{ color: "#f54746" }}>Bài học</span>
         </li>
         <li onClick={() => history.push("/skills/1219/exercise")}>
-          <img src={noti}></img>
+          <img src={practice}></img>
           <span >Thực hành</span>
         </li>
         <li onClick={() => history.push("/skills/1219/assess")}>
-          <img src={noti}></img>
+          <img src={evaluate}></img>
           <span >Đánh giá</span>
         </li>
       </ul>

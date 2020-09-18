@@ -32,6 +32,8 @@ import {
 } from "@material-ui/core";
 import moment from 'moment'
 import SwipeableViews from 'react-swipeable-views';
+import { get } from "../../api";
+import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const like = require('../../assets/icon/like@1x.png')
@@ -56,18 +58,30 @@ class Index extends React.Component {
       isShowNewPass: false,
       isShowConfirmPass: false,
       openMediaDrawer: false,
-      mediaTabIndex: 1
+      mediaTabIndex: 1,
+      userDetail: null
     };
+  }
+  getProfile(id) {
+    get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=" + id, result => {
+      if (result.result == 1) {
+        this.setState({
+          userDetail: result.content.user
+        })
+      }
+    })
+  }
+
+  componentWillMount() {
+    this.getProfile(0)
   }
   render() {
     let {
       showUserMenu,
-    } = this.state
-    let {
       userDetail
-    } = this.props
+    } = this.state
     return (
-      <div className="profile-page user-page" >
+      userDetail ? <div className="profile-page user-page" >
         <div className="cover-img" style={{ background: "url(" + userDetail.coverImage + ")" }}></div>
 
         <div className="user-avatar" style={{ background: "url(" + userDetail.avatar + ")" }}></div>
@@ -172,7 +186,7 @@ class Index extends React.Component {
         {
           renderUserPageDrawer(this)
         }
-      </div>
+      </div> : ""
     );
   }
 }

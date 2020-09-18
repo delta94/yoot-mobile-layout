@@ -31,7 +31,7 @@ export class FacebookSelector extends React.Component {
             open
         } = this.state
         return (
-            <ClickAwayListener onClickAway={() => this.setState({ open: false })}>
+            <ClickAwayListener className="d" onClickAway={() => this.setState({ open: false })}>
                 <LongPress
                     time={300}
                     onLongPress={() => this.setState({ open: true })}

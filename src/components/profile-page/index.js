@@ -17,6 +17,11 @@ import {
   toggleUserPageDrawer
 } from '../../actions/app'
 import {
+  setUserProfile,
+  getFolowedMe,
+  getMeFolowing
+} from '../../actions/user'
+import {
   setCurrenUserDetail
 } from '../../actions/user'
 import {
@@ -50,6 +55,13 @@ import Educaction from './education'
 import Hoppies from './hoppies'
 import SwipeableViews from 'react-swipeable-views';
 import Dropzone from 'react-dropzone'
+import MultiInput from '../common/multi-input'
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/lib/ReactCrop.scss';
+import Cropper from '../common/cropper'
+import { postFormData, get } from "../../api";
+import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import { showNotification } from "../../utils/common";
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/Profile.png')
@@ -86,9 +98,87 @@ class Index extends React.Component {
       isShowNewPass: false,
       isShowConfirmPass: false,
       openMediaDrawer: false,
-      mediaTabIndex: 1
+      mediaTabIndex: 1,
+      openUploadAvatarReview: false,
+      openCropperDrawer: false,
+      crop: {
+        unit: '%',
+        width: 100,
+        aspect: 16 / 16,
+      },
     };
   }
+
+  onSelectFile = files => {
+    this.setState({
+      rootAvatarToUpload: files[0]
+    })
+    if (files && files.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener('load', () =>
+        this.setState({
+          src: reader.result,
+          openUploadAvatarReview: true,
+          openCropperDrawer: true
+        })
+      );
+      reader.readAsDataURL(files[0]);
+    }
+  };
+
+  updateAvatar() {
+    let {
+      avatarToUpload,
+      rootAvatarToUpload
+    } = this.state
+    var fr = new FileReader;
+    fr.onload = function () {
+      var img = new Image;
+      img.onload = function () {
+        const formData = new FormData();
+
+        let avatarFileToUpload = new File(
+          [avatarToUpload.file],
+          avatarToUpload.file.name,
+          {
+            type: avatarToUpload.file.type,
+            lastModified: new Date
+          }
+        )
+
+
+        console.log("rootAvatarToUpload", rootAvatarToUpload)
+        console.log("avatarToUpload", avatarFileToUpload)
+
+        formData.append("content", "")
+        formData.append("imageroot_0_" + img.width + "_" + img.height, rootAvatarToUpload)
+        formData.append("image_1_" + avatarToUpload.width + "_" + avatarToUpload.height, avatarToUpload.file)
+
+        postFormData(SOCIAL_NET_WORK_API, "User/UpdateAvatar", formData, result => {
+          if (result && result.result == 1) {
+            this.getProfile()
+          }
+        })
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(rootAvatarToUpload);
+
+
+  }
+  getProfile() {
+    get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
+      if (result.result == 1) {
+        this.props.setUserProfile(result.content.user)
+        this.props.getFolowedMe(0)
+        this.props.getMeFolowing(0)
+      } else {
+        showNotification("", <span className="app-noti-message">{result.message}</span>, null)
+      }
+
+    })
+  }
+
   componentWillMount() {
     this.props.addFooterContent(renderFooter(this.props.history))
     this.props.toggleHeader(false)
@@ -97,10 +187,14 @@ class Index extends React.Component {
   render() {
     let {
       showUserMenu,
+      croppedImageUrl
     } = this.state
+    let {
+      profile
+    } = this.props
     return (
-      <div className="profile-page" >
-        <div className="cover-img" style={{ background: "url(" + data.coverImage + ")" }}>
+      profile ? <div className="profile-page" >
+        <div className="cover-img" style={{ background: "url(" + profile.avatar + ")" }}>
           <Dropzone onDrop={acceptedFiles => { this.setState({ imageSelected: acceptedFiles }) }}>
             {({ getRootProps, getInputProps }) => (
               <div {...getRootProps()}>
@@ -114,8 +208,8 @@ class Index extends React.Component {
 
         </div>
 
-        <div className="user-avatar" style={{ background: "url(" + data.avatar + ")" }}>
-          <Dropzone onDrop={acceptedFiles => { this.setState({ imageSelected: acceptedFiles }) }}>
+        <div className="user-avatar" style={{ background: "url(" + profile.avatar + ")" }}>
+          <Dropzone onDrop={acceptedFiles => this.onSelectFile(acceptedFiles)}>
             {({ getRootProps, getInputProps }) => (
               <div {...getRootProps()}>
                 <input {...getInputProps()} accept="image/*" />
@@ -129,9 +223,9 @@ class Index extends React.Component {
         </div>
 
         <div className="user-info">
-          <span className="user-name">{data.fullName}</span>
+          <span className="user-name">{profile.fullname}</span>
           <span className="point">
-            <span>Điểm YOOT: {data.point}</span>
+            <span>Điểm YOOT: {profile.mempoint}</span>
             <img src={coin} />
           </span>
           <IconButton style={{ background: "rgba(0,0,0,0.07)" }} onClick={() => this.setState({ showUserMenu: true })}>
@@ -143,42 +237,50 @@ class Index extends React.Component {
           <ul>
             <li>
               <span><img src={like}></img></span>
-              <span>{data.liked}</span>
+              <span>{profile.numlike}</span>
             </li>
             <li>
               <span><img src={follower}></img></span>
-              <span>{data.folow}</span>
+              <span>{profile.isfollowme}</span>
             </li>
             <li>
               <span><img src={donePractice}></img></span>
-              <span>{data.posted}</span>
+              <span>{profile.numpost}</span>
             </li>
           </ul>
         </div>
 
         <div className="user-profile">
           <ul>
-            <li>
-              <img src={job} />
-              <span className="title" >Từng làm <b>{data.jobs[0].position}</b> tại <b>{data.jobs[0].company}</b></span>
-            </li>
-            <li>
-              <img src={education} />
-              <span className="title" >Từng học <b>{data.studies[0].majors}</b> tại <b>{data.studies[0].school}</b></span>
-            </li>
-            <li>
-              <img src={birthday} />
-              <span className="title" >Ngày sinh <b>{moment(data.birthday).format("DD/MM/YYYY")}</b></span>
-            </li>
-            <li>
-              <img src={sex} />
-              <span className="title">Giới tính <b>{data.gender}</b></span>
-            </li>
+            {
+              profile.userExperience && profile.userExperience.length > 0 ? <li>
+                <img src={job} />
+                <span className="title" >Từng làm <b>{profile.userExperience[0].title}</b> tại <b>{profile.userExperience[0].companyname}</b></span>
+              </li> : ""
+            }
+            {
+              profile.userStudyGraduation && profile.userStudyGraduation.length > 0 ? <li>
+                <img src={education} />
+                <span className="title" >Từng học <b>{profile.userStudyGraduation[0].specialized}</b> tại <b>{profile.userStudyGraduation[0].schoolname}</b></span>
+              </li> : ""
+            }
+            {
+              profile.birthday ? <li>
+                <img src={birthday} />
+                <span className="title" >Ngày sinh <b>{moment(profile.birthday).format("DD/MM/YYYY")}</b></span>
+              </li> : ""
+            }
+            {
+              profile.gendertext ? <li>
+                <img src={sex} />
+                <span className="title">Giới tính <b>{profile.gendertext}</b></span>
+              </li> : ""
+            }
           </ul>
           <span className="view-detail-link" onClick={() => {
             this.props.setCurrenUserDetail(data)
             this.props.toggleUserDetail(true)
-          }}>{">>> Xem thêm thông tin của"} {data.fullName}</span>
+          }}>{">>> Xem thêm thông tin của"} {profile.fullname}</span>
         </div>
 
         <Button className="update-button" style={{ background: "#f44645" }} onClick={() => this.setState({ showUpdateProfile: true })}>Cập nhật thông tin cá nhân</Button>
@@ -248,7 +350,13 @@ class Index extends React.Component {
         {
           renderVideoDrawer(this)
         }
-      </div>
+        {
+          renderUpdateAvatarReviewDrawer(this)
+        }
+        {
+          renderCropperDrawer(this)
+        }
+      </div> : ""
     );
   }
 }
@@ -275,7 +383,10 @@ const mapDispatchToProps = dispatch => ({
   togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
   toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
   setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
-  toggleUserPageDrawer: (isShow) => dispatch(toggleUserPageDrawer(isShow))
+  toggleUserPageDrawer: (isShow) => dispatch(toggleUserPageDrawer(isShow)),
+  setUserProfile: (user) => dispatch(setUserProfile(user)),
+  getFolowedMe: (currentpage) => dispatch(getFolowedMe(currentpage)),
+  getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage))
 });
 
 export default connect(
@@ -356,10 +467,10 @@ const renderFooter = (history) => {
             <img src={home}></img>
             <span >Trang chủ</span>
           </li>
-          <li onClick={() => history.replace('/yoot-noti')}>
+          {/* <li onClick={() => history.replace('/yoot-noti')}>
             <img src={noti}></img>
             <span >Thông báo</span>
-          </li>
+          </li> */}
           <li>
             <img src={profileBw}></img>
             <span style={{ color: "#f54746" }}>Cá nhân</span>
@@ -416,6 +527,9 @@ const renderUpdateProfileDrawer = (component) => {
   let {
     showUpdateProfile
   } = component.state
+  let {
+    profile
+  } = component.props
   return (
     <Drawer anchor="bottom" className="update-profile-form" open={showUpdateProfile} onClose={() => component.setState({ showUpdateProfile: false })}>
       <div className="form-header">
@@ -425,10 +539,10 @@ const renderUpdateProfileDrawer = (component) => {
         <label>Cập nhật thông tin</label>
       </div>
       <div className="content-form">
-        <UserInfo data={data} />
-        <Experiendces data={data} />
-        <Educaction data={data} />
-        <Hoppies data={data} />
+        <UserInfo data={profile} />
+        {/* <Experiendces data={profile} />
+        <Educaction data={profile} />
+        <Hoppies data={profile} /> */}
       </div>
     </Drawer>
   )
@@ -859,7 +973,83 @@ const renderVideoDrawer = (component) => {
   )
 }
 
+const renderUpdateAvatarReviewDrawer = (component) => {
+  let {
+    openUploadAvatarReview,
+    postContent,
+    isReviewMode,
+    avatarToUpload
+  } = component.state
+  let {
+    profile
+  } = component.props
+  return (
+    <Drawer anchor="bottom" className="update-avatar-review-drawer" open={openUploadAvatarReview} onClose={() => component.setState({ openUploadAvatarReview: false })}>
+      <div className="drawer-detail media-drawer">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => isReviewMode == false ? component.setState({ openUploadAvatarReview: false }) : component.setState({ openCropperDrawer: true, avatarToUpload: null, isReviewMode: false })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>{
+              isReviewMode ? "Quay lại chỉnh sửa" : "Cập nhật ảnh đại diện"
+            }
+            </label>
+          </div>
+          <Button className="bt-submit" onClick={() => component.updateAvatar()}>Đăng</Button>
+        </div>
+        <div className="filter">
+        </div>
+        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+          <div className="post-content">
+            <MultiInput
+              placeholder="Nhập nội dung"
+              onChange={(value) => component.setState({ postContent: value })} />
+          </div>
+          <div className="profile-page" >
+            <div className="cover-img" style={{ background: "url(" + profile.avatar + ")" }}>
+            </div>
+            <div className="user-avatar" style={{ background: "url(" + (avatarToUpload && avatarToUpload.file ? URL.createObjectURL(avatarToUpload.file) : profile.avatar) + ")" }}>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
 
+const renderCropperDrawer = (component) => {
+  let {
+    openCropperDrawer,
+    crop,
+    src,
+    croppedImage
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="cropper-drawer" open={openCropperDrawer} onClose={() => component.setState({ openCropperDrawer: false })}>
+      {
+        src ? <div className="drawer-detail">
+          <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+            <Cropper
+              src={src}
+              crop={crop}
+              onCropped={(file) => component.setState({ croppedImage: file })}
+            />
+          </div>
+          <div className="footer-drawer">
+            <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
+            <div>
+              <Button onClick={() => component.setState({ openCropperDrawer: false, avatarToUpload: croppedImage })}>Huỷ</Button>
+              <Button onClick={() => component.setState({ openCropperDrawer: false, isReviewMode: true, avatarToUpload: croppedImage })}>Chế độ xem trước</Button>
+              <Button>Đăng bài</Button>
+            </div>
+          </div>
+
+        </div> : ""
+      }
+    </Drawer >
+  )
+}
 
 
 

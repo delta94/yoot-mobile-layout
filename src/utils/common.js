@@ -93,6 +93,28 @@ export const confirmSubmit = (title, message, onOK, onCANCEL) => {
   });
 };
 
+export const showNotification = (title, message, onOK) => {
+  confirmAlert({
+    title: title,
+    message: message,
+    buttons: [
+      {
+        label: "Đồng ý",
+        onClick: onOK ? () => onOK() : ""
+      }
+    ]
+  });
+};
+
+export const showConfirm = (title, message, onOK, onCancel, okLabel, cancelLabel) => {
+  confirmAlert({
+    title: title,
+    message: message,
+    buttons: [
+    ],
+  });
+};
+
 export const getDate = () => {
   var now = moment().utc();
   var date = now.utcOffset('+7').toDate();

@@ -48,7 +48,6 @@ class Index extends React.Component {
   componentDidMount() {
     let value = [5, 4, 3, 3]
     let point1 = $("#style-table")
-    console.log("point1", point1)
   }
   render() {
     return (
@@ -445,6 +444,9 @@ const renderYourJobDrawer = (component) => {
             </div>
             <YourJobs />
           </div>
+          <div className="footer-drawer">
+            <Button onClick={() => component.props.toggleYourMajorsDrawer(true)}>Ngành học tương ứng</Button>
+          </div>
 
         </div> : ""
       }
@@ -495,18 +497,18 @@ const renderYourMajorsDrawer = (component) => {
               <i class="fas fa-heart"></i> Trường đang quan tâm
             </div>
           </div>
-          <div style={{ background: "#f2f3f7"}}>
-            <div className="filter" style={{background: "white", width: "100%", margin: "10px auto", padding: "1px"}}>
+          <div style={{ background: "#f2f3f7" }}>
+            <div className="filter" style={{ background: "white", width: "100%", margin: "10px auto", padding: "1px" }}>
               <div className="major-noti jobList-Noti" style={{ padding: "0px 10px", width: "90%" }}>
-                  <div className="divContent">
-                    <i class="fas fa-play"></i>
-                    <p className="content">Trang ngành học được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những ngành học mà bạn muốn tìm hiểu nhé.</p>
-                  </div>
+                <div className="divContent">
+                  <i class="fas fa-play"></i>
+                  <p className="content">Trang ngành học được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những ngành học mà bạn muốn tìm hiểu nhé.</p>
+                </div>
               </div>
-              <div className="panel" style={{borderBottom: "1px solid #f2f3f7", width: "95%", margin: "0 auto 10px"}}>
-                <ul style={{padding: "10px 0", display: "inline-flex"}}>
-                  <li className="active" style={{color: "#ff5a5a", display: "inline-block", borderBottom: "2px solid #ff5a5a", paddingBottom: "10px"}}>
-                      Bác sỹ
+              <div className="panel" style={{ borderBottom: "1px solid #f2f3f7", width: "95%", margin: "0 auto 10px" }}>
+                <ul style={{ padding: "10px 0", display: "inline-flex" }}>
+                  <li className="active" style={{ color: "#ff5a5a", display: "inline-block", borderBottom: "2px solid #ff5a5a", paddingBottom: "10px" }}>
+                    Bác sỹ
                   </li>
                 </ul>
               </div>

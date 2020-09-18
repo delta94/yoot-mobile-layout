@@ -23,29 +23,31 @@ ul{
     background: #e8e9ed !important;
     .tab-header{
         min-height: 40px !important;
-        > div > div{
-            position: relative;
-            > span:last-child{
-                height: 100%;
-                z-index: 0;
-                background: #fff !important;
-                border-radius: 6px;
-            }
+        > div{
             > div{
-                position: relative;
-                z-index: 1;
-                button{
-                    min-height: 40px !important;
-                    > span{
-                        color: #484848 !important;
-                        text-transform: none !important;
-                        font-family: Roboto-Medium;
-                    }
-                    > span:last-child{
-                        display: none;  
+                > div{
+                    position: relative;
+                    z-index: 1;
+                    > button.tab-item{
+                        height: 40px;
+                        min-height: 20px;
+                        border-radius: 2px;
+                        > span{
+                            font-family: Roboto-Medium;
+                            text-transform: none;
+                            color: #555;
+                        }
                     }
                 }
+                > span:last-child{
+                    height: 100%;
+                    background: #fff;
+                    z-index: 0;
+                    border-radius: 5px;
+                }
+                
             }
+            
         }
     }
 }
@@ -114,24 +116,39 @@ ul{
     font-family: Roboto-Regular;
     color: #c0c0c0;
 }
-// input[type="color"],
-// input[type="date"],
-// input[type="datetime"],
-// input[type="datetime-local"],
-// input[type="email"],
-// input[type="month"],
-// input[type="number"],
-// input[type="password"],
-// input[type="search"],
-// input[type="tel"],
-// input[type="text"],
-// input[type="time"],
-// input[type="url"],
-// input[type="week"],
-// select:focus,
-// textarea {
-//   font-size: 16px !important;
-// }
+input[type="color"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"],
+select,
+select:focus
+ {
+  font-size: 16px !important;
+  transform: scale(0.8) !important;
+  margin-left: -23px;
+  padding: 0px !important;
+
+}
+select:focus{
+    margin-left: 0px !important;
+    background: none !important;
+}
+textarea{
+    font-size: 16px !important;
+}
+input[type="password"]{
+    margin-left: -18px;
+}
 .red{
     color: #ff5a5a;
 }
@@ -212,6 +229,11 @@ input{
             }
         }
     }
+}
+.custom-placehoder{
+    margin-top: -7px;
+    margin-left: -2px;
+    color: rgba(0, 0, 0, 0.3);
 }
 .react-confirm-alert-blur{
     filter: blur(0);
@@ -303,6 +325,20 @@ fieldset{
         display: inline-block;
         width: 100%;
         font-family: Roboto-Medium;
+        button{
+            background: rgba(0, 0, 0, 0.05) !important;
+            border-radius: 4px;
+            padding: 4px 10px;
+            margin-left: 10px;
+            img{
+                width: 17px;
+                margin-bottom: 1px;
+            }
+            svg{
+                width: 20px;
+                opacity: 0.7;
+            }
+        }
     }
 }
 #style-chart{
@@ -378,6 +414,108 @@ fieldset{
             top: calc(50% + 14px);
             background: none;
             height: 0px;
+        }
+    }
+}
+.app-noti-message{
+    font-family: Roboto-Regular;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    display: inline-block;
+}
+.confirm-drawer{
+    display: flex;
+    align-items: center;
+    > div:last-child{
+        position: relative;
+        min-width: calc(100% - 20px);
+        max-width: calc(100% - 20px);
+        margin-left: 10px;
+        border-radius: 15px;
+    }
+}
+.jon-group-confirm{
+    background: #fff;
+    padding: 20px;
+    > label{
+        font-family: Roboto-Medium;
+        font-size: 1.2rem;
+    }
+    > div{
+        display: flex;
+        margin: 10px 0px;
+        &.accept-role{
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        button{
+            margin-right: 20px;
+            &:last-child{
+                margin-right: 0px;
+            }
+        }
+    }
+}
+.custom-select{
+    >div::after,
+    >div::before{
+        display: none
+    }
+    > div{
+        min-height: 38px;
+        // min-width: 100px;
+        > div{
+            display: flex;
+            align-items: center;
+            > svg{
+                margin-right: -15px;
+            }
+        }
+        select{
+            padding-right: 0px;
+            width: fit-content;
+            min-height: 38px;
+            line-height: 31px;
+            option{
+                min-width: 40px;
+            }
+            // width: calc(100% - 25px);
+        }
+    }
+}
+.privacy-menu{
+    ul{
+        padding: 10px;
+        li{
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 7px;
+            &:last-child{
+                margin-bottom: 0px;
+            }
+            > img{
+                width: 20px;
+            }
+            > div{
+                white-space:normal;
+                width: fit-content;
+                > label{
+                    font-family: Roboto-Medium;
+                    display: inline-block;
+                    width: 100%;
+                    text-align: center;
+                    color: #333;
+                }
+                > span{
+                    font-family: Roboto-Regular;
+                    color: #666;
+                    display: inline-block;
+                    width: 100%;
+                    font-size: 0.8rem;
+                    text-align: center;
+                }
+            }
         }
     }
 }

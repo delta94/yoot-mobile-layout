@@ -35,6 +35,69 @@ const color = require('../../assets/icon/color@1x.png')
 const defaultImage = "https://dapp.dblog.org/img/default.jpg"
 const search = require('../../assets/icon/Find@1x.png')
 
+const bg01 = require('../../assets/background/bg01.png')
+const bg02 = require('../../assets/background/bg02.png')
+const bg03 = require('../../assets/background/bg03.png')
+const bg04 = require('../../assets/background/bg04.png')
+const bg05 = require('../../assets/background/bg05.png')
+const bg06 = require('../../assets/background/bg06.png')
+const bg07 = require('../../assets/background/bg07.png')
+const bg08 = require('../../assets/background/bg08.png')
+const bg09 = require('../../assets/background/bg09.png')
+const bg10 = require('../../assets/background/bg10.png')
+const bg11 = require('../../assets/background/bg11.png')
+
+const backgroundList = [
+    {
+        id: 0,
+        background: null
+    },
+    {
+        id: 1,
+        background: bg01
+    },
+    {
+        id: 2,
+        background: bg02
+    },
+    {
+        id: 3,
+        background: bg03
+    },
+    {
+        id: 4,
+        background: bg04
+    },
+    {
+        id: 5,
+        background: bg05
+    },
+    {
+        id: 6,
+        background: bg06
+    },
+    {
+        id: 7,
+        background: bg07
+    },
+    {
+        id: 8,
+        background: bg08
+    },
+    {
+        id: 9,
+        background: bg09
+    },
+    {
+        id: 10,
+        background: bg10
+    },
+    {
+        id: 11,
+        background: bg11
+    }
+]
+
 
 export class Index extends React.Component {
 
@@ -101,6 +164,37 @@ export class Index extends React.Component {
             tagedFrieds
         })
     }
+    handleSelectBackground(background) {
+        this.setState({
+            backgroundSelected: background,
+
+        })
+    }
+    handleInputChange(value) {
+
+        let inputValue = value.target.value
+
+        inputValue.replace("@", <span style={{ color: "red" }}>@</span>)
+
+        this.setState({
+            postContent: inputValue
+        })
+
+        if (inputValue) {
+            if (inputValue.match(/\n/g)) {
+                if (inputValue.match(/\n/g).length > 4) {
+                    this.setState({
+                        backgroundSelected: backgroundList[0]
+                    })
+                }
+            }
+            if (inputValue.length > 150) {
+                this.setState({
+                    backgroundSelected: backgroundList[0]
+                })
+            }
+        }
+    }
 
 
     render() {
@@ -164,7 +258,10 @@ const renderPostDrawer = (component) => {
         imageSelected,
         videoSelected,
         albumSelected,
-        groupSelected
+        groupSelected,
+        isBackgroundSelect,
+        backgroundSelected,
+        postContent
     } = component.state
 
     return (
@@ -190,7 +287,7 @@ const renderPostDrawer = (component) => {
                     }
                     <ul>
                         <li>
-                            <Dropzone onDrop={acceptedFiles => { component.setState({ imageSelected: imageSelected.concat(acceptedFiles) }) }}>
+                            <Dropzone onDrop={acceptedFiles => { component.setState({ imageSelected: imageSelected.concat(acceptedFiles), isBackgroundSelect: false }) }}>
                                 {({ getRootProps, getInputProps }) => (
                                     <div {...getRootProps()} id="bt-select-image">
                                         <input {...getInputProps()} accept="image/*" />
@@ -201,7 +298,7 @@ const renderPostDrawer = (component) => {
                             </Dropzone>
                         </li>
                         <li>
-                            <Dropzone onDrop={acceptedFiles => component.setState({ videoSelected: acceptedFiles })}>
+                            <Dropzone onDrop={acceptedFiles => component.setState({ videoSelected: acceptedFiles, isBackgroundSelect: false })}>
                                 {({ getRootProps, getInputProps }) => (
                                     <div {...getRootProps()} id="bt-select-video">
                                         <input {...getInputProps()} accept="video/*" />
@@ -219,7 +316,7 @@ const renderPostDrawer = (component) => {
                             <img src={tag} />
                             <span>Gắn thẻ</span>
                         </li>
-                        <li>
+                        <li onClick={() => component.setState({ isBackgroundSelect: true, backgroundSelected: backgroundList[0] })}>
                             <img src={color} />
                             <span>Màu nền</span>
                         </li>
@@ -232,11 +329,16 @@ const renderPostDrawer = (component) => {
                         style={{
                             width: "100%",
                             marginBottom: "10px",
+                            background: "url(" + (backgroundSelected ? backgroundSelected.background : "") + ")",
+                            overflow: "hidden",
+                            borderRadius: "7px"
                         }}
+                        value={postContent}
+                        onChange={value => component.handleInputChange(value)}
                         multiline
-                        className="auto-height-input"
+                        className={"auto-height-input " + (backgroundSelected && backgroundSelected.id != 0 ? "have-background" : "")}
                     />
-                    <div className="post-role">
+                    <div className={"post-role " + (backgroundSelected && backgroundSelected.id != 0 ? "have-background" : "")}>
                         {
                             albumSelected ? <span className="bt-sumbit" >
                                 <img src={album} />
@@ -303,6 +405,19 @@ const renderPostDrawer = (component) => {
                             </div> : ""
                         }
                     </div>
+                    {
+                        isBackgroundSelect ? <div className="background-list">
+                            <ul>
+                                {
+                                    backgroundList.map((item, index) => <li key={index} style={{ background: "url(" + (item ? item.background : "") + ")" }}>
+                                        <Button onClick={() => component.handleSelectBackground(item)}>
+                                            <span className={"radio " + (backgroundSelected && backgroundSelected.id == index ? "active" : "")}></span>
+                                        </Button>
+                                    </li>)
+                                }
+                            </ul>
+                        </div> : ""
+                    }
                 </div>
             </div>
         </Drawer>

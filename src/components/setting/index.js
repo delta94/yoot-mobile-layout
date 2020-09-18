@@ -105,10 +105,10 @@ const renderFooter = (history) => {
           <img src={home}></img>
           <span >Trang chủ</span>
         </li>
-        <li onClick={() => history.replace('/yoot-noti')}>
+        {/* <li onClick={() => history.replace('/yoot-noti')}>
           <img src={noti}></img>
           <span >Thông báo</span>
-        </li>
+        </li> */}
         <li onClick={() => history.replace('/profile')}>
           <img src={profileBw}></img>
           <span>Cá nhân</span>

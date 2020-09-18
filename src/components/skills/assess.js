@@ -24,8 +24,9 @@ import { StickyContainer, Sticky } from 'react-sticky';
 import SwipeableViews from 'react-swipeable-views';
 import Dropzone from 'react-dropzone'
 
-const noti = require('../../assets/icon/NotiBw@1x.png')
-const Newfeed = require('../../assets/icon/Newfeed@1x.png')
+const practice = require('../../assets/icon/practice.png')
+const evaluate1 = require('../../assets/icon/evaluate1.png')
+const Newfeed = require('../../assets/icon/Lesson.png')
 const Coins_Y = require('../../assets/icon/Coins_Y.png')
 const IMG_1038 = require('../../assets/images/IMG_1038.jpg')
 const Logo_y = require('../../assets/icon/Logo_y@1x.png')
@@ -92,11 +93,11 @@ const renderFooter = (history) => {
           <span >Bài học</span>
         </li>
         <li onClick={() => history.push("/skills/1219/exercise")}>
-          <img src={noti}></img>
+          <img src={practice}></img>
           <span >Thực hành</span>
         </li>
         <li>
-          <img src={noti}></img>
+          <img src={evaluate1}></img>
           <span style={{ color: "#f54746" }}>Đánh giá</span>
         </li>
       </ul>

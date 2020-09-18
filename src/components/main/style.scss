@@ -180,6 +180,11 @@
   display: grid;
   grid-template-rows: min-content min-content auto;
   height: 100vh;
+  .folowing-list{
+    max-height: 260px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
   .drawer-header{
     border-bottom: 1px solid rgba(0,0,0,0.1);
     height: 60px;

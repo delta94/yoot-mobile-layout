@@ -52,7 +52,7 @@ class Index extends React.Component {
                             style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
                         >
                             <Paper>
-                                <ClickAwayListener onClickAway={() => this.handleClose()}>
+                                <ClickAwayListener className="ds" onClickAway={() => this.handleClose()}>
                                     {
                                         content ? content : ""
                                     }

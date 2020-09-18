@@ -81,7 +81,7 @@ class Index extends React.Component {
         <div className="banner" style={{
           height: "120px", background: "url(" + postBg + ")"
         }}>
-          <label>Chào {profile.fullName},</label>
+          <label>Chào {profile.fullname},</label>
           <span>Ngày hôm nay của bạn thế nào?</span>
           <Button onClick={() => this.props.togglePostDrawer(true)}>Tạo bài đăng mới</Button>
         </div>

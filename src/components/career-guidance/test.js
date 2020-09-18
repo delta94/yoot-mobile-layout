@@ -69,21 +69,20 @@ class Index extends React.Component {
         let answer = answers[currentQuestion.stt]
         let nextQuestion = questions.find(item => item.stt == currentQuestion.stt - 1)
         if (!nextQuestion) return
-        if (answer && answer.most != null && answer.least != null) {
-            this.setState({
-                currentQuestion: nextQuestion,
-                leastValue: answers[nextQuestion.stt] ? answers[nextQuestion.stt].least : null,
-                mostValue: answers[nextQuestion.stt] ? answers[nextQuestion.stt].most : null,
-                isLastQuestion: false
-            })
-        }
+        this.setState({
+            currentQuestion: nextQuestion,
+            leastValue: answers[nextQuestion.stt] ? answers[nextQuestion.stt].least : null,
+            mostValue: answers[nextQuestion.stt] ? answers[nextQuestion.stt].most : null,
+            isLastQuestion: false
+        })
     }
     render() {
         let {
             mostValue,
             leastValue,
             isLastQuestion,
-            currentQuestion
+            currentQuestion,
+            answers
         } = this.state
         return (
             <div className="test-page">
@@ -128,7 +127,7 @@ class Index extends React.Component {
                     </div>
                 </div>
                 {
-                    isLastQuestion ? <Button className="bt-submit">Kết quả</Button> : ""
+                    isLastQuestion || answers.length > questions.length ? <Button className="bt-submit">Kết quả</Button> : ""
                 }
             </div>
         );

@@ -1,0 +1,20 @@
+#vk-input { 
+    padding: 10px;
+    border-radius: 7px;
+    border: 1px solid rgba(0,0,0,0.1);
+    outline: none;
+    font-family: Roboto-Regular;
+}
+.highlight{
+    color:blue;
+}
+.multi-input{
+  position: relative;
+  .placeholder{
+    position: absolute;
+    top: 12px;
+    left: 10px;
+    font-family: Roboto-Regular;
+    color: rgba(0,0,0,0.4)
+  }
+}

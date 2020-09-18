@@ -174,7 +174,6 @@ export class Index extends React.Component {
     handleSetDefault() {
         let { item } = this.props
         if (!item) return
-        console.log("item", item)
         this.setState({
 
         })

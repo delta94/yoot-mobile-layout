@@ -8,18 +8,39 @@ import {
   toggleUserPageDrawer
 } from '../../actions/app'
 import {
-  setCurrenUserDetail
+  setCurrenUserDetail,
 } from '../../actions/user'
+import {
+  joinGroup,
+  acceptGroup
+} from '../../actions/group'
 import { connect } from 'react-redux'
 import { StickyContainer, Sticky } from 'react-sticky';
+import {
+  SOCIAL_NET_WORK_API,
+  SYSTEM_API
+} from '../../constants/appSettings'
 import Slider from "react-slick";
 import {
   AppBar,
   Tabs,
   Tab,
-  Avatar
+  Avatar,
+  Button,
+  FormControlLabel,
+  Checkbox,
+  Drawer,
+  IconButton
 } from '@material-ui/core'
+import {
+  ChevronLeft as ChevronLeftIcon
+} from '@material-ui/icons'
 import SwipeableViews from 'react-swipeable-views';
+import { get } from "../../api";
+import moment from 'moment'
+import { objToQuery } from "../../utils/common";
+import Loader from '../common/loader'
+import $ from 'jquery'
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/ProfileBW.png')
@@ -36,6 +57,9 @@ const coin = require('../../assets/icon/Coins_Y.png')
 const like = require('../../assets/icon/like@1x.png')
 const follower = require('../../assets/icon/Follower@1x.png')
 const donePractice = require('../../assets/icon/DonePractive@1x.png')
+
+const checkIcon = require('../../assets/images/check.png')
+const checkedIcon = require('../../assets/images/checked.png')
 
 
 const settings = {
@@ -551,10 +575,172 @@ class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tabIndex: 0
+      tabIndex: 0,
+      joinGroupProccessingId: 80,
+      isRead: false,
+      topGroups: [],
+      topUsers: [],
+      groupCurrentPage: 0,
+      isEndOfGroupList: false,
+      userCurrenntPage: 0,
+      isEndOfUserList: false
     };
   }
+
+  getBanner() {
+    get(SYSTEM_API, "System/GetBanners", result => {
+      this.setState({
+        panners: result.content.banners
+      })
+    })
+  }
+
+
+  getTopUser(currentpage) {
+    let {
+      topUsers
+    } = this.state
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      limit: 20
+    }
+    let queryParam = objToQuery(param)
+    get(SOCIAL_NET_WORK_API, "User/GetTopUsers" + queryParam, result => {
+      if (result.result == 1) {
+        this.setState({
+          topUsers: topUsers.concat(result.content.topUsers),
+          isLoadMoreGroup: false
+        })
+        if (result.content.topUsers.length == 0) {
+          this.setState({
+            isEndOfUserList: true
+          })
+        }
+      }
+    })
+  }
+
+  getTopGroup(currentpage) {
+    if (currentpage < 0) return
+    let {
+      topGroups
+    } = this.state
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      limit: 20,
+      skin: 'TopGroup'
+    }
+    let queryParam = objToQuery(param)
+    get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + queryParam, result => {
+      if (result.result == 1) {
+        this.setState({
+          topGroups: topGroups.concat(result.content.groupUsers),
+          isLoadMoreGroup: false
+        })
+        if (result.content.groupUsers.length == 0) {
+          this.setState({
+            isEndOfGroupList: true
+          })
+        }
+      }
+    })
+  }
+
+  joinGroup(groupid) {
+    let {
+      topGroups
+    } = this.state
+    this.setState({
+      joinGroupProccessingId: groupid,
+      showJoinGroupConfirm: false
+    })
+    this.props.joinGroup(groupid, () => {
+      topGroups.map(group => {
+        if (group.groupid == groupid) {
+          group.status = 1
+        }
+      })
+      this.setState({
+        joinGroupProccessingId: null,
+      })
+    }, () => {
+      this.setState({
+        joinGroupProccessingId: null
+      })
+    })
+  }
+
+  acceptGroup(groupid) {
+    let {
+      topGroups
+    } = this.state
+
+    this.setState({
+      joinGroupProccessingId: groupid,
+      showJoinGroupConfirm: false
+    })
+    this.props.acceptGroup(groupid, () => {
+      topGroups.map(group => {
+        if (group.groupid == groupid) {
+          group.status = 1
+        }
+      })
+      this.setState({
+        joinGroupProccessingId: null,
+        topGroups: topGroups
+      })
+    }, () => {
+      this.setState({
+        joinGroupProccessingId: null
+      })
+    })
+  }
+
+  onScroll() {
+    let element = $("#top-rank-content")
+    let {
+      groupCurrentPage,
+      userCurrenntPage,
+      rankTabIndex,
+      isLoadMoreGroup,
+      isEndOfGroupList,
+      isEndOfUserList
+    } = this.state
+    if (element && rankTabIndex >= 0)
+      if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+        if (rankTabIndex == 0) {
+          if (isLoadMoreGroup == false && isEndOfUserList == false) {
+            this.setState({
+              userCurrenntPage: userCurrenntPage + 1,
+              isLoadMoreGroup: true
+            }, () => {
+              this.getTopUser(userCurrenntPage + 1)
+            })
+          }
+        }
+        else {
+          if (isLoadMoreGroup == false && isEndOfGroupList == false) {
+            this.setState({
+              groupCurrentPage: groupCurrentPage + 1,
+              isLoadMoreGroup: true
+            }, () => {
+              this.getTopGroup(groupCurrentPage + 1)
+            })
+          }
+        }
+      }
+  }
+
   componentWillMount() {
+    let {
+      groupCurrentPage,
+      userCurrenntPage
+    } = this.state
+    this.getBanner()
+    this.getTopUser(userCurrenntPage)
+    this.getTopGroup(groupCurrentPage)
     this.props.addHeaderContent(renderHeader())
     this.props.addFooterContent(renderFooter(this.props.history))
     this.props.toggleHeader(true)
@@ -562,21 +748,23 @@ class Index extends React.Component {
   }
   render() {
     let {
-      tabIndex
+      tabIndex,
+      panners,
+      topUsers,
+      topGroups,
+      joinGroupProccessingId,
+      groupCurrentPage
     } = this.state
+
     return (
       <div className="home-page" >
         <div className="home-slider">
           <Slider {...settings}>
-            <div className="slide-item">
-              <img src="http://157.119.251.140:9669/Assets/Image/Banner/banner02.png?utm_source=zalo&utm_medium=zalo&utm_campaign=zalo&zarsrc=31" />
-            </div>
-            <div className="slide-item">
-              <img src="http://157.119.251.140:9669/Assets/Image/Banner/banner02.png?utm_source=zalo&utm_medium=zalo&utm_campaign=zalo&zarsrc=31" />
-            </div>
-            <div className="slide-item">
-              <img src="http://157.119.251.140:9669/Assets/Image/Banner/banner02.png?utm_source=zalo&utm_medium=zalo&utm_campaign=zalo&zarsrc=31" />
-            </div>
+            {
+              panners && panners.map((banner, index) => <div className="slide-item" key={index}>
+                <img src={banner.link} />
+              </div>)
+            }
           </Slider>
         </div>
         <StickyContainer className="container">
@@ -639,7 +827,7 @@ class Index extends React.Component {
               <TabPanel value={tabIndex} index={0} className="content-box">
                 <div className="top-members">
                   {
-                    member.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} onClick={() => {
+                    topUsers ? topUsers.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} onClick={() => {
                       this.props.setCurrenUserDetail(item)
                       this.props.toggleUserPageDrawer(true)
                     }}>
@@ -650,7 +838,7 @@ class Index extends React.Component {
                       </div>
                       <div className="user-info">
                         <span className="rank">#{key + 1}</span>
-                        <span className="user-name">{item.fullName}</span>
+                        <span className="user-name">{item.fullname}</span>
                         <span className="point">
                           <span>Điển YOOT: {item.point}</span>
                           <img src={coin} />
@@ -659,63 +847,86 @@ class Index extends React.Component {
                           <ul>
                             <li>
                               <span><img src={like}></img></span>
-                              <span>{item.liked}</span>
+                              <span>{item.numlike}</span>
                             </li>
                             <li>
                               <span><img src={follower}></img></span>
-                              <span>{item.folow}</span>
+                              <span>{item.numfollow}</span>
                             </li>
                             <li>
                               <span><img src={donePractice}></img></span>
-                              <span>{item.posted}</span>
+                              <span>{item.numpost}</span>
                             </li>
                           </ul>
                         </div>
                       </div>
-                    </div>)
+                    </div>) : ""
                   }
-                  <span className="link-to-standing">Đến bảng xếp hạng</span>
+                  <span className="link-to-standing" onClick={() => this.setState({ showRankDrawer: true, rankTabIndex: tabIndex })}>Đến bảng xếp hạng</span>
                 </div>
               </TabPanel>
               <TabPanel value={tabIndex} index={1} >
                 <div className="top-groups">
                   {
-                    groups.map((item, key) => <div className="group-item" key={key} style={{ background: "url(" + item.coverImage + ")" }}>
+                    topGroups ? topGroups.map((item, key) => <div className="group-item" key={key} style={{ background: "url(" + item.backgroundimage + ")" }}>
                       <div className="group-info">
                         <Avatar aria-label="recipe" className="avatar">
-                          <img src={item.groupAvatar} style={{ width: "100%" }} />
+                          <img src={item.thumbnail} style={{ width: "100%" }} />
                         </Avatar>
-                        <span className="group-name">{item.groupName}</span>
+                        <span className="group-name">{item.groupname}</span>
                       </div>
-                      <span className="posted">{item.posted} bài đăng</span>
+                      <span className="posted">{item.numpost} bài đăng</span>
                       <div className="members-list">
-                        <span className="total">Thành viên: {item.members.length}</span>
-                        <div className="member-avatar">
+                        <span className="total">Thành viên: {item.nummember}</span>
+                        <div>
                           {
-                            item.members.map((item, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
-                              <img src={item.avatar} style={{ width: "100%" }} />
-                            </Avatar>
-                            )
+                            item.managers && item.managers.length > 0 ? <div className="member-avatar">
+                              {
+                                item.managers.map((manager, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
+                                  <img src={manager.avatar} style={{ width: "100%" }} />
+                                </Avatar>
+                                )
+                              }
+                              {
+                                item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
+                                  +{item.managers.length - 2}
+                                </Avatar> : ""
+                              }
+                            </div> : ""
                           }
                           {
-                            item.members.length > 2 ? < Avatar aria-label="recipe" className="avatar">
-                              +{item.members.length - 2}
-                            </Avatar> : ""
+                            item.status == 0 ? <span className="action-bt sumit" onClick={() => this.setState({ currentGroupId: item.groupid, showJoinGroupConfirm: true, isJoiningGroup: true })}>
+                              Tham gia
+                           {
+                                joinGroupProccessingId == item.groupid ? <Loader type="small" /> : ""
+                              }
+                            </span> : ""
+                          }
+                          {
+                            item.status == 2 ? <span className="action-bt accepted" onClick={() => this.setState({ currentGroupId: item.groupid, showJoinGroupConfirm: true, isJoiningGroup: false })}>
+                              Chấp nhận
+                               {
+                                joinGroupProccessingId == item.groupid ? <Loader type="small" /> : ""
+                              }
+                            </span> : ""
                           }
                         </div>
                       </div>
-                      {
-                        item.owner == true ? <span className="action-bt accepted">Chấp nhận</span> : <span className="action-bt sumit">Tham gia</span>
-                      }
-                    </div>)
+
+                    </div>) : ""
                   }
-                  <span className="link-to-standing">Đến bảng xếp hạng</span>
+                  <span className="link-to-standing" onClick={() => this.setState({ showRankDrawer: true, rankTabIndex: tabIndex })}>Đến bảng xếp hạng</span>
                 </div>
               </TabPanel>
             </SwipeableViews>
           </div>
         </StickyContainer>
-
+        {
+          renderJoinGroupConfirm(this)
+        }
+        {
+          renderTopRankDrawer(this)
+        }
       </div>
 
     );
@@ -725,6 +936,7 @@ class Index extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.app,
+    ...state.user
   }
 };
 
@@ -734,8 +946,11 @@ const mapDispatchToProps = dispatch => ({
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
   toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
   toggleUserPageDrawer: (isShow) => dispatch(toggleUserPageDrawer(isShow)),
-  setCurrenUserDetail: (user) => dispatch(setCurrenUserDetail(user))
+  setCurrenUserDetail: (user) => dispatch(setCurrenUserDetail(user)),
+  joinGroup: (groupId, successCallback, errorCallback) => dispatch(joinGroup(groupId, successCallback, errorCallback)),
+  acceptGroup: (groupId, successCallback, errorCallback) => dispatch(acceptGroup(groupId, successCallback, errorCallback))
 });
+
 
 export default connect(
   mapStateToProps,
@@ -757,10 +972,10 @@ const renderFooter = (history) => {
           <img src={home}></img>
           <span style={{ color: "#f54746" }}>Trang chủ</span>
         </li>
-        <li onClick={() => history.replace('/yoot-noti')}>
+        {/* <li onClick={() => history.replace('/yoot-noti')}>
           <img src={noti}></img>
           <span>Thông báo</span>
-        </li>
+        </li> */}
         <li onClick={() => history.replace('/profile')}>
           <img src={profileBw}></img>
           <span>Cá nhân</span>
@@ -797,4 +1012,191 @@ function TabPanel(props) {
       )}
     </div>
   );
+}
+
+const renderJoinGroupConfirm = (component) => {
+  let {
+    showJoinGroupConfirm,
+    isRead,
+    currentGroupId,
+    isJoiningGroup
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="confirm-drawer" open={showJoinGroupConfirm} onClose={() => component.setState({ showJoinGroupConfirm: false, currentGroupId: null })}>
+      <div className='jon-group-confirm'>
+        <label>Nội quy nhóm</label>
+        <p>Vui lòng đọc kỹ và xác nhận nội quy nhóm trước khi tham gia nhóm.</p>
+        <div className="accept-role">
+          <FormControlLabel
+            control={<Checkbox checked={isRead} onChange={() => component.setState({ isRead: !isRead })} icon={<img src={checkIcon} style={{ width: 20, height: 20 }} />} checkedIcon={<img src={checkedIcon} style={{ width: 20, height: 20 }} />} name="checkedH" />}
+            label={<span>Xác nhận đã đọc nội quy</span>}
+            labelPlacement="start"
+          />
+        </div>
+        <div>
+          <Button className="bt-cancel" onClick={() => component.setState({ showJoinGroupConfirm: false, currentGroupId: null })}>Đóng</Button>
+          {
+            isRead ? <Button className="bt-submit" onClick={() => isJoiningGroup == true ? component.joinGroup(currentGroupId) : component.acceptGroup(currentGroupId)}>Tham gia nhóm</Button> : <Button className="bt-submit" style={{ opacity: 0.5 }} disabled>Tham gia nhóm</Button>
+          }
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+const renderTopRankDrawer = (component) => {
+
+  let {
+    rankTabIndex,
+    panners,
+    topUsers,
+    topGroups,
+    joinGroupProccessingId,
+    showRankDrawer,
+    isLoadMoreGroup
+  } = component.state
+
+
+  return (
+    <Drawer anchor="bottom" className="top-rank-drawer" open={showRankDrawer} onClose={() => component.setState({ showRankDrawer: false })}>
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.setState({
+            showRankDrawer: false,
+            topGroups: topGroups.slice(0, 20),
+            topUsers: topUsers.slice(0, 20),
+            rankTabIndex: -1
+          })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Bảng xếp hạng</label>
+          </div>
+        </div>
+        <div className="filter">
+          <AppBar position="static" color="default" className={"custom-tab"}>
+            <Tabs
+              value={rankTabIndex}
+              onChange={(e, value) => component.setState({ rankTabIndex: value })}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="fullWidth"
+              aria-label="full width tabs example"
+              className="tab-header"
+            >
+              <Tab label="Thành viên tích cực" {...a11yProps(0)} className="tab-item" />
+              <Tab label="Nhóm chất lượng" {...a11yProps(1)} className="tab-item" />
+            </Tabs>
+          </AppBar>
+        </div>
+        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} id="top-rank-content" onScroll={(e) => component.onScroll(e)}>
+          <div className="member-list">
+            <SwipeableViews
+              index={rankTabIndex}
+              onChangeIndex={(value) => component.setState({ rankTabIndex: value })}
+              className="tab-content"
+            >
+              <TabPanel value={rankTabIndex} index={0} className="content-box">
+                <div className="top-members">
+                  {
+                    topUsers ? topUsers.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} onClick={() => {
+                      component.props.setCurrenUserDetail(item)
+                      component.props.toggleUserPageDrawer(true)
+                    }}>
+                      <div className="member-avatar">
+                        <Avatar aria-label="recipe" className="avatar">
+                          <img src={item.avatar} style={{ width: "100%" }} />
+                        </Avatar>
+                      </div>
+                      <div className="user-info">
+                        <span className="rank">#{key + 1}</span>
+                        <span className="user-name">{item.fullname}</span>
+                        <span className="point">
+                          <span>Điển YOOT: {item.point}</span>
+                          <img src={coin} />
+                        </span>
+                        <div className="react-reward">
+                          <ul>
+                            <li>
+                              <span><img src={like}></img></span>
+                              <span>{item.numlike}</span>
+                            </li>
+                            <li>
+                              <span><img src={follower}></img></span>
+                              <span>{item.numfollow}</span>
+                            </li>
+                            <li>
+                              <span><img src={donePractice}></img></span>
+                              <span>{item.numpost}</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>) : ""
+                  }
+                  {
+                    isLoadMoreGroup ? <div style={{ height: "50px" }}><Loader type="small" /></div> : ""
+                  }
+                </div>
+              </TabPanel>
+              <TabPanel value={rankTabIndex} index={1} >
+                <div className="top-groups">
+                  {
+                    topGroups ? topGroups.map((item, key) => <div className="group-item" key={key} style={{ background: "url(" + item.backgroundimage + ")" }}>
+                      <div className="group-info">
+                        <Avatar aria-label="recipe" className="avatar">
+                          <img src={item.thumbnail} style={{ width: "100%" }} />
+                        </Avatar>
+                        <span className="group-name">{item.groupname}</span>
+                      </div>
+                      <span className="posted">{item.numpost} bài đăng</span>
+                      <div className="members-list">
+                        <span className="total">Thành viên: {item.nummember}</span>
+                        <div>
+                          {
+                            item.managers && item.managers.length > 0 ? <div className="member-avatar">
+                              {
+                                item.managers.map((manager, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
+                                  <img src={manager.avatar} style={{ width: "100%" }} />
+                                </Avatar>
+                                )
+                              }
+                              {
+                                item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
+                                  +{item.managers.length - 2}
+                                </Avatar> : ""
+                              }
+                            </div> : ""
+                          }
+                          {
+                            item.status == 0 ? <span className="action-bt sumit" onClick={() => component.setState({ currentGroupId: item.groupid, showJoinGroupConfirm: true, isJoiningGroup: true })}>
+                              Tham gia
+                           {
+                                joinGroupProccessingId == item.groupid ? <Loader type="small" /> : ""
+                              }
+                            </span> : ""
+                          }
+                          {
+                            item.status == 2 ? <span className="action-bt accepted" onClick={() => component.setState({ currentGroupId: item.groupid, showJoinGroupConfirm: true, isJoiningGroup: false })}>
+                              Chấp nhận
+                               {
+                                joinGroupProccessingId == item.groupid ? <Loader type="small" /> : ""
+                              }
+                            </span> : ""
+                          }
+                        </div>
+                      </div>
+                    </div>) : ""
+                  }
+                  {
+                    isLoadMoreGroup ? <div style={{ height: "50px" }}><Loader type="small" /></div> : ""
+                  }
+                </div>
+              </TabPanel>
+            </SwipeableViews>
+          </div>
+        </div>
+      </div>
+    </Drawer>
+  )
 }

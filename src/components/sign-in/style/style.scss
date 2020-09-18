@@ -82,3 +82,38 @@
   }
   
 }
+
+.reset-pass-drawer{
+  .sign-in-page{
+    > label{
+      font-family: Roboto-Medium;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 50px;
+      margin-top: 20px;
+      color: #444;
+    }
+    > span{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Roboto-Regular;
+      color: #666;
+    }
+    .sign-in-form{
+      padding:50px 20px;
+      box-sizing: border-box;
+      button{
+        margin-top: 10px;
+      }
+      .bt-cancel{
+        position: absolute;
+        bottom: 20px;
+        left: 25vw;
+        width: 50vw !important;
+      }
+    }
+  }
+}

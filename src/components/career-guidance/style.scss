@@ -43,6 +43,21 @@
             }
         }
     }
+    .footer-drawer{
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        button{
+            width: 60%;
+            background: #53a6dc;
+            color: #fff;
+            span{
+                text-transform: none;
+                font-family: Roboto-Medium;
+            }
+        }
+    }
 }
 
 .style-test-drawer{

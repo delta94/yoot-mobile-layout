@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { createStore, combineReducers, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
-import createHistory from "history/createBrowserHistory";
+import { createBrowserHistory } from "history";
 import {
     ConnectedRouter,
     routerReducer,
@@ -15,7 +15,7 @@ import App from "./app";
 const yootFull = require('./assets/images/yoot-full.png')
 const imgBg = require('./assets/images/img-bg.png')
 
-const history = createHistory();
+const history = createBrowserHistory();
 const middleware = routerMiddleware(history);
 const store = createStore(
     combineReducers({

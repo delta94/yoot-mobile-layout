@@ -7,19 +7,24 @@ export const Privacies = {
         label: "Công khai",
         icon: require('../assets/icon/group.png'),
         icon1: require('../assets/icon/group1.png'),
-        description: "Mọi người đều xem được"
+        description: "Mọi người đều xem được",
+        code: 2
     },
     Friend: {
         value: "Friend",
         label: "Bạn bè",
         icon: require('../assets/icon/Friend_celected.png'),
-        description: "Bạn bè của bạn trên YOOT"
+        icon1: require('../assets/icon/Friend.png'),
+        description: "Bạn bè của bạn trên YOOT",
+        code: 3
     },
     Private: {
         value: "private",
         label: "Chỉ mình tôi",
         icon: require('../assets/icon/Private_Selected.png'),
-        description: "Chỉ tôi mới xem được"
+        icon1: require('../assets/icon/Private.png'),
+        description: "Chỉ tôi mới xem được",
+        code: 4
     }
 }
 
@@ -38,3 +43,11 @@ export const GroupPrivacies = {
         description: "Chỉ tôi mới xem được"
     }
 }
+
+export const Dates = ["Ngày 1", "Ngày 2", "Ngày 3", "Ngày 4", "Ngày 5", "Ngày 6", "Ngày 7", "Ngày 8", "Ngày 9", "Ngày 10", "Ngày 11", "Ngày 12", "Ngày 13", "Ngày 14", "Ngày 15", "Ngày 16", "Ngày 17", "Ngày 18", "Ngày 19", "Ngày 20", "Ngày 21", "Ngày 22", "Ngày 23", "Ngày 24", "Ngày 25", "Ngày 26", "Ngày 27", "Ngày 28", "Ngày 29", "Ngày 30", "Ngày 31"]
+export const Mounths = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"]
+
+
+
+
+

@@ -1,5 +1,5 @@
-import { BASE_API } from "../constants/appSettings";
-import { ACCESS_TOKEN } from "../constants/localStorageKeys";
+import { COMUNITY_ACCESS_KEY, SKILL_ACCESS_KEY, CAREER_GUIDANCE_ACCESS_KEY } from "../constants/localStorageKeys";
+import { SOCIAL_NET_WORK_API, SCHOOL_API, BUILD_YS_API, SYSTEM_API } from "../constants/appSettings"
 import { showError, showInfo } from "../utils/app";
 import { signOut } from "../auth";
 import $ from 'jquery'
@@ -9,32 +9,54 @@ const defaultHeaders = {
   Accept: "application/json"
 };
 
-export async function getAsync(endpoint, successCallback, errorCallback, hideLoader) {
-  return myFetchAsync("GET", endpoint, undefined, successCallback, errorCallback, hideLoader);
+export async function getAsync(endpoint, successCallback, errorCallback) {
+  return myFetchAsync("GET", endpoint, undefined, successCallback, errorCallback);
 }
 
-export function get(endpoint, successCallback, errorCallback, hideLoader) {
-  myFetch("GET", endpoint, undefined, successCallback, errorCallback, hideLoader);
+export function get(api, endpoint, successCallback, errorCallback) {
+  myFetch("GET", endpoint, undefined, successCallback, errorCallback, api);
 }
 
-export function post(endpoint, body, successCallback, errorCallback, hideLoader) {
-  myFetch("POST", endpoint, body, successCallback, errorCallback, hideLoader);
+export function post(api, endpoint, body, successCallback, errorCallback) {
+  myFetch("POST", endpoint, body, successCallback, errorCallback, api);
 }
 
-export function put(endpoint, body, successCallback, errorCallback, hideLoader) {
-  myFetch("PUT", endpoint, body, successCallback, errorCallback, hideLoader);
+export function put(api, endpoint, body, successCallback, errorCallback) {
+  myFetch("PUT", endpoint, body, successCallback, errorCallback, api);
 }
-export function _delete(endpoint, body, successCallback, errorCallback, hideLoader) {
-  myFetch("DELETE", endpoint, body, successCallback, errorCallback, hideLoader);
+export function _delete(api, endpoint, body, successCallback, errorCallback) {
+  myFetch("DELETE", endpoint, body, successCallback, errorCallback, api);
 }
-export function postFormData(endpoint, data, successCallback, errorCallback) {
-  let url = BASE_API + "api/" + endpoint;
+export function postFormData(api, endpoint, data, successCallback, errorCallback) {
+  let url = api + "api/" + endpoint;
+
+  let ACCESS_TOKEN = null;
+
+  switch (api) {
+    case SOCIAL_NET_WORK_API: {
+      ACCESS_TOKEN = window.localStorage.getItem(COMUNITY_ACCESS_KEY);
+      break
+    }
+    case SCHOOL_API: {
+      ACCESS_TOKEN = window.localStorage.getItem(SKILL_ACCESS_KEY);
+      break
+    }
+    case SYSTEM_API: {
+      ACCESS_TOKEN = "Geso@Key!SNet#Admin2020";
+      break
+    }
+    case BUILD_YS_API: {
+      ACCESS_TOKEN = window.localStorage.getItem(CAREER_GUIDANCE_ACCESS_KEY);
+      break
+    }
+    default: break
+  }
 
   let response = fetch(url, {
     method: "POST",
     headers: {
       Accept: "application/json",
-      Authorization: "bearer " + window.localStorage.getItem(ACCESS_TOKEN)
+      Authorization: ACCESS_TOKEN
     },
     body: data
   });
@@ -42,9 +64,9 @@ export function postFormData(endpoint, data, successCallback, errorCallback) {
   handleResponse(response, successCallback, errorCallback, endpoint);
 }
 
-function myFetch(method, endpoint, body, successCallback, errorCallback, hideLoader) {
+function myFetch(method, endpoint, body, successCallback, errorCallback, api) {
 
-  const response = myFetchAsync(method, endpoint, body, successCallback, errorCallback, hideLoader)
+  const response = myFetchAsync(method, endpoint, body, successCallback, errorCallback, api)
 
   handleResponse(response, successCallback, errorCallback, endpoint);
 }
@@ -52,19 +74,40 @@ function myFetch(method, endpoint, body, successCallback, errorCallback, hideLoa
 
 var proccess = []
 
-function myFetchAsync(method, endpoint, body, successCallback, errorCallback, hideLoader) {
-  let url = BASE_API + "api/" + endpoint;
+function myFetchAsync(method, endpoint, body, successCallback, errorCallback, api) {
+
+  let url = api + "api/" + endpoint;
+  if (api == SYSTEM_API) url = SOCIAL_NET_WORK_API + "api/" + endpoint;
 
   body = JSON.stringify(body);
 
   proccess.push(endpoint)
 
-  if (!hideLoader)
-    $("#proccess").removeClass("hide")
-
   let headers = defaultHeaders;
-  headers["Authorization"] =
-    "bearer " + window.localStorage.getItem(ACCESS_TOKEN);
+
+  let ACCESS_TOKEN = null;
+
+  switch (api) {
+    case SOCIAL_NET_WORK_API: {
+      ACCESS_TOKEN = window.localStorage.getItem(COMUNITY_ACCESS_KEY);
+      break
+    }
+    case SCHOOL_API: {
+      ACCESS_TOKEN = window.localStorage.getItem(SKILL_ACCESS_KEY);
+      break
+    }
+    case SYSTEM_API: {
+      ACCESS_TOKEN = "Geso@Key!SNet#Admin2020";
+      break
+    }
+    case BUILD_YS_API: {
+      ACCESS_TOKEN = window.localStorage.getItem(CAREER_GUIDANCE_ACCESS_KEY);
+      break
+    }
+    default: break
+  }
+
+  headers["Authorization"] = ACCESS_TOKEN;
 
   let response = null;
 
