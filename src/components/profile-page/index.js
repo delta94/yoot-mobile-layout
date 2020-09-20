@@ -1003,8 +1003,15 @@ const renderUpdateAvatarReviewDrawer = (component) => {
         <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
           <div className="post-content">
             <MultiInput
+              useHashtags={true}
+              useMentions={true}
               placeholder="Nhập nội dung"
-              onChange={(value) => component.setState({ postContent: value })} />
+              onChange={(value) => component.setState({ postContent: value })} 
+              userOptions={[
+                {fullname : 'User 1'},
+                {fullname : 'User 2'},
+                {fullname : 'User 3'}
+              ]}/>
           </div>
           <div className="profile-page" >
             <div className="cover-img" style={{ background: "url(" + profile.avatar + ")" }}>

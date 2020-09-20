@@ -18,3 +18,28 @@
     color: rgba(0,0,0,0.4)
   }
 }
+#mention-options{
+  width: 75%;
+  box-shadow: 1px;
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  position: absolute;
+  z-index: 999;
+  background: white;
+  p{
+    border-bottom: 1px solid #ededed;
+    padding: 10px;
+    margin: 0;
+    &:hover{
+      background: #ededed;
+      &:first-child{
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+      }
+      &:last-child {
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+    }
+  }
+}
