@@ -1,6 +1,8 @@
+import React from 'react';
 import moment from "moment";
 import { DATETIME_FORMAT, DATE_FORMAT } from "../constants/appSettings";
 import { confirmAlert } from 'react-confirm-alert'
+import NumberFormat from 'react-number-format';
 
 export const jsonFromUrlParams = search => {
   if (!search) return {};
@@ -120,4 +122,25 @@ export const getDate = () => {
   var date = now.utcOffset('+7').toDate();
 
   return date;
+}
+
+export const NumberFormatCustom = (props) => {
+  const { inputRef, onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={inputRef}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      isNumericString
+      format="#### ### #####"
+    />
+  );
 }

@@ -26,6 +26,7 @@ import { setUserProfile } from '../../actions/user'
 import Loader from '../common/loader'
 import moment from 'moment'
 import { connect } from 'react-redux'
+import {NumberFormatCustom} from '../../utils/common'
 
 const logo = require('../../assets/images/yoot-full.png')
 const bgImg = require('../../assets/images/Bg-img.png')
@@ -254,7 +255,7 @@ class Index extends React.Component {
       registerName,
       registerEmail,
       registerBirthDay,
-      isAcceptTerms
+      isAcceptTerms,
     } = this.state
 
     return (
@@ -290,7 +291,9 @@ class Index extends React.Component {
                     width: "100%",
                     marginBottom: "10px"
                   }}
-                  tyle={"number"}
+                  InputProps={{
+                    inputComponent: NumberFormatCustom,
+                  }}
                   value={loginPhoneNumber}
                   onChange={e => this.setState({ loginPhoneNumber: e.target.value.length < 11 ? e.target.value : loginPhoneNumber })}
                 />
@@ -338,8 +341,10 @@ class Index extends React.Component {
                       width: "100%",
                       marginBottom: "10px"
                     }}
-                    type={"number"}
                     value={registerPhoneNumber}
+                    InputProps={{
+                      inputComponent: NumberFormatCustom,
+                    }}
                     onChange={e => this.setState({ registerPhoneNumber: e.target.value.length < 11 ? e.target.value : registerPhoneNumber })}
                   />
                   <TextField
