@@ -8,11 +8,20 @@
         background-size: cover !important;
         background-position: 50% 50% !important;
         background-repeat: no-repeat !important;
+        .overlay{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: 1;
+        }
         > div{
             width: fit-content;
             position: absolute;
             bottom: 10px;
             right: 10px;
+            z-index: 10;
         }
         input{
             display: none !important;
@@ -30,11 +39,20 @@
         background-size: cover !important;
         background-position: 50% 50% !important;
         position: relative;
+        .overlay{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: 1;
+        }
         > div{
             width: fit-content;
             position: absolute;
             bottom: -5px;
             right: -5px;
+            z-index: 10;
         }
         input{
             display: none !important;
@@ -178,20 +196,31 @@
             display: grid;
             grid-template-columns: repeat(3,1fr);
             margin-top: 10px;
+            width: calc(100vw - 20px);
+            grid-column-gap: 10px;
             .friend-item{
                 .avatar{
-                    width: 30vw;
-                    height: 30vw;
-                    background-size: cover !important;
-                    background-position: 50% 50% !important;
-                    background-repeat: no-repeat !important;
+                    width: calc((100vw - 40px)/3);
+                    height: calc((100vw - 40px)/3);
                     border: none;
-                    border-radius: 5px;
+                    border-radius: 20px;
+                    overflow: hidden;
+                    background: rgba(0,0,0,0.07);
+                    > div{
+                        width: 100%;
+                        height: 100%;
+                        background-size: cover !important;
+                        background-position: 50% 50% !important;
+                        background-repeat: no-repeat !important;
+                        border: none;
+                    }
                 }
                 .name{
                     font-family: Roboto-Medium;
                     margin-top: 10px;
-                    display: inline-block
+                    display: inline-block;
+                    width: 100%;
+                    text-align: center;
                 }
                 .mutual-friend-count{
                     display: flex;
@@ -408,6 +437,7 @@
                         margin-right: 5px;
                         background: #f44645;
                         font-family: Roboto-Regular;
+                        margin-bottom: 5px;
                         span{
                             color: #fff;
                         }
@@ -448,10 +478,10 @@
                 align-items: flex-start;
                 position: relative;
                 > img{
-                    width: 30px;
+                    width: 20px;
                 }
                 > div{
-                    margin-left: 10px;
+                    margin-left: 20px;
                     max-width: 70%;
                     label{
                         font-family: Roboto-Medium;
@@ -723,10 +753,11 @@
     }
 }
 .cropper-drawer{
-    
+    background: #0e1013 !important;
     .drawer-detail{
         display: grid;
         grid-template-rows: auto min-content;
+        height: 80vh;
         > div{
             background: #0e1013 !important;
         }
@@ -740,7 +771,7 @@
                 width: 100%;
                 text-align: center;
                 color: rgba(255,255,255,0.8);
-                
+                padding-top: 10px;
             }
             > div{
                 display: flex;
@@ -757,6 +788,33 @@
                     }
                 }
             }
+        }
+    }
+}
+.congraduate-select{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    .input-field{
+        > div{
+            padding-right: 25px;
+            border: 1px solid rgba(0,0,0,0.15);
+            border-radius: 7px;
+        }
+    }
+}
+.privacy-select{
+    > button{
+        background: rgba(0,0,0,0.05);
+        border-radius: 7px;
+        padding: 8px 15px;
+        img{
+            width: 20px;
+            margin-right: 10px;
+        }
+        svg{
+            width: 20px;
         }
     }
 }

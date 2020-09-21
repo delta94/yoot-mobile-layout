@@ -4,7 +4,10 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 50px;
+        width: 100%;
+        ul{
+            width: 100%;
+        }
         >span{
             font-family: Roboto-Regular;
             color: #555;

@@ -17,7 +17,7 @@ import {
 } from '@material-ui/icons'
 import moment from 'moment'
 import { SOCIAL_NET_WORK_API } from '../../constants/appSettings';
-import { Dates, Mounths, Privacies } from '../../constants/constants'
+import { Dates, Months, Privacies } from '../../constants/constants'
 import { get, post } from '../../api';
 import { showNotification, objToArray } from '../../utils/common';
 import {
@@ -71,7 +71,10 @@ export class Index extends React.Component {
             dateOfBirthPrivacy: PrivaciesOptions.find(item => item.code == defaultDateOfBirthPrivacy),
             yearOfBirthPrivacy: PrivaciesOptions.find(item => item.code == defaultYearOfBirthPrivacy),
             genderPrivacy: PrivaciesOptions.find(item => item.code == defaultGenderPrivacy)
-        })
+
+        }, () => this.setState({
+            defaultState: this.state
+        }))
     }
 
     updateProfile() {
@@ -151,6 +154,18 @@ export class Index extends React.Component {
         })
     }
 
+    handleClose() {
+        if (Object.entries(this.state).toString() != Object.entries(this.state.defaultState).toString()) {
+            this.setState({
+                showCloseConfim: true
+            })
+        } else {
+            this.setState({
+                showUpdateForm: false
+            })
+        }
+    }
+
     componentDidMount() {
         this._handleSetDefault()
     }
@@ -209,7 +224,7 @@ export class Index extends React.Component {
 
                 <Drawer anchor="bottom" className="drawer-form" open={showUpdateForm} onClose={() => this.setState({ showUpdateForm: false })}>
                     <div className="form-header">
-                        <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => this.setState({ showUpdateForm: false })}>
+                        <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => this.handleClose()}>
                             <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
                         </IconButton>
                         <label>Cập nhật thông tin cá nhân</label>
@@ -218,6 +233,7 @@ export class Index extends React.Component {
                         <div className='input-field'>
                             <label>Tên <span className="red">(*)</span></label>
                             <TextField
+                                className="custom-input"
                                 variant="outlined"
                                 placeholder="Nhập tên"
                                 style={{
@@ -231,6 +247,7 @@ export class Index extends React.Component {
                         <div className='input-field'>
                             <label>Email <span className="red">(*)</span></label>
                             <TextField
+                                className="custom-input"
                                 variant="outlined"
                                 placeholder="Nhập email"
                                 style={{
@@ -269,6 +286,7 @@ export class Index extends React.Component {
                                 </Menu>
                             </label>
                             <TextField
+                                className="custom-input"
                                 variant="outlined"
                                 placeholder="Nhập địa chỉ"
                                 style={{
@@ -326,7 +344,7 @@ export class Index extends React.Component {
                                             onChange={(e) => this.setState({ mounthOfBirth: e.target.value })}
                                         >
                                             {
-                                                Mounths.map((month, index) => <option key={index} value={index + 1}>{month}</option>)
+                                                Months.map((month, index) => <option key={index} value={index + 1}>{month}</option>)
                                             }
                                         </NativeSelect>
                                     </FormControl>
@@ -361,6 +379,7 @@ export class Index extends React.Component {
                                 </label>
                                 <div>
                                     <TextField
+                                        className="custom-input"
                                         variant="outlined"
                                         placeholder="Nhập năm sinh"
                                         value={yearOfBirth}
@@ -412,6 +431,9 @@ export class Index extends React.Component {
                         }
                     </div>
                 </Drawer>
+                {
+                    renderCloseForm(this)
+                }
             </div>
         )
     }
@@ -428,3 +450,22 @@ export default connect(
     null,
     mapDispatchToProps
 )(Index);
+
+
+const renderCloseForm = (component) => {
+    let {
+        showCloseConfim,
+    } = component.state
+    return (
+        <Drawer anchor="bottom" className="confirm-drawer" open={showCloseConfim} onClose={() => component.setState({ showCloseConfim: false })}>
+            <div className='jon-group-confirm'>
+                <label>Bạn muốn rời khỏi trang này?</label>
+                <p>Những thông tin vừa thay đổi vẫn chưa được lưu.</p>
+                <div className="mt20">
+                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false })}>Đồng ý rời khỏi</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại thay đổi</Button>
+                </div>
+            </div>
+        </Drawer>
+    )
+}

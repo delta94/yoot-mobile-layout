@@ -110,7 +110,7 @@ function myFetchAsync(method, endpoint, body, successCallback, errorCallback, ap
   headers["Authorization"] = ACCESS_TOKEN;
 
   let response = null;
-
+  if (method == "OPTIONS") return
   if (body === undefined)
     response = fetch(url, {
       method: method,

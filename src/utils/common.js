@@ -144,3 +144,27 @@ export const NumberFormatCustom = (props) => {
     />
   );
 }
+export const fromNow = (date = moment().now(), now) => {
+  if (moment(now).dayOfYear() - moment(date).dayOfYear() < 4 && moment(now).dayOfYear() - moment(date).dayOfYear() > -100) {
+    let result = moment(date).from(moment(now))
+    if (result.indexOf('a few seconds') >= 0 || result.indexOf('in a minute') >= 0) {
+      return 'Vài giây trước';
+    }
+    if (result.indexOf('AM') >= 0 || result.indexOf('Am') >= 0 || result.indexOf('am') >= 0) {
+      return 'sa';
+    }
+    if (result.indexOf('PM') >= 0 || result.indexOf('Pm') >= 0 || result.indexOf('pm') >= 0) {
+      return 'ch';
+    }
+    if (result.indexOf('a minute ago') >= 0) return result.replace('a minute ago', '1 phút trước');
+    if (result.indexOf('minutes ago') >= 0) return result.replace('minutes ago', 'phút trước');
+    if (result.indexOf('an hour ago') >= 0) return result.replace('an hour ago', '1 giờ trước');
+    if (result.indexOf('hours ago') >= 0) return result.replace('hours ago', 'giờ trước');
+    if (result.indexOf('months ago') >= 0) return result.replace('months ago', 'tháng trước');
+    if (result.indexOf('a day ago') >= 0) return result.replace('a day ago', 'hôm qua');
+
+    if (parseInt(result.split('days ago')[0]) <= 5) return result.replace('days ago', 'ngày trước');
+  }
+  // return result
+  return moment(date).format('DD/MM/YYYY HH:mm');
+};

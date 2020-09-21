@@ -445,6 +445,7 @@ const renderCommentDrawer = (component) => {
           </div>
         </div>
         <TextField
+          className="custom-input"
           className="comment-input"
           variant="outlined"
           placeholder="Viết bình luận"
@@ -493,6 +494,7 @@ const renderShareDrawer = (component) => {
         <div className="drawer-content" style={{ overflow: "scroll" }}>
           <label>Bản tin</label>
           <TextField
+            className="custom-input"
             variant="outlined"
             placeholder="Bạn viết gì đi..."
             style={{

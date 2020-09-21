@@ -168,6 +168,7 @@ const renderSearchGroupDrawer = (component) => {
         </div>
         <div className="filter">
           <TextField
+            className="custom-input"
             variant="outlined"
             placeholder="Nhập tên nhóm để tìm"
             className="search-box"

@@ -12,6 +12,16 @@ import {
     PlayArrow as PlayArrowIcon,
     MoreHoriz as MoreHorizIcon,
 } from '@material-ui/icons'
+import { get, post } from '../../api';
+import { SCHOOL_API, SOCIAL_NET_WORK_API } from '../../constants/appSettings';
+import {
+    setUserProfile,
+    getFolowedMe,
+    getMeFolowing
+} from '../../actions/user'
+import { showNotification } from '../../utils/common';
+import { connect } from 'react-redux'
+import Loader from '../common/loader'
 
 export class Index extends React.Component {
 
@@ -23,75 +33,181 @@ export class Index extends React.Component {
             showUpdateForm: false,
             hoppies: "",
             otherSkill: "",
-            skillList: [
-                {
-                    value: 1,
-                    label: "Lãnh đạo"
-                },
-                {
-                    value: 2,
-                    label: "Quản lý thời gian"
-                },
-                {
-                    value: 3,
-                    label: "Quản lý dự án"
-                },
-                {
-                    value: 4,
-                    label: "Ra quyết định"
-                },
-                {
-                    value: 5,
-                    label: "Làm việc nhóm"
-                },
-                {
-                    value: 6,
-                    label: "Quản lý stress"
-                },
-                {
-                    value: 7,
-                    label: "Giải quyết vấn đề"
-                },
-                {
-                    value: 8,
-                    label: "Quản lý sáng tạo"
-                },
-                {
-                    value: 9,
-                    label: "Học hiệu quả"
-                },
-                {
-                    value: 10,
-                    label: "Quản lý chiến lược"
-                }
-            ]
+            skills: [],
+            isProcessing: false
         };
     }
 
     componentDidMount() {
+        this.handleGetSkills()
+    }
+
+    handleGetSkills() {
+        get(SCHOOL_API, "Course/getSkills", result => {
+            if (result.StatusCode == 1) {
+                this.setState({
+                    skills: result.Data
+                })
+            }
+        })
     }
 
     handleSelect(skill) {
         let {
-            skillList
+            skills
         } = this.state
-        skillList.map(item => {
-            if (item.value == skill.value)
+        skills.map(item => {
+            if (item.ID == skill.ID)
                 item.isChecked = item.isChecked ? !item.isChecked : true
         })
         this.setState({
-            skillList
+            skills,
+            isChange: true
         })
     }
+
+    handleSetDefault() {
+        let {
+            data
+        } = this.props
+        let {
+            skills
+        } = this.state
+        if (!data) return
+
+        skills.map(item => {
+            let existSkill = data.userSkill.find(e => e.skill_fk == item.ID)
+            if (existSkill) {
+                item.isChecked = true
+            } else {
+                item.isChecked = false
+            }
+        })
+
+        this.setState({
+            hoppies: data.likes,
+            otherSkill: data.special,
+            skills: skills
+        })
+    }
+
+    handleUpdate() {
+        let {
+            skills,
+            hoppies,
+            otherSkill
+        } = this.state
+        let skillsForUpdate = skills.filter(skill => skill.isChecked == true)
+        let updateFinishCount = 0
+        let skillParam = []
+        this.setState({
+            isProcessing: true
+        })
+
+        skillsForUpdate.map(skill => {
+            skillParam.push({
+                userid: 0,
+                skill_fk: skill.ID
+            })
+        })
+        post(SOCIAL_NET_WORK_API, "User/UpdateUserSkill", skillParam, () => {
+            if (updateFinishCount > 0) {
+                this.setState({
+                    isProcessing: false,
+                    showUpdateForm: false
+                })
+                this.getProfile()
+            } else {
+                updateFinishCount += 1;
+            }
+        })
+        let favoriteParam = {
+            likes: hoppies,
+            special: otherSkill
+        }
+        post(SOCIAL_NET_WORK_API, "User/UpdateUserFavorite", favoriteParam, () => {
+            if (updateFinishCount > 0) {
+                this.setState({
+                    isProcessing: false,
+                    showUpdateForm: false
+                })
+                this.getProfile()
+            } else {
+                updateFinishCount += 1;
+            }
+        })
+    }
+
+    getProfile() {
+        get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
+            if (result.result == 1) {
+                this.props.setUserProfile(result.content.user)
+                this.props.getFolowedMe(0)
+                this.props.getMeFolowing(0)
+                this.setState({ isUpdatePreccessing: false })
+            } else {
+                showNotification("", <span className="app-noti-message">{result.message}</span>, null)
+            }
+
+        })
+    }
+
+    handleDelete() {
+
+        let updateFinishCount = 0
+
+        this.setState({ isProcessing: true })
+
+        post(SOCIAL_NET_WORK_API, "User/UpdateUserSkill", [], () => {
+            if (updateFinishCount > 0) {
+                this.setState({
+                    isProcessing: false,
+                    showDeleteConfirm: false
+                })
+                this.getProfile()
+            } else {
+                updateFinishCount += 1;
+            }
+        })
+        let favoriteParam = {
+            likes: "",
+            special: ""
+        }
+        post(SOCIAL_NET_WORK_API, "User/UpdateUserFavorite", favoriteParam, () => {
+            if (updateFinishCount > 0) {
+                this.setState({
+                    isProcessing: false,
+                    showDeleteConfirm: false
+                })
+                this.getProfile()
+            } else {
+                updateFinishCount += 1;
+            }
+        })
+    }
+
+    handleClose() {
+        if (this.state.isChange) {
+            this.setState({
+                showCloseConfim: true
+            })
+        } else {
+            this.setState({
+                showUpdateForm: false
+            })
+        }
+    }
+
 
     render() {
         let {
             anchor,
             showLocalMenu,
             showUpdateForm,
-            skillList,
             hoppies,
-            otherSkill
+            otherSkill,
+            skills,
+            isProcessing
         } = this.state
         let {
             data
@@ -106,11 +222,11 @@ export class Index extends React.Component {
                     <li>
                         <label>Kỹ năng</label>
                         {
-                            data.skills ? <ul className="skills">
+                            data.userSkill ? <ul className="skills">
                                 {
-                                    data.skills.map((item, index) => <li key={index} className="skill"><span>
+                                    data.userSkill.map((item, index) => <li key={index} className="skill"><span>
                                         {
-                                            item
+                                            item.skill_name
                                         }
                                     </span></li>)
                                 }
@@ -119,15 +235,15 @@ export class Index extends React.Component {
                         }
                     </li>
                     <li>
-                        <label>Sở thích</label>
+                        <label style={{ display: "inline-block", width: "100%" }}>Sở thích</label>
                         {
-                            data.hopies ? <span>{data.hopies}</span> : ""
+                            data.likes ? <span>{data.likes}</span> : ""
                         }
                     </li>
                     <li>
-                        <label>Kỹ năng đặc biệt / tài lẻ</label>
+                        <label style={{ display: "inline-block", width: "100%" }}>Kỹ năng đặc biệt / tài lẻ</label>
                         {
-                            data.orderSkills ? <span>{data.orderSkills}</span> : ""
+                            data.special ? <span>{data.special}</span> : ""
                         }
                     </li>
                 </ul>
@@ -141,12 +257,14 @@ export class Index extends React.Component {
                     open={showLocalMenu}
                     onClose={() => this.setState({ showLocalMenu: false })}
                 >
-                    <MenuItem onClick={() => this.setState({ showLocalMenu: false, showUpdateForm: true })}>Chỉnh sửa</MenuItem>
-                    <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Xoá</MenuItem>
+                    <MenuItem onClick={() => this.setState({ showLocalMenu: false, showUpdateForm: true }, () => {
+                        this.handleSetDefault()
+                    })}>Chỉnh sửa</MenuItem>
+                    <MenuItem onClick={() => this.setState({ showLocalMenu: false, showDeleteConfirm: true })}>Xoá</MenuItem>
                 </Menu>
                 <Drawer anchor="bottom" className="drawer-form update-skill" open={showUpdateForm} onClose={() => this.setState({ showUpdateForm: false })}>
                     <div className="form-header">
-                        <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => this.setState({ showUpdateForm: false })}>
+                        <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => this.handleClose()}>
                             <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
                         </IconButton>
                         <label>Kỹ năng và sở trường</label>
@@ -160,8 +278,8 @@ export class Index extends React.Component {
                             <label>Kỹ năng</label>
                             <ul>
                                 {
-                                    skillList.map((item, index) => <li key={index} className={item.isChecked ? "active" : ""}>
-                                        <Button onClick={() => this.handleSelect(item)}>{item.label}</Button>
+                                    skills.map((item, index) => <li key={index} className={item.isChecked ? "active" : ""}>
+                                        <Button onClick={() => this.handleSelect(item)}>{item.NAME}</Button>
                                     </li>)
                                 }
                             </ul>
@@ -169,6 +287,7 @@ export class Index extends React.Component {
                         <div className="skill">
                             <label>Sở thích</label>
                             <TextField
+                                className="custom-input"
                                 variant="outlined"
                                 placeholder="Nhập sở thích của bạn"
                                 style={{
@@ -177,12 +296,13 @@ export class Index extends React.Component {
                                 }}
                                 multiline
                                 value={hoppies}
-                                onChange={e => this.setState({ hoppies: e.target.value })}
+                                onChange={e => this.setState({ hoppies: e.target.value, isChange: true })}
                             />
                         </div>
                         <div className="skill" style={{ border: "none" }}>
                             <label>Kỹ năng đặc biệt / Tài lẻ</label>
                             <TextField
+                                className="custom-input"
                                 variant="outlined"
                                 placeholder="Nhập thông tin"
                                 style={{
@@ -191,18 +311,77 @@ export class Index extends React.Component {
                                 }}
                                 multiline
                                 value={otherSkill}
-                                onChange={e => this.setState({ otherSkill: e.target.value })}
+                                onChange={e => this.setState({ otherSkill: e.target.value, isChange: true })}
                             />
                         </div>
-                        <Button variant="contained" className={"bt-submit"}>Lưu thông tin</Button>
+                        <Button variant="contained" className={"bt-submit"} onClick={() => this.handleUpdate()}>Lưu thông tin</Button>
                     </div>
+                    {
+                        isProcessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+                    }
                 </Drawer>
+                {
+                    renderDeleteConfirm(this)
+                }
+                {
+                    renderCloseForm(this)
+                }
             </div>
         )
     }
 }
-export default Index
+const mapDispatchToProps = dispatch => ({
+    setUserProfile: (user) => dispatch(setUserProfile(user)),
+    getFolowedMe: (currentpage) => dispatch(getFolowedMe(currentpage)),
+    getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage))
+});
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(Index);
+
+const renderDeleteConfirm = (component) => {
+    let {
+        showDeleteConfirm,
+        isProcessing
+    } = component.state
+    return (
+        <Drawer anchor="bottom" className="confirm-drawer" open={showDeleteConfirm} onClose={() => component.setState({ showDeleteConfirm: false })}>
+            <div className='jon-group-confirm'>
+                <label>Xoá thông tin sở trường.</label>
+                <p>Bạn có chắc chắn muốn xoá thông tin này không?</p>
+                <div className="mt20">
+                    <Button className="bt-cancel" onClick={() => component.setState({ showDeleteConfirm: false })}>Huỷ</Button>
+                    <Button className="bt-submit" onClick={() => component.handleDelete()}>
+                        Xoá
+                    </Button>
+                </div>
+            </div>
+            {
+                isProcessing ? <Loader type="dask-mode small" isFullScreen={false} /> : ""
+            }
+        </Drawer>
+    )
+}
 
 
 
+const renderCloseForm = (component) => {
+    let {
+        showCloseConfim,
+    } = component.state
+    return (
+        <Drawer anchor="bottom" className="confirm-drawer" open={showCloseConfim} onClose={() => component.setState({ showCloseConfim: false })}>
+            <div className='jon-group-confirm'>
+                <label>Bạn muốn rời khỏi trang này?</label>
+                <p>Những thông tin vừa thay đổi vẫn chưa được lưu.</p>
+                <div className="mt20">
+                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false, isChange: false })}>Đồng ý rời khỏi</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại thay đổi</Button>
+                </div>
+            </div>
+        </Drawer>
+    )
+}
 
