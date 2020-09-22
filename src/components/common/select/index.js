@@ -88,6 +88,7 @@ class Index extends React.Component {
                         <label>{title ? title : ""}</label>
                         {
                             searchable ? <TextField
+                                className="custom-input"
                                 variant="outlined"
                                 placeholder="Tìm kiếm"
                                 style={{

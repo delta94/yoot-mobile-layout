@@ -10,11 +10,6 @@ export class Loader extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // crop: {
-            //     unit: '%',
-            //     width: 100,
-            //     aspect: 16 / 16,
-            // },
         };
     }
 
@@ -120,6 +115,7 @@ export class Loader extends React.Component {
                     onImageLoaded={this.onImageLoaded}
                     onComplete={this.onCropComplete}
                     onChange={this.onCropChange}
+                    keepSelection={true}
                 />
             </div>
         )

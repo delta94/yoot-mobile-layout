@@ -146,9 +146,6 @@ select:focus{
 textarea{
     font-size: 16px !important;
 }
-input[type="password"]{
-    margin-left: -18px;
-}
 .red{
     color: #ff5a5a;
 }
@@ -257,6 +254,25 @@ input{
         }
     }
 }
+.bt-confirm{
+    width: 100% !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    min-height: 30px !important;
+    background: #5abdff !important;
+    > span{
+        text-transform: none !important;
+        color: #fff !important;
+    }
+    &.outline{
+        background: #fff !important;
+        // border: 1px solid #ff5a5a !important;
+        box-shadow: 0px 0px 2px #ff5a5a !important;
+        > span{
+            color: #5abdff !important;
+        }
+    }
+}
 .bt-cancel{
     width: 100% !important;
     border-radius: 6px !important;
@@ -309,6 +325,11 @@ fieldset{
     }
 }
 
+button,
+span,
+div{
+    outline: none !important;
+}
 
 .input-field{
     &.inline{
@@ -422,6 +443,7 @@ fieldset{
     font-size: 1.2rem;
     margin-top: 20px;
     display: inline-block;
+    padding: 0px 15px;
 }
 .confirm-drawer{
     display: flex;
@@ -516,6 +538,14 @@ fieldset{
                     text-align: center;
                 }
             }
+        }
+    }
+}
+.custom-input{
+    > div{
+        > div:nth-child(3){
+            position: absolute;
+            right: 0px;
         }
     }
 }

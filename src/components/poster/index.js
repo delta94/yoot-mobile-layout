@@ -324,6 +324,7 @@ const renderPostDrawer = (component) => {
                 </div>
                 <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
                     <TextField
+                        className="custom-input"
                         variant="outlined"
                         placeholder="Bạn viết gì đi..."
                         style={{
@@ -559,6 +560,7 @@ const renderCreateAlbumDrawer = (component) => {
                 <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
                     <label>Tên album</label>
                     <TextField
+                        className="custom-input"
                         variant="outlined"
                         placeholder="Tên album"
                         style={{
@@ -567,6 +569,7 @@ const renderCreateAlbumDrawer = (component) => {
                         }}
                     />
                     <TextField
+                        className="custom-input"
                         variant="outlined"
                         placeholder="Mô tả album"
                         style={{
@@ -657,6 +660,7 @@ const renderTagFriendDrawer = (component) => {
                 </div>
                 <div className="filter">
                     <TextField
+                        className="custom-input"
                         variant="outlined"
                         placeholder="Nhập tên bạn bè để tìm kiếm"
                         className="search-box"
@@ -728,6 +732,7 @@ const renderGroupForPostDrawer = (component) => {
                 </div>
                 <div className="filter">
                     <TextField
+                        className="custom-input"
                         variant="outlined"
                         placeholder="Nhập tên nhóm để tìm"
                         className="search-box"

@@ -14,7 +14,7 @@ import {
   toggleFooter,
   setMediaToViewer,
   toggleMediaViewerDrawer,
-  toggleUserPageDrawer
+  toggleUserPageDrawer,
 } from '../../actions/app'
 import {
   setUserProfile,
@@ -56,12 +56,13 @@ import Hoppies from './hoppies'
 import SwipeableViews from 'react-swipeable-views';
 import Dropzone from 'react-dropzone'
 import MultiInput from '../common/multi-input'
-import ReactCrop from 'react-image-crop';
+import Loader from '../common/loader'
 import 'react-image-crop/lib/ReactCrop.scss';
 import Cropper from '../common/cropper'
-import { postFormData, get } from "../../api";
+import { postFormData, get, post } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
-import { showNotification } from "../../utils/common";
+import { showNotification, objToQuery, jsonFromUrlParams } from "../../utils/common";
+import { signIn } from '../../auth'
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/Profile.png')
@@ -101,15 +102,22 @@ class Index extends React.Component {
       mediaTabIndex: 1,
       openUploadAvatarReview: false,
       openCropperDrawer: false,
+      isProccessing: false,
+      historyPointCurrentPage: 0,
+      oldPassForChange: "",
+      newPassForChange: "",
+      confirmPassForChange: "",
+      numOfFriend: 0,
       crop: {
         unit: '%',
         width: 100,
-        aspect: 16 / 16,
+        height: 100
+        // aspect: 16 / 16,
       },
     };
   }
 
-  onSelectFile = files => {
+  onSelectAvatarFile = files => {
     this.setState({
       rootAvatarToUpload: files[0]
     })
@@ -126,46 +134,130 @@ class Index extends React.Component {
     }
   };
 
+
+
   updateAvatar() {
     let {
       avatarToUpload,
-      rootAvatarToUpload
+      rootAvatarToUpload,
+      isProccessing,
+      postContent
     } = this.state
     var fr = new FileReader;
+    let that = this
+    if (isProccessing == true) return
+    this.setState({
+      isProccessing: true
+    })
     fr.onload = function () {
       var img = new Image;
       img.onload = function () {
+
         const formData = new FormData();
 
-        let avatarFileToUpload = new File(
-          [avatarToUpload.file],
-          avatarToUpload.file.name,
-          {
-            type: avatarToUpload.file.type,
-            lastModified: new Date
-          }
-        )
+        if (avatarToUpload) {
+          let avatarFileToUpload = new File(
+            [avatarToUpload.file],
+            avatarToUpload.file.name,
+            {
+              type: avatarToUpload.file.type,
+              lastModified: new Date,
+              part: avatarToUpload.file.name
+            }
+          )
+          formData.append("image_1_" + avatarToUpload.width + "_" + avatarToUpload.height, avatarFileToUpload)
+        } else {
+          formData.append("image_1_" + img.width + "_" + img.height, rootAvatarToUpload)
+        }
 
-
-        console.log("rootAvatarToUpload", rootAvatarToUpload)
-        console.log("avatarToUpload", avatarFileToUpload)
-
-        formData.append("content", "")
+        formData.append("content", postContent)
         formData.append("imageroot_0_" + img.width + "_" + img.height, rootAvatarToUpload)
-        formData.append("image_1_" + avatarToUpload.width + "_" + avatarToUpload.height, avatarToUpload.file)
+
 
         postFormData(SOCIAL_NET_WORK_API, "User/UpdateAvatar", formData, result => {
-          if (result && result.result == 1) {
-            this.getProfile()
-          }
+          that.getProfile()
+          that.setState({
+            openCropperDrawer: false,
+            openUploadAvatarReview: false,
+            isReviewMode: false,
+            isProccessing: false
+          })
         })
       };
       img.src = fr.result;
     };
     fr.readAsDataURL(rootAvatarToUpload);
-
-
   }
+
+  onSelectBackgroundFile = files => {
+    this.setState({
+      rootBackgroundToUpload: files[0]
+    })
+    if (files && files.length > 0) {
+      const reader = new FileReader();
+      reader.addEventListener('load', () =>
+        this.setState({
+          backgroundSrc: reader.result,
+          openUploadBackgroundReview: true,
+          openBackgroundCropperDrawer: true
+        })
+      );
+      reader.readAsDataURL(files[0]);
+    }
+  };
+
+  updateBackground() {
+    let {
+      backgroundToUpload,
+      rootBackgroundToUpload,
+      isProccessing
+    } = this.state
+    var fr = new FileReader;
+    let that = this
+    if (isProccessing == true) return
+    this.setState({
+      isProccessing: true
+    })
+    fr.onload = function () {
+      var img = new Image;
+      img.onload = function () {
+
+        const formData = new FormData();
+
+        if (backgroundToUpload) {
+          let backgroundFileToUpload = new File(
+            [backgroundToUpload.file],
+            backgroundToUpload.file.name,
+            {
+              type: backgroundToUpload.file.type,
+              lastModified: new Date,
+              part: backgroundToUpload.file.name
+            }
+          )
+          formData.append("image_1_" + backgroundToUpload.width + "_" + backgroundToUpload.height, backgroundFileToUpload)
+        } else {
+          formData.append("image_1_" + img.width + "_" + img.height, rootBackgroundToUpload)
+        }
+
+        formData.append("content", "")
+        formData.append("imageroot_0_" + img.width + "_" + img.height, rootBackgroundToUpload)
+
+
+        postFormData(SOCIAL_NET_WORK_API, "User/UpdateBackground", formData, result => {
+          that.getProfile()
+          that.setState({
+            openBackgroundCropperDrawer: false,
+            openUploadBackgroundReview: false,
+            isReviewMode: false,
+            isProccessing: false
+          })
+        })
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(rootBackgroundToUpload);
+  }
+
   getProfile() {
     get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
       if (result.result == 1) {
@@ -178,24 +270,161 @@ class Index extends React.Component {
 
     })
   }
+  getHistoryPoint() {
+    let {
+      historyPointCurrentPage
+    } = this.state
+    let param = {
+      currentpage: historyPointCurrentPage,
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      limit: 20
+    }
+    get(SOCIAL_NET_WORK_API, "User/GetHistoryPoint" + objToQuery(param), result => {
+      console.log("User/GetHistoryPoint", result)
+      if (result && result.result == 1) {
+        this.setState({
+          historyPoints: result.content.histories
+        })
+      }
+    })
+  }
+
+  getFriends() {
+    let param = {
+      currentpage: 0,
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      limit: 6,
+      status: "Friends",
+      forFriendId: 0,
+      groupid: 0
+    }
+    get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
+      if (result.result == 1) {
+        this.setState({
+          friends: result.content.userInvites
+        })
+      }
+    })
+  }
+
+  getNumOfFriend() {
+    let param = {
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      status: "Friends",
+      forFriendId: 0,
+    }
+    get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + objToQuery(param), result => {
+      if (result.result == 1) {
+        this.setState({
+          numOfFriend: result.content.count
+        })
+      }
+    })
+  }
+
+  changePassword() {
+    let {
+      oldPassForChange,
+      newPassForChange,
+      confirmPassForChange
+    } = this.state
+    if (!oldPassForChange || oldPassForChange == "") {
+      showNotification("", <span className="app-noti-message">Vui lòng nhập mật khẩu hiện tại.</span>, null)
+      return
+    }
+    if (oldPassForChange && oldPassForChange.length < 6 || oldPassForChange && oldPassForChange.length > 25) {
+      showNotification("", <span className="app-noti-message">Vui lòng nhập mật khẩu có độ dài từ 6 đến 25 ký tự.</span>, null)
+      return
+    }
+    if (!newPassForChange || newPassForChange == "") {
+      showNotification("", <span className="app-noti-message">Vui lòng nhập mật khẩu mới.</span>, null)
+      return
+    }
+    if (newPassForChange && newPassForChange.length < 6 || newPassForChange && newPassForChange.length > 25) {
+      showNotification("", <span className="app-noti-message">Vui lòng nhập mật khẩu có độ dài từ 6 đến 25 ký tự.</span>, null)
+      return
+    }
+    if (confirmPassForChange != newPassForChange) {
+      showNotification("", <span className="app-noti-message">Mật khẩu xác nhận không trùng khớp.</span>, null)
+      return
+    }
+    let param = {
+      oldpassword: oldPassForChange,
+      newpassword: newPassForChange,
+      // socialtoken: string
+    }
+    this.setState({
+      isProccessing: true
+    })
+    post(SOCIAL_NET_WORK_API, "User/ChangePasswordUser", param, (result) => {
+      if (result.result == 1) {
+        console.log("result", result)
+        let { profile } = this.props
+        let loginParam = {
+          phone: profile.phone,
+          password: newPassForChange
+        }
+        post(SOCIAL_NET_WORK_API, "Login/Index", loginParam, (result) => {
+          if (result.result == 1) {
+            signIn({
+              comunityAccessToken: result.content.myToken,
+              skillAccessToken: result.content.myTokenTraining,
+              careerGuidanceAccessToken: result.content.myTokenBuildYS
+            });
+            this.props.toggleChangePasswordForm(false)
+
+            this.setState({
+              isProccessing: false,
+              oldPassForChange: "",
+              newPassForChange: "",
+              confirmPassForChange: ""
+            })
+          }
+        })
+      } else {
+        showNotification("", <span className="app-noti-message">{result.message}</span>, null)
+        this.setState({
+          isProccessing: false,
+        })
+      }
+    })
+  }
 
   componentWillMount() {
-    this.props.addFooterContent(renderFooter(this.props.history))
+    this.getFriends()
+    this.getNumOfFriend()
+    this.props.addFooterContent(renderFooter(this))
     this.props.toggleHeader(false)
     this.props.toggleFooter(true)
+  }
+  componentDidMount() {
+
+    let searchParam = jsonFromUrlParams(window.location.search)
+    if (searchParam && searchParam.setting == "true") {
+      this.setState({
+        showUserMenu: true
+      })
+    }
+
   }
   render() {
     let {
       showUserMenu,
-      croppedImageUrl
+      croppedImageUrl,
+      numOfFriend,
+      friends
     } = this.state
     let {
       profile
     } = this.props
     return (
       profile ? <div className="profile-page" >
-        <div className="cover-img" style={{ background: "url(" + profile.avatar + ")" }}>
-          <Dropzone onDrop={acceptedFiles => { this.setState({ imageSelected: acceptedFiles }) }}>
+        <div className="cover-img" style={{ background: "url(" + profile.background + ")" }}>
+          <div className="overlay" onClick={() => {
+            this.props.setMediaToViewer(profile.listBackground)
+            this.props.toggleMediaViewerDrawer(true, { canDownload: true, showInfo: true })
+          }}></div>
+          <Dropzone onDrop={acceptedFiles => this.onSelectBackgroundFile(acceptedFiles)}>
             {({ getRootProps, getInputProps }) => (
               <div {...getRootProps()}>
                 <input {...getInputProps()} accept="image/*" />
@@ -209,7 +438,11 @@ class Index extends React.Component {
         </div>
 
         <div className="user-avatar" style={{ background: "url(" + profile.avatar + ")" }}>
-          <Dropzone onDrop={acceptedFiles => this.onSelectFile(acceptedFiles)}>
+          <div className="overlay" onClick={() => {
+            this.props.setMediaToViewer(profile.listAvatar)
+            this.props.toggleMediaViewerDrawer(true, { canDownload: true, showInfo: true })
+          }}></div>
+          <Dropzone onDrop={acceptedFiles => this.onSelectAvatarFile(acceptedFiles)}>
             {({ getRootProps, getInputProps }) => (
               <div {...getRootProps()}>
                 <input {...getInputProps()} accept="image/*" />
@@ -226,7 +459,6 @@ class Index extends React.Component {
           <span className="user-name">{profile.fullname}</span>
           <span className="point">
             <span>Điểm YOOT: {profile.mempoint}</span>
-            <img src={coin} />
           </span>
           <IconButton style={{ background: "rgba(0,0,0,0.07)" }} onClick={() => this.setState({ showUserMenu: true })}>
             <MoreHorizIcon />
@@ -287,19 +519,26 @@ class Index extends React.Component {
 
         <div className="friend-reward">
           <label>Bạn bè</label>
-          <span>{data.friends.length} người bạn</span>
-          <div className="friend-list">
-            {
-              data.friends.map((item, index) => <div key={index} className="friend-item" onClick={() => {
-                this.props.setCurrenUserDetail(item)
-                this.props.toggleUserPageDrawer(true)
-              }}>
-                <div className="avatar" style={{ background: "url(" + item.avatar + ")" }}></div>
-                <span className="name">{item.fullName}</span>
-              </div>)
-            }
-          </div>
-          <div className="search-friend" onClick={() => this.props.toggleFriendDrawer(true)}>
+          <span>{numOfFriend} người bạn</span>
+          {
+            friends && friends.length > 0 ? <div className="friend-list">
+              {
+                friends.map((item, index) => <div key={index} className="friend-item" onClick={() => {
+                  this.props.setCurrenUserDetail(item)
+                  this.props.toggleUserPageDrawer(true)
+                }}>
+                  <div className="avatar">
+                    <div className="image" style={{ background: "url(" + item.friendavatar + ")" }}></div>
+                  </div>
+                  <span className="name">{item.friendname}</span>
+                </div>)
+              }
+            </div> : ""
+          }
+          <div className="search-friend" onClick={() => {
+            this.props.setCurrenUserDetail(profile)
+            this.props.toggleFriendDrawer(true)
+          }}>
             <img src={search}></img>
             <span>Tìm bạn bè</span>
           </div>
@@ -356,6 +595,12 @@ class Index extends React.Component {
         {
           renderCropperDrawer(this)
         }
+        {
+          renderUpdateBackgroundReviewDrawer(this)
+        }
+        {
+          renderBackgroundCropperDrawer(this)
+        }
       </div> : ""
     );
   }
@@ -386,7 +631,7 @@ const mapDispatchToProps = dispatch => ({
   toggleUserPageDrawer: (isShow) => dispatch(toggleUserPageDrawer(isShow)),
   setUserProfile: (user) => dispatch(setUserProfile(user)),
   getFolowedMe: (currentpage) => dispatch(getFolowedMe(currentpage)),
-  getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage))
+  getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage)),
 });
 
 export default connect(
@@ -435,39 +680,39 @@ export default connect(
 
 
 
-const renderFooter = (history) => {
+const renderFooter = (component) => {
   let pathName = window.location.pathname
   return (
     pathName == "/communiti-profile" ? <div className="app-footer">
       <ul>
-        <li onClick={() => history.replace('/community')}>
+        <li onClick={() => component.props.history.replace('/community')}>
           <img src={Lesson}></img>
           <span >Bản tin</span>
         </li>
-        <li onClick={() => history.replace('/videos')}>
+        <li onClick={() => component.props.history.replace('/videos')}>
           <img src={Video}></img>
           <span >Video</span>
         </li>
-        <li onClick={() => history.replace('/groups')}>
+        <li onClick={() => component.props.history.replace('/groups')}>
           <img src={Group1}></img>
           <span>Nhóm</span>
         </li>
-        <li onClick={() => history.replace('/community-noti')}>
+        <li onClick={() => component.props.history.replace('/community-noti')}>
           <img src={NotiBw}></img>
           <span>Thông báo</span>
         </li>
-        <li onClick={() => history.replace('/communiti-profile')}>
+        <li onClick={() => component.props.history.replace('/communiti-profile')}>
           <img src={Profile}></img>
           <span style={{ color: "#f54746" }}>Cá nhân</span>
         </li>
       </ul>
     </div> : <div className="app-footer">
         <ul>
-          <li onClick={() => history.replace('/')}>
+          <li onClick={() => component.props.history.replace('/')}>
             <img src={home}></img>
             <span >Trang chủ</span>
           </li>
-          {/* <li onClick={() => history.replace('/yoot-noti')}>
+          {/* <li onClick={() => component.props.history.replace('/yoot-noti')}>
             <img src={noti}></img>
             <span >Thông báo</span>
           </li> */}
@@ -475,7 +720,7 @@ const renderFooter = (history) => {
             <img src={profileBw}></img>
             <span style={{ color: "#f54746" }}>Cá nhân</span>
           </li>
-          <li onClick={() => history.replace('/setting')}>
+          <li onClick={() => component.props.history.replace('/setting')}>
             <img src={settingBw}></img>
             <span>Cài đặt</span>
           </li>
@@ -504,6 +749,7 @@ const renderUserMenuDrawer = (component) => {
           <Button onClick={() => {
             component.props.setCurrenUserDetail(data)
             component.props.toggleUserHistory(true)
+            component.getHistoryPoint()
           }}>Lịch sử tích điểm</Button>
         </li>
         <li>
@@ -540,9 +786,9 @@ const renderUpdateProfileDrawer = (component) => {
       </div>
       <div className="content-form">
         <UserInfo data={profile} />
-        {/* <Experiendces data={profile} />
+        <Experiendces data={profile} />
         <Educaction data={profile} />
-        <Hoppies data={profile} /> */}
+        <Hoppies data={profile} />
       </div>
     </Drawer>
   )
@@ -554,6 +800,11 @@ const renderUserHistoryDrawer = (component) => {
     showUserHistory,
     userDetail
   } = component.props
+  let {
+    historyPoints
+  } = component.state
+
+  console.log("historyPoints", historyPoints)
   return (
     <Drawer anchor="right" open={showUserHistory} onClose={() => component.props.toggleUserHistory(false)}>
       {
@@ -580,54 +831,99 @@ const renderUserHistoryDrawer = (component) => {
           </div>
           <div className="filter"></div>
           <div style={{ overflow: "scroll", width: "100vw" }}>
-            <ul className="user-history">
-              <li>
-                <div className="date"><span>{renderVNDays(new Date)}, {moment(new Date).format("DD-MM-YYYY")}</span></div>
-                <div className="list">
-                  <label><PlayArrowIcon /> Cộng đồng</label>
-                  <ul>
-                    <li>
-                      <span>Đăng bài viết</span>
-                      <span>+300 <img src={coin} /></span>
-                    </li>
-                    <li>
-                      <span>Đăng bài viết</span>
-                      <span>+300 <img src={coin} /></span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="list">
-                  <label><PlayArrowIcon /> Kỹ năng</label>
-                </div>
-                <div className="total">
-                  <span>Tổng điểm / ngày</span>
-                  <span>600 <img src={coin} /></span>
-                </div>
-              </li>
-              <li>
-                <div className="date"><span>{renderVNDays(new Date)}, {moment(new Date).format("DD-MM-YYYY")}</span></div>
-                <div className="list">
-                  <label><PlayArrowIcon /> Cộng đồng</label>
-                  <ul>
-                    <li>
-                      <span>Đăng bài viết</span>
-                      <span>+300 <img src={coin} /></span>
-                    </li>
-                    <li>
-                      <span>Đăng bài viết</span>
-                      <span>+300 <img src={coin} /></span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="list">
-                  <label><PlayArrowIcon /> Kỹ năng</label>
-                </div>
-                <div className="total">
-                  <span>Tổng điểm / ngày</span>
-                  <span>600 <img src={coin} /></span>
-                </div>
-              </li>
-            </ul>
+            {
+
+              historyPoints && historyPoints.length > 0 ? <ul className="user-history">
+
+                {
+                  historyPoints.map((history, index) => <li key={index}>
+                    <div className="date"><span>{renderVNDays(moment(history.datetype))}, {moment(moment(history.datetype)).format("DD-MM-YYYY")}</span></div>
+                    {
+                      history.groupProjectPoints.map((e, index) => <div className="list" key={index}>
+                        <label><PlayArrowIcon />{e.title}</label>
+                        <ul>
+                          {
+                            e.groupMemberPoints[0] && e.groupMemberPoints[0].actionGroupPoints[0].memberPoints.map((item, index) => <li key={index}>
+                              <span>{item.pointpolicyname}</span>
+                              <span>+{item.point}</span>
+                            </li>)
+                          }
+                        </ul>
+                        <ul>
+                          {
+                            e.groupMemberPoints[1] && e.groupMemberPoints[0].actionGroupPoints[0].memberPoints.map((item, index) => <li key={index}>
+                              <span>{item.pointpolicyname}</span>
+                              <span>+{item.point}</span>
+                            </li>)
+                          }
+                        </ul>
+                      </div>)
+                    }
+                    {/* {
+                      history.groupProjectPoints.map((e, index) => <div className="list" key={index}>
+                        <label><PlayArrowIcon />{e.title}</label>
+                        <ul>
+                          {
+                            e.groupMemberPoints.map((e, index) => <li key={index}>
+                              {
+                                e.title != "" ? <span>{e.title}</span> : ""
+                              }
+                            </li>)
+                          }
+                          {}
+                        </ul>
+                      </div>)
+                    } */}
+                  </li>)
+                }
+                <li>
+                  <div className="date"><span>{renderVNDays(new Date)}, {moment(new Date).format("DD-MM-YYYY")}</span></div>
+                  <div className="list">
+                    <label><PlayArrowIcon /> Cộng đồng</label>
+                    <ul>
+                      <li>
+                        <span>Đăng bài viết</span>
+                        <span>+300 <img src={coin} /></span>
+                      </li>
+                      <li>
+                        <span>Đăng bài viết</span>
+                        <span>+300 <img src={coin} /></span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="list">
+                    <label><PlayArrowIcon /> Kỹ năng</label>
+                  </div>
+                  <div className="total">
+                    <span>Tổng điểm / ngày</span>
+                    <span>600 <img src={coin} /></span>
+                  </div>
+                </li>
+                <li>
+                  <div className="date"><span>{renderVNDays(new Date)}, {moment(new Date).format("DD-MM-YYYY")}</span></div>
+                  <div className="list">
+                    <label><PlayArrowIcon /> Cộng đồng</label>
+                    <ul>
+                      <li>
+                        <span>Đăng bài viết</span>
+                        <span>+300 <img src={coin} /></span>
+                      </li>
+                      <li>
+                        <span>Đăng bài viết</span>
+                        <span>+300 <img src={coin} /></span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="list">
+                    <label><PlayArrowIcon /> Kỹ năng</label>
+                  </div>
+                  <div className="total">
+                    <span>Tổng điểm / ngày</span>
+                    <span>600 <img src={coin} /></span>
+                  </div>
+                </li>
+              </ul> : ""
+            }
           </div>
         </div> : ""
       }
@@ -642,7 +938,11 @@ const renderChangePasswordDrawer = (component) => {
   let {
     isShowOldPass,
     isShowNewPass,
-    isShowConfirmPass
+    isShowConfirmPass,
+    oldPassForChange,
+    newPassForChange,
+    confirmPassForChange,
+    isProccessing
   } = component.state
   return (
     <Drawer anchor="right" open={showChangePasswordForm} onClose={() => component.props.toggleChangePasswordForm(false)}>
@@ -659,6 +959,7 @@ const renderChangePasswordDrawer = (component) => {
         <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
           <div>
             <TextField
+              className="custom-input"
               variant="outlined"
               placeholder="Mật khẩu hiện tại"
               style={{
@@ -666,6 +967,8 @@ const renderChangePasswordDrawer = (component) => {
                 marginBottom: "10px"
               }}
               type={isShowOldPass ? "text" : "password"}
+              value={oldPassForChange}
+              onChange={e => component.setState({ oldPassForChange: e.target.value })}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -679,6 +982,7 @@ const renderChangePasswordDrawer = (component) => {
               }}
             />
             <TextField
+              className="custom-input"
               variant="outlined"
               placeholder="Mật khẩu mới"
               style={{
@@ -686,6 +990,8 @@ const renderChangePasswordDrawer = (component) => {
                 marginBottom: "10px"
               }}
               type={isShowNewPass ? "text" : "password"}
+              value={newPassForChange}
+              onChange={e => component.setState({ newPassForChange: e.target.value })}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -699,6 +1005,7 @@ const renderChangePasswordDrawer = (component) => {
               }}
             />
             <TextField
+              className="custom-input"
               variant="outlined"
               placeholder="Nhập lại mật khẩu mới"
               style={{
@@ -706,6 +1013,8 @@ const renderChangePasswordDrawer = (component) => {
                 marginBottom: "50px"
               }}
               type={isShowConfirmPass ? "text" : "password"}
+              value={confirmPassForChange}
+              onChange={e => component.setState({ confirmPassForChange: e.target.value })}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -718,11 +1027,18 @@ const renderChangePasswordDrawer = (component) => {
                 ),
               }}
             />
-            <Button variant="contained" className={"bt-submit"}>Lưu thông tin</Button>
-            <Button variant="contained" className={"bt-cancel"}>Huỷ</Button>
+            <Button variant="contained" className={"bt-submit"} onClick={() => component.changePassword()}>Lưu thông tin</Button>
+            <Button variant="contained" className={"bt-cancel"} onClick={() => component.setState({
+              oldPassForChange: "",
+              newPassForChange: "",
+              confirmPassForChange: ""
+            }, () => component.props.toggleChangePasswordForm(false))}>Huỷ</Button>
           </div>
         </div>
       </div>
+      {
+        isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+      }
     </Drawer>
   )
 }
@@ -776,6 +1092,7 @@ const renderFriendsForBlockDrawer = (component) => {
         <div className="filter"></div>
         <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
           <TextField
+            className="custom-input"
             variant="outlined"
             placeholder="Tìm kiếm"
             className="search-box"
@@ -978,7 +1295,8 @@ const renderUpdateAvatarReviewDrawer = (component) => {
     openUploadAvatarReview,
     postContent,
     isReviewMode,
-    avatarToUpload
+    avatarToUpload,
+    isProccessing
   } = component.state
   let {
     profile
@@ -987,7 +1305,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
     <Drawer anchor="bottom" className="update-avatar-review-drawer" open={openUploadAvatarReview} onClose={() => component.setState({ openUploadAvatarReview: false })}>
       <div className="drawer-detail media-drawer">
         <div className="drawer-header">
-          <div className="direction" onClick={() => isReviewMode == false ? component.setState({ openUploadAvatarReview: false }) : component.setState({ openCropperDrawer: true, avatarToUpload: null, isReviewMode: false })}>
+          <div className="direction" onClick={() => isReviewMode == false ? component.setState({ openUploadAvatarReview: false }) : component.setState({ openCropperDrawer: true, isReviewMode: false })}>
             <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
               <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
             </IconButton>
@@ -1021,6 +1339,9 @@ const renderUpdateAvatarReviewDrawer = (component) => {
           </div>
         </div>
       </div>
+      {
+        isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+      }
     </Drawer>
   )
 }
@@ -1030,7 +1351,8 @@ const renderCropperDrawer = (component) => {
     openCropperDrawer,
     crop,
     src,
-    croppedImage
+    croppedImage,
+    isProccessing
   } = component.state
   return (
     <Drawer anchor="bottom" className="cropper-drawer" open={openCropperDrawer} onClose={() => component.setState({ openCropperDrawer: false })}>
@@ -1046,13 +1368,102 @@ const renderCropperDrawer = (component) => {
           <div className="footer-drawer">
             <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
             <div>
-              <Button onClick={() => component.setState({ openCropperDrawer: false, avatarToUpload: croppedImage })}>Huỷ</Button>
+              <Button onClick={() => component.setState({ openCropperDrawer: false })}>Huỷ</Button>
               <Button onClick={() => component.setState({ openCropperDrawer: false, isReviewMode: true, avatarToUpload: croppedImage })}>Chế độ xem trước</Button>
-              <Button>Đăng bài</Button>
+              <Button onClick={() => component.setState({ avatarToUpload: croppedImage }, () => component.updateAvatar())}>Đăng bài</Button>
             </div>
           </div>
 
         </div> : ""
+      }
+      {
+        isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+      }
+    </Drawer >
+  )
+}
+
+const renderUpdateBackgroundReviewDrawer = (component) => {
+  let {
+    openUploadBackgroundReview,
+    postContent,
+    isReviewMode,
+    backgroundToUpload,
+    isProccessing
+  } = component.state
+  let {
+    profile
+  } = component.props
+  return (
+    <Drawer anchor="bottom" className="update-avatar-review-drawer" open={openUploadBackgroundReview} onClose={() => component.setState({ openUploadBackgroundReview: false })}>
+      <div className="drawer-detail media-drawer">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => isReviewMode == false ? component.setState({ openUploadBackgroundReview: false }) : component.setState({ openBackgroundCropperDrawer: true, isReviewMode: false })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>{
+              isReviewMode ? "Quay lại chỉnh sửa" : "Cập nhật ảnh đại diện"
+            }
+            </label>
+          </div>
+          <Button className="bt-submit" onClick={() => component.updateBackground()}>Đăng</Button>
+        </div>
+        <div className="filter">
+        </div>
+        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+          <div className="post-content">
+            <MultiInput
+              placeholder="Nhập nội dung"
+              onChange={(value) => component.setState({ postContent: value })} />
+          </div>
+          <div className="profile-page" >
+            <div className="cover-img" style={{ background: "url(" + (backgroundToUpload && backgroundToUpload.file ? URL.createObjectURL(backgroundToUpload.file) : profile.background) + ")" }}>
+            </div>
+            <div className="user-avatar" style={{ background: "url(" + profile.avatar + ")" }}>
+            </div>
+          </div>
+        </div>
+      </div>
+      {
+        isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+      }
+    </Drawer>
+  )
+}
+
+const renderBackgroundCropperDrawer = (component) => {
+  let {
+    openBackgroundCropperDrawer,
+    crop,
+    backgroundSrc,
+    backgroundCroppedImage,
+    isProccessing
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="cropper-drawer" open={openBackgroundCropperDrawer} onClose={() => component.setState({ openBackgroundCropperDrawer: false })}>
+      {
+        backgroundSrc ? <div className="drawer-detail">
+          <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+            <Cropper
+              src={backgroundSrc}
+              crop={crop}
+              onCropped={(file) => component.setState({ backgroundCroppedImage: file })}
+            />
+          </div>
+          <div className="footer-drawer">
+            <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
+            <div>
+              <Button onClick={() => component.setState({ openBackgroundCropperDrawer: false })}>Huỷ</Button>
+              <Button onClick={() => component.setState({ openBackgroundCropperDrawer: false, isReviewMode: true, backgroundToUpload: backgroundCroppedImage })}>Chế độ xem trước</Button>
+              <Button onClick={() => component.setState({ backgroundToUpload: backgroundCroppedImage }, () => component.updateBackground())}>Đăng bài</Button>
+            </div>
+          </div>
+
+        </div> : ""
+      }
+      {
+        isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
       }
     </Drawer >
   )

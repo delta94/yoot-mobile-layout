@@ -60,9 +60,10 @@ import SwipeableViews from 'react-swipeable-views';
 import moment from 'moment'
 import Slider from "react-slick";
 import Dropzone from 'react-dropzone'
-import { objToArray, showNotification } from "../../utils/common";
+import { objToArray, showNotification, fromNow } from "../../utils/common";
 import { get } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import Friends from './friend'
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const search = require('../../assets/icon/Find@1x.png')
@@ -171,9 +172,10 @@ class Main extends React.Component {
         {
           renderUserDetailDrawer(this)
         }
-        {
+        {/* {
           renderFriendDrawer(this)
-        }
+        } */}
+        <Friends />
         {
           renderFindFriendDrawer(this)
         }
@@ -268,7 +270,6 @@ const renderUserDetailDrawer = (component) => {
     userDetail,
     profile
   } = component.props
-  console.log("profile", profile)
   return (
     <Drawer anchor="bottom" className="drawer-detail" open={showUserDetail} onClose={() => component.props.toggleUserDetail(false)}>
       {
@@ -417,8 +418,6 @@ const renderUserPageDrawer = (component) => {
     userDetail,
   } = component.props
 
-  console.log("userDetail", userDetail)
-
   return (
     <Drawer anchor="bottom" className="user-page-drawer" open={showUserPage} onClose={() => component.props.toggleUserPageDrawer(false)}>
       {
@@ -513,6 +512,7 @@ const renderFriendDrawer = (component) => {
         </div>
         <div className="filter">
           <TextField
+            className="custom-input"
             variant="outlined"
             placeholder="Nhập tên bạn bè để tìm kiếm"
             className="search-box"
@@ -702,6 +702,7 @@ const renderFindFriendDrawer = (component) => {
         </div>
         <div className="filter">
           <TextField
+            className="custom-input"
             variant="outlined"
             placeholder="Nhập tên bạn bè để tìm kiếm"
             className="search-box"
@@ -749,7 +750,8 @@ const renderMediaViewer = (component) => {
     mediaToView
   } = component.props
   let {
-    isHideMediaHeadFoot
+    isHideMediaHeadFoot,
+    activeMeidaSlideIndex
   } = component.state
 
   const settings = {
@@ -757,8 +759,13 @@ const renderMediaViewer = (component) => {
     infinite: true,
     speed: 500,
     slidesToShow: 1,
-    slidesToScroll: 1
+    slidesToScroll: 1,
+    afterChange: current => component.setState({ activeMeidaSlideIndex: current }),
+    easing: "ease-in-out",
+    infinite: false,
   };
+
+  let currentMediaActive = mediaToView ? mediaToView[activeMeidaSlideIndex ? activeMeidaSlideIndex : 0] : null
 
   return (
     <Drawer anchor="bottom" className="media-viewer" open={showMediaViewerDrawer} onClose={() => component.props.toggleMediaViewerDrawer(false)}>
@@ -772,21 +779,21 @@ const renderMediaViewer = (component) => {
             }, 1000);
             component.props.toggleMediaViewerDrawer(false)
           }}><CloseIcon /></IconButton>
-          {
+          {/* {
             mediaViewerFeature ? <IconButton onClick={(e) => component.setState({ showMediaViewerMenu: true })}>
               <MoreVertIcon />
             </IconButton> : ""
-          }
+          } */}
         </div>
         <div className="viewer-detail" onClick={() => component.setState({ isHideMediaHeadFoot: !isHideMediaHeadFoot })}>
           {
-            mediaToView && mediaToView.medias && mediaToView.medias.length > 0 ? <Slider {...settings}>
+            mediaToView && mediaToView.length > 0 ? <Slider {...settings} >
               {
-                mediaToView.medias.map((item, index) => <div key={index}>
+                mediaToView.map((item, index) => <div key={index}>
                   {
-                    item.type == "video" ? <video controls={true} autoPlay={true}>
-                      <source src={item.url} type="video/mp4"></source>
-                    </video> : <img src={item.url} />
+                    item.typeobject == 1 ? <img src={item.nameroot} /> : <video controls={true} autoPlay={true}>
+                      <source src={item.nameroot} type="video/mp4"></source>
+                    </video>
                   }
                 </div>)
               }
@@ -795,23 +802,19 @@ const renderMediaViewer = (component) => {
         </div>
         {
           mediaViewerFeature && mediaViewerFeature.showInfo ? <div className={"viewer-footer " + (isHideMediaHeadFoot ? "hide" : "")}>
-            <div className="footer-infor">
-              <div className="user-info">
-                {
-                  mediaToView ? <span>{mediaToView.userName}</span> : ""
-                }
-              </div>
-              <div className="post-content">
-                {
-                  mediaToView ? <pre>{mediaToView.content}</pre> : ""
-                }
-              </div>
-              <div className="post-time">
-                {
-                  mediaToView ? <span>{moment(mediaToView.time).format("DD/MM/YYYY hh:mm")}</span> : ""
-                }
-              </div>
-            </div>
+            {
+              currentMediaActive ? <div className="footer-infor">
+                <div className="user-info">
+                  <span>{currentMediaActive.userpost}</span>
+                </div>
+                <div className="post-content">
+                  <pre>{currentMediaActive.postcontent}</pre>
+                </div>
+                <div className="post-time">
+                  <span>{fromNow(currentMediaActive.createdate, new Date)}</span>
+                </div>
+              </div> : ""
+            }
             <div className="footer-reward">
               <ul>
                 <li>
@@ -928,6 +931,7 @@ const renderReportDrawer = (component) => {
               </ul>
               <div>
                 <TextField
+                  className="custom-input"
                   className="order-reason"
                   variant="outlined"
                   placeholder="Khác (Ghi tối đa 20 chữ)"
@@ -1132,6 +1136,7 @@ const renderCreateGroupDrawer = (component) => {
           <div>
             <label>Tên nhóm</label>
             <TextField
+              className="custom-input"
               className="order-reason"
               variant="outlined"
               placeholder="Đặt tên nhóm"
@@ -1141,6 +1146,7 @@ const renderCreateGroupDrawer = (component) => {
               }}
             />
             <TextField
+              className="custom-input"
               className="input-multiline"
               variant="outlined"
               placeholder="Mô tả nhóm"
@@ -1167,6 +1173,7 @@ const renderCreateGroupDrawer = (component) => {
             </div>
             <label>Quy định nhóm</label>
             <TextField
+              className="custom-input"
               className="input-multiline"
               variant="outlined"
               placeholder="Quy định nhóm"

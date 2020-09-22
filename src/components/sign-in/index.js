@@ -285,6 +285,7 @@ class Index extends React.Component {
             <TabPanel value={value} index={0} className="content-box">
               <div>
                 <TextField
+                  className="custom-input"
                   variant="outlined"
                   placeholder="Email, số điện thoại"
                   style={{
@@ -298,6 +299,7 @@ class Index extends React.Component {
                   onChange={e => this.setState({ loginPhoneNumber: e.target.value.length < 11 ? e.target.value : loginPhoneNumber })}
                 />
                 <TextField
+                  className="custom-input"
                   variant="outlined"
                   placeholder="Mật khẩu"
                   style={{
@@ -335,6 +337,7 @@ class Index extends React.Component {
                 <div>
                   <label>Thông tin tài khoản</label>
                   <TextField
+                    className="custom-input"
                     variant="outlined"
                     placeholder="Số điện thoại"
                     style={{
@@ -348,6 +351,7 @@ class Index extends React.Component {
                     onChange={e => this.setState({ registerPhoneNumber: e.target.value.length < 11 ? e.target.value : registerPhoneNumber })}
                   />
                   <TextField
+                    className="custom-input"
                     variant="outlined"
                     placeholder="Mật khẩu"
                     style={{
@@ -370,6 +374,7 @@ class Index extends React.Component {
                     }}
                   />
                   <TextField
+                    className="custom-input"
                     variant="outlined"
                     placeholder="Nhập lại mật khẩu"
                     style={{
@@ -395,6 +400,7 @@ class Index extends React.Component {
                 <div className="mt10">
                   <label>Thông tin cá nhân</label>
                   <TextField
+                    className="custom-input"
                     variant="outlined"
                     placeholder="Họ và tên"
                     style={{
@@ -405,6 +411,7 @@ class Index extends React.Component {
                     onChange={e => this.setState({ registerName: e.target.value })}
                   />
                   <TextField
+                    className="custom-input"
                     variant="outlined"
                     placeholder="Email"
                     style={{
@@ -416,6 +423,7 @@ class Index extends React.Component {
                   />
 
                   <TextField
+                    className="custom-input"
                     variant="outlined"
                     placeholder="Sinh nhật"
                     type="date"
@@ -501,6 +509,7 @@ const renderResetPassDrawer = (component) => {
           <span>Nhập email bạn đã đăng ký để khôi phục mật khẩu.</span>
           <div className="sign-in-form">
             <TextField
+              className="custom-input"
               variant="outlined"
               placeholder="Địa chỉ email"
               style={{
