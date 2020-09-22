@@ -140,7 +140,6 @@ export const NumberFormatCustom = (props) => {
         });
       }}
       isNumericString
-      format="#### ### #####"
     />
   );
 }

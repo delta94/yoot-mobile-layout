@@ -27,6 +27,7 @@ import {
 } from '../../actions/user'
 import { connect } from "react-redux"
 import { Loader } from '../common/loader'
+import {NumberFormatCustom} from '../../utils/common'
 
 export class Index extends React.Component {
 
@@ -364,7 +365,9 @@ export class Index extends React.Component {
                                         variant="outlined"
                                         placeholder="Nhập năm sinh"
                                         value={yearOfBirth}
-                                        type="number"
+                                        InputProps={{
+                                            inputComponent: NumberFormatCustom,
+                                          }}
                                         onChange={e => this.setState({ yearOfBirth: e.target.value })}
                                     />
                                 </div>
