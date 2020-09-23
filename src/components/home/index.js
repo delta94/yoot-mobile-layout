@@ -608,8 +608,10 @@ class Index extends React.Component {
     let queryParam = objToQuery(param)
     get(SOCIAL_NET_WORK_API, "User/GetTopUsers" + queryParam, result => {
       if (result.result == 1) {
+        let list = result.content.topUsers
+        list.map(item => item.friendid = item.userid)
         this.setState({
-          topUsers: topUsers.concat(result.content.topUsers),
+          topUsers: topUsers.concat(list),
           isLoadMoreGroup: false
         })
         if (result.content.topUsers.length == 0) {

@@ -64,7 +64,7 @@ import { objToArray, showNotification, fromNow } from "../../utils/common";
 import { get } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import Friends from './friend'
-import SearchFriends from './search-friend'
+import SearchFriends from './search-friend'
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const search = require('../../assets/icon/Find@1x.png')
