@@ -64,6 +64,7 @@ import { objToArray, showNotification, fromNow } from "../../utils/common";
 import { get } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import Friends from './friend'
+import SearchFriends from './search-friend'
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const search = require('../../assets/icon/Find@1x.png')
@@ -92,12 +93,12 @@ class Main extends React.Component {
 
   getProfile() {
     get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
-      if (result.result == 1) {
+      if (result && result.result == 1) {
         this.props.setUserProfile(result.content.user)
         this.props.getFolowedMe(0)
         this.props.getMeFolowing(0)
       } else {
-        showNotification("", <span className="app-noti-message">{result.message}</span>, null)
+        showNotification("", <span className="app-noti-message">{result && result.message}</span>, null)
       }
 
     })
@@ -172,13 +173,8 @@ class Main extends React.Component {
         {
           renderUserDetailDrawer(this)
         }
-        {/* {
-          renderFriendDrawer(this)
-        } */}
         <Friends />
-        {
-          renderFindFriendDrawer(this)
-        }
+        <SearchFriends />
         {
           renderMediaViewer(this)
         }
@@ -420,328 +416,13 @@ const renderUserPageDrawer = (component) => {
 
   return (
     <Drawer anchor="bottom" className="user-page-drawer" open={showUserPage} onClose={() => component.props.toggleUserPageDrawer(false)}>
-      {
-        userDetail ? <div className="drawer-detail">
-          <div className="drawer-header">
-            <div className="direction" onClick={() => component.props.toggleUserPageDrawer(false)}>
-              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-              </IconButton>
-              <label>Trang cá nhân</label>
-            </div>
-            <div className="user-reward">
-              <div className="profile">
-                <span className="user-name">{userDetail.fullname}</span>
-                <span className="point">
-                  <span>Điển YOOT: {userDetail.point}</span>
-                  <img src={coin} />
-                </span>
-              </div>
-              <Avatar aria-label="recipe" className="avatar">
-                <img src={userDetail.avatar} style={{ width: "100%" }} />
-              </Avatar>
-            </div>
-          </div>
-          <div className="filter"></div>
-          <div style={{ overflow: "scroll" }}>
-            {/* <UserPage userDetail={userDetail} /> */}
-          </div>
-
-        </div> : ""
-      }
+      <UserPage userDetail={userDetail} />
     </Drawer>
   )
 }
 
-const renderFriendDrawer = (component) => {
-  let {
-    searchKey,
-    friendTabIndex
-  } = component.state
-  let {
-    showFriendDrawer,
-  } = component.props
-  const friends = [
-    {
-      fullName: "Bảo Ngọc",
-      avatar: "https://pajulahti.com/wp-content/uploads/2017/04/500x500.jpeg"
-    },
-    {
-      fullName: "Nguyễn Thị Lê Dân",
-      avatar: "https://gigamall.vn/data/2019/05/06/10385426_logo-bobapop-500x500.jpg"
-    },
-    {
-      fullName: "Đặng Lê Trúc Linh",
-      avatar: "https://gigamall.vn/data/2019/09/03/16244113_LOGO-ADOI-500x500.jpg"
-    },
-    {
-      fullName: "Bảo Ngọc",
-      avatar: "https://pajulahti.com/wp-content/uploads/2017/04/500x500.jpeg"
-    },
-    {
-      fullName: "Nguyễn Thị Lê Dân",
-      avatar: "https://gigamall.vn/data/2019/05/06/10385426_logo-bobapop-500x500.jpg"
-    },
-    {
-      fullName: "Đặng Lê Trúc Linh",
-      avatar: "https://gigamall.vn/data/2019/09/03/16244113_LOGO-ADOI-500x500.jpg"
-    },
-    {
-      fullName: "Bảo Ngọc",
-      avatar: "https://pajulahti.com/wp-content/uploads/2017/04/500x500.jpeg"
-    },
-    {
-      fullName: "Nguyễn Thị Lê Dân",
-      avatar: "https://gigamall.vn/data/2019/05/06/10385426_logo-bobapop-500x500.jpg"
-    },
-    {
-      fullName: "Đặng Lê Trúc Linh",
-      avatar: "https://gigamall.vn/data/2019/09/03/16244113_LOGO-ADOI-500x500.jpg"
-    }
-  ]
-  return (
-    <Drawer anchor="bottom" className="friend-drawer" open={showFriendDrawer} onClose={() => component.props.toggleFriendDrawer(false)}>
-      <div className="drawer-detail">
-        <div className="drawer-header">
-          <div className="direction" onClick={() => component.props.toggleFriendDrawer(false)}>
-            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-            </IconButton>
-            <label>Tìm kiếm bạn bè</label>
-          </div>
-        </div>
-        <div className="filter">
-          <TextField
-            className="custom-input"
-            variant="outlined"
-            placeholder="Nhập tên bạn bè để tìm kiếm"
-            className="search-box"
-            style={{
-              width: "calc(100% - 20px",
-              margin: "0px 0px 10px 10px",
-            }}
-            disabled
-            value={""}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <img src={search} />
-                </InputAdornment>
-              ),
-            }}
-            onClick={() => component.props.toggleFindFriendDrawer(true)}
-          />
-          <AppBar position="static" color="default" className={"custom-tab mb10"}>
-            <Tabs
-              value={friendTabIndex}
-              onChange={(e, value) => component.setState({ friendTabIndex: value })}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="fullWidth"
-              aria-label="full width tabs example"
-              className="tab-header"
-            >
-              <Tab label="Gợi ý" {...a11yProps(0)} className="tab-item" />
-              <Tab label="Lời mời" {...a11yProps(1)} className="tab-item" />
-              <Tab label="Đã gửi" {...a11yProps(2)} className="tab-item" />
-              <Tab label="bạn bè" {...a11yProps(3)} className="tab-item" />
-            </Tabs>
-          </AppBar>
-        </div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} >
-          <SwipeableViews
-            index={friendTabIndex}
-            onChangeIndex={(value) => this.setState({ friendTabIndex: value })}
-            className="tab-content"
-          >
-            <TabPanel value={friendTabIndex} index={0} className="content-box">
-              <div className="friend-list" style={{ height: "2000px" }}>
-                <ul>
-                  {
-                    friends.map((item, index) => <li key={index} className="friend-layout">
-                      <div>
-                        <Avatar aria-label="recipe" className="avatar">
-                          <img src={item.avatar} style={{ width: "100%" }} />
-                        </Avatar>
-                      </div>
-                      <div className="info-action">
-                        <label>{item.fullName}</label>
-                        <div className="action">
-                          <Button className="bt-submit">Kết bạn</Button>
-                          <Button className="bt-cancel">Gỡ bỏ</Button>
-                        </div>
-                      </div>
-                    </li>)
-                  }
-                </ul>
-              </div>
-            </TabPanel>
-            <TabPanel value={friendTabIndex} index={1} style={{ height: "2000px" }}>
-              <div className="friend-list" style={{ height: "2000px" }}>
-                <ul>
-                  {
-                    friends.map((item, index) => <li key={index} className="friend-layout">
-                      <div>
-                        <Avatar aria-label="recipe" className="avatar">
-                          <img src={item.avatar} style={{ width: "100%" }} />
-                        </Avatar>
-                      </div>
-                      <div className="info-action">
-                        <label>{item.fullName}</label>
-                        <div className="action">
-                          <Button className="bt-submit">Đồng ý</Button>
-                          <Button className="bt-cancel">Từ chối</Button>
-                        </div>
-                      </div>
-                    </li>)
-                  }
-                </ul>
-              </div>
-            </TabPanel>
-            <TabPanel value={friendTabIndex} index={2} className="content-box">
-              <div className="friend-list" style={{ height: "2000px" }}>
-                <ul>
-                  {
-                    friends.map((item, index) => <li key={index} className="friend-layout">
-                      <div>
-                        <Avatar aria-label="recipe" className="avatar">
-                          <img src={item.avatar} style={{ width: "100%" }} />
-                        </Avatar>
-                      </div>
-                      <div className="info-action">
-                        <label>{item.fullName}</label>
-                        <div className="action">
-                          <Button className="bt-submit">Huỷ yêu cầu</Button>
-                        </div>
-                      </div>
-                    </li>)
-                  }
-                </ul>
-              </div>
-            </TabPanel>
-            <TabPanel value={friendTabIndex} index={3} style={{ height: "2000px" }}>
-              <div className="friend-list" style={{ height: "2000px" }}>
-                <ul>
-                  {
-                    friends.map((item, index) => <li key={index} className="friend-layout">
-                      <div>
-                        <Avatar aria-label="recipe" className="avatar">
-                          <img src={item.avatar} style={{ width: "100%" }} />
-                        </Avatar>
-                      </div>
-                      <div className="info-action">
-                        <label>{item.fullName}</label>
-                        <div className="action">
-                          <Button className="bt-submit">Xoá bạn</Button>
-                        </div>
-                      </div>
-                    </li>)
-                  }
-                </ul>
-              </div>
-            </TabPanel>
-          </SwipeableViews>
-        </div>
-      </div>
-    </Drawer>
-  )
-}
 
-const renderFindFriendDrawer = (component) => {
-  let {
-    showFindFriendDrawer,
-  } = component.props
-  const friends = [
-    {
-      fullName: "Bảo Ngọc",
-      avatar: "https://pajulahti.com/wp-content/uploads/2017/04/500x500.jpeg"
-    },
-    {
-      fullName: "Nguyễn Thị Lê Dân",
-      avatar: "https://gigamall.vn/data/2019/05/06/10385426_logo-bobapop-500x500.jpg"
-    },
-    {
-      fullName: "Đặng Lê Trúc Linh",
-      avatar: "https://gigamall.vn/data/2019/09/03/16244113_LOGO-ADOI-500x500.jpg"
-    },
-    {
-      fullName: "Bảo Ngọc",
-      avatar: "https://pajulahti.com/wp-content/uploads/2017/04/500x500.jpeg"
-    },
-    {
-      fullName: "Nguyễn Thị Lê Dân",
-      avatar: "https://gigamall.vn/data/2019/05/06/10385426_logo-bobapop-500x500.jpg"
-    },
-    {
-      fullName: "Đặng Lê Trúc Linh",
-      avatar: "https://gigamall.vn/data/2019/09/03/16244113_LOGO-ADOI-500x500.jpg"
-    },
-    {
-      fullName: "Bảo Ngọc",
-      avatar: "https://pajulahti.com/wp-content/uploads/2017/04/500x500.jpeg"
-    },
-    {
-      fullName: "Nguyễn Thị Lê Dân",
-      avatar: "https://gigamall.vn/data/2019/05/06/10385426_logo-bobapop-500x500.jpg"
-    },
-    {
-      fullName: "Đặng Lê Trúc Linh",
-      avatar: "https://gigamall.vn/data/2019/09/03/16244113_LOGO-ADOI-500x500.jpg"
-    }
-  ]
-  return (
-    <Drawer anchor="bottom" className="find-friends" open={showFindFriendDrawer} onClose={() => component.props.toggleFindFriendDrawer(false)}>
-      <div className="drawer-detail">
-        <div className="drawer-header">
-          <div className="direction" onClick={() => component.props.toggleFindFriendDrawer(false)}>
-            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-            </IconButton>
-            <label>Tìm bạn bè</label>
-          </div>
-        </div>
-        <div className="filter">
-          <TextField
-            className="custom-input"
-            variant="outlined"
-            placeholder="Nhập tên bạn bè để tìm kiếm"
-            className="search-box"
-            style={{
-              width: "calc(100% - 20px",
-              margin: "0px 0px 10px 10px",
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <img src={search} />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </div>
-        <div style={{ overflow: "scroll", width: "100vw" }}>
-          <div className="friend-list" style={{ height: "2000px" }}>
-            <ul>
-              {
-                friends.map((item, index) => <li key={index} className="friend-layout">
-                  <div className="friend-info">
-                    <Avatar aria-label="recipe" className="avatar">
-                      <img src={item.avatar} style={{ width: "100%" }} />
-                    </Avatar>
-                    <label>{item.fullName}</label>
-                  </div>
-                  <div className="action">
-                    <Button className="bt-submit">Kết bạn</Button>
-                  </div>
-                </li>)
-              }
-            </ul>
-          </div>
-        </div>
-      </div>
-    </Drawer>
-  )
-}
+
 
 const renderMediaViewer = (component) => {
   let {

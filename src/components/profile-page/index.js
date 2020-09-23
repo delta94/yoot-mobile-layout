@@ -15,6 +15,8 @@ import {
   setMediaToViewer,
   toggleMediaViewerDrawer,
   toggleUserPageDrawer,
+  toggleSeachFriends,
+  setCurrentFriendId
 } from '../../actions/app'
 import {
   setUserProfile,
@@ -63,6 +65,7 @@ import { postFormData, get, post } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import { showNotification, objToQuery, jsonFromUrlParams } from "../../utils/common";
 import { signIn } from '../../auth'
+import $ from 'jquery'
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/Profile.png')
@@ -108,13 +111,212 @@ class Index extends React.Component {
       newPassForChange: "",
       confirmPassForChange: "",
       numOfFriend: 0,
+      isEndOfList: false,
+      historyPoints: [],
       crop: {
         unit: '%',
         width: 100,
         height: 100
         // aspect: 16 / 16,
       },
+      friends: [],
+      rejectFriends: [],
+      rejectFriendsCurrentPage: 0,
+      isEndOfRejectFriends: false,
+      isLoadMore: false,
+      friendsCurrentPage: 0,
+      isEndOfFriends: false,
+      searchKey: ""
     };
+  }
+
+  getRejectFriends(userId, currentpage) {
+    let {
+      rejectFriends
+    } = this.state
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      limit: 20,
+      status: "Reject",
+      forFriendId: userId,
+      groupid: 0
+    }
+    this.setState({
+      isLoadMore: true
+    })
+    get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
+      if (result.result == 1) {
+        this.setState({
+          rejectFriends: rejectFriends.concat(result.content.userInvites),
+          isLoadMore: false
+        })
+        if (result.content.userInvites.length == 0) {
+          this.setState({
+            isEndOfRejectFriends: true
+          })
+        }
+      }
+    })
+  }
+
+  addFriend(friendId) {
+    let {
+      suggestFriends,
+      waitings,
+      allUsers
+    } = this.state
+    let param = {
+      friendid: friendId
+    }
+    get(SOCIAL_NET_WORK_API, "Friends/AddOrDeleteInviateFriends" + objToQuery(param), (result) => {
+      if (result && result.result == 1) {
+        allUsers.map((user) => {
+          if (user.friendid == friendId) {
+            user.status = user.status == 1 ? 0 : 1
+          }
+        })
+        this.setState({
+          suggestFriends: suggestFriends.filter(friend => friend.friendid != friendId),
+          waitings: waitings.filter(friend => friend.friendid != friendId),
+          allUsers: allUsers
+        })
+      }
+    })
+  }
+  removeSuggest(friendId) {
+    let {
+      suggestFriends
+    } = this.state
+    this.setState({
+      suggestFriends: suggestFriends.filter(friend => friend.friendid != friendId)
+    })
+  }
+
+  acceptFriend(friend) {
+    let {
+      queues,
+      friends
+    } = this.state
+    let param = {
+      friendid: friend.friendid
+    }
+    if (!friend) return
+    get(SOCIAL_NET_WORK_API, "Friends/AcceptFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          queues: queues.filter(friend => friend.friendid != friend.friendid),
+          friends: [friend].concat(friends)
+        })
+      }
+    })
+  }
+
+  removeFriend(friendid) {
+    let {
+      friends,
+      allUsers
+    } = this.state
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/RemoveFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          friends: friends.filter(friend => friend.friendid != friendid),
+          allUsers: allUsers.filter(friend => friend.friendid != friendid),
+          showFriendActionsDrawer: false
+        })
+      }
+    })
+  }
+
+  bandFriend(friendid) {
+    let {
+      friends,
+      allUsers,
+    } = this.state
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/BandFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          friends: friends.filter(friend => friend.friendid != friendid),
+          showFriendActionsDrawer: false,
+          rejectFriends: [],
+          isEndOfRejectFriends: false,
+          rejectFriendsCurrentPage: 0
+        })
+        this.getRejectFriends(0, 0)
+      }
+    })
+  }
+
+  unBandFriend(friendid) {
+    let {
+      rejectFriends
+    } = this.state
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/RemoveBandFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          rejectFriends: rejectFriends.filter(friend => friend.friendid != friendid),
+          showFriendActionsDrawer: false
+        })
+      }
+    })
+  }
+
+  unFolowFriend(friendid) {
+    let {
+      friends,
+      allUsers
+    } = this.state
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/UnFollowFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        friends.map(friend => {
+          if (friend.friendid == friendid) friend.ismefollow = 0
+        })
+        this.setState({
+          friends: friends,
+          allUsers: allUsers,
+          showFriendActionsDrawer: false
+        })
+      }
+    })
+  }
+
+  folowFriend(friendid) {
+    let {
+      friends,
+      allUsers
+    } = this.state
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/FollowFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        friends.map(friend => {
+          if (friend.friendid == friendid) friend.ismefollow = 1
+        })
+        this.setState({
+          friends: friends,
+          allUsers: allUsers,
+          showFriendActionsDrawer: false
+        })
+      }
+    })
   }
 
   onSelectAvatarFile = files => {
@@ -133,8 +335,6 @@ class Index extends React.Component {
       reader.readAsDataURL(files[0]);
     }
   };
-
-
 
   updateAvatar() {
     let {
@@ -270,39 +470,83 @@ class Index extends React.Component {
 
     })
   }
-  getHistoryPoint() {
+
+  getHistoryPoint(historyPointCurrentPage) {
     let {
-      historyPointCurrentPage
+      historyPoints
     } = this.state
     let param = {
       currentpage: historyPointCurrentPage,
       currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
       limit: 20
     }
+    this.setState({
+      isLoadHistory: true
+    })
     get(SOCIAL_NET_WORK_API, "User/GetHistoryPoint" + objToQuery(param), result => {
-      console.log("User/GetHistoryPoint", result)
       if (result && result.result == 1) {
         this.setState({
-          historyPoints: result.content.histories
+          historyPoints: historyPoints.concat(result.content.histories),
         })
+        if (result.content.histories.length == 0) {
+          this.setState({
+            isEndOfList: true
+          })
+        }
       }
+      this.setState({
+        isLoadHistory: false,
+      })
     })
   }
 
-  getFriends() {
+  onScroll() {
+    let element = $("#history-list")
+    let {
+      isEndOfList,
+      historyPointCurrentPage,
+      isLoadHistory
+    } = this.state
+    if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+      if (isLoadHistory == false && isEndOfList == false) {
+        this.setState({
+          historyPointCurrentPage: historyPointCurrentPage + 1,
+          isLoadMoreGroup: true
+        }, () => {
+          this.getHistoryPoint(historyPointCurrentPage + 1)
+        })
+      }
+    }
+  }
+
+  getFriends(currentpage) {
+    let {
+      friends,
+      searchKey
+    } = this.state
     let param = {
-      currentpage: 0,
+      currentpage: currentpage,
       currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
-      limit: 6,
+      limit: 20,
       status: "Friends",
       forFriendId: 0,
-      groupid: 0
+      groupid: 0,
+      findstring: searchKey
     }
+    this.setState({
+      isLoadMore: true
+    })
     get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
       if (result.result == 1) {
         this.setState({
-          friends: result.content.userInvites
+          friends: friends.concat(result.content.userInvites),
+          isLoadMore: false
         })
+        if (result.content.userInvites.length == 0) {
+          this.setState({
+            isEndOfFriends: true
+          })
+        }
       }
     })
   }
@@ -390,12 +634,65 @@ class Index extends React.Component {
     })
   }
 
+  getTotalPoint(history) {
+    let output = 0
+    history.groupProjectPoints.map(groupProjectPoint => {
+      groupProjectPoint.groupMemberPoints.map(groupMemberPoint => {
+        groupMemberPoint.actionGroupPoints.map(actionGroupPoint => {
+          actionGroupPoint.memberPoints.map(point => {
+            output += point.point
+          })
+        })
+      })
+    })
+    return output
+  }
+
+  onBlockedScroll() {
+    let element = $("#friend-blocked")
+    let {
+      rejectFriendsCurrentPage,
+      isEndOfRejectFriends,
+      isLoadMore
+    } = this.state
+    if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+      if (isLoadMore == false && isEndOfRejectFriends == false) {
+        this.setState({
+          rejectFriendsCurrentPage: rejectFriendsCurrentPage + 1,
+          isLoadMoreGroup: true
+        }, () => {
+          this.getRejectFriends(0, rejectFriendsCurrentPage + 1)
+        })
+      }
+    }
+  }
+
+  onAllFriendScrool() {
+    let element = $("#all-friend-for-block")
+    let {
+      friendsCurrentPage,
+      isEndOfFriends,
+      isLoadMore
+    } = this.state
+    if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+      if (isLoadMore == false && isEndOfFriends == false) {
+        this.setState({
+          friendsCurrentPage: friendsCurrentPage + 1,
+          isLoadMoreGroup: true
+        }, () => {
+          this.getFriends(friendsCurrentPage + 1)
+        })
+      }
+    }
+  }
+
   componentWillMount() {
-    this.getFriends()
+    this.getFriends(0)
     this.getNumOfFriend()
     this.props.addFooterContent(renderFooter(this))
     this.props.toggleHeader(false)
     this.props.toggleFooter(true)
+    this.getRejectFriends(0, 0)
   }
   componentDidMount() {
 
@@ -405,7 +702,6 @@ class Index extends React.Component {
         showUserMenu: true
       })
     }
-
   }
   render() {
     let {
@@ -437,11 +733,11 @@ class Index extends React.Component {
 
         </div>
 
-        <div className="user-avatar" style={{ background: "url(" + profile.avatar + ")" }}>
+        <div className="user-avatar" >
           <div className="overlay" onClick={() => {
             this.props.setMediaToViewer(profile.listAvatar)
             this.props.toggleMediaViewerDrawer(true, { canDownload: true, showInfo: true })
-          }}></div>
+          }} style={{ background: "url(" + profile.avatar + ")" }}></div>
           <Dropzone onDrop={acceptedFiles => this.onSelectAvatarFile(acceptedFiles)}>
             {({ getRootProps, getInputProps }) => (
               <div {...getRootProps()}>
@@ -523,7 +819,7 @@ class Index extends React.Component {
           {
             friends && friends.length > 0 ? <div className="friend-list">
               {
-                friends.map((item, index) => <div key={index} className="friend-item" onClick={() => {
+                friends.slice(0, 6).map((item, index) => <div key={index} className="friend-item" onClick={() => {
                   this.props.setCurrenUserDetail(item)
                   this.props.toggleUserPageDrawer(true)
                 }}>
@@ -531,6 +827,7 @@ class Index extends React.Component {
                     <div className="image" style={{ background: "url(" + item.friendavatar + ")" }}></div>
                   </div>
                   <span className="name">{item.friendname}</span>
+                  <span className="mutual-friend-count">{item.numfriendwith} bạn chung</span>
                 </div>)
               }
             </div> : ""
@@ -542,6 +839,7 @@ class Index extends React.Component {
             <img src={search}></img>
             <span>Tìm bạn bè</span>
           </div>
+          <Button className="bt-submit mt20" onClick={() => this.setState({ showAllFriendsDrawer: true })}>Xem tất cả bạn bè</Button>
         </div>
 
         <div className="post-bt" onClick={() => this.props.togglePostDrawer(true)}>
@@ -601,6 +899,16 @@ class Index extends React.Component {
         {
           renderBackgroundCropperDrawer(this)
         }
+        {
+          renderAllFriendsDrawer(this)
+        }
+
+        {
+          renderConfirmDrawer(this)
+        }
+        {
+          renderFriendActionsDrawer(this)
+        }
       </div> : ""
     );
   }
@@ -632,44 +940,14 @@ const mapDispatchToProps = dispatch => ({
   setUserProfile: (user) => dispatch(setUserProfile(user)),
   getFolowedMe: (currentpage) => dispatch(getFolowedMe(currentpage)),
   getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage)),
+  toggleSeachFriends: (isShow) => dispatch(toggleSeachFriends(isShow)),
+  setCurrentFriendId: (friendId) => dispatch(setCurrentFriendId(friendId))
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Index);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -731,10 +1009,11 @@ const renderFooter = (component) => {
 
 const renderUserMenuDrawer = (component) => {
   let {
-    showUserMenu
+    showUserMenu,
+    isLoadHistory
   } = component.state
   return (
-    <Drawer anchor="right" className="user-menu" open={showUserMenu} onClose={() => component.setState({ showUserMenu: false })}>
+    <Drawer anchor="right" className="user-menu full" open={showUserMenu} onClose={() => component.setState({ showUserMenu: false })}>
       <div className="menu-header">
         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showUserMenu: false })}>
           <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
@@ -749,7 +1028,7 @@ const renderUserMenuDrawer = (component) => {
           <Button onClick={() => {
             component.props.setCurrenUserDetail(data)
             component.props.toggleUserHistory(true)
-            component.getHistoryPoint()
+            component.getHistoryPoint(0)
           }}>Lịch sử tích điểm</Button>
         </li>
         <li>
@@ -764,6 +1043,7 @@ const renderUserMenuDrawer = (component) => {
           <Button style={{ background: "#ff5a59" }} onClick={() => signOut()}>Đăng xuất tài khoản</Button>
         </li>
       </ul>
+
     </Drawer>
   )
 }
@@ -801,7 +1081,8 @@ const renderUserHistoryDrawer = (component) => {
     userDetail
   } = component.props
   let {
-    historyPoints
+    historyPoints,
+    isLoadHistory
   } = component.state
 
   console.log("historyPoints", historyPoints)
@@ -830,7 +1111,7 @@ const renderUserHistoryDrawer = (component) => {
             </div>
           </div>
           <div className="filter"></div>
-          <div style={{ overflow: "scroll", width: "100vw" }}>
+          <div style={{ overflow: "scroll", width: "100vw" }} id="history-list" onScroll={() => component.onScroll()}>
             {
 
               historyPoints && historyPoints.length > 0 ? <ul className="user-history">
@@ -839,94 +1120,53 @@ const renderUserHistoryDrawer = (component) => {
                   historyPoints.map((history, index) => <li key={index}>
                     <div className="date"><span>{renderVNDays(moment(history.datetype))}, {moment(moment(history.datetype)).format("DD-MM-YYYY")}</span></div>
                     {
-                      history.groupProjectPoints.map((e, index) => <div className="list" key={index}>
-                        <label><PlayArrowIcon />{e.title}</label>
+                      history.groupProjectPoints.map((groupProjectPoint, index) => <div className="list" key={index}>
+                        <label><PlayArrowIcon />{groupProjectPoint.title}</label>
                         <ul>
                           {
-                            e.groupMemberPoints[0] && e.groupMemberPoints[0].actionGroupPoints[0].memberPoints.map((item, index) => <li key={index}>
-                              <span>{item.pointpolicyname}</span>
-                              <span>+{item.point}</span>
-                            </li>)
-                          }
-                        </ul>
-                        <ul>
-                          {
-                            e.groupMemberPoints[1] && e.groupMemberPoints[0].actionGroupPoints[0].memberPoints.map((item, index) => <li key={index}>
-                              <span>{item.pointpolicyname}</span>
-                              <span>+{item.point}</span>
-                            </li>)
+                            groupProjectPoint.groupMemberPoints
+                            && groupProjectPoint.groupMemberPoints.length > 0
+                            && groupProjectPoint.groupMemberPoints.map((groupMemberPoint, index) => <span key={index}>
+                              {
+                                groupMemberPoint.title != "" ? <span className="project">{groupMemberPoint.title}</span> : ""
+                              }
+                              {
+                                groupMemberPoint.actionGroupPoints
+                                && groupMemberPoint.actionGroupPoints.length > 0
+                                && groupMemberPoint.actionGroupPoints.map((actionGroupPoint, index) => <span key={index}>
+                                  {
+                                    actionGroupPoint.title != "" ? <span className="member">{actionGroupPoint.title}</span> : ""
+                                  }
+                                  {
+                                    actionGroupPoint.memberPoints
+                                    && actionGroupPoint.memberPoints.length > 0
+                                    && actionGroupPoint.memberPoints.map((memberPoint, index) => <span key={index} className="point">
+                                      <span>{memberPoint.pointpolicyname}</span>
+                                      <span>+{memberPoint.point}</span>
+                                    </span>)
+                                  }
+                                </span>)
+                              }
+                            </span>)
                           }
                         </ul>
                       </div>)
                     }
-                    {/* {
-                      history.groupProjectPoints.map((e, index) => <div className="list" key={index}>
-                        <label><PlayArrowIcon />{e.title}</label>
-                        <ul>
-                          {
-                            e.groupMemberPoints.map((e, index) => <li key={index}>
-                              {
-                                e.title != "" ? <span>{e.title}</span> : ""
-                              }
-                            </li>)
-                          }
-                          {}
-                        </ul>
-                      </div>)
-                    } */}
+                    <div className="total">
+                      <span>Tổng điểm/ngày</span>
+                      <span>{component.getTotalPoint(history)}</span>
+                    </div>
                   </li>)
                 }
-                <li>
-                  <div className="date"><span>{renderVNDays(new Date)}, {moment(new Date).format("DD-MM-YYYY")}</span></div>
-                  <div className="list">
-                    <label><PlayArrowIcon /> Cộng đồng</label>
-                    <ul>
-                      <li>
-                        <span>Đăng bài viết</span>
-                        <span>+300 <img src={coin} /></span>
-                      </li>
-                      <li>
-                        <span>Đăng bài viết</span>
-                        <span>+300 <img src={coin} /></span>
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="list">
-                    <label><PlayArrowIcon /> Kỹ năng</label>
-                  </div>
-                  <div className="total">
-                    <span>Tổng điểm / ngày</span>
-                    <span>600 <img src={coin} /></span>
-                  </div>
-                </li>
-                <li>
-                  <div className="date"><span>{renderVNDays(new Date)}, {moment(new Date).format("DD-MM-YYYY")}</span></div>
-                  <div className="list">
-                    <label><PlayArrowIcon /> Cộng đồng</label>
-                    <ul>
-                      <li>
-                        <span>Đăng bài viết</span>
-                        <span>+300 <img src={coin} /></span>
-                      </li>
-                      <li>
-                        <span>Đăng bài viết</span>
-                        <span>+300 <img src={coin} /></span>
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="list">
-                    <label><PlayArrowIcon /> Kỹ năng</label>
-                  </div>
-                  <div className="total">
-                    <span>Tổng điểm / ngày</span>
-                    <span>600 <img src={coin} /></span>
-                  </div>
-                </li>
+                {
+                  isLoadHistory ? <div style={{ height: "50px" }}><Loader type="small" /></div> : ""
+                }
               </ul> : ""
             }
           </div>
         </div> : ""
       }
+
     </Drawer>
   )
 }
@@ -1047,6 +1287,9 @@ const renderBlockFriendDrawer = (component) => {
   let {
     showBlockFriendForm
   } = component.props
+  let {
+    rejectFriends
+  } = component.state
   return (
     <Drawer anchor="right" open={showBlockFriendForm} onClose={() => component.props.toggleBlockFriendForm(false)}>
       <div className="drawer-detail block-friend-form">
@@ -1058,12 +1301,38 @@ const renderBlockFriendDrawer = (component) => {
             <label>Danh sách chặn</label>
           </div>
         </div>
-        <div className="filter"></div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="filter">
           <p>Bạn và người bị chặn sẽ không thể nhìn thấy nhau. Nếu bạn bỏ chặn người này có thể xem dòng thời gian của bạn hoặc liên hệ với bạn.</p>
           <div className="add-bt" onClick={() => component.props.toggleFriendsForBlockForm(true)}>
             <AddCircleOutlineIcon />
             <span>Thêm vào danh sách chặn</span>
+          </div>
+        </div>
+        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} id="friend-blocked" onScroll={() => component.onBlockedScroll()}>
+          <div className="friend-list" >
+            {
+              rejectFriends && rejectFriends.length > 0 ? <ul>
+                {
+                  rejectFriends.map((item, index) => <li key={index} className="friend-layout" >
+                    <div onClick={() => {
+                      this.props.setCurrenUserDetail(item)
+                      this.props.toggleUserPageDrawer(true)
+                    }}>
+                      <Avatar aria-label="recipe" className="avatar">
+                        <img src={item.friendavatar} style={{ width: "100%" }} />
+                      </Avatar>
+                      <label onClick={() => {
+                        this.props.setCurrenUserDetail(item)
+                        this.props.toggleUserPageDrawer(true)
+                      }}>{item.friendname}</label>
+                    </div>
+                    <div className="action">
+                      <Button className="bt-cancel" onClick={() => component.unBandFriend(item.friendid)}>Bỏ chặn</Button>
+                    </div>
+                  </li>)
+                }
+              </ul> : ""
+            }
           </div>
         </div>
       </div>
@@ -1073,7 +1342,9 @@ const renderBlockFriendDrawer = (component) => {
 
 const renderFriendsForBlockDrawer = (component) => {
   let {
-    searchKey
+    searchKey,
+    friends,
+    friendsCurrentPage
   } = component.state
   let {
     showFriendsForBlockForm
@@ -1089,8 +1360,7 @@ const renderFriendsForBlockDrawer = (component) => {
             <label>Tìm kiếm bạn bè</label>
           </div>
         </div>
-        <div className="filter"></div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="filter" >
           <TextField
             className="custom-input"
             variant="outlined"
@@ -1101,7 +1371,91 @@ const renderFriendsForBlockDrawer = (component) => {
               margin: "10px 0px",
             }}
             value={searchKey}
-            onChange={e => component.setState({ searchKey: e.target.value })}
+            onChange={e => component.setState({
+              searchKey: e.target.value,
+              friends: [],
+              isEndOfFriends: false,
+              friendsCurrentPage: 0
+            }, () => component.getFriends(friendsCurrentPage))}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <img src={search} style={{ width: "20px" }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </div>
+        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} id="all-friend-for-block" onScroll={() => component.onAllFriendScrool()}>
+          <div className="friend-list" >
+            {
+              friends && friends.length > 0 ? <ul>
+                {
+                  friends.map((item, index) => <li key={index} className="friend-layout" >
+                    <div onClick={() => {
+                      this.props.setCurrenUserDetail(item)
+                      this.props.toggleUserPageDrawer(true)
+                    }}>
+                      <Avatar aria-label="recipe" className="avatar">
+                        <img src={item.friendavatar} style={{ width: "100%" }} />
+                      </Avatar>
+                      <label onClick={() => {
+                        this.props.setCurrenUserDetail(item)
+                        this.props.toggleUserPageDrawer(true)
+                      }}>{item.friendname}</label>
+                    </div>
+                    <div className="action">
+                      <Button className="bt-submit"
+                        onClick={() => component.setState({
+                          okCallback: () => component.bandFriend(item.friendid),
+                          confirmTitle: "",
+                          confirmMessage: "Bạn có chắc chắn muốn chặn người này không? Bạn và người bị chặn sẽ không thể nhìn thấy nhau, đồng thời nếu đang là bạn bè, việc chặn này cũng sẽ huỷ kết bạn của nhau.",
+                          showConfim: true
+                        })}>Chặn</Button>
+                    </div>
+                  </li>)
+                }
+              </ul> : ""
+            }
+          </div>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+const renderAllFriendsDrawer = (component) => {
+  let {
+    friends,
+    showAllFriendsDrawer
+  } = component.state
+  let {
+    profile
+  } = component.props
+  return (
+    <Drawer anchor="bottom" className="find-friends" open={showAllFriendsDrawer} >
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction"
+            onClick={() =>
+              component.setState({ showAllFriendsDrawer: false })
+            }>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Tìm bạn bè</label>
+          </div>
+        </div>
+        <div className="filter">
+          <TextField
+            className="custom-input"
+            variant="outlined"
+            placeholder="Nhập tên bạn bè để tìm kiếm"
+            className="search-box"
+            style={{
+              width: "calc(100% - 20px",
+              margin: "0px 0px 10px 10px",
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -1109,9 +1463,119 @@ const renderFriendsForBlockDrawer = (component) => {
                 </InputAdornment>
               ),
             }}
+            onClick={() => {
+              component.props.toggleSeachFriends(true)
+              component.props.setCurrentFriendId(profile.id)
+            }}
           />
         </div>
+        <div style={{ overflow: "scroll", width: "100vw" }} id="all-user-list" onScroll={() => component.onAllUserScroll()}>
+          <div className="friend-list" >
+            <ul>
+              {
+                friends.map((item, index) => <li key={index} className="friend-layout">
+                  <div className="friend-info" >
+                    <Avatar aria-label="recipe" className="avatar">
+                      <img src={item.friendavatar} style={{ width: "100%" }} />
+                    </Avatar>
+                    <label>
+                      <span className="name">{item.friendname}</span>
+                      <span className="with-friend">{item.numfriendwith} bạn chung</span>
+                    </label>
+                  </div>
+                  <div className="action">
+
+                    {
+                      item.status == 0 ? <Button className="bt-submit" onClick={() => component.addFriend(item.friendid)}>Kết bạn</Button> : ""
+                    }
+                    {
+                      item.status == 1 ? <Button className="bt-cancel" onClick={() => component.setState({
+                        okCallback: () => component.addFriend(item.friendid),
+                        confirmTitle: "",
+                        confirmMessage: "Bạn có chắc chắn muốn huỷ yêu cầu kết bạn này không?",
+                        showConfim: true
+                      })}>Huỷ</Button> : ""
+                    }
+                    {
+                      item.status == 10 ? <IconButton onClick={() => component.setState({
+                        showFriendActionsDrawer: true,
+                        currentFriend: item
+                      })}><MoreHorizIcon /></IconButton> : ""
+                    }
+                  </div>
+                </li>)
+              }
+            </ul>
+          </div>
+        </div>
       </div>
+    </Drawer>
+  )
+}
+
+const renderConfirmDrawer = (component) => {
+  let {
+    showConfim,
+    okCallback,
+    confirmTitle,
+    confirmMessage
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="confirm-drawer" open={showConfim} onClose={() => component.setState({ showConfim: false })}>
+      <div className='jon-group-confirm'>
+        <label>{confirmTitle}</label>
+        <p>{confirmMessage}</p>
+        <div className="mt20">
+          <Button className="bt-confirm" onClick={() => component.setState({ showConfim: false }, () => okCallback ? okCallback() : null)}>Đồng ý</Button>
+          <Button className="bt-submit" onClick={() => component.setState({ showConfim: false })}>Đóng</Button>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+const renderFriendActionsDrawer = (component) => {
+  let {
+    currentFriend,
+    showFriendActionsDrawer
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="friend-actions-drawer" open={showFriendActionsDrawer} onClose={() => component.setState({ showFriendActionsDrawer: false })}>
+      {
+        currentFriend ? <div className="drawer-content">
+          <ul>
+            {
+              currentFriend.ismefollow == 1 ? <li onClick={() => component.setState({
+                okCallback: () => component.unFolowFriend(currentFriend.friendid),
+                confirmTitle: "",
+                confirmMessage: "Bạn có chắc muốn bỏ theo dõi người này không?",
+                showConfim: true
+              })}>
+                <label>Bỏ theo dõi ( {currentFriend.friendname} )</label>
+                <span>Không nhìn thấy các hoạt động của nhau nữa nhưng vẫn là bạn bè.</span>
+              </li> : <li onClick={() => component.folowFriend(currentFriend.friendid)}>
+                  <label>Theo dõi ( {currentFriend.friendname} )</label>
+                  <span>Nhìn thấy các hoạt động của nhau.</span>
+                </li>
+            }
+            <li onClick={() => component.setState({
+              okCallback: () => component.bandFriend(currentFriend.friendid),
+              confirmTitle: "",
+              confirmMessage: "Bạn có chắc chắn muốn chặn người này không? Bạn và người bị chặn sẽ không thể nhìn thấy nhau, đồng thời nếu đang là bạn bè, việc chặn này cũng sẽ huỷ kết bạn của nhau.",
+              showConfim: true
+            })}>
+              <label>Chặn ( {currentFriend.friendname} )</label>
+              <span>Bạn và người này sẽ không nhìn thấy nhau.</span>
+            </li>
+          </ul>
+          <Button className="bt-submit" onClick={() => component.setState({
+            okCallback: () => component.removeFriend(currentFriend.friendid),
+            confirmTitle: "",
+            confirmMessage: "Bạn có chắc chắn muốn xoá người này khỏi danh sách bạn bè không?",
+            showConfim: true
+          })}>Huỷ kết bạn</Button>
+        </div> : ''
+      }
     </Drawer>
   )
 }
@@ -1321,15 +1785,15 @@ const renderUpdateAvatarReviewDrawer = (component) => {
         <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
           <div className="post-content">
             <MultiInput
-              useHashtags={true}
-              useMentions={true}
+              useHashtags={false}
+              useMentions={false}
               placeholder="Nhập nội dung"
-              onChange={(value) => component.setState({ postContent: value })} 
+              onChange={(value) => console.log(value)}
               userOptions={[
-                {fullname : 'User 1'},
-                {fullname : 'User 2'},
-                {fullname : 'User 3'}
-              ]}/>
+                { fullname: 'User 1' },
+                { fullname: 'User 2' },
+                { fullname: 'User 3' }
+              ]} />
           </div>
           <div className="profile-page" >
             <div className="cover-img" style={{ background: "url(" + profile.avatar + ")" }}>
@@ -1415,7 +1879,16 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
           <div className="post-content">
             <MultiInput
               placeholder="Nhập nội dung"
-              onChange={(value) => component.setState({ postContent: value })} />
+              onChange={(value) => console.log(value)}
+              useHashtags={false}
+              useMentions={false}
+              userOptions={[
+                { fullname: 'User 1' },
+                { fullname: 'User 2' },
+                { fullname: 'User 3' }
+              ]}
+            />
+
           </div>
           <div className="profile-page" >
             <div className="cover-img" style={{ background: "url(" + (backgroundToUpload && backgroundToUpload.file ? URL.createObjectURL(backgroundToUpload.file) : profile.background) + ")" }}>

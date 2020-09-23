@@ -21,7 +21,9 @@ import {
     TOGGLE_STYLE_TEST_DRAWER,
     TOGGLE_YOUR_JOB_DRAWER,
     TOGGLE_DISC_DRAWER,
-    TOGGLE_YOUR_MAJORS_DRAWER
+    TOGGLE_YOUR_MAJORS_DRAWER,
+    TOGGLE_SEARCH_FRIENDS_DRAWER,
+    SET_CURRENT_FRIEND_ID
 } from '../actions/app'
 
 const initialState = {
@@ -49,7 +51,9 @@ const initialState = {
     showStyleTestPage: false,
     showYourJobPage: false,
     showDISCDrawer: false,
-    showYourMajorsPage: false
+    showYourMajorsPage: false,
+    showSearchFriendDrawer: false,
+    currentFriendId: null
 };
 
 export default (state = initialState, action) => {
@@ -176,6 +180,16 @@ export default (state = initialState, action) => {
             });
         }
 
+        case TOGGLE_SEARCH_FRIENDS_DRAWER: {
+            return Object.assign({}, state, {
+                showSearchFriendDrawer: action.payload,
+            });
+        }
+        case SET_CURRENT_FRIEND_ID: {
+            return Object.assign({}, state, {
+                currentFriendId: action.payload,
+            });
+        }
 
 
         default:

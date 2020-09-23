@@ -63,6 +63,7 @@ import { postFormData, get, post } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import { showNotification, objToQuery, jsonFromUrlParams } from "../../utils/common";
 import { signIn } from '../../auth'
+import $ from 'jquery'
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/ProfileBW.png')
@@ -104,12 +105,22 @@ class Index extends React.Component {
       oldPassForChange: "",
       newPassForChange: "",
       confirmPassForChange: "",
+      isEndOfList: false,
+      historyPoints: [],
       crop: {
         unit: '%',
         width: 100,
         height: 100
         // aspect: 16 / 16,
       },
+      friends: [],
+      rejectFriends: [],
+      rejectFriendsCurrentPage: 0,
+      isEndOfRejectFriends: false,
+      isLoadMore: false,
+      friendsCurrentPage: 0,
+      isEndOfFriends: false,
+      searchKey: ""
     };
   }
 
@@ -129,8 +140,6 @@ class Index extends React.Component {
       reader.readAsDataURL(files[0]);
     }
   };
-
-
 
   updateAvatar() {
     let {
@@ -266,6 +275,7 @@ class Index extends React.Component {
 
     })
   }
+
   getHistoryPoint() {
     let {
       historyPointCurrentPage
@@ -280,6 +290,47 @@ class Index extends React.Component {
       if (result.staus == 1) {
         this.setState({
           historyPoints: result.content.histories
+        })
+      }
+    })
+  }
+
+  bandFriend(friendid) {
+    let {
+      friends,
+      allUsers,
+    } = this.state
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/BandFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          friends: friends.filter(friend => friend.friendid != friendid),
+          showFriendActionsDrawer: false,
+          rejectFriends: [],
+          isEndOfRejectFriends: false,
+          rejectFriendsCurrentPage: 0
+        })
+        this.getRejectFriends(0, 0)
+      }
+    })
+  }
+
+  unBandFriend(friendid) {
+    let {
+      rejectFriends
+    } = this.state
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/RemoveBandFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          rejectFriends: rejectFriends.filter(friend => friend.friendid != friendid),
+          showFriendActionsDrawer: false
         })
       }
     })
@@ -353,11 +404,175 @@ class Index extends React.Component {
     })
   }
 
+  getHistoryPoint(historyPointCurrentPage) {
+    let {
+      historyPoints
+    } = this.state
+    let param = {
+      currentpage: historyPointCurrentPage,
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      limit: 20
+    }
+    this.setState({
+      isLoadHistory: true
+    })
+    get(SOCIAL_NET_WORK_API, "User/GetHistoryPoint" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          historyPoints: historyPoints.concat(result.content.histories),
+        })
+        if (result.content.histories.length == 0) {
+          this.setState({
+            isEndOfList: true
+          })
+        }
+      }
+      this.setState({
+        isLoadHistory: false,
+      })
+    })
+  }
+
+  onScroll() {
+    let element = $("#history-list")
+    let {
+      isEndOfList,
+      historyPointCurrentPage,
+      isLoadHistory
+    } = this.state
+    if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+      if (isLoadHistory == false && isEndOfList == false) {
+        this.setState({
+          historyPointCurrentPage: historyPointCurrentPage + 1,
+          isLoadMoreGroup: true
+        }, () => {
+          this.getHistoryPoint(historyPointCurrentPage + 1)
+        })
+      }
+    }
+  }
+
+  getFriends(currentpage) {
+    let {
+      friends,
+      searchKey
+    } = this.state
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      limit: 20,
+      status: "Friends",
+      forFriendId: 0,
+      groupid: 0,
+      findstring: searchKey
+    }
+    this.setState({
+      isLoadMore: true
+    })
+    get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
+      if (result.result == 1) {
+        this.setState({
+          friends: friends.concat(result.content.userInvites),
+          isLoadMore: false
+        })
+        if (result.content.userInvites.length == 0) {
+          this.setState({
+            isEndOfFriends: true
+          })
+        }
+      }
+    })
+  }
+
+  onBlockedScroll() {
+    let element = $("#friend-blocked")
+    let {
+      rejectFriendsCurrentPage,
+      isEndOfRejectFriends,
+      isLoadMore
+    } = this.state
+    if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+      if (isLoadMore == false && isEndOfRejectFriends == false) {
+        this.setState({
+          rejectFriendsCurrentPage: rejectFriendsCurrentPage + 1,
+          isLoadMoreGroup: true
+        }, () => {
+          this.getRejectFriends(0, rejectFriendsCurrentPage + 1)
+        })
+      }
+    }
+  }
+
+  onAllFriendScrool() {
+    let element = $("#all-friend-for-block")
+    let {
+      friendsCurrentPage,
+      isEndOfFriends,
+      isLoadMore
+    } = this.state
+    if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+      if (isLoadMore == false && isEndOfFriends == false) {
+        this.setState({
+          friendsCurrentPage: friendsCurrentPage + 1,
+          isLoadMoreGroup: true
+        }, () => {
+          this.getFriends(friendsCurrentPage + 1)
+        })
+      }
+    }
+  }
+
+  getTotalPoint(history) {
+    let output = 0
+    history.groupProjectPoints.map(groupProjectPoint => {
+      groupProjectPoint.groupMemberPoints.map(groupMemberPoint => {
+        groupMemberPoint.actionGroupPoints.map(actionGroupPoint => {
+          actionGroupPoint.memberPoints.map(point => {
+            output += point.point
+          })
+        })
+      })
+    })
+    return output
+  }
+
+  getRejectFriends(userId, currentpage) {
+    let {
+      rejectFriends
+    } = this.state
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      limit: 20,
+      status: "Reject",
+      forFriendId: userId,
+      groupid: 0
+    }
+    this.setState({
+      isLoadMore: true
+    })
+    get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
+      if (result.result == 1) {
+        this.setState({
+          rejectFriends: rejectFriends.concat(result.content.userInvites),
+          isLoadMore: false
+        })
+        if (result.content.userInvites.length == 0) {
+          this.setState({
+            isEndOfRejectFriends: true
+          })
+        }
+      }
+    })
+  }
+
   componentWillMount() {
     this.props.addFooterContent(renderFooter(this))
     this.props.addHeaderContent(renderHeader(this))
     this.props.toggleHeader(true)
     this.props.toggleFooter(true)
+    this.getRejectFriends(0, 0)
+    this.getFriends(0)
   }
   componentDidMount() {
 
@@ -388,7 +603,7 @@ class Index extends React.Component {
               <Button onClick={() => {
                 this.props.setCurrenUserDetail(data)
                 this.props.toggleUserHistory(true)
-                this.getHistoryPoint()
+                this.getHistoryPoint(0)
               }}>Lịch sử tích điểm</Button>
             </li>
             <li>
@@ -422,6 +637,9 @@ class Index extends React.Component {
         }
         {
           renderFriendsForBlockDrawer(this)
+        }
+        {
+          renderConfirmDrawer(this)
         }
       </div> : ""
     );
@@ -628,6 +846,12 @@ const renderUserHistoryDrawer = (component) => {
     showUserHistory,
     userDetail
   } = component.props
+  let {
+    historyPoints,
+    isLoadHistory
+  } = component.state
+
+  console.log("historyPoints", historyPoints)
   return (
     <Drawer anchor="right" open={showUserHistory} onClose={() => component.props.toggleUserHistory(false)}>
       {
@@ -653,58 +877,62 @@ const renderUserHistoryDrawer = (component) => {
             </div>
           </div>
           <div className="filter"></div>
-          <div style={{ overflow: "scroll", width: "100vw" }}>
-            <ul className="user-history">
-              <li>
-                <div className="date"><span>{renderVNDays(new Date)}, {moment(new Date).format("DD-MM-YYYY")}</span></div>
-                <div className="list">
-                  <label><PlayArrowIcon /> Cộng đồng</label>
-                  <ul>
-                    <li>
-                      <span>Đăng bài viết</span>
-                      <span>+300 <img src={coin} /></span>
-                    </li>
-                    <li>
-                      <span>Đăng bài viết</span>
-                      <span>+300 <img src={coin} /></span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="list">
-                  <label><PlayArrowIcon /> Kỹ năng</label>
-                </div>
-                <div className="total">
-                  <span>Tổng điểm / ngày</span>
-                  <span>600 <img src={coin} /></span>
-                </div>
-              </li>
-              <li>
-                <div className="date"><span>{renderVNDays(new Date)}, {moment(new Date).format("DD-MM-YYYY")}</span></div>
-                <div className="list">
-                  <label><PlayArrowIcon /> Cộng đồng</label>
-                  <ul>
-                    <li>
-                      <span>Đăng bài viết</span>
-                      <span>+300 <img src={coin} /></span>
-                    </li>
-                    <li>
-                      <span>Đăng bài viết</span>
-                      <span>+300 <img src={coin} /></span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="list">
-                  <label><PlayArrowIcon /> Kỹ năng</label>
-                </div>
-                <div className="total">
-                  <span>Tổng điểm / ngày</span>
-                  <span>600 <img src={coin} /></span>
-                </div>
-              </li>
-            </ul>
+          <div style={{ overflow: "scroll", width: "100vw" }} id="history-list" onScroll={() => component.onScroll()}>
+            {
+
+              historyPoints && historyPoints.length > 0 ? <ul className="user-history">
+
+                {
+                  historyPoints.map((history, index) => <li key={index}>
+                    <div className="date"><span>{renderVNDays(moment(history.datetype))}, {moment(moment(history.datetype)).format("DD-MM-YYYY")}</span></div>
+                    {
+                      history.groupProjectPoints.map((groupProjectPoint, index) => <div className="list" key={index}>
+                        <label><PlayArrowIcon />{groupProjectPoint.title}</label>
+                        <ul>
+                          {
+                            groupProjectPoint.groupMemberPoints
+                            && groupProjectPoint.groupMemberPoints.length > 0
+                            && groupProjectPoint.groupMemberPoints.map((groupMemberPoint, index) => <span key={index}>
+                              {
+                                groupMemberPoint.title != "" ? <span className="project">{groupMemberPoint.title}</span> : ""
+                              }
+                              {
+                                groupMemberPoint.actionGroupPoints
+                                && groupMemberPoint.actionGroupPoints.length > 0
+                                && groupMemberPoint.actionGroupPoints.map((actionGroupPoint, index) => <span key={index}>
+                                  {
+                                    actionGroupPoint.title != "" ? <span className="member">{actionGroupPoint.title}</span> : ""
+                                  }
+                                  {
+                                    actionGroupPoint.memberPoints
+                                    && actionGroupPoint.memberPoints.length > 0
+                                    && actionGroupPoint.memberPoints.map((memberPoint, index) => <span key={index} className="point">
+                                      <span>{memberPoint.pointpolicyname}</span>
+                                      <span>+{memberPoint.point}</span>
+                                    </span>)
+                                  }
+                                </span>)
+                              }
+                            </span>)
+                          }
+                        </ul>
+                      </div>)
+                    }
+                    <div className="total">
+                      <span>Tổng điểm/ngày</span>
+                      <span>{component.getTotalPoint(history)}</span>
+                    </div>
+                  </li>)
+                }
+                {
+                  isLoadHistory ? <div style={{ height: "50px" }}><Loader type="small" /></div> : ""
+                }
+              </ul> : ""
+            }
           </div>
         </div> : ""
       }
+
     </Drawer>
   )
 }
@@ -825,6 +1053,9 @@ const renderBlockFriendDrawer = (component) => {
   let {
     showBlockFriendForm
   } = component.props
+  let {
+    rejectFriends
+  } = component.state
   return (
     <Drawer anchor="right" open={showBlockFriendForm} onClose={() => component.props.toggleBlockFriendForm(false)}>
       <div className="drawer-detail block-friend-form">
@@ -836,12 +1067,38 @@ const renderBlockFriendDrawer = (component) => {
             <label>Danh sách chặn</label>
           </div>
         </div>
-        <div className="filter"></div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="filter">
           <p>Bạn và người bị chặn sẽ không thể nhìn thấy nhau. Nếu bạn bỏ chặn người này có thể xem dòng thời gian của bạn hoặc liên hệ với bạn.</p>
           <div className="add-bt" onClick={() => component.props.toggleFriendsForBlockForm(true)}>
             <AddCircleOutlineIcon />
             <span>Thêm vào danh sách chặn</span>
+          </div>
+        </div>
+        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} id="friend-blocked" onScroll={() => component.onBlockedScroll()}>
+          <div className="friend-list" >
+            {
+              rejectFriends && rejectFriends.length > 0 ? <ul>
+                {
+                  rejectFriends.map((item, index) => <li key={index} className="friend-layout" >
+                    <div onClick={() => {
+                      this.props.setCurrenUserDetail(item)
+                      this.props.toggleUserPageDrawer(true)
+                    }}>
+                      <Avatar aria-label="recipe" className="avatar">
+                        <img src={item.friendavatar} style={{ width: "100%" }} />
+                      </Avatar>
+                      <label onClick={() => {
+                        this.props.setCurrenUserDetail(item)
+                        this.props.toggleUserPageDrawer(true)
+                      }}>{item.friendname}</label>
+                    </div>
+                    <div className="action">
+                      <Button className="bt-cancel" onClick={() => component.unBandFriend(item.friendid)}>Bỏ chặn</Button>
+                    </div>
+                  </li>)
+                }
+              </ul> : ""
+            }
           </div>
         </div>
       </div>
@@ -851,7 +1108,9 @@ const renderBlockFriendDrawer = (component) => {
 
 const renderFriendsForBlockDrawer = (component) => {
   let {
-    searchKey
+    searchKey,
+    friends,
+    friendsCurrentPage
   } = component.state
   let {
     showFriendsForBlockForm
@@ -867,8 +1126,7 @@ const renderFriendsForBlockDrawer = (component) => {
             <label>Tìm kiếm bạn bè</label>
           </div>
         </div>
-        <div className="filter"></div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="filter" >
           <TextField
             className="custom-input"
             variant="outlined"
@@ -879,15 +1137,74 @@ const renderFriendsForBlockDrawer = (component) => {
               margin: "10px 0px",
             }}
             value={searchKey}
-            onChange={e => component.setState({ searchKey: e.target.value })}
+            onChange={e => component.setState({
+              searchKey: e.target.value,
+              friends: [],
+              isEndOfFriends: false,
+              friendsCurrentPage: 0
+            }, () => component.getFriends(friendsCurrentPage))}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <img src={search} />
+                  <img src={search} style={{ width: "20px" }} />
                 </InputAdornment>
               ),
             }}
           />
+        </div>
+        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} id="all-friend-for-block" onScroll={() => component.onAllFriendScrool()}>
+          <div className="friend-list" >
+            {
+              friends && friends.length > 0 ? <ul>
+                {
+                  friends.map((item, index) => <li key={index} className="friend-layout" >
+                    <div onClick={() => {
+                      this.props.setCurrenUserDetail(item)
+                      this.props.toggleUserPageDrawer(true)
+                    }}>
+                      <Avatar aria-label="recipe" className="avatar">
+                        <img src={item.friendavatar} style={{ width: "100%" }} />
+                      </Avatar>
+                      <label onClick={() => {
+                        this.props.setCurrenUserDetail(item)
+                        this.props.toggleUserPageDrawer(true)
+                      }}>{item.friendname}</label>
+                    </div>
+                    <div className="action">
+                      <Button className="bt-submit"
+                        onClick={() => component.setState({
+                          okCallback: () => component.bandFriend(item.friendid),
+                          confirmTitle: "",
+                          confirmMessage: "Bạn có chắc chắn muốn chặn người này không? Bạn và người bị chặn sẽ không thể nhìn thấy nhau, đồng thời nếu đang là bạn bè, việc chặn này cũng sẽ huỷ kết bạn của nhau.",
+                          showConfim: true
+                        })}>Chặn</Button>
+                    </div>
+                  </li>)
+                }
+              </ul> : ""
+            }
+          </div>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+const renderConfirmDrawer = (component) => {
+  let {
+    showConfim,
+    okCallback,
+    confirmTitle,
+    confirmMessage
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="confirm-drawer" open={showConfim} onClose={() => component.setState({ showConfim: false })}>
+      <div className='jon-group-confirm'>
+        <label>{confirmTitle}</label>
+        <p>{confirmMessage}</p>
+        <div className="mt20">
+          <Button className="bt-confirm" onClick={() => component.setState({ showConfim: false }, () => okCallback ? okCallback() : null)}>Đồng ý</Button>
+          <Button className="bt-submit" onClick={() => component.setState({ showConfim: false })}>Đóng</Button>
         </div>
       </div>
     </Drawer>

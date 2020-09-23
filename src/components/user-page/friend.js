@@ -46,60 +46,51 @@ class Index extends React.Component {
         this.state = {
             friendTabIndex: 0,
             suggestFriendCurrentPage: 0,
-            waitingCurrentPage: 0,
-            queuesCurrentPage: 0,
-            friendsCurrentPage: 0,
             isEndOfSuggestFriends: false,
-            isEndOfWaitings: false,
-            isEndOfQueues: false,
-            isEndOfFriends: false,
             suggestFriends: [],
-            queues: [],
-            waitings: [],
-            friends: [],
             searchKey: "",
             isLoadMore: false,
-            allUsers: []
+            allUsers: [],
+            friendsWithFriends: [],
+            isEndOfFriendsWithFriends: false,
+            friendsWithFriendsCurrentPage: 0,
+            allUsers: [],
+            allUsersCurrentPage: 0,
+            isEndOfAllUsers: false
         };
     }
 
-
-    getFriends(userId, currentpage) {
+    getFriendsWithFriends(userId, currentpage) {
         let {
-            profile
-        } = this.props
-        let {
-            friends
+            friendsWithFriends
         } = this.state
         let param = {
             currentpage: currentpage,
             currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
             limit: 20,
-            status: "Friends",
-            forFriendId: userId == profile.id ? 0 : userId,
+            status: "FriendsWithFriends",
+            forFriendId: userId,
             groupid: 0
         }
         this.setState({
             isLoadMore: true
         })
         get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
-            if (result && result.result == 1) {
+            if (result.result == 1) {
                 this.setState({
-                    friends: friends.concat(result.content.userInvites),
+                    friendsWithFriends: friendsWithFriends.concat(result.content.userInvites),
                     isLoadMore: false
                 })
                 if (result.content.userInvites.length == 0) {
                     this.setState({
-                        isEndOfFriends: true
+                        isEndOfFriendsWithFriends: true
                     })
                 }
             }
         })
     }
+
     getSuggestFriends(userId, currentpage) {
-        let {
-            profile
-        } = this.props
         let {
             suggestFriends
         } = this.state
@@ -107,8 +98,8 @@ class Index extends React.Component {
             currentpage: currentpage,
             currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
             limit: 20,
-            status: "SuggestFriendsMe",
-            forFriendId: userId == profile.id ? 0 : userId,
+            status: "SuggestFriendsInFriend",
+            forFriendId: userId,
             groupid: 0
         }
         this.setState({
@@ -129,20 +120,19 @@ class Index extends React.Component {
         })
     }
 
-    getQueue(userId, currentpage) {
+    getAllUsers(userId, currentpage) {
         let {
-            profile
-        } = this.props
-        let {
-            queues
+            allUsers,
+            searchKey
         } = this.state
         let param = {
             currentpage: currentpage,
             currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
             limit: 20,
-            status: "Queue",
-            forFriendId: userId == profile.id ? 0 : userId,
-            groupid: 0
+            status: "All",
+            forFriendId: userId,
+            groupid: 0,
+            findstring: searchKey
         }
         this.setState({
             isLoadMore: true
@@ -150,65 +140,30 @@ class Index extends React.Component {
         get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
             if (result && result.result == 1) {
                 this.setState({
-                    queues: queues.concat(result.content.userInvites),
+                    allUsers: allUsers.concat(result.content.userInvites),
                     isLoadMore: false
                 })
                 if (result.content.userInvites.length == 0) {
                     this.setState({
-                        isEndOfQueues: true
+                        isEndOfAllUsers: true
                     })
                 }
             }
         })
     }
 
-    getWaiting(userId, currentpage) {
-        let {
-            profile
-        } = this.props
-        let {
-            waitings
-        } = this.state
-        let param = {
-            currentpage: currentpage,
-            currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
-            limit: 20,
-            status: "Waiting",
-            forFriendId: userId == profile.id ? 0 : userId,
-            groupid: 0
-        }
-        this.setState({
-            isLoadMore: true
-        })
-        get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
-            console.log("result", result)
-            if (result && result.result == 1) {
-                this.setState({
-                    waitings: waitings.concat(result.content.userInvites),
-                    isLoadMore: false
-                })
-                if (result.content.userInvites.length == 0) {
-                    this.setState({
-                        isEndOfWaitings: true
-                    })
-                }
-            }
-        })
-    }
 
     handleScroll() {
         let element = $("#friend-content")
         let {
             isLoadMore,
-            isEndOfSuggestFriends,
             friendTabIndex,
+            isEndOfSuggestFriends,
             suggestFriendCurrentPage,
-            isEndOfQueues,
-            queuesCurrentPage,
-            isEndOfWaitings,
-            waitingCurrentPage,
-            friendsCurrentPage,
-            isEndOfFriends
+            isEndOfAllUsers,
+            allUsersCurrentPage,
+            isEndOfFriendsWithFriends,
+            friendsWithFriendsCurrentPage
         } = this.state
         if (element && friendTabIndex >= 0)
             if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
@@ -223,32 +178,22 @@ class Index extends React.Component {
                     }
                 }
                 if (friendTabIndex == 1) {
-                    if (isLoadMore == false && isEndOfQueues == false) {
+                    if (isLoadMore == false && isEndOfFriendsWithFriends == false) {
                         this.setState({
-                            queuesCurrentPage: queuesCurrentPage + 1,
+                            friendsWithFriendsCurrentPage: friendsWithFriendsCurrentPage + 1,
                             isLoadMore: true
                         }, () => {
-                            this.getQueue(this.props.userDetail.id, queuesCurrentPage + 1)
+                            this.getFriendsWithFriends(this.props.userDetail.id, friendsWithFriendsCurrentPage + 1)
                         })
                     }
                 }
                 if (friendTabIndex == 2) {
-                    if (isLoadMore == false && isEndOfWaitings == false) {
+                    if (isLoadMore == false && isEndOfAllUsers == false) {
                         this.setState({
-                            waitingCurrentPage: waitingCurrentPage + 1,
+                            allUsersCurrentPage: allUsersCurrentPage + 1,
                             isLoadMore: true
                         }, () => {
-                            this.getWaiting(this.props.userDetail.id, waitingCurrentPage + 1)
-                        })
-                    }
-                }
-                if (friendTabIndex == 3) {
-                    if (isLoadMore == false && isEndOfFriends == false) {
-                        this.setState({
-                            friendsCurrentPage: friendsCurrentPage + 1,
-                            isLoadMore: true
-                        }, () => {
-                            this.getFriends(this.props.userDetail.id, friendsCurrentPage + 1)
+                            this.getAllUsers(this.props.userDetail.id, allUsersCurrentPage + 1)
                         })
                     }
                 }
@@ -260,7 +205,6 @@ class Index extends React.Component {
     addFriend(friendId) {
         let {
             suggestFriends,
-            waitings,
             allUsers
         } = this.state
         let param = {
@@ -273,10 +217,8 @@ class Index extends React.Component {
                         user.status = user.status == 1 ? 0 : 1
                     }
                 })
-
                 this.setState({
                     suggestFriends: suggestFriends.filter(friend => friend.friendid != friendId),
-                    waitings: waitings.filter(friend => friend.friendid != friendId),
                     allUsers: allUsers
                 })
             }
@@ -312,7 +254,7 @@ class Index extends React.Component {
 
     removeFriend(friendid) {
         let {
-            friends,
+            friendsWithFriends,
             allUsers
         } = this.state
         let param = {
@@ -322,7 +264,7 @@ class Index extends React.Component {
         get(SOCIAL_NET_WORK_API, "Friends/RemoveFriends" + objToQuery(param), result => {
             if (result && result.result == 1) {
                 this.setState({
-                    friends: friends.filter(friend => friend.friendid != friendid),
+                    friendsWithFriends: friendsWithFriends.filter(friend => friend.friendid != friendid),
                     allUsers: allUsers.filter(friend => friend.friendid != friendid),
                     showFriendActionsDrawer: false
                 })
@@ -332,7 +274,7 @@ class Index extends React.Component {
 
     bandFriend(friendid) {
         let {
-            friends,
+            friendsWithFriends,
             allUsers
         } = this.state
         let param = {
@@ -342,7 +284,7 @@ class Index extends React.Component {
         get(SOCIAL_NET_WORK_API, "Friends/BandFriends" + objToQuery(param), result => {
             if (result && result.result == 1) {
                 this.setState({
-                    friends: friends.filter(friend => friend.friendid != friendid),
+                    friendsWithFriends: friendsWithFriends.filter(friend => friend.friendid != friendid),
                     allUsers: allUsers.filter(friend => friend.friendid != friendid),
                     showFriendActionsDrawer: false
                 })
@@ -352,7 +294,7 @@ class Index extends React.Component {
 
     unFolowFriend(friendid) {
         let {
-            friends,
+            friendsWithFriends,
             allUsers
         } = this.state
         let param = {
@@ -361,14 +303,14 @@ class Index extends React.Component {
         if (!friendid) return
         get(SOCIAL_NET_WORK_API, "Friends/UnFollowFriends" + objToQuery(param), result => {
             if (result && result.result == 1) {
-                friends.map(friend => {
+                friendsWithFriends.map(friend => {
                     if (friend.friendid == friendid) friend.ismefollow = 0
                 })
                 allUsers.map(friend => {
                     if (friend.friendid == friendid) friend.ismefollow = 0
                 })
                 this.setState({
-                    friends: friends,
+                    friendsWithFriends: friendsWithFriends,
                     allUsers: allUsers,
                     showFriendActionsDrawer: false
                 })
@@ -377,7 +319,7 @@ class Index extends React.Component {
     }
     folowFriend(friendid) {
         let {
-            friends,
+            friendsWithFriends,
             allUsers
         } = this.state
         let param = {
@@ -386,14 +328,14 @@ class Index extends React.Component {
         if (!friendid) return
         get(SOCIAL_NET_WORK_API, "Friends/FollowFriends" + objToQuery(param), result => {
             if (result && result.result == 1) {
-                friends.map(friend => {
+                friendsWithFriends.map(friend => {
                     if (friend.friendid == friendid) friend.ismefollow = 1
                 })
                 allUsers.map(friend => {
                     if (friend.friendid == friendid) friend.ismefollow = 1
                 })
                 this.setState({
-                    friends: friends,
+                    friendsWithFriends: friendsWithFriends,
                     allUsers: allUsers,
                     showFriendActionsDrawer: false
                 })
@@ -417,43 +359,31 @@ class Index extends React.Component {
             suggestFriends: [],
             suggestFriendCurrentPage: 0,
             isEndOfSuggestFriends: false,
-            friends: [],
-            friendsCurrentPage: 0,
-            isEndOfFriends: false,
-            queues: [],
-            queuesCurrentPage: 0,
-            isEndOfQueues: false,
-            waitings: [],
-            waitingCurrentPage: 0,
-            isEndOfWaitings: false
         }, () => callBack())
     }
 
     onCloseDrawer() {
         this.onResetAll(() => {
-            this.props.toggleFriendDrawer(false)
+            this.props.onClose()
         })
     }
 
 
     componentWillReceiveProps(nextProps) {
         let {
-            friends,
             suggestFriends,
-            queues,
-            waitings
+            friendsWithFriends,
+            allUsers
         } = this.state
         if (this.props.userDetail && this.props.userDetail.id != nextProps.userDetail.id) {
-            this.getFriends(nextProps.userDetail.id, 0)
             this.getSuggestFriends(nextProps.userDetail.id, 0)
-            this.getQueue(nextProps.userDetail.id, 0)
-            this.getWaiting(nextProps.userDetail.id, 0)
+            this.getFriendsWithFriends(nextProps.userDetail.id, 0)
+            this.getAllUsers(nextProps.userDetail.id, 0)
         } else {
             if (nextProps.userDetail) {
-                if (friends.length == 0) this.getFriends(nextProps.userDetail.id, 0)
                 if (suggestFriends.length == 0) this.getSuggestFriends(nextProps.userDetail.id, 0)
-                if (queues.length == 0) this.getQueue(nextProps.userDetail.id, 0)
-                if (waitings.length == 0) this.getWaiting(nextProps.userDetail.id, 0)
+                if (friendsWithFriends.length == 0) this.getFriendsWithFriends(nextProps.userDetail.id, 0)
+                if ((allUsers.length == 0)) this.getAllUsers(nextProps.userDetail.id, 0)
             }
         }
     }
@@ -461,22 +391,19 @@ class Index extends React.Component {
     render() {
         let {
             friendTabIndex,
-            friends,
             suggestFriends,
-            queues,
-            waitings,
             isLoadMore,
+            friendsWithFriends,
+            allUsers
         } = this.state
         let {
             userDetail,
-            showFriendDrawer
+            open
         } = this.props
-
-        console.log("suggestFriends", suggestFriends)
 
         return (
             userDetail ? <div className="friend-page" >
-                <Drawer anchor="bottom" className="friend-drawer" open={showFriendDrawer} onClose={() => this.onCloseDrawer()}>
+                <Drawer anchor="bottom" className="friend-drawer find-friends" open={open} onClose={() => this.onCloseDrawer()}>
                     <div className="drawer-detail">
                         <div className="drawer-header">
                             <div className="direction" onClick={() => this.onCloseDrawer()}>
@@ -523,9 +450,8 @@ class Index extends React.Component {
                                     className="tab-header"
                                 >
                                     <Tab label="Gợi ý" {...a11yProps(0)} className="tab-item" />
-                                    <Tab label="Lời mời" {...a11yProps(1)} className="tab-item" />
-                                    <Tab label="Đã gửi" {...a11yProps(2)} className="tab-item" />
-                                    <Tab label="bạn bè" {...a11yProps(3)} className="tab-item" />
+                                    <Tab label="Chung" {...a11yProps(1)} className="tab-item" />
+                                    <Tab label="Tất cả" {...a11yProps(2)} className="tab-item" />
                                 </Tabs>
                             </AppBar>
                         </div>
@@ -567,110 +493,72 @@ class Index extends React.Component {
                                 </TabPanel>
                                 <TabPanel value={friendTabIndex} index={1} >
                                     <div className="friend-list" >
-                                        {
-                                            queues && queues.length > 0 ? <ul>
-                                                {
-                                                    queues.map((item, index) => <li key={index} className="friend-layout">
-                                                        <div onClick={() => {
-                                                            this.props.setCurrenUserDetail(item)
-                                                            this.props.toggleUserPageDrawer(true)
-                                                        }}>
-                                                            <Avatar aria-label="recipe" className="avatar">
-                                                                <img src={item.friendavatar} style={{ width: "100%" }} />
-                                                            </Avatar>
-                                                        </div>
-                                                        <div className="info-action">
-                                                            <label onClick={() => {
-                                                                this.props.setCurrenUserDetail(item)
-                                                                this.props.toggleUserPageDrawer(true)
-                                                            }}>{item.friendname}</label>
-                                                            <div className="action">
-                                                                <Button className="bt-submit" onClick={() => this.acceptFriend(item)}>Đồng ý</Button>
-                                                                <Button className="bt-cancel">Từ chối</Button>
-                                                            </div>
-                                                        </div>
-                                                    </li>)
-                                                }
-                                            </ul> : ""
-                                        }
+                                        <ul>
+                                            {
+                                                friendsWithFriends.map((item, index) => <li key={index} className="friend-layout">
+                                                    <div className="friend-info" >
+                                                        <Avatar aria-label="recipe" className="avatar">
+                                                            <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                        </Avatar>
+                                                        <label>
+                                                            <span className="name">{item.friendname}</span>
+                                                            <span className="with-friend">{item.numfriendwith} bạn chung</span>
+                                                        </label>
+                                                    </div>
+                                                    <div className="action">
+                                                        {
+                                                            item.status == 10 ? <IconButton onClick={() => this.setState({
+                                                                showFriendActionsDrawer:
+                                                                    true,
+                                                                currentFriend: item
+                                                            })}><MoreHorizIcon /></IconButton> : ""
+                                                        }
+                                                    </div>
+                                                </li>)
+                                            }
+                                        </ul>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value={friendTabIndex} index={2} className="content-box">
+                                <TabPanel value={friendTabIndex} index={2} className="content-box find-friends">
                                     <div className="friend-list" >
-                                        {
-                                            waitings && waitings.length > 0 ? <ul>
-                                                {
-                                                    waitings.map((item, index) => <li key={index} className="friend-layout">
-                                                        <div onClick={() => {
-                                                            this.props.setCurrenUserDetail(item)
-                                                            this.props.toggleUserPageDrawer(true)
-                                                        }}>
-                                                            <Avatar aria-label="recipe" className="avatar">
-                                                                <img src={item.friendavatar} style={{ width: "100%" }} />
-                                                            </Avatar>
-                                                        </div>
-                                                        <div className="info-action">
-                                                            <label onClick={() => {
-                                                                this.props.setCurrenUserDetail(item)
-                                                                this.props.toggleUserPageDrawer(true)
-                                                            }}>{item.friendname}</label>
-                                                            <div className="action">
-                                                                <Button className="bt-submit" onClick={() => this.setState({
-                                                                    okCallback: () => this.addFriend(item.friendid),
-                                                                    confirmTitle: "",
-                                                                    confirmMessage: "Bạn có chắc chắn muốn huỷ yêu cầu kết bạn này không?",
-                                                                    showConfim: true
-                                                                })} >Huỷ yêu cầu</Button>
-                                                            </div>
-                                                        </div>
-                                                    </li>)
-                                                }
-                                            </ul> : ""
-                                        }
+                                        <ul>
+                                            {
+                                                allUsers.map((item, index) => <li key={index} className="friend-layout">
+                                                    <div className="friend-info" >
+                                                        <Avatar aria-label="recipe" className="avatar">
+                                                            <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                        </Avatar>
+                                                        <label>
+                                                            <span className="name">{item.friendname}</span>
+                                                            <span className="with-friend">{item.numfriendwith} bạn chung</span>
+                                                        </label>
+                                                    </div>
+                                                    <div className="action">
+
+                                                        {
+                                                            item.status == 0 ? <Button className="bt-submit" onClick={() => this.addFriend(item.friendid)}>Kết bạn</Button> : ""
+                                                        }
+                                                        {
+                                                            item.status == 1 ? <Button className="bt-cancel" onClick={() => this.setState({
+                                                                okCallback: () => this.addFriend(item.friendid),
+                                                                confirmTitle: "",
+                                                                confirmMessage: "Bạn có chắc chắn muốn huỷ yêu cầu kết bạn này không?",
+                                                                showConfim: true
+                                                            })}>Huỷ</Button> : ""
+                                                        }
+                                                        {
+                                                            item.status == 10 ? <IconButton onClick={() => this.setState({
+                                                                showFriendActionsDrawer: true,
+                                                                currentFriend: item
+                                                            })}><MoreHorizIcon /></IconButton> : ""
+                                                        }
+                                                    </div>
+                                                </li>)
+                                            }
+                                        </ul>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value={friendTabIndex} index={3} >
-                                    {
-                                        friends && friends.length > 0 ? <div className="friend-list" >
-                                            <ul>
-                                                {
-                                                    friends.map((item, index) => <li key={index} className="friend-layout">
-                                                        <div onClick={() => {
-                                                            this.props.setCurrenUserDetail(item)
-                                                            this.props.toggleUserPageDrawer(true)
-                                                        }}>
-                                                            <Avatar aria-label="recipe" className="avatar">
-                                                                <img src={item.friendavatar} style={{ width: "100%" }} />
-                                                            </Avatar>
-                                                        </div>
-                                                        <div className="info-action">
-                                                            <label onClick={() => {
-                                                                this.props.setCurrenUserDetail(item)
-                                                                this.props.toggleUserPageDrawer(true)
-                                                            }}>{item.friendname}</label>
-                                                            <div className="action">
-                                                                <Button className="bt-submit" onClick={() => this.setState({
-                                                                    okCallback: () => this.removeFriend(item.friendid),
-                                                                    confirmTitle: "",
-                                                                    confirmMessage: "Bạn có chắc chắn muốn xoá người này khỏi danh sách bạn bè không?",
-                                                                    showConfim: true
-                                                                })}>Xoá bạn</Button>
-                                                                {
-                                                                    item.ismefollow == 1 ? <Button className="bt-cancel" onClick={() => this.setState({
-                                                                        okCallback: () => this.unFolowFriend(item.friendid),
-                                                                        confirmTitle: "",
-                                                                        confirmMessage: "Bạn có chắc chắn muốn bỏ theo dõi người này không?",
-                                                                        showConfim: true
-                                                                    })} >Bỏ theo dõi</Button> : <Button className="bt-cancel" onClick={() => this.folowFriend(item.friendid)}>Theo dõi</Button>
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </li>)
-                                                }
-                                            </ul>
-                                        </div> : ""
-                                    }
-                                </TabPanel>
+
                             </SwipeableViews>
                             <div style={{ height: "50px" }}>
                                 {
@@ -683,18 +571,20 @@ class Index extends React.Component {
                 {
                     renderConfirmDrawer(this)
                 }
-
+                {
+                    renderFriendActionsDrawer(this)
+                }
             </div> : ""
         );
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        ...state.app,
-        ...state.user
-    }
-};
+// const mapStateToProps = state => {
+//     return {
+//         ...state.app,
+//         ...state.user
+//     }
+// };
 
 const mapDispatchToProps = dispatch => ({
     toggleFriendDrawer: (isShow) => dispatch(toggleFriendDrawer(isShow)),
@@ -706,7 +596,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(
-    mapStateToProps,
+    null,
     mapDispatchToProps
 )(Index);
 
@@ -758,6 +648,52 @@ const renderConfirmDrawer = (component) => {
     )
 }
 
+
+const renderFriendActionsDrawer = (component) => {
+    let {
+        currentFriend,
+        showFriendActionsDrawer
+    } = component.state
+    return (
+        <Drawer anchor="bottom" className="friend-actions-drawer" open={showFriendActionsDrawer} onClose={() => component.setState({ showFriendActionsDrawer: false })}>
+            {
+                currentFriend ? <div className="drawer-content">
+                    <ul>
+                        {
+                            currentFriend.ismefollow == 1 ? <li onClick={() => component.setState({
+                                okCallback: () => component.unFolowFriend(currentFriend.friendid),
+                                confirmTitle: "",
+                                confirmMessage: "Bạn có chắc muốn bỏ theo dõi người này không?",
+                                showConfim: true
+                            })}>
+                                <label>Bỏ theo dõi ( {currentFriend.friendname} )</label>
+                                <span>Không nhìn thấy các hoạt động của nhau nữa nhưng vẫn là bạn bè.</span>
+                            </li> : <li onClick={() => component.folowFriend(currentFriend.friendid)}>
+                                    <label>Theo dõi ( {currentFriend.friendname} )</label>
+                                    <span>Nhìn thấy các hoạt động của nhau.</span>
+                                </li>
+                        }
+                        <li onClick={() => component.setState({
+                            okCallback: () => component.bandFriend(currentFriend.friendid),
+                            confirmTitle: "",
+                            confirmMessage: "Bạn có chắc chắn muốn chặn người này không? Bạn và người bị chặn sẽ không thể nhìn thấy nhau, đồng thời nếu đang là bạn bè, việc chặn này cũng sẽ huỷ kết bạn của nhau.",
+                            showConfim: true
+                        })}>
+                            <label>Chặn ( {currentFriend.friendname} )</label>
+                            <span>Bạn và người này sẽ không nhìn thấy nhau.</span>
+                        </li>
+                    </ul>
+                    <Button className="bt-submit" onClick={() => component.setState({
+                        okCallback: () => component.removeFriend(currentFriend.friendid),
+                        confirmTitle: "",
+                        confirmMessage: "Bạn có chắc chắn muốn xoá người này khỏi danh sách bạn bè không?",
+                        showConfim: true
+                    })}>Huỷ kết bạn</Button>
+                </div> : ''
+            }
+        </Drawer>
+    )
+}
 
 
 

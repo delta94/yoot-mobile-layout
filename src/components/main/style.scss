@@ -445,6 +445,7 @@
         height: 70px;
         border-bottom:1px solid rgba(0, 0, 0, 0.06);
         padding: 0px 10px;
+        
         .avatar{
           width: 50px;
           height: 50px;
@@ -502,17 +503,31 @@
             height: 50px;
           }
           label{
-            font-family: Roboto-Medium;
-            color: #555;
-            font-size: 1.1rem !important;
-            margin-left: 10px;
+            .name{
+              font-family: Roboto-Medium;
+              color: #555;
+              font-size: 1.1rem !important;
+              margin-left: 10px;
+            }
+            .with-friend{
+              display: inline-block;
+              width: 100%;
+              margin-left: 10px;
+              margin-top: 5px;
+              color: #888;
+            }
           }
+          
         }
         
         button{
-          min-height: 25px !important;
-          width: fit-content !important;
-          padding: 5px 20px;
+          &.bt-submit,
+          &.bt-cancel{
+            min-height: 25px !important;
+            width: fit-content !important;
+            padding: 5px 20px;
+            min-width: 85px !important;
+          }
         }
       }
     }
@@ -913,6 +928,56 @@
         border-radius: 7px;
         box-sizing: border-box;
       }
+    }
+  }
+}
+
+.friend-actions-drawer{
+  > div:last-child{
+    border-radius: 20px 20px 0px 0px;
+  }
+  .drawer-content{
+    padding: 20px;
+    box-sizing: border-box;
+    ul{
+      margin-top: 30px;
+      li{
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        margin-bottom: 10px;
+        border-radius: 7px;
+        padding: 10px;
+        label{
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: center;
+          font-family: Roboto-Medium;
+        }
+        span{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          color: rgba(0,0,0,0.4);
+          margin-top: 5px;
+        }
+      }
+    }
+    button{
+      margin-top: 30px;
+      margin-bottom: 20px;
+    }
+  }
+}
+.friend-layout{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .friend-info{
+    display: flex;
+    align-items: center;
+    label{
+      margin-left: 10px;
     }
   }
 }

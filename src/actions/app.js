@@ -26,6 +26,8 @@ export const TOGGLE_STYLE_TEST_DRAWER = "app@TOGGLE_STYLE_TEST_DRAWER"
 export const TOGGLE_YOUR_JOB_DRAWER = "app@TOGGLE_YOUR_JOB_DRAWER"
 export const TOGGLE_DISC_DRAWER = "app@TOGGLE_DISC_DRAWER"
 export const TOGGLE_YOUR_MAJORS_DRAWER = "app@TOGGLE_YOUR_MAJORS_DRAWER"
+export const TOGGLE_SEARCH_FRIENDS_DRAWER = "app@TOGGLE_SEARCH_FRIENDS_DRAWER"
+export const SET_CURRENT_FRIEND_ID = "app@SET_CURRENT_FRIEND_ID"
 
 
 export const toggleHeader = (isShow) => {
@@ -231,6 +233,27 @@ export const toggleYourMajorsDrawer = (isShow) => {
         })
     }
 }
+
+export const toggleSeachFriends = (isShow) => {
+    return dispatch => {
+        dispatch({
+            type: TOGGLE_SEARCH_FRIENDS_DRAWER,
+            payload: isShow,
+        })
+    }
+}
+
+export const setCurrentFriendId = (friendId) => {
+    return dispatch => {
+        dispatch({
+            type: SET_CURRENT_FRIEND_ID,
+            payload: friendId,
+        })
+    }
+}
+
+
+
 
 
 
