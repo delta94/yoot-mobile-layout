@@ -120,7 +120,7 @@ export class Loader extends React.Component {
         } = this.props
         return (
             <div className={"multi-input " + className}>
-                <div id={id ? id : "vk-input"} contenteditable="true" onChange={() => alert()}>
+                <div id={id ? id : "vk-input"} contentEditable="true" onChange={() => alert()}>
                     {value ? value : ""}
                 </div>
                 {useMentions ? <div id="mention-options" style={{display:'none'}}>

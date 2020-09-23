@@ -1646,8 +1646,8 @@ const renderUpdateAvatarReviewDrawer = (component) => {
         <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
           <div className="post-content">
             <MultiInput
-              useHashtags={false}
-              useMentions={false}
+              useHashtags={true}
+              useMentions={true}
               placeholder="Nhập nội dung"
               onChange={(value) => console.log(value)}
               userOptions={[
