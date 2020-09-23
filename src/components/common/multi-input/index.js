@@ -28,6 +28,10 @@ export class Loader extends React.Component {
             } else {
                 $("#placeholder").css("display", "inherit")
             }
+            if (this.innerText == '\n'){
+                this.innerText='';
+                $("#placeholder").css("display", "inherit")
+            }
             that.props.onChange(this.outerText);
         })
         $(document).on('click', '#mention-options .item', function(e){
