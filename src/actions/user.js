@@ -18,12 +18,29 @@ export const setUserProfile = (user) => {
 }
 
 export const setCurrenUserDetail = (user) => {
+
     return dispatch => {
+        // if (!user.friendid) return
         dispatch({
             type: SET_USER_DETAIL,
             payload: user
         })
+        // })
+        // let param = {
+        //     forFriendId: user.friendid
+        // }
+        // get(SOCIAL_NET_WORK_API, "User/Index" + objToQuery(param), (result) => {
+        //     if (result && result.result == 1) {
+        //         dispatch({
+        //             type: SET_USER_DETAIL,
+        //             payload: result.content.user
+        //         })
+        //     }
+        // })
     }
+
+
+
 }
 export const getFolowedMe = (currentpage) => {
     return dispatch => {

@@ -4,6 +4,16 @@
             font-size: 1.5rem;
         }
     }
+    .none-bg{
+        position: relative;
+        > button{
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 10px;
+            border-radius: 7px;
+            padding: 5px 10px;
+        }
+    }
 }
 .friend-actions{
     display: flex;
@@ -55,5 +65,11 @@
                 }
             }
         }
+    }
+}
+
+.user-menu{
+    > div:last-child{
+        border-radius: 20px 20px 0px 0px;
     }
 }

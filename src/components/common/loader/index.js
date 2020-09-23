@@ -12,7 +12,9 @@ export class Loader extends React.Component {
     render() {
         let {
             type,
-            isFullScreen
+            isFullScreen,
+            width,
+            height
         } = this.props
         if (isFullScreen) {
             $("body").css("overflow", "hidden")
@@ -20,7 +22,7 @@ export class Loader extends React.Component {
         return (
             <div className={"bg-overlay " + type + (isFullScreen ? " full-screen" : "")}>
                 <div>
-                    <img className={"spinner-img"} src={loading} />
+                    <img className={"spinner-img"} src={loading} style={{ width: width, height: height }} />
                 </div>
             </div>
         )

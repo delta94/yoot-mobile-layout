@@ -34,6 +34,11 @@ import moment from 'moment'
 import SwipeableViews from 'react-swipeable-views';
 import { get } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import ContentLoader from "react-content-loader"
+import Loader from '../common/loader'
+import { objToQuery } from "../../utils/common";
+import Friends from './friend'
+
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const like = require('../../assets/icon/like@1x.png')
@@ -59,134 +64,356 @@ class Index extends React.Component {
       isShowConfirmPass: false,
       openMediaDrawer: false,
       mediaTabIndex: 1,
-      userDetail: null
+      userDetail: null,
+      isLoadMore: false,
+      friends: [],
+      isEndOfFriends: false,
+      friendsCurrentPage: 0
     };
   }
   getProfile(id) {
+    let {
+      friendsCurrentPage
+    } = this.state
     get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=" + id, result => {
-      if (result.result == 1) {
+      if (result && result.result == 1) {
         this.setState({
           userDetail: result.content.user
+        })
+        this.getFriends(id, friendsCurrentPage)
+      }
+    })
+  }
+
+  getFriends(userId, currentpage) {
+    let {
+      friends
+    } = this.state
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      limit: 20,
+      status: "Friends",
+      forFriendId: userId,
+      groupid: 0
+    }
+    this.setState({
+      isLoadMore: true
+    })
+    get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          friends: friends.concat(result.content.userInvites),
+          isLoadMore: false
+        })
+        if (result.content.userInvites.length == 0) {
+          this.setState({
+            isEndOfFriends: true
+          })
+        }
+      }
+    })
+  }
+  addFriend(friendId) {
+    let param = {
+      friendid: friendId
+    }
+    get(SOCIAL_NET_WORK_API, "Friends/AddOrDeleteInviateFriends" + objToQuery(param), (result) => {
+      if (result && result.result == 1) {
+        this.getProfile(friendId)
+      }
+    })
+  }
+
+  acceptFriend(friend) {
+    let {
+      queues,
+      friends
+    } = this.state
+    let param = {
+      friendid: friend.friendid
+    }
+    if (!friend) return
+    get(SOCIAL_NET_WORK_API, "Friends/AcceptFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          queues: queues.filter(friend => friend.friendid != friend.friendid),
+          friends: [friend].concat(friends)
         })
       }
     })
   }
 
-  componentWillMount() {
-    this.getProfile(0)
+  removeFriend(friendid) {
+    let {
+      friends,
+      allUsers
+    } = this.state
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/RemoveFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          friends: friends.filter(friend => friend.friendid != friendid),
+          allUsers: allUsers.filter(friend => friend.friendid != friendid),
+          showFriendActionsDrawer: false
+        })
+      }
+    })
+  }
+
+  bandFriend(friendid) {
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/BandFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.props.toggleUserPageDrawer(false)
+        this.setState({
+          showUserMenu: false
+        })
+      }
+    })
+  }
+
+  unFolowFriend(friendid) {
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/UnFollowFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.getProfile(friendid)
+        this.setState({
+          showUserMenu: false
+        })
+      }
+    })
+  }
+  folowFriend(friendid) {
+    let param = {
+      friendid: friendid
+    }
+    if (!friendid) return
+    get(SOCIAL_NET_WORK_API, "Friends/FollowFriends" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.getProfile(friendid)
+        this.setState({
+          showUserMenu: false
+        })
+      }
+    })
+  }
+
+  componentDidMount() {
+    let {
+      userDetail,
+    } = this.props
+    if (userDetail)
+      this.getProfile(userDetail.friendid)
   }
   render() {
     let {
       showUserMenu,
-      userDetail
+      userDetail,
+      friends,
+      showFriendDrawer
     } = this.state
+
+    let {
+      onClose
+    } = this.props
+
     return (
-      userDetail ? <div className="profile-page user-page" >
-        <div className="cover-img" style={{ background: "url(" + userDetail.coverImage + ")" }}></div>
-
-        <div className="user-avatar" style={{ background: "url(" + userDetail.avatar + ")" }}></div>
-
-        <div className="user-info">
-          <span className="user-name">{userDetail.fullName}</span>
-        </div>
-
-        <div className="react-reward">
-          <ul>
-            <li>
-              <span><img src={like}></img></span>
-              <span>{userDetail.liked}</span>
-            </li>
-            <li>
-              <span><img src={follower}></img></span>
-              <span>{userDetail.folow}</span>
-            </li>
-            <li>
-              <span><img src={donePractice}></img></span>
-              <span>{userDetail.posted}</span>
-            </li>
-          </ul>
-        </div>
-
-        <div className="friend-actions">
-          <Button className="bt-submit">Kết bạn</Button>
-          <Button className="bt-cancel">Theo dõi</Button>
-          <IconButton className="bt-more" style={{ background: "rgba(0,0,0,0.07)" }} onClick={() => this.setState({ showUserMenu: true })}>
-            <MoreHorizIcon />
-          </IconButton>
-        </div>
-
-        <div className="user-profile">
-          <ul>
-            <li>
-              <img src={job} />
-              <span className="title" >Từng làm <b>{userDetail.jobs[0].position}</b> tại <b>{userDetail.jobs[0].company}</b></span>
-            </li>
-            <li>
-              <img src={education} />
-              <span className="title" >Từng học <b>{userDetail.studies[0].majors}</b> tại <b>{userDetail.studies[0].school}</b></span>
-            </li>
-            <li>
-              <img src={birthday} />
-              <span className="title" >Ngày sinh <b>{moment(userDetail.birthday).format("DD/MM/YYYY")}</b></span>
-            </li>
-            <li>
-              <img src={sex} />
-              <span className="title">Giới tính <b>{userDetail.gender}</b></span>
-            </li>
-          </ul>
-          <span className="view-detail-link" onClick={() => {
-            this.props.setCurrenUserDetail(userDetail)
-            this.props.toggleUserDetail(true)
-          }}>{">>> Xem thêm thông tin của"} {userDetail.fullName}</span>
-        </div>
-
-        <div className="friend-reward">
-          <label>Bạn bè</label>
-          <span>{userDetail.friends.length} người bạn</span>
-          <div className="friend-list">
-            {
-              userDetail.friends.map((item, index) => <div key={index} className="friend-item" onClick={() => {
-                this.setState({
-                  showUserPage: true,
-                  userDetail: item
-                })
-              }}>
-                <div className="avatar" style={{ background: "url(" + item.avatar + ")" }}></div>
-                <span className="name">{item.fullName}</span>
-                <span className='mutual-friend-count'>{item.mutualFriendCount} bạn chung</span>
-              </div>)
-            }
+      <div className="drawer-detail">
+        < div className="drawer-header" >
+          <div className="direction" onClick={() => onClose ? onClose() : this.props.toggleUserPageDrawer(false)}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Trang cá nhân</label>
           </div>
-          <Button className="bt-submit" style={{ marginTop: "10px" }}>Xem tất cả bạn bè</Button>
+          {
+            userDetail ? <div className="user-reward">
+              <div className="profile">
+                <span className="user-name">{userDetail.fullname}</span>
+                <span className="point">
+                  <span>Điển YOOT: {userDetail.mempoint}</span>
+                </span>
+
+              </div>
+              <Avatar aria-label="recipe" className="avatar">
+                <img src={userDetail.avatar} style={{ width: "100%" }} />
+              </Avatar>
+            </div> : <ContentLoader
+              speed={2}
+              width={200}
+              height={42}
+              viewBox="0 0 200 42"
+              backgroundColor="#f3f3f3"
+              foregroundColor="#ecebeb"
+              style={{ height: "100%" }}
+            >
+                <rect x="7" y="6" rx="4" ry="4" width="140" height="8" />
+                <rect x="47" y="21" rx="8" ry="8" width="100" height="16" />
+                <rect x="160" y="0" rx="100" ry="100" width="40" height="40" />
+              </ContentLoader>
+          }
+        </div >
+        <div className="filter"></div>
+        <div style={{ overflow: "scroll" }}>
+          {
+            userDetail ? <div className="profile-page user-page" >
+              <div className="none-bg">
+                <div className="cover-img" style={{ background: "url(" + userDetail.background + ")" }}></div>
+                {
+                  userDetail.statusfriend == 10 ? <IconButton style={{ background: "rgba(0,0,0,0.07)" }} onClick={() => this.setState({ showUserMenu: true })}>
+                    <MoreHorizIcon />
+                  </IconButton> : ""
+                }
+              </div>
+              <div className="user-avatar" >
+                <div className="img" style={{ background: "url(" + userDetail.avatar + ")" }}></div>
+              </div>
+
+              <div className="user-info">
+                <span className="user-name">{userDetail.fullname}</span>
+              </div>
+
+              <div className="react-reward">
+                <ul>
+                  <li>
+                    <span><img src={like}></img></span>
+                    <span>{userDetail.numlike}</span>
+                  </li>
+                  <li>
+                    <span><img src={follower}></img></span>
+                    <span>{userDetail.numfollow}</span>
+                  </li>
+                  <li>
+                    <span><img src={donePractice}></img></span>
+                    <span>{userDetail.numpost}</span>
+                  </li>
+                </ul>
+              </div>
+
+              {
+                userDetail.statusfriend != 10 ? <div className="friend-actions">
+                  {
+                    userDetail.statusfriend == 0 || userDetail.statusfriend == 5 ? <Button className="bt-submit" onClick={() => this.addFriend(userDetail.id)}>Kết bạn</Button> : ""
+                  }
+                  {
+                    userDetail.statusfriend == 1 ? <Button className="bt-submit" onClick={() => this.addFriend(userDetail.id)}>Huỷ</Button> : ""
+                  }
+                  {
+                    userDetail.ismefollow == 0 ? <Button className="bt-cancel" onClick={() => this.folowFriend(userDetail.id)}>Theo dõi</Button> : ""
+                  }
+                  {
+                    userDetail.ismefollow == 1 ? <Button className="bt-cancel" onClick={() => this.setState({
+                      okCallback: () => this.unFolowFriend(userDetail.id),
+                      confirmTitle: "",
+                      confirmMessage: "Bạn có chắc chắn muốn bỏ theo dõi người này không?",
+                      showConfim: true
+                    })}>Bỏ theo dõi</Button> : ""
+                  }
+                  <IconButton className="bt-more" style={{ background: "rgba(0,0,0,0.07)" }} onClick={() => this.setState({ showUserMenu: true })}>
+                    <MoreHorizIcon />
+                  </IconButton>
+                </div> : ""
+              }
+
+              <div className="user-profile">
+                <ul>
+                  {
+                    userDetail.userExperience && userDetail.userExperience.length > 0 ? <li>
+                      <img src={job} />
+                      <span className="title" >Từng làm <b>{userDetail.userExperience[0].title}</b> tại <b>{userDetail.userExperience[0].companyname}</b></span>
+                    </li> : ""
+                  }
+                  {
+                    userDetail.userStudyGraduation && userDetail.userStudyGraduation.length > 0 ? <li>
+                      <img src={education} />
+                      <span className="title" >Từng học <b>{userDetail.userStudyGraduation[0].specialized}</b> tại <b>{userDetail.userStudyGraduation[0].schoolname}</b></span>
+                    </li> : ""
+                  }
+                  {
+                    userDetail.birthday ? <li>
+                      <img src={birthday} />
+                      <span className="title" >Ngày sinh <b>{moment(userDetail.birthday).format("DD/MM/YYYY")}</b></span>
+                    </li> : ""
+                  }
+                  {
+                    userDetail.gendertext ? <li>
+                      <img src={sex} />
+                      <span className="title">Giới tính <b>{userDetail.gendertext}</b></span>
+                    </li> : ""
+                  }
+                </ul>
+                <span className="view-detail-link" onClick={() => {
+                  this.props.setCurrenUserDetail(userDetail)
+                  this.props.toggleUserDetail(true)
+                }}>{">>> Xem thêm thông tin của"} {userDetail.fullname}</span>
+              </div>
+
+              <div className="friend-reward">
+                <label>Bạn bè</label>
+                <span>{10} người bạn</span>
+                <div className="friend-list">
+                  {
+                    friends.length > 0 && friends.slice(0, 6).map((item, index) => <div key={index} className="friend-item" onClick={() => {
+                      this.setState({
+                        showUserPage: true,
+                        currentUserDetail: item
+                      })
+                    }}>
+                      <div className="avatar">
+                        <div className="image" style={{ background: "url(" + item.friendavatar + ")" }}></div>
+                      </div>
+                      <span className="name">{item.friendname}</span>
+                      <span className='mutual-friend-count'>{item.numfriendwith} bạn chung</span>
+                    </div>)
+                  }
+                </div>
+                <Button className="bt-submit" style={{ marginTop: "10px" }} onClick={() => this.setState({ showFriendDrawer: true })}>Xem tất cả bạn bè</Button>
+              </div>
+
+              <div className="quit-post-bt">
+                <ul>
+                  <li onClick={() => this.setState({ openMediaDrawer: true })}>
+                    <img src={uploadImage}></img>
+                    <span>Ảnh</span>
+                  </li>
+                  <li onClick={() => this.setState({ openVideoDrawer: true })}>
+                    <img src={uploadVideo}></img>
+                    <span>Video</span>
+                  </li>
+                </ul>
+              </div>
+
+              <Friends open={showFriendDrawer} userDetail={userDetail} onClose={() => this.setState({ showFriendDrawer: false })} />
+              {
+                renderUserMenuDrawer(this)
+              }
+              {
+                renderMediaDrawer(this)
+              }
+              {
+                renderVideoDrawer(this)
+              }
+              {
+                renderUserPageDrawer(this)
+              }
+              {
+                renderConfirmDrawer(this)
+              }
+            </div> : <Loader type={"small"} width={30} height={30} />
+          }
         </div>
 
-        <div className="quit-post-bt">
-          <ul>
-            <li onClick={() => this.setState({ openMediaDrawer: true })}>
-              <img src={uploadImage}></img>
-              <span>Ảnh</span>
-            </li>
-            <li onClick={() => this.setState({ openVideoDrawer: true })}>
-              <img src={uploadVideo}></img>
-              <span>Video</span>
-            </li>
-          </ul>
-        </div>
-
-
-        {
-          renderUserMenuDrawer(this)
-        }
-        {
-          renderMediaDrawer(this)
-        }
-        {
-          renderVideoDrawer(this)
-        }
-        {
-          renderUserPageDrawer(this)
-        }
-      </div> : ""
+      </div >
     );
   }
 }
@@ -257,6 +484,26 @@ export default connect(
 
 
 
+const renderConfirmDrawer = (component) => {
+  let {
+    showConfim,
+    okCallback,
+    confirmTitle,
+    confirmMessage
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="confirm-drawer" open={showConfim} onClose={() => component.setState({ showConfim: false })}>
+      <div className='jon-group-confirm'>
+        <label>{confirmTitle}</label>
+        <p>{confirmMessage}</p>
+        <div className="mt20">
+          <Button className="bt-confirm" onClick={() => component.setState({ showConfim: false }, () => okCallback ? okCallback() : null)}>Đồng ý</Button>
+          <Button className="bt-submit" onClick={() => component.setState({ showConfim: false })}>Đóng</Button>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
 
 
 const renderUserMenuDrawer = (component) => {
@@ -265,7 +512,7 @@ const renderUserMenuDrawer = (component) => {
   } = component.state
   let {
     userDetail
-  } = component.props
+  } = component.state
   return (
     <Drawer anchor="bottom" className="user-menu" open={showUserMenu} onClose={() => component.setState({ showUserMenu: false })}>
       <div className="menu-header">
@@ -275,14 +522,46 @@ const renderUserMenuDrawer = (component) => {
         <label>Tuỳ chọn</label>
       </div>
       <ul className="menu-list">
+        {
+          userDetail.ismefollow == 1 ? <li >
+            <Button onClick={() => component.setState({
+              okCallback: () => component.unFolowFriend(userDetail.id),
+              confirmTitle: "",
+              confirmMessage: "Bạn có chắc muốn bỏ theo dõi người này không?",
+              showConfim: true
+            })}>
+              <span>
+                <span>Bỏ theo dõi ( {userDetail.fullname} )</span>
+                <span>Không nhìn thấy các hoạt động của nhau nữa nhưng vẫn là bạn bè.</span>
+              </span>
+            </Button>
+          </li> : <li onClick={() => component.folowFriend(userDetail.id)}>
+              <Button>
+                <span>
+                  <span>Theo dõi ( {userDetail.fullname} )</span>
+                  <span>Nhìn thấy các hoạt động của nhau.</span>
+                </span>
+              </Button>
+            </li>
+        }
         <li>
-          <Button onClick={() => component.setState({ showUpdateProfile: true })}>
+          <Button onClick={() => component.setState({
+            okCallback: () => component.bandFriend(userDetail.id),
+            confirmTitle: "",
+            confirmMessage: "Bạn có chắc chắn muốn chặn người này không? Bạn và người bị chặn sẽ không thể nhìn thấy nhau, đồng thời nếu đang là bạn bè, việc chặn này cũng sẽ huỷ kết bạn của nhau.",
+            showConfim: true
+          })}>
             <span>
-              <span>Chặn ( {userDetail.fullName} )</span>
+              <span>Chặn ( {userDetail.fullname} )</span>
               <span>Bạn và người này sẽ không thể nhìn thấy nhau</span>
             </span>
           </Button>
         </li>
+        {
+          userDetail.statusfriend == 10 ? <li>
+            <Button className="bt-submit">Xoá bạn</Button>
+          </li> : ""
+        }
       </ul>
     </Drawer>
   )
@@ -496,38 +775,12 @@ function TabPanel(props) {
 const renderUserPageDrawer = (component) => {
   let {
     showUserPage,
-    userDetail
+    currentUserDetail
   } = component.state
   return (
     <Drawer anchor="bottom" className="user-page-drawer" open={showUserPage} onClose={() => component.setState({ showUserPage: false })}>
       {
-        userDetail ? <div className="drawer-detail">
-          <div className="drawer-header">
-            <div className="direction" onClick={() => component.setState({ showUserPage: false })}>
-              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-              </IconButton>
-              <label>Trang cá nhân</label>
-            </div>
-            <div className="user-reward">
-              <div className="profile">
-                <span className="user-name">{userDetail.fullName}</span>
-                <span className="point">
-                  <span>Điển YOOT: {userDetail.point}</span>
-                  <img src={coin} />
-                </span>
-              </div>
-              <Avatar aria-label="recipe" className="avatar">
-                <img src={userDetail.avatar} style={{ width: "100%" }} />
-              </Avatar>
-            </div>
-          </div>
-          <div className="filter"></div>
-          <div style={{ overflow: "scroll" }}>
-            <Index {...component.props} userDetail={userDetail} />
-          </div>
-
-        </div> : ""
+        currentUserDetail ? <Index {...component.props} userDetail={currentUserDetail} onClose={() => component.setState({ showUserPage: false })} /> : ""
       }
     </Drawer>
   )
