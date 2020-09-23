@@ -139,7 +139,7 @@ export const NumberFormatCustom = (props) => {
           },
         });
       }}
-      isNumericString
+      allowLeadingZeros
     />
   );
 }
