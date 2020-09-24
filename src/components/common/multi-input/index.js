@@ -19,17 +19,13 @@ export class Loader extends React.Component {
             useHashtags,
             useMentions
         } = this.props
+        var that = this
         var hashtags = false;
         var mentions = false;
-        let that = this
         $(document).on('keyup', id ? ("#" + id) : '#vk-input', function (e) {
             if ($(this)[0].outerText.length > 0) {
                 $("#placeholder").css("display", "none");
             } else {
-                $("#placeholder").css("display", "inherit")
-            }
-            if (this.innerText == '\n'){
-                this.innerText='';
                 $("#placeholder").css("display", "inherit")
             }
             that.props.onChange(this.outerText);
@@ -37,76 +33,77 @@ export class Loader extends React.Component {
         $(document).on('click', '#mention-options .item', function(e){
             var str = this.innerText;
             var multiInput = $('#vk-input');
-            var innerHTML = multiInput[0].innerHTML.replace('<span class="highlight">@</span>', '<span class="highlight">@' + str + '</span>&nbsp;')
+            $('#vk-input').html(multiInput[0].innerHTML.replace('<span class="highlight mentions new">@</span>', '<span class="highlight mentions" contenteditable="false">@' + str + '</span>&nbsp;'));
+            that.placeCaretAtEnd(this);
             mentions = false;
-            $('#vk-input').html(innerHTML);
             that.props.onChange(multiInput[0].outerText);
-            that.placeCaretAtEnd(this);
             $('#mention-options').css("display", "none");
-        })
-        $(document).on('keydown', id ? ("#" + id) : '#vk-input', function (e) {
-            let arrow = {
-                space: 32,
-                del: 8,
-            };
-            if(useHashtags){
-                arrow.hashtag = 51;
-            }
-            if(useMentions){
-                arrow.mentions = 50;
-            }
+        })       
+        $(document).on('keypress', id ? ("#" + id) : '#vk-input', function(e) {
             var input_field = $(this);
-            if (e.shiftKey){
-                switch (e.keyCode) {
-                    case arrow.mentions:
-                        mentions = true;
-                        break;
-                    case arrow.hashtag:
-                        hashtags = true;
-                        break;
-                }
-            } else{
-                mentions = false;
+            var x = e.which || e.keyCode;
+            if (x == 32){ // space key
+              if(hashtags || mentions){
+                e.preventDefault();
+                input_field.html(input_field.html() + "</span>&nbsp;");
+                that.placeCaretAtEnd(this);
                 hashtags = false;
-                switch (e.keyCode) {
-                    case arrow.del:
-                        $('#mention-options').css("display", "none");
-                        break;
-                    case arrow.space:
-                        $('#mention-options').css("display", "none");
-                        input_field.html(input_field.html() + "</span>&nbsp;");
-                        break;
+                mentions = false;
+                if(document.getElementsByClassName("new")){
+                    document.getElementsByClassName("new")[0].setAttribute("contenteditable", false);
                 }
+              }
+              $('#mention-options').css("display", "none");
             }
-            if(mentions){
-                input_field.html(input_field.html() + "<span class='highlight'>@");
+            if (x == 35){ // hash key (#)
+              e.preventDefault();
+              $(".highlight").removeClass("new");
+              input_field.html(input_field.html() + "<span class='highlight hashtag new'>#");
+              that.placeCaretAtEnd(this);
+              hashtags = true;
+            }
+            if (x == 64){ // hash key (@)
+                e.preventDefault();
+                $(".highlight").removeClass("new");
+                input_field.html(input_field.html() + "<span class='highlight mentions new'>@");
+                that.placeCaretAtEnd(this);
+                mentions = true;
                 $('#mention-options').css("display", "block");
-                mentions = false;
-                e.preventDefault();
+              }
+            // various punctuation characters
+            if (x == 8 || x == 9 || x >=16 && x <= 18 || x == 27 || x == 33 || x == 34 || x >= 36 && x <= 47 || x >= 58 && x < 64 || x >= 91 && x <= 94 || x == 96 || x >= 123 && x <= 126) {
+                if(hashtags || mentions) {
+                    e.preventDefault();
+                    input_field.html(input_field.html() + "</span>" + String.fromCharCode(x));
+                    that.placeCaretAtEnd(this);
+                    hashtags = false;
+                    mentions = false;
+                    if(document.getElementsByClassName("new")){
+                        document.getElementsByClassName("new")[0].setAttribute("contenteditable", false);
+                    }
+                }
             }
-            if(hashtags){
-                input_field.html(input_field.html() + "<span class='highlight'>#");
-                hashtags = false;
-                e.preventDefault();
+            if(x == 13){// return key
+              document.execCommand('defaultParagraphSeparator', false, 'p');
+              $('#mention-options').css("display", "none");
             }
-            that.placeCaretAtEnd(this);
+            
         });
     }
     placeCaretAtEnd(el) {
         el.focus();
-        if (typeof window.getSelection != "undefined"
-            && typeof document.createRange != "undefined") {
-            var range = document.createRange();
-            range.selectNodeContents(el);
-            range.collapse(false);
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
+        if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+          var range = document.createRange();
+          range.selectNodeContents(el);
+          range.collapse(false);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
         } else if (typeof document.body.createTextRange != "undefined") {
-            var textRange = document.body.createTextRange();
-            textRange.moveToElementText(el);
-            textRange.collapse(false);
-            textRange.select();
+          var textRange = document.body.createTextRange();
+          textRange.moveToElementText(el);
+          textRange.collapse(false);
+          textRange.select();
         }
     }
 

@@ -1,12 +1,29 @@
+// .highlight span[data-role="remove"] {
+//   border-radius: 50%;
+//   background: red;
+//   color: white;
+//   cursor: pointer;
+//   padding: 0 5px 1px;
+//   margin-left:5px;
+// }
 #vk-input { 
-    padding: 10px;
-    border-radius: 7px;
-    border: 1px solid rgba(0,0,0,0.1);
-    outline: none;
-    font-family: Roboto-Regular;
+  padding: 10px;
+  border-radius: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  outline: none;
+  font-family: Roboto-Regular;
+  margin: auto;
+  p{
+    margin: 0;
+    line-height: 2;
+  }
 }
 .highlight{
-    color:blue;
+  background: #f0f8fb;
+  color: #52a5d9;
+  padding: 1px;
+  margin: -1px;
+  border-radius: 5px;
 }
 .multi-input{
   position: relative;
