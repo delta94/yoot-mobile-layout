@@ -17,7 +17,8 @@ export class Loader extends React.Component {
             id,
             onChange,
             useHashtags,
-            useMentions
+            useMentions,
+            disabledInput
         } = this.props
         var that = this
         var hashtags = false;
@@ -114,6 +115,7 @@ export class Loader extends React.Component {
         let {
             className,
             id,
+            disabledInput,
             placeholder,
             userOptions,
             useHashtags,
@@ -121,7 +123,7 @@ export class Loader extends React.Component {
         } = this.props
         return (
             <div className={"multi-input " + className}>
-                <div id={id ? id : "vk-input"} contentEditable="true" onChange={() => alert()}>
+                <div id={id ? id : "vk-input"} contentEditable={!disabledInput ? "true": "false"} onChange={() => alert()}>
                     {value ? value : ""}
                 </div>
                 {useMentions ? <div id="mention-options" style={{display:'none'}}>

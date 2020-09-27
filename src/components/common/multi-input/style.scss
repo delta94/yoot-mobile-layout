@@ -13,6 +13,9 @@
   outline: none;
   font-family: Roboto-Regular;
   margin: auto;
+  &[contentEditable="false"]{
+    margin-bottom: 15px;
+  }
   p{
     margin: 0;
     line-height: 2;
