@@ -16,6 +16,12 @@ ul{
     margin: 0px;
 }
 
+button.color-gray{
+    > span{
+        color: #777 !important;
+    }
+}
+
 .custom-tab{
     box-shadow: none !important;
     padding: 5px;
@@ -255,6 +261,19 @@ input{
         }
     }
 }
+.bt-default{
+    width: 100% !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    min-height: 30px !important;
+    background: #fff !important;
+    > span{
+        text-transform: none !important;
+        color: #555 !important;
+        font-size: 1.2rem;
+        font-family: Roboto-Regular;
+    }
+}
 .bt-confirm{
     width: 100% !important;
     border-radius: 6px !important;
@@ -292,6 +311,7 @@ fieldset{
     border-color: rgba(0, 0, 0, 0.15) !important;
 }
 .custom-menu{
+    z-index:  100000000 !important;
     > div:last-child{
         border-radius: 7px;
         ul{
@@ -552,4 +572,23 @@ div{
 }
 .none-bg{
     background: rgba(0, 0, 0, 0.07);
+}
+.custom-toast{
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.Toastify__toast--info{
+    background: #242a2ee7 !important;
+    width: fit-content !important;
+    padding: 0px 20px;
+    border-radius: 7px;
+    min-height: 40px;
+    > button{
+        display: none;
+    }
+    .Toastify__toast-body{
+        font-family: Roboto-Regular;
+    }
 }

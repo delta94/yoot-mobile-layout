@@ -33,11 +33,12 @@ import {
 import moment from 'moment'
 import SwipeableViews from 'react-swipeable-views';
 import { get } from "../../api";
-import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
 import ContentLoader from "react-content-loader"
 import Loader from '../common/loader'
 import { objToQuery } from "../../utils/common";
 import Friends from './friend'
+import Medias from './medias'
 
 
 const coin = require('../../assets/icon/Coins_Y.png')
@@ -91,7 +92,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: currentpage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20,
       status: "Friends",
       forFriendId: userId,
@@ -220,7 +221,8 @@ class Index extends React.Component {
       showUserMenu,
       userDetail,
       friends,
-      showFriendDrawer
+      showFriendDrawer,
+      openMediaDrawer
     } = this.state
 
     let {
@@ -409,6 +411,7 @@ class Index extends React.Component {
               {
                 renderConfirmDrawer(this)
               }
+              <Medias open={openMediaDrawer} onClose={() => this.setState({ openMediaDrawer: false })} currentUser={userDetail} />
             </div> : <Loader type={"small"} width={30} height={30} />
           }
         </div>

@@ -1,5 +1,5 @@
 import { get } from "../api"
-import { SOCIAL_NET_WORK_API } from "../constants/appSettings"
+import { SOCIAL_NET_WORK_API, CurrentDate } from "../constants/appSettings"
 import { objToQuery } from "../utils/common"
 import moment from 'moment'
 
@@ -46,7 +46,7 @@ export const getFolowedMe = (currentpage) => {
     return dispatch => {
         let param = {
             currentpage: currentpage,
-            currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+            currentdate: moment(new Date).format(CurrentDate),
             limit: 20,
             status: "Followed",
             forFriendId: 0,
@@ -68,7 +68,7 @@ export const getMeFolowing = (currentpage) => {
     return dispatch => {
         let param = {
             currentpage: currentpage,
-            currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+            currentdate: moment(new Date).format(CurrentDate),
             limit: 20,
             status: "Following",
             forFriendId: 0,

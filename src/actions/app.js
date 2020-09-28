@@ -28,6 +28,9 @@ export const TOGGLE_DISC_DRAWER = "app@TOGGLE_DISC_DRAWER"
 export const TOGGLE_YOUR_MAJORS_DRAWER = "app@TOGGLE_YOUR_MAJORS_DRAWER"
 export const TOGGLE_SEARCH_FRIENDS_DRAWER = "app@TOGGLE_SEARCH_FRIENDS_DRAWER"
 export const SET_CURRENT_FRIEND_ID = "app@SET_CURRENT_FRIEND_ID"
+export const TOGGLE_CREATE_ALBUM_DRAWER = "app@TOGGLE_CREATE_ALBUM_DRAWER"
+export const TOGGLE_ALBUM_DETAIL_DRAWER = "app@TOGGLE_ALBUM_DETAIL_DRAWER"
+export const SET_CURRENNT_ALBUM = "app@SET_CURRENNT_ALBUM"
 
 
 export const toggleHeader = (isShow) => {
@@ -251,6 +254,37 @@ export const setCurrentFriendId = (friendId) => {
         })
     }
 }
+
+export const toggleCreateAlbumDrawer = (isShow, callback) => {
+    return dispatch => {
+        dispatch({
+            type: TOGGLE_CREATE_ALBUM_DRAWER,
+            payload: isShow,
+            callback: callback
+        })
+    }
+}
+
+export const toggleAlbumDetailDrawer = (isShow, callback) => {
+    return dispatch => {
+        dispatch({
+            type: TOGGLE_ALBUM_DETAIL_DRAWER,
+            payload: isShow,
+            callback: callback
+        })
+    }
+}
+
+export const setCurrentAlbum = (album) => {
+    return dispatch => {
+        dispatch({
+            type: SET_CURRENNT_ALBUM,
+            payload: album,
+        })
+    }
+}
+
+
 
 
 

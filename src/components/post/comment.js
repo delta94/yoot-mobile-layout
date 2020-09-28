@@ -32,12 +32,12 @@ class Index extends React.Component {
             <li style={{ position: "relative" }}>
                 <div>
                     <Avatar className="avatar">
-                        <img src={comment.user.avatar} />
+                        <img src={comment.avatarusercomment} />
                     </Avatar>
                     <div className="comment-info">
                         <div className="info">
-                            <label>{comment.user.fullName}</label>
-                            <span>{comment.comment}</span>
+                            <label>{comment.nameusercomment}</label>
+                            <span>{comment.commentcontent}</span>
                         </div>
                         {
                             hideReactions ? "" : <div className="actions">

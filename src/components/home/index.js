@@ -18,7 +18,8 @@ import { connect } from 'react-redux'
 import { StickyContainer, Sticky } from 'react-sticky';
 import {
   SOCIAL_NET_WORK_API,
-  SYSTEM_API
+  SYSTEM_API,
+  CurrentDate
 } from '../../constants/appSettings'
 import Slider from "react-slick";
 import {
@@ -602,7 +603,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: currentpage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20
     }
     let queryParam = objToQuery(param)
@@ -630,7 +631,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: currentpage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20,
       skin: 'TopGroup'
     }

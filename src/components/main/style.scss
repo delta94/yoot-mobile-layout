@@ -733,6 +733,7 @@
         height: 35px;
         border-radius: 7px;
         border: 1px solid rgba(0,0,0,0.1);
+        margin-bottom: 10px;
         button{
           height: 100%;
           width: 100%;
@@ -978,6 +979,81 @@
     align-items: center;
     label{
       margin-left: 10px;
+    }
+  }
+}
+
+#album-content{
+  .detail{
+    .tab-content{
+      .react-swipeable-view-container{
+        > div{
+          overflow: unset !important;
+        }
+      }
+    }
+  }
+}
+.update-privacy-image-drawer{
+  .drawer-header{
+    border: none !important;
+    .direction{
+      width: 100%;
+      label{
+        white-space: nowrap;
+      }
+    }
+    .bt-default{
+      width: fit-content !important;
+    }
+  }
+  .drawer-content{
+    ul{
+      padding: 10px;
+      box-sizing: border-box;
+      li{
+        button{
+          padding: 0px;
+          width: 100%;
+          .custom-radio{
+            width: fit-content;
+            svg{
+              color: #bbb;
+            }
+            &.active{
+              svg{
+                color: #ff5a5a;
+              }
+            }
+          }
+          img{
+            width: 23px;
+            margin-right: 10px;
+          }
+          span{
+            > label{
+              text-transform: none;
+              display: block;
+              width: 100%;
+              text-align: left;
+              font-family: Roboto-Medium;
+              color: #333;
+              line-height: 1rem;
+              margin-bottom: 5px;
+            }
+            > span{
+              text-transform: none;
+              display: block;
+              width: 100%;
+              text-align: left;
+              color: #888;
+              font-size: 0.9rem;
+              line-height: 1rem;
+              font-family: Roboto-Regular;
+            }
+          }
+        }
+      }
     }
   }
 }

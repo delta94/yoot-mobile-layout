@@ -78,14 +78,16 @@ class Index extends React.Component {
     } = this.props
     return (
       <div className="community-page" >
-        <div className="banner" style={{
-          height: "120px", background: "url(" + postBg + ")"
-        }}>
-          <label>Chào {profile.fullname},</label>
-          <span>Ngày hôm nay của bạn thế nào?</span>
-          <Button onClick={() => this.props.togglePostDrawer(true)}>Tạo bài đăng mới</Button>
-        </div>
-        <StickyContainer className="container">
+        {
+          profile ? <div className="banner" style={{
+            height: "120px", background: "url(" + postBg + ")"
+          }}>
+            <label>Chào {profile.fullname},</label>
+            <span>Ngày hôm nay của bạn thế nào?</span>
+            <Button onClick={() => this.props.togglePostDrawer(true)}>Tạo bài đăng mới</Button>
+          </div> : ""
+        }
+        < StickyContainer className="container">
           <Sticky topOffset={-60} >
             {({ style, wasSticky }) => (
               <div style={{ ...style, top: "60px", zIndex: 999 }}>
@@ -117,10 +119,10 @@ class Index extends React.Component {
             )}
           </Sticky>
           <div className="page-detail" style={{ height: "2000px" }}>
-            <Post />
+            {/* <Post /> */}
           </div>
         </StickyContainer>
-      </div>
+      </div >
     );
   }
 }

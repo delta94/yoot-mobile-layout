@@ -23,7 +23,10 @@ import {
     TOGGLE_DISC_DRAWER,
     TOGGLE_YOUR_MAJORS_DRAWER,
     TOGGLE_SEARCH_FRIENDS_DRAWER,
-    SET_CURRENT_FRIEND_ID
+    SET_CURRENT_FRIEND_ID,
+    TOGGLE_CREATE_ALBUM_DRAWER,
+    TOGGLE_ALBUM_DETAIL_DRAWER,
+    SET_CURRENNT_ALBUM
 } from '../actions/app'
 
 const initialState = {
@@ -53,7 +56,11 @@ const initialState = {
     showDISCDrawer: false,
     showYourMajorsPage: false,
     showSearchFriendDrawer: false,
-    currentFriendId: null
+    currentFriendId: null,
+    showCreateAlbumDrawer: false,
+    currentAlbum: null,
+    createAlbumSuccessCallback: null,
+    updateAlbumSuccessCallback: null
 };
 
 export default (state = initialState, action) => {
@@ -188,6 +195,23 @@ export default (state = initialState, action) => {
         case SET_CURRENT_FRIEND_ID: {
             return Object.assign({}, state, {
                 currentFriendId: action.payload,
+            });
+        }
+        case TOGGLE_CREATE_ALBUM_DRAWER: {
+            return Object.assign({}, state, {
+                showCreateAlbumDrawer: action.payload,
+                createAlbumSuccessCallback: action.callback
+            });
+        }
+        case TOGGLE_ALBUM_DETAIL_DRAWER: {
+            return Object.assign({}, state, {
+                showAlbumDetailDrawer: action.payload,
+                updateAlbumSuccessCallback: action.callback
+            });
+        }
+        case SET_CURRENNT_ALBUM: {
+            return Object.assign({}, state, {
+                currentAlbum: action.payload,
             });
         }
 

@@ -17,7 +17,8 @@ import {
   Button,
   Drawer,
   TextField,
-  InputAdornment
+  InputAdornment,
+  Radio
 } from '@material-ui/core'
 
 import {
@@ -28,7 +29,7 @@ import {
   ChevronLeft as ChevronLeftIcon
 } from '@material-ui/icons'
 import moment from 'moment'
-import { Privacies } from '../../constants/constants'
+import { Privacies, ReactSelectorIcon } from '../../constants/constants'
 import { connect } from 'react-redux'
 import {
   togglePostDrawer,
@@ -36,11 +37,21 @@ import {
   toggleMediaViewerDrawer,
   setMediaToViewer
 } from '../../actions/app'
-import { confirmSubmit } from "../../utils/common";
+import {
+  updatePosted,
+  likePosted,
+  dislikePosted,
+  likeImage,
+  dislikeImage
+} from '../../actions/posted'
+import { confirmSubmit, fromNow, objToQuery } from "../../utils/common";
 import FacebookSelector from "../common/facebook-selector";
 import $ from 'jquery'
 import Comment from './comment'
-import { objToArray } from '../../utils/common';
+import { objToArray, copyToClipboard } from '../../utils/common';
+import Loader from '../common/loader'
+import { post } from "../../api";
+import { SOCIAL_NET_WORK_API, PostLinkToCoppy } from "../../constants/appSettings";
 
 const maxCols = 6
 const like1 = require('../../assets/icon/like1@1x.png')
@@ -114,8 +125,6 @@ class Index extends React.Component {
 
   handleColumnCal(index, length) {
     switch (length) {
-      case 1:
-        return maxCols
       case 2:
         return maxCols / 2
       case 3:
@@ -131,8 +140,6 @@ class Index extends React.Component {
   }
   handleCellHeightCal(index, length) {
     switch (length) {
-      case 1:
-        return 300
       case 2:
         return 300
       case 3:
@@ -147,6 +154,99 @@ class Index extends React.Component {
   }
   handleDeletePost() {
     confirmSubmit("Thông báo", "Bạn có muốn xoá bài đăng này không?")
+  }
+
+  updateImagePrivacy() {
+    let {
+      currentImage,
+      privacySelected
+    } = this.state
+    let {
+      data
+    } = this.props
+    if (currentImage && privacySelected) {
+      let param = {
+        postid: data.nfid,
+        postfor: privacySelected
+      }
+      this.setState({
+        isProccesing: true
+      })
+      post(SOCIAL_NET_WORK_API, "PostNewsFeed/ChangePostFor" + objToQuery(param), null, result => {
+        if (result && result.result == 1) {
+          this.setState({
+            isProccesing: false,
+            showUpdatePrivacyDrawer: false
+          })
+          let privacy = objToArray(Privacies).find(item => item.code == privacySelected)
+          this.props.updatePosted({ ...data, postforid: privacy.code, postforwho: privacy.label }, "mePosteds")
+        }
+      })
+    }
+  }
+
+  likePosted(reaction) {
+    let {
+      data
+    } = this.props
+    if (!data) return
+    let param = {
+      postid: data.nfid,
+      icon: reaction.code
+    }
+    this.props.likePosted(data.nfid, reaction.code, "myPosteds")
+    this.setState({ isProccesing: false })
+    post(SOCIAL_NET_WORK_API, "PostNewsFeed/LikeNewsFeed" + objToQuery(param), null, (result) => {
+    })
+  }
+
+  dislikePosted() {
+    let {
+      data
+    } = this.props
+    if (!data) return
+    let param = {
+      postid: data.nfid,
+      icon: -1
+    }
+    this.setState({ isProccesing: false })
+    this.props.dislikePosted(data.nfid, "myPosteds")
+    post(SOCIAL_NET_WORK_API, "PostNewsFeed/LikeNewsFeed" + objToQuery(param), null, (result) => {
+    })
+  }
+
+  likeImage(reaction, image) {
+    let {
+      data
+    } = this.props
+    if (!data) return
+    let param = {
+      postid: data.nfid,
+      icon: reaction.code,
+      nameimage: image.nameimage
+    }
+    this.props.likeImage(data.nfid, image.detailimageid, reaction.code, "myPosteds")
+    this.setState({ isProccesing: false })
+    post(SOCIAL_NET_WORK_API, "PostNewsFeed/LikeNewsFeed" + objToQuery(param), null, (result) => {
+
+    })
+  }
+
+  dislikeImage(image) {
+    let {
+      data
+    } = this.props
+    if (!data) return
+    let param = {
+      postid: data.nfid,
+      icon: -1,
+      nameimage: image.nameimage
+    }
+    this.props.dislikeImage(data.nfid, image.detailimageid, "myPosteds")
+    this.setState({ isProccesing: false })
+
+    post(SOCIAL_NET_WORK_API, "PostNewsFeed/LikeNewsFeed" + objToQuery(param), null, (result) => {
+    })
   }
 
   componentWillMount() {
@@ -169,15 +269,22 @@ class Index extends React.Component {
       anchor,
       showLocalMenu,
       openReactions,
-
     } = this.state
     let {
       profile,
-      daskMode
+      daskMode,
+      data
     } = this.props
 
+    let PrivacyOptions = objToArray(Privacies)
+
     return (
-      <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
+      data ? <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
+        {
+          data.kindpost == 4 ? <div className="album-name">
+            <span>Album <span>{data.albumname}</span></span>
+          </div> : ""
+        }
         <CardHeader
           className="card-header"
           avatar={
@@ -190,39 +297,72 @@ class Index extends React.Component {
               <MoreHorizIcon />
             </IconButton>
           }
-          title={<span className="poster-name">Hoang Hai Long</span>}
+          title={<span className="poster-name">
+            <span className="name">Hoang Hai Long</span>
+            {
+              data.kindpost == 4 ? <span>{data.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
+            }
+            {
+              data.kindpost == 3 ? <span>{data.titlepost.replace("{username}", " ")}</span> : ""
+            }
+            {
+              data.kindpost == 2 ? <span>{data.titlepost.replace("{username}", " ")}</span> : ""
+            }
+          </span>}
           subheader={<div className="poster-subtitle">
             <div>
-              <img src={Privacies.Public.icon1} />
-              <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
-              <span>{moment(new Date).format("DD/MM/YYYY")}</span>
+              <img src={PrivacyOptions.find(privacy => privacy.code == data.postforid).icon1} />
+              <FiberManualRecordIcon />
+              <span>{moment(data.createdate).format("DD/MM/YYYY HH:mm")}</span>
+              <FiberManualRecordIcon />
+              <span>{fromNow(moment(data.createdate), moment(new Date))}</span>
             </div>
-            <div>
+            {/* <div>
               <img src={Group} />
               <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
               <span><u>Thông điệp thức tỉnh con người</u></span>
-            </div>
+            </div> */}
           </div>}
         />
+        {
+          data.nfcontent != "" ? <div className={"post-content"}>
+            <span>{data.nfcontent}</span>
+          </div> : ""
+        }
         <CardContent className="card-content">
           <div className="media-grid">
             {
-              daskMode ? "" : <GridList cols={maxCols}>
-                {photos.map((photo, index) => (
-                  <GridListTile className="image" style={{ height: this.handleCellHeightCal(index, photos.length) }} key={photo.url} cols={this.handleColumnCal(index, photos.length)}>
-                    <img src={photo.url} alt={photo.title} onClick={() => {
-                      this.props.setMediaToViewer({
-                        medias: photos,
-                        userName: "Tester 001202",
-                        likeCount: 10,
-                        commentCount: 30,
-                        content: "React Images Viewer is free to use for personal and commercial projects under the MIT license.Attribution is not required, but greatly appreciated.It does not have to be user- facing and can remain within the code."
-                      })
-                      this.props.toggleMediaViewerDrawer(true, { showInfo: true })
-                    }} />
-                  </GridListTile>
-                ))}
-              </GridList>
+              daskMode ? "" : (
+                data.mediaPlays.length > 1
+                  ? <GridList cols={maxCols} onClick={() => this.setState({ showPostedDetail: true })}>
+                    {data.mediaPlays.map((photo, index) => (
+                      <GridListTile
+                        className="image"
+                        style={{
+                          height: this.handleCellHeightCal(index, data.mediaPlays.length),
+                        }}
+                        key={photo.name}
+                        cols={this.handleColumnCal(index, data.mediaPlays.length)}
+                      >
+                        <img src={photo.name} alt={photo.name} />
+                      </GridListTile>
+                    ))}
+                  </GridList>
+                  : <GridList cols={1}>
+                    {data.mediaPlays.map((photo, index) => (
+                      <GridListTile className="image" style={{ height: "auto" }} key={photo.name} cols={1} onClick={() => {
+                        this.props.setMediaToViewer(data.mediaPlays)
+                        this.props.toggleMediaViewerDrawer(true, {
+                          actions: data.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
+                          showInfo: true,
+                          activeIndex: index
+                        })
+                      }}>
+                        <img src={photo.name} alt={photo.name} style={{ width: "100%", height: "100%" }} />
+                      </GridListTile>
+                    ))}
+                  </GridList>
+              )
             }
             {
               daskMode ? <GridList cols={maxCols}>
@@ -236,27 +376,45 @@ class Index extends React.Component {
               </GridList> : ""
             }
           </div>
-          <div className="react-reward">
-            <span className="like">
-              <img src={like1} />
-              <span>1</span>
-            </span>
-            <span className="comment">
-              2 bình luận
-            </span>
-          </div>
+          {
+            data.numlike > 0 || data.numcomment > 0 ? <div className="react-reward">
+              {
+                data.numlike > 0 ? <span className="like">
+                  {
+                    data.iconNumbers.filter(item => item.icon != data.iconlike).map((icon, index) => index > 0 && <img key={index} src={ReactSelectorIcon[icon.icon].icon}></img>)
+                  }
+                  {
+                    data.islike == 1 ? <img src={ReactSelectorIcon[data.iconlike].icon}></img> : ""
+                  }
+                  <span>{data.numlike}</span>
+                </span> : <span className="like">
+                  </span>
+              }
+              {
+                data.numcomment > 0 ? <span className="comment">
+                  {data.numcomment} bình luận
+                </span> : ""
+              }
+            </div> : ""
+          }
         </CardContent>
         <CardActions disableSpacing className="post-actions">
-          <FacebookSelector open={openReactions} onClose={() => this.setState({ openReactions: false })} onReaction={(reaction) => console.log("reaction", reaction)} />
+          <FacebookSelector
+            open={openReactions}
+            active={data.iconlike}
+            onClose={() => this.setState({ openReactions: false })}
+            onReaction={(reaction) => this.likePosted(reaction)}
+            onShortPress={(reaction) => data.islike == 1 ? this.dislikePosted(reaction) : this.likePosted(reaction)}
+          />
           <Button onClick={() => this.setState({ showCommentDrawer: true })}><img src={daskMode ? comment1 : comment} />Bình luận</Button>
           <Button onClick={() => this.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
         </CardActions>
         {
-          daskMode ? "" : <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>
+          daskMode ? "" : (data.numcomment > 0 ? <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>
             <CardContent className={"card-container"}>
               <ul className="comment-list" onClick={() => this.setState({ showCommentDrawer: true })}>
                 {
-                  comments.map((comment, index) => <Comment key={index} comment={comment} hideReactions={true} />)
+                  data.comments.map((comment, index) => <Comment key={index} comment={comment} hideReactions={true} />)
                 }
                 {
                   profile ? <li >
@@ -272,21 +430,29 @@ class Index extends React.Component {
                 }
               </ul>
             </CardContent>
-          </Collapse>
+          </Collapse> : "")
         }
-        <Menu
-          className="custom-menu"
-          anchorEl={anchor}
-          keepMounted
-          open={showLocalMenu}
-          onClose={() => this.setState({ showLocalMenu: false })}
-        >
-          <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.props.togglePostDrawer(true))}>Chỉnh sửa bài đăng</MenuItem>
-          <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.handleDeletePost())}>Xoá bài đăng</MenuItem>
-          <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Sao chép liên kết</MenuItem>
-          <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem>
-          <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.props.toggleReportDrawer(true))}>Báo cáo vi phạm</MenuItem>
-        </Menu>
+        {
+          showLocalMenu ? <Menu
+            className="custom-menu"
+            anchorEl={anchor}
+            keepMounted
+            open={showLocalMenu}
+            onClose={() => this.setState({ showLocalMenu: false })}
+          >
+            <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.props.togglePostDrawer(true))}>Chỉnh sửa bài đăng</MenuItem>
+            {
+              data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.handleDeletePost())}>Xoá bài đăng</MenuItem> : ""
+            }
+            <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => copyToClipboard(PostLinkToCoppy + data.nfid))}>Sao chép liên kết</MenuItem>
+            {
+              data.iduserpost != profile.id ? <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
+            }
+            {
+              data.iduserpost != profile.id ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.props.toggleReportDrawer(true))}>Báo cáo vi phạm</MenuItem> : ""
+            }
+          </Menu> : ""
+        }
         {
           renderCommentDrawer(this)
         }
@@ -296,7 +462,13 @@ class Index extends React.Component {
         {
           renderSharePrivacyMenuDrawer(this)
         }
-      </Card>
+        {
+          renderUpdatePrivacyImageDrawer(this)
+        }
+        {
+          rednerDetailPosted(this)
+        }
+      </Card> : ""
     );
   }
 }
@@ -310,7 +482,12 @@ const mapDispatchToProps = dispatch => ({
   togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
   toggleReportDrawer: (isShow) => dispatch(toggleReportDrawer(isShow)),
   toggleMediaViewerDrawer: (isShow, features) => dispatch(toggleMediaViewerDrawer(isShow, features)),
-  setMediaToViewer: (media) => dispatch(setMediaToViewer(media))
+  setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
+  updatePosted: (posted, targetKey) => dispatch(updatePosted(posted, targetKey)),
+  likePosted: (postedId, likeIcon, targetKey) => dispatch(likePosted(postedId, likeIcon, targetKey)),
+  dislikePosted: (postedId, targetKey) => dispatch(dislikePosted(postedId, targetKey)),
+  likeImage: (postId, imageId, iconCode, targetKey) => dispatch(likeImage(postId, imageId, iconCode, targetKey)),
+  dislikeImage: (postId, imageId, targetKey) => dispatch(dislikeImage(postId, imageId, targetKey))
 });
 
 
@@ -318,6 +495,54 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(Index);
+
+
+const mediaRootActions = (component) => [
+  {
+    label: "Lưu vào điện thoại",
+    action: (value) => component.downloadImage(value.name)
+  },
+  {
+    label: "Chỉnh sửa nội dung",
+    action: (value) => alert("Chỉnh sửa nội dung")
+  },
+  {
+    label: "Đặt làm ảnh đại diện",
+    action: (value) => alert("Đặt làm ảnh đại diện")
+  },
+  {
+    label: "Đặt làm ảnh bìa",
+    action: (value) => alert("Đặt làm ảnh bìa")
+  },
+  {
+    label: "Chỉnh sửa quyền riêng tư",
+    action: (value) => component.setState({
+      currentImage: value,
+      showUpdatePrivacyDrawer: true,
+      privacySelected: component.props.data.postforid,
+    })
+  },
+  {
+    label: "Xoá ảnh",
+    action: (value) => component.setState({
+      showConfim: true,
+      okCallback: () => component.deleteImage(value),
+      confirmTitle: "",
+      confirmMessage: "Khi xoá ảnh sẽ xoá luôn bài đăng, bạn vẫn muốn tiếp tục?"
+    })
+  },
+  {
+    label: "Đặt làm ảnh đại diện album",
+    action: (value) => component.setImageToAlbumBackground(value)
+  }
+]
+
+const mediaGuestActions = [
+  {
+    label: "Lưu vào điện thoại",
+    action: (value) => this.downloadImage(value.name)
+  }
+]
 
 
 
@@ -537,6 +762,252 @@ const renderSharePrivacyMenuDrawer = (component) => {
           </li>)
         }
       </ul>
+    </Drawer>
+  )
+}
+
+const renderUpdatePrivacyImageDrawer = (component) => {
+  let {
+    showUpdatePrivacyDrawer,
+    isProccesing,
+    privacySelected
+  } = component.state
+
+
+  let PrivacyOptions = objToArray(Privacies)
+
+  return (
+    <Drawer anchor="bottom" className="update-privacy-image-drawer" open={showUpdatePrivacyDrawer}>
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.setState({ showUpdatePrivacyDrawer: false })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Chỉnh sửa quyền riêng tư</label>
+          </div>
+          <Button className="bt-default" onClick={() => component.updateImagePrivacy()}>Lưu</Button>
+        </div>
+        <div className="filter"></div>
+        <div className="drawer-content" style={{ overflow: "scroll" }}>
+          <ul>
+            {
+              PrivacyOptions.map((privacy, index) => <li key={index} onClick={() => component.setState({ privacySelected: privacy.code })}>
+                <Button>
+                  <Radio
+                    className={"custom-radio " + (privacySelected == privacy.code ? "active" : "")}
+                    checked={privacySelected == privacy.code}
+                    onChange={() => component.setState({ privacySelected: privacy.code })}
+                  />
+                  <img src={privacy.icon1} />
+                  <span>
+                    <label>{privacy.label}</label>
+                    <span>{privacy.description}</span>
+                  </span>
+                </Button>
+              </li>)
+            }
+          </ul>
+        </div>
+
+      </div>
+
+      {
+        isProccesing == true ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+      }
+    </Drawer>
+  )
+}
+
+const rednerDetailPosted = (component) => {
+  let {
+    showPostedDetail,
+  } = component.state
+  let {
+    data,
+    profile,
+    daskMode,
+    openReactions,
+    anchor,
+    showLocalMenu
+  } = component.props
+
+  let PrivacyOptions = objToArray(Privacies)
+
+
+  return (
+    <Drawer anchor="bottom" className="posted-detail-drawer" open={showPostedDetail}>
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.setState({ showPostedDetail: false })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+          </div>
+        </div>
+        <div className="filter"></div>
+        <div className="drawer-content" style={{ overflow: "scroll", background: "#ededed", padding: "10px" }}>
+          {
+            data && <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
+              {
+                data.kindpost == 4 ? <div className="album-name">
+                  <span>Album <span>{data.albumname}</span></span>
+                </div> : ""
+              }
+              <CardHeader
+                className="card-header"
+                avatar={
+                  <Avatar aria-label="recipe" className="avatar">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRDik_Tc8kiAcd80dH3S7I4sDJK76cbjidtyQ&usqp=CAU" />
+                  </Avatar>
+                }
+                action={
+                  <IconButton aria-label="settings" onClick={(e) => component.setState({ showLocalMenu: true, anchor: e.target })}>
+                    <MoreHorizIcon />
+                  </IconButton>
+                }
+                title={<span className="poster-name">
+                  <span className="name">Hoang Hai Long</span>
+                  {
+                    data.kindpost == 4 ? <span>{data.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
+                  }
+                  {
+                    data.kindpost == 3 ? <span>{data.titlepost.replace("{username}", " ")}</span> : ""
+                  }
+                  {
+                    data.kindpost == 2 ? <span>{data.titlepost.replace("{username}", " ")}</span> : ""
+                  }
+                </span>}
+                subheader={<div className="poster-subtitle">
+                  <div>
+                    <img src={PrivacyOptions.find(privacy => privacy.code == data.postforid).icon1} />
+                    <FiberManualRecordIcon />
+                    <span>{moment(data.createdate).format("DD/MM/YYYY HH:mm")}</span>
+                    <FiberManualRecordIcon />
+                    <span>{fromNow(moment(data.createdate), moment(new Date))}</span>
+                  </div>
+                  {/* <div>
+              <img src={Group} />
+              <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
+              <span><u>Thông điệp thức tỉnh con người</u></span>
+            </div> */}
+                </div>}
+              />
+              {
+                data.nfcontent != "" ? <div className={"post-content"}>
+                  <span>{data.nfcontent}</span>
+                </div> : ""
+              }
+              <CardContent className="card-content">
+                {
+                  data.numlike > 0 || data.numcomment > 0 ? <div className="react-reward">
+                    {
+                      data.numlike > 0 ? <span className="like">
+                        {
+                          data.iconNumbers.filter(item => item.icon != data.iconlike).map((icon, index) => index > 0 && <img key={index} src={ReactSelectorIcon[icon.icon].icon}></img>)
+                        }
+                        {
+                          data.islike == 1 ? <img src={ReactSelectorIcon[data.iconlike].icon}></img> : ""
+                        }
+                        <span>{data.numlike}</span>
+                      </span> : <span className="like">
+                        </span>
+                    }
+                    {
+                      data.numcomment > 0 ? <span className="comment">
+                        {data.numcomment} bình luận
+                </span> : ""
+                    }
+                  </div> : ""
+                }
+              </CardContent>
+              <CardActions disableSpacing className="post-actions">
+                <FacebookSelector
+                  open={openReactions}
+                  active={data.iconlike}
+                  onClose={() => component.setState({ openReactions: false })}
+                  onReaction={(reaction) => component.likePosted(reaction)}
+                  onShortPress={(reaction) => data.islike == 1 ? component.dislikePosted(reaction) : component.likePosted(reaction)}
+                />
+
+                <Button onClick={() => component.setState({ showCommentDrawer: true })}><img src={daskMode ? comment1 : comment} />Bình luận</Button>
+                <Button onClick={() => component.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+              </CardActions>
+
+              <Menu
+                className="custom-menu"
+                anchorEl={anchor}
+                keepMounted
+                open={showLocalMenu}
+                onClose={() => component.setState({ showLocalMenu: false })}
+              >
+                <MenuItem onClick={() => component.setState({ showLocalMenu: false }, () => component.props.togglePostDrawer(true))}>Chỉnh sửa bài đăng</MenuItem>
+                {
+                  data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => component.setState({ showLocalMenu: false }, () => component.handleDeletePost())}>Xoá bài đăng</MenuItem> : ""
+                }
+                <MenuItem onClick={() => component.setState({ showLocalMenu: false }, () => copyToClipboard(PostLinkToCoppy + data.nfid))}>Sao chép liên kết</MenuItem>
+                {
+                  data.iduserpost != profile.id ? <MenuItem onClick={() => component.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
+                }
+                {
+                  data.iduserpost != profile.id ? <MenuItem onClick={() => component.setState({ showLocalMenu: false }, () => component.props.toggleReportDrawer(true))}>Báo cáo vi phạm</MenuItem> : ""
+                }
+              </Menu>
+            </Card>
+          }
+          <div className="list-image">
+            <ul>
+              {
+                data.mediaPlays.map((media, index) => <li key={index}>
+                  <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
+                    <CardContent className="card-content">
+                      <img src={media.name} className="image" />
+                      {
+                        media.numlike > 0 || media.numcomment > 0 ? <div className="react-reward">
+                          {
+                            media.numlike > 0 ? <span className="like">
+                              {
+                                media.iconNumbers.filter(item => item.icon != media.iconlike).map((icon, index) => index > 0 && <img key={index} src={ReactSelectorIcon[icon.icon].icon}></img>)
+                              }
+                              {
+                                media.islike == 1 ? <img src={ReactSelectorIcon[media.iconlike].icon}></img> : ""
+                              }
+                              <span>{media.numlike}</span>
+                            </span> : <span className="like">
+                              </span>
+                          }
+                          {
+                            media.numcomment > 0 ? <span className="comment">
+                              {media.numcomment} bình luận
+                </span> : ""
+                          }
+                        </div> : ""
+                      }
+                    </CardContent>
+                    <CardActions disableSpacing className="post-actions">
+                      <FacebookSelector
+                        open={openReactions}
+                        active={media.iconlike > 0 ? media.iconlike : 0}
+                        onClose={() => component.setState({ openReactions: false })}
+                        onReaction={(reaction) => component.likeImage(reaction, media)}
+                        onShortPress={(reaction) => media.islike == 1 ? component.dislikeImage(media) : component.likeImage(reaction, media)}
+                      />
+                      <Button onClick={() => component.setState({ showCommentDrawer: true })}><img src={daskMode ? comment1 : comment} />Bình luận</Button>
+                      <Button onClick={() => component.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+                    </CardActions>
+
+                  </Card>
+                </li>)
+              }
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      {/* {
+        isProccesing == true ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+      } */}
     </Drawer>
   )
 }

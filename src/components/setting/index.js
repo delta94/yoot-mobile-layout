@@ -60,7 +60,7 @@ import Loader from '../common/loader'
 import 'react-image-crop/lib/ReactCrop.scss';
 import Cropper from '../common/cropper'
 import { postFormData, get, post } from "../../api";
-import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
 import { showNotification, objToQuery, jsonFromUrlParams } from "../../utils/common";
 import { signIn } from '../../auth'
 import $ from 'jquery'
@@ -282,7 +282,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: historyPointCurrentPage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20
     }
     get(SOCIAL_NET_WORK_API, "User/GetHistoryPoint" + objToQuery(param), result => {
@@ -410,7 +410,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: historyPointCurrentPage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20
     }
     this.setState({
@@ -459,7 +459,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: currentpage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20,
       status: "Friends",
       forFriendId: 0,
@@ -542,7 +542,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: currentpage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20,
       status: "Reject",
       forFriendId: userId,
@@ -851,7 +851,6 @@ const renderUserHistoryDrawer = (component) => {
     isLoadHistory
   } = component.state
 
-  console.log("historyPoints", historyPoints)
   return (
     <Drawer anchor="right" open={showUserHistory} onClose={() => component.props.toggleUserHistory(false)}>
       {

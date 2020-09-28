@@ -3,6 +3,7 @@ import moment from "moment";
 import { DATETIME_FORMAT, DATE_FORMAT } from "../constants/appSettings";
 import { confirmAlert } from 'react-confirm-alert'
 import NumberFormat from 'react-number-format';
+import { showInfo } from './app';
 
 export const jsonFromUrlParams = search => {
   if (!search) return {};
@@ -167,3 +168,24 @@ export const fromNow = (date = moment().now(), now) => {
   // return result
   return moment(date).format('DD/MM/YYYY HH:mm');
 };
+
+
+export const srcToFile = (src, fileName, mimeType) => {
+  return (fetch(src)
+    .then(function (res) { return res.arrayBuffer(); })
+    .then(function (buf) { return new File([buf], fileName, { type: mimeType }); })
+  );
+}
+
+export const copyToClipboard = (str, successCallback) => {
+  const el = document.createElement('textarea');
+  el.value = str;
+  el.setAttribute('readonly', '');
+  el.style.position = 'absolute';
+  el.style.left = '-9999px';
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+  showInfo("Đã sao chép liên kết")
+}; 

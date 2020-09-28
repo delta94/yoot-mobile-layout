@@ -160,9 +160,6 @@ export class Index extends React.Component {
             isLoading: true
         })
         get(SOCIAL_NET_WORK_API, "Media/GetListAlbum" + objToQuery(param), result => {
-
-            console.log("result", result)
-
             if (result && result.result == 1) {
                 this.setState({
                     albums: albums.concat(result.content.albums),
@@ -182,13 +179,7 @@ export class Index extends React.Component {
         this.setState({
             postedImages: [],
             postedImagesCurrentPage: 0,
-            isEndOfPostedImage: false,
-            coverImages: [],
-            coverImagesCurrentPage: 0,
-            isEndOfCoverImages: false,
-            albums: [],
-            albumsCurrentPage: 0,
-            isEndOfAlbums: false
+            isEndOfPostedImage: false
         })
         if (callBack) callBack()
     }
@@ -196,10 +187,10 @@ export class Index extends React.Component {
     onScroll(index) {
         let element = $("#media-content")
         let {
-            userDetail
+            currentUser
         } = this.props
-        if (userDetail && userDetail.userid) {
-            userDetail.id = userDetail.userid
+        if (currentUser && currentUser.userid) {
+            currentUser.id = currentUser.userid
         }
 
         let {
@@ -220,7 +211,7 @@ export class Index extends React.Component {
                             postedImagesCurrentPage: postedImagesCurrentPage + 1,
                             isLoading: true
                         }, () => {
-                            this.getPostedImage(postedImagesCurrentPage + 1, userDetail.id)
+                            this.getPostedImage(postedImagesCurrentPage + 1, currentUser.id)
                         })
                     }
                 }
@@ -230,7 +221,7 @@ export class Index extends React.Component {
                             avatarImagesCurrentPage: avatarImagesCurrentPage + 1,
                             isLoading: true
                         }, () => {
-                            this.getAvatarImage(avatarImagesCurrentPage + 1, userDetail.id)
+                            this.getAvatarImage(avatarImagesCurrentPage + 1, currentUser.id)
                         })
                     }
                 }
@@ -240,7 +231,7 @@ export class Index extends React.Component {
                             coverImagesCurrentPage: coverImagesCurrentPage + 1,
                             isLoading: true
                         }, () => {
-                            this.getCorverImage(coverImagesCurrentPage + 1, userDetail.id)
+                            this.getCorverImage(coverImagesCurrentPage + 1, currentUser.id)
                         })
                     }
                 }
@@ -249,10 +240,10 @@ export class Index extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         let {
-            userDetail
+            currentUser
         } = nextProps
-        if (userDetail && userDetail.userid) {
-            userDetail.id = userDetail.userid
+        if (currentUser && currentUser.userid) {
+            currentUser.id = currentUser.userid
         }
         let {
             mediaTabIndex,
@@ -265,10 +256,10 @@ export class Index extends React.Component {
             albums
         } = this.state
         if (nextProps.open == true) {
-            if (postedImages.length == 0) this.getPostedImage(postedImagesCurrentPage, userDetail.id)
-            if (avatarImages.length == 0) this.getAvatarImage(avatarImagesCurrentPage, userDetail.id)
-            if (coverImages.length == 0) this.getCorverImage(coverImagesCurrentPage, userDetail.id)
-            if (albums.length == 0) this.getAlbum(coverImagesCurrentPage, userDetail.id)
+            if (postedImages.length == 0) this.getPostedImage(postedImagesCurrentPage, currentUser.id)
+            if (avatarImages.length == 0) this.getAvatarImage(avatarImagesCurrentPage, currentUser.id)
+            if (coverImages.length == 0) this.getCorverImage(coverImagesCurrentPage, currentUser.id)
+            if (albums.length == 0) this.getAlbum(coverImagesCurrentPage, currentUser.id)
         }
     }
 
@@ -277,7 +268,8 @@ export class Index extends React.Component {
         let {
             open,
             onClose,
-            userDetail
+            currentUser,
+            profile
         } = this.props
         let {
             isLoading,
@@ -294,13 +286,13 @@ export class Index extends React.Component {
             <div className="media-drawer">
                 <Drawer anchor="bottom" open={open} >
                     {
-                        userDetail ? <div className="drawer-detail media-drawer">
+                        currentUser ? <div className="drawer-detail media-drawer">
                             <div className="drawer-header">
                                 <div className="direction" onClick={() => this.handleReset(() => onClose ? onClose() : "")}>
                                     <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                                         <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
                                     </IconButton>
-                                    <label>Album của {userDetail.fullName}</label>
+                                    <label>Album của {currentUser.fullName}</label>
                                 </div>
                             </div>
                             <div className="filter">
@@ -393,26 +385,22 @@ export class Index extends React.Component {
                                     <TabPanel value={mediaTabIndex} index={3} className="content-box">
                                         <div className="album image-box">
                                             <ul>
-                                                <li className="add-bt" onClick={() => this.props.toggleCreateAlbumDrawer(true, () => {
-                                                    this.setState({
-                                                        albums: [],
-                                                        albumsCurrentPage: 0,
-                                                        isEndOfAlbums: false
-                                                    }, () => this.getAlbum(0, userDetail.id))
-                                                })}>
-                                                    <div className="demo-bg" >
-                                                        <AddIcon />
-                                                    </div>
-                                                    <span className="name">Tạo album</span>
-                                                </li>
+                                                {
+                                                    currentUser.id == profile.id ? <li className="add-bt" onClick={() => this.props.toggleCreateAlbumDrawer(true, () => {
+                                                        this.setState({
+                                                            albums: []
+                                                        }, () => this.getAlbum(0, currentUser.id))
+                                                    })}>
+                                                        <div className="demo-bg" >
+                                                            <AddIcon />
+                                                        </div>
+                                                        <span className="name">Tạo album</span>
+                                                    </li> : ""
+                                                }
                                                 {
                                                     albums.map((album, index) => <li key={index} onClick={() => {
                                                         this.props.setCurrentAlbum(album)
-                                                        this.props.toggleAlbumDetailDrawer(true, () => {
-                                                            this.setState({
-                                                                albums: []
-                                                            }, () => this.getAlbum(0, userDetail.id))
-                                                        })
+                                                        this.props.toggleAlbumDetailDrawer(true)
                                                     }}>
                                                         <div>
                                                             <div className="demo-bg" style={{ background: "url(" + (album.topimgname) + ")" }} />
@@ -421,9 +409,6 @@ export class Index extends React.Component {
                                                     </li>)
                                                 }
                                             </ul>
-                                            {
-                                                isLoading == true && mediaTabIndex == 2 ? <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div> : ""
-                                            }
                                         </div>
                                     </TabPanel>
                                 </SwipeableViews>
@@ -436,23 +421,22 @@ export class Index extends React.Component {
     }
 }
 
-// const mapStateToProps = state => {
-//     return {
-//         ...state.app,
-//         ...state.user
-//     }
-// };
+const mapStateToProps = state => {
+    return {
+        ...state.user
+    }
+};
 
 const mapDispatchToProps = dispatch => ({
     setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
     toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
     toggleCreateAlbumDrawer: (isShow, callback) => dispatch(toggleCreateAlbumDrawer(isShow, callback)),
-    toggleAlbumDetailDrawer: (isShow, callback) => dispatch(toggleAlbumDetailDrawer(isShow, callback)),
+    toggleAlbumDetailDrawer: (isShow) => dispatch(toggleAlbumDetailDrawer(isShow)),
     setCurrentAlbum: (album) => dispatch(setCurrentAlbum(album))
 });
 
 export default connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps
 )(Index);
 

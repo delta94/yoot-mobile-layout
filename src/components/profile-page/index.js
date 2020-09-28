@@ -19,6 +19,10 @@ import {
   setCurrentFriendId
 } from '../../actions/app'
 import {
+  setMePosted,
+  likePosted
+} from '../../actions/posted'
+import {
   setUserProfile,
   getFolowedMe,
   getMeFolowing
@@ -44,9 +48,6 @@ import {
   Avatar,
   TextField,
   InputAdornment,
-  AppBar,
-  Tabs,
-  Tab
 } from "@material-ui/core";
 import moment from 'moment'
 import { signOut } from "../../auth";
@@ -62,11 +63,13 @@ import Loader from '../common/loader'
 import 'react-image-crop/lib/ReactCrop.scss';
 import Cropper from '../common/cropper'
 import { postFormData, get, post } from "../../api";
-import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
 import { showNotification, objToQuery, jsonFromUrlParams } from "../../utils/common";
 import { signIn } from '../../auth'
 import $ from 'jquery'
 import Medias from './medias'
+import Post from '../post'
+import { result } from "lodash";
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/Profile.png')
@@ -127,7 +130,9 @@ class Index extends React.Component {
       isLoadMore: false,
       friendsCurrentPage: 0,
       isEndOfFriends: false,
-      searchKey: ""
+      searchKey: "",
+      isEndOfPosteds: false,
+      postedsCurrentPage: 0
     };
   }
 
@@ -137,7 +142,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: currentpage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20,
       status: "Reject",
       forFriendId: userId,
@@ -478,7 +483,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: historyPointCurrentPage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20
     }
     this.setState({
@@ -527,7 +532,7 @@ class Index extends React.Component {
     } = this.state
     let param = {
       currentpage: currentpage,
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       limit: 20,
       status: "Friends",
       forFriendId: 0,
@@ -554,7 +559,7 @@ class Index extends React.Component {
 
   getNumOfFriend() {
     let param = {
-      currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+      currentdate: moment(new Date).format(CurrentDate),
       status: "Friends",
       forFriendId: 0,
     }
@@ -691,15 +696,69 @@ class Index extends React.Component {
     this.getPostedImage()
   }
 
-  componentWillMount() {
+  getPosted(currentpage, userId) {
+    let {
+      myPosteds
+    } = this.props
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format(CurrentDate),
+      limit: 20,
+      groupid: 0,
+      isVideo: 0,
+      suggestGroup: 0,
+      forFriendId: userId,
+      albumid: 0
+    }
+    this.setState({
+      isLoadMore: true
+    })
+    get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetAllNewsFeed" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          isLoadMore: false
+        })
+        this.props.setMePosted(myPosteds.concat(result.content.newsFeeds))
+        if (result.content.newsFeeds.length == 0) {
+          this.setState({
+            isEndOfPosteds: true,
+            isLoadMore: false
+          })
+        }
+      }
+    })
+  }
+
+  componentDidMount() {
     this.getFriends(0)
     this.getNumOfFriend()
     this.props.addFooterContent(renderFooter(this))
     this.props.toggleHeader(false)
     this.props.toggleFooter(true)
     this.getRejectFriends(0, 0)
-  }
-  componentDidMount() {
+    document.addEventListener("scroll", () => {
+      let element = $("html")
+      let {
+        postedsCurrentPage,
+        isEndOfPosteds,
+        isLoadMore
+      } = this.state
+      let {
+        myPosteds
+      } = this.props
+      if (myPosteds.length == 0) return
+      if (element.scrollTop() + window.innerHeight >= element[0].scrollHeight) {
+        if (isLoadMore == false && isEndOfPosteds == false) {
+          this.setState({
+            postedsCurrentPage: postedsCurrentPage + 1,
+            isLoadMore: true
+          }, () => {
+            this.getPosted(postedsCurrentPage + 1, this.props.profile.id)
+          })
+        }
+      }
+    })
+
 
     let searchParam = jsonFromUrlParams(window.location.search)
     if (searchParam && searchParam.setting == "true") {
@@ -708,17 +767,30 @@ class Index extends React.Component {
       })
     }
   }
+
+  componentWillReceiveProps(nextProps) {
+    console.log("nextProps", nextProps)
+    if (Object.entries(this.props.profile ? this.props.profile : {}).toString() != Object.entries(nextProps.profile ? nextProps.profile : {}).toString()) {
+      this.getPosted(0, nextProps.profile.id)
+    }
+  }
+
   render() {
     let {
       showUserMenu,
       croppedImageUrl,
       numOfFriend,
       friends,
-      openMediaDrawer
+      openMediaDrawer,
+      isLoadMore
     } = this.state
     let {
-      profile
+      profile,
+      myPosteds
     } = this.props
+
+    console.log("myPosteds", myPosteds)
+
     return (
       profile ? <div className="profile-page" >
         <div className="cover-img" style={{ background: "url(" + profile.background + ")" }}>
@@ -868,6 +940,18 @@ class Index extends React.Component {
           </ul>
         </div>
 
+        <div className="posted">
+          {
+            myPosteds && myPosteds.length > 0 ? <ul>
+              {
+                myPosteds.map((post, index) => <li key={index} >
+                  <Post data={post} />
+                </li>)
+              }
+            </ul> : ""
+          }
+        </div>
+
 
         {
           renderUserMenuDrawer(this)
@@ -887,7 +971,7 @@ class Index extends React.Component {
         {
           renderFriendsForBlockDrawer(this)
         }
-        <Medias open={openMediaDrawer} onClose={() => this.setState({ openMediaDrawer: false })} profile={profile} />
+        <Medias open={openMediaDrawer} onClose={() => this.setState({ openMediaDrawer: false })} userDetail={profile} />
         {
           renderVideoDrawer(this)
         }
@@ -913,15 +997,23 @@ class Index extends React.Component {
         {
           renderFriendActionsDrawer(this)
         }
+        <div style={{ height: "50px", background: "#f0f0f0", zIndex: 0 }}>
+          {
+            isLoadMore ? <Loader type="small" style={{ background: "#f0f0f0" }} width={30} height={30} /> : ""
+          }
+        </div>
       </div> : ""
     );
   }
 }
 
 const mapStateToProps = state => {
+  // const myPosteds = state.posted.myPosteds
+  console.log("mapStateToProps", state)
   return {
     ...state.app,
-    ...state.user
+    ...state.user,
+    myPosteds: state.posted.myPosteds
   }
 };
 
@@ -945,7 +1037,9 @@ const mapDispatchToProps = dispatch => ({
   getFolowedMe: (currentpage) => dispatch(getFolowedMe(currentpage)),
   getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage)),
   toggleSeachFriends: (isShow) => dispatch(toggleSeachFriends(isShow)),
-  setCurrentFriendId: (friendId) => dispatch(setCurrentFriendId(friendId))
+  setCurrentFriendId: (friendId) => dispatch(setCurrentFriendId(friendId)),
+  setMePosted: (posteds) => dispatch(setMePosted(posteds)),
+
 });
 
 export default connect(
@@ -1089,7 +1183,6 @@ const renderUserHistoryDrawer = (component) => {
     isLoadHistory
   } = component.state
 
-  console.log("historyPoints", historyPoints)
   return (
     <Drawer anchor="right" open={showUserHistory} onClose={() => component.props.toggleUserHistory(false)}>
       {

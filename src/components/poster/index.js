@@ -207,14 +207,9 @@ export class Index extends React.Component {
                 {
                     renderPostPrivacyMenuDrawer(this)
                 }
-                {
-                    renderAlbumPrivacyMenuDrawer(this)
-                }
+
                 {
                     renderAlbumSelectDrawer(this)
-                }
-                {
-                    renderCreateAlbumDrawer(this)
                 }
                 {
                     renderTagFriendDrawer(this)
@@ -450,29 +445,7 @@ const renderPostPrivacyMenuDrawer = (component) => {
     )
 }
 
-const renderAlbumPrivacyMenuDrawer = (component) => {
-    let {
-        showAlbumPrivacySelectOption
-    } = component.state
-    let privacyOptions = objToArray(Privacies)
-    return (
-        <Drawer anchor="bottom" className="img-select-option" open={showAlbumPrivacySelectOption} onClose={() => component.setState({ showAlbumPrivacySelectOption: false })}>
-            <div className="option-header">
-                <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showAlbumPrivacySelectOption: false })}>
-                    <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-                </IconButton>
-                <label>Quyền riêng tư</label>
-            </div>
-            <ul className="option-list">
-                {
-                    privacyOptions.map((item, index) => <li key={index}>
-                        <Button onClick={() => component.setState({ postPrivacy: item, showAlbumPrivacySelectOption: false })}>{item.label}</Button>
-                    </li>)
-                }
-            </ul>
-        </Drawer>
-    )
-}
+
 
 
 const renderAlbumSelectDrawer = (component) => {
@@ -538,59 +511,7 @@ const renderAlbumSelectDrawer = (component) => {
     )
 }
 
-const renderCreateAlbumDrawer = (component) => {
-    let {
-        showCreateAlbumDrawer,
-        postPrivacy
-    } = component.state
 
-    return (
-        <Drawer anchor="bottom" className="create-album-drawer" open={showCreateAlbumDrawer} onClose={() => component.setState({ showCreateAlbumDrawer: false })}>
-            <div className="drawer-detail">
-                <div className="drawer-header">
-                    <div className="direction" onClick={() => component.setState({ showCreateAlbumDrawer: false })}>
-                        <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-                            <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-                        </IconButton>
-                        <label>Tạo album mới</label>
-                    </div>
-                    <Button >Tạo</Button>
-                </div>
-                <div className="filter"></div>
-                <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
-                    <label>Tên album</label>
-                    <TextField
-                        className="custom-input"
-                        variant="outlined"
-                        placeholder="Tên album"
-                        style={{
-                            width: "100%",
-                            marginBottom: "10px"
-                        }}
-                    />
-                    <TextField
-                        className="custom-input"
-                        variant="outlined"
-                        placeholder="Mô tả album"
-                        style={{
-                            width: "100%",
-                            marginBottom: "10px",
-                        }}
-                        multiline
-                        className="auto-height-input"
-                    />
-                    <span className="privacy-sumbit" onClick={() => component.setState({ showAlbumPrivacySelectOption: true })}>
-                        <img src={postPrivacy.icon} />
-                        <span>
-                            <span>{postPrivacy.label}</span>
-                            <span>{postPrivacy.description}</span>
-                        </span>
-                    </span>
-                </div>
-            </div>
-        </Drawer>
-    )
-}
 
 const renderTagFriendDrawer = (component) => {
     let {

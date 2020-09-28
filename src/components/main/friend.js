@@ -29,7 +29,7 @@ import SwipeableViews from 'react-swipeable-views';
 import { connect } from 'react-redux'
 import moment from 'moment'
 import { get } from "../../api";
-import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
 import { objToQuery } from "../../utils/common";
 import $ from 'jquery'
 import Loader from '../common/loader'
@@ -73,7 +73,7 @@ class Index extends React.Component {
         } = this.state
         let param = {
             currentpage: currentpage,
-            currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+            currentdate: moment(new Date).format(CurrentDate),
             limit: 20,
             status: "Friends",
             forFriendId: userId == profile.id ? 0 : userId,
@@ -105,7 +105,7 @@ class Index extends React.Component {
         } = this.state
         let param = {
             currentpage: currentpage,
-            currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+            currentdate: moment(new Date).format(CurrentDate),
             limit: 20,
             status: "SuggestFriendsMe",
             forFriendId: userId == profile.id ? 0 : userId,
@@ -138,7 +138,7 @@ class Index extends React.Component {
         } = this.state
         let param = {
             currentpage: currentpage,
-            currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+            currentdate: moment(new Date).format(CurrentDate),
             limit: 20,
             status: "Queue",
             forFriendId: userId == profile.id ? 0 : userId,
@@ -171,7 +171,7 @@ class Index extends React.Component {
         } = this.state
         let param = {
             currentpage: currentpage,
-            currentdate: moment(new Date).format("YYYY-MM-DD hh:mm:ss"),
+            currentdate: moment(new Date).format(CurrentDate),
             limit: 20,
             status: "Waiting",
             forFriendId: userId == profile.id ? 0 : userId,

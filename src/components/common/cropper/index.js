@@ -80,7 +80,6 @@ export class Loader extends React.Component {
         let {
             src
         } = this.props
-        console.log("crop", crop)
         let fileExtention = src.split(";")[0].split(":")[1]
         if (this.imageRef && crop.width && crop.height) {
             const croppedImageUrl = await this.getCroppedImg(

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Route, Switch } from "react-router";
 import Home from "../home";
 import YootNoti from '../yoot-noti'
@@ -16,6 +16,7 @@ import SourceNoti from '../skill-noti'
 import Exercise from '../skills/exercise'
 import Assess from '../skills/assess'
 import CareerGuidance from '../career-guidance'
+import Album from './album'
 import "./style.scss";
 import { connect } from 'react-redux'
 import {
@@ -45,7 +46,8 @@ import {
   toggleReportDrawer,
   toggleGroupDrawer,
   toggleCreateGroupDrawer,
-  toggleGroupInviteDrawer
+  toggleGroupInviteDrawer,
+  toggleCreateAlbumDrawer,
 } from '../../actions/app'
 import {
   setCurrenUserDetail,
@@ -54,17 +56,20 @@ import {
   getMeFolowing
 } from '../../actions/user'
 import {
-  GroupPrivacies
+  GroupPrivacies,
+  Privacies
 } from '../../constants/constants'
 import SwipeableViews from 'react-swipeable-views';
 import moment from 'moment'
 import Slider from "react-slick";
 import Dropzone from 'react-dropzone'
 import { objToArray, showNotification, fromNow } from "../../utils/common";
-import { get } from "../../api";
+import { get, post } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import Friends from './friend'
 import SearchFriends from './search-friend'
+import Loader from '../common/loader'
+import Realtime from '../realtime'
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const search = require('../../assets/icon/Find@1x.png')
@@ -79,6 +84,9 @@ const unfriend = require('../../assets/icon/unfriend@1x.png')
 const NewGr = require('../../assets/icon/NewGr@1x.png')
 
 
+
+
+
 class Main extends React.Component {
   constructor(props) {
     super(props)
@@ -87,7 +95,10 @@ class Main extends React.Component {
       searchKey: "",
       friendTabIndex: 0,
       groupTabIndex: 0,
-      groupPrivacy: GroupPrivacies.Public
+      groupPrivacy: GroupPrivacies.Public,
+      postPrivacy: Privacies.Public,
+      albumName: '',
+      description: ''
     }
   }
 
@@ -104,9 +115,79 @@ class Main extends React.Component {
     })
   }
 
+  createAlbum() {
+    let {
+      albumName,
+      description,
+      postPrivacy
+    } = this.state
+    let param = {
+      name: albumName,
+      description: description,
+      albumfor: postPrivacy.code
+    }
+    let {
+      createAlbumSuccessCallback
+    } = this.props
+    this.setState({
+      isCreateAlbum: true
+    })
+    post(SOCIAL_NET_WORK_API, "Media/CreateAlbum", param, result => {
+      if (result && result.result == 1) {
+        setTimeout(() => {
+          if (createAlbumSuccessCallback) createAlbumSuccessCallback()
+        }, 1000);
+        setTimeout(() => {
+          this.setState({
+            isChange: false,
+            albumName: '',
+            description: '',
+            postPrivacy: Privacies.Public
+          })
+          this.props.toggleCreateAlbumDrawer(false)
+          this.setState({
+            isCreateAlbum: false
+          })
+        }, 2000);
+      }
+    })
+  }
+
+  handleCloseCreateDrawer() {
+    let {
+      isChange
+    } = this.state
+    if (isChange == true) {
+      this.setState({
+        showConfim: true,
+        okCallback: () => this.setState({
+          albumName: '',
+          description: '',
+          postPrivacy: Privacies.Public
+        }, () => this.props.toggleCreateAlbumDrawer(false)),
+        confirmTitle: "Bạn muốn rời khỏi trang này?",
+        confirmMessage: "Những thông tin vừa thay đổi vẫn chưa được lưu."
+      })
+    } else {
+      this.props.toggleCreateAlbumDrawer(false)
+    }
+  }
+
   componentWillMount() {
     this.getProfile()
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (Object.entries(this.props.mediaViewerFeature ? this.props.mediaViewerFeature : {}).toString() != Object.entries(nextProps.mediaViewerFeature ? nextProps.mediaViewerFeature : {}).toString()) {
+      console.log("mediaViewerSlider", this.sliderX)
+
+      if (this.slider) {
+
+        // this.slider.current.slickGoTo(10)
+      }
+    }
+  }
+
   render() {
     let {
       userDetailFolowTabIndex
@@ -119,8 +200,10 @@ class Main extends React.Component {
       footerContent,
     } = this.props
 
+
     return (
       <div className="wrapper">
+        <Realtime />
         <div className={"fix-header " + (showHeader ? "showed" : "hided") + (window.location.pathname == '/videos' ? " dask-mode" : "")} >
           <div className="direction">
             {headerContent}
@@ -140,6 +223,7 @@ class Main extends React.Component {
             </div> : ""
           }
         </div>
+
         <main className="content-main" style={{ marginTop: (showHeader ? "60px" : "0px"), marginBottom: showFooter ? "70px" : "0px" }}>
           <Switch >
             <Route exact path="/" component={Home} />
@@ -196,6 +280,16 @@ class Main extends React.Component {
         {
           renderGroupInviteDrawer(this)
         }
+        {
+          renderCreateAlbumDrawer(this)
+        }
+        {
+          renderAlbumPrivacyMenuDrawer(this)
+        }
+        {
+          renderConfirmDrawer(this)
+        }
+        <Album />
       </div>
 
     );
@@ -222,8 +316,8 @@ const mapDispatchToProps = dispatch => ({
   toggleGroupInviteDrawer: (isShow) => dispatch(toggleGroupInviteDrawer(isShow)),
   setUserProfile: (user) => dispatch(setUserProfile(user)),
   getFolowedMe: (currentpage) => dispatch(getFolowedMe(currentpage)),
-  getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage))
-
+  getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage)),
+  toggleCreateAlbumDrawer: (isShow) => dispatch(toggleCreateAlbumDrawer(isShow)),
 });
 
 export default connect(
@@ -421,9 +515,6 @@ const renderUserPageDrawer = (component) => {
   )
 }
 
-
-
-
 const renderMediaViewer = (component) => {
   let {
     showMediaViewerDrawer,
@@ -432,7 +523,8 @@ const renderMediaViewer = (component) => {
   } = component.props
   let {
     isHideMediaHeadFoot,
-    activeMeidaSlideIndex
+    activeMeidaSlideIndex,
+    activeItem
   } = component.state
 
   const settings = {
@@ -441,12 +533,13 @@ const renderMediaViewer = (component) => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    afterChange: current => component.setState({ activeMeidaSlideIndex: current }),
+    afterChange: current => component.setState({
+      activeItem: mediaToView ? mediaToView[current ? current : 0] : null
+    }),
     easing: "ease-in-out",
-    infinite: false,
+    infinite: true,
+    initialSlide: mediaViewerFeature && mediaViewerFeature.activeIndex ? mediaViewerFeature && mediaViewerFeature.activeIndex : 0
   };
-
-  let currentMediaActive = mediaToView ? mediaToView[activeMeidaSlideIndex ? activeMeidaSlideIndex : 0] : null
 
   return (
     <Drawer anchor="bottom" className="media-viewer" open={showMediaViewerDrawer} onClose={() => component.props.toggleMediaViewerDrawer(false)}>
@@ -455,16 +548,17 @@ const renderMediaViewer = (component) => {
           <IconButton onClick={() => {
             setTimeout(() => {
               component.setState({
-                isHideMediaHeadFoot: false
+                isHideMediaHeadFoot: false,
+                activeItem: undefined
               })
             }, 1000);
             component.props.toggleMediaViewerDrawer(false)
           }}><CloseIcon /></IconButton>
-          {/* {
+          {
             mediaViewerFeature ? <IconButton onClick={(e) => component.setState({ showMediaViewerMenu: true })}>
               <MoreVertIcon />
             </IconButton> : ""
-          } */}
+          }
         </div>
         <div className="viewer-detail" onClick={() => component.setState({ isHideMediaHeadFoot: !isHideMediaHeadFoot })}>
           {
@@ -472,8 +566,8 @@ const renderMediaViewer = (component) => {
               {
                 mediaToView.map((item, index) => <div key={index}>
                   {
-                    item.typeobject == 1 ? <img src={item.nameroot} /> : <video controls={true} autoPlay={true}>
-                      <source src={item.nameroot} type="video/mp4"></source>
+                    item.typeobject == 1 ? <img src={item.nameroot ? item.nameroot : item.name} /> : <video controls={true} autoPlay={true}>
+                      <source src={item.nameroot ? item.nameroot : item.name} type="video/mp4"></source>
                     </video>
                   }
                 </div>)
@@ -484,15 +578,15 @@ const renderMediaViewer = (component) => {
         {
           mediaViewerFeature && mediaViewerFeature.showInfo ? <div className={"viewer-footer " + (isHideMediaHeadFoot ? "hide" : "")}>
             {
-              currentMediaActive ? <div className="footer-infor">
+              activeItem ? <div className="footer-infor">
                 <div className="user-info">
-                  <span>{currentMediaActive.userpost}</span>
+                  <span>{activeItem.userpost}</span>
                 </div>
                 <div className="post-content">
-                  <pre>{currentMediaActive.postcontent}</pre>
+                  <pre>{activeItem.postcontent}</pre>
                 </div>
                 <div className="post-time">
-                  <span>{fromNow(currentMediaActive.createdate, new Date)}</span>
+                  <span>{fromNow(activeItem.createdate, new Date)}</span>
                 </div>
               </div> : ""
             }
@@ -538,11 +632,17 @@ const renderMediaViewer = (component) => {
 
 const renderMediaViewerMenu = (component) => {
   let {
-    showMediaViewerMenu
+    showMediaViewerMenu,
+    activeItem
   } = component.state
   let {
     mediaViewerFeature,
+    mediaToView
   } = component.props
+  if (!activeItem && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0) {
+    activeItem = mediaToView[mediaViewerFeature.activeIndex]
+  }
+
 
   return (
     <Drawer anchor="bottom" className="media-viewer-menu" open={showMediaViewerMenu} onClose={() => component.setState({ showMediaViewerMenu: false })}>
@@ -556,12 +656,15 @@ const renderMediaViewerMenu = (component) => {
           </div>
         </div>
         {
-          mediaViewerFeature ? <div className="menu-list">
+          mediaViewerFeature && mediaViewerFeature.actions ? <div className="menu-list">
             <ul>
               {
-                mediaViewerFeature.canDownload ? <li>
-                  <Button><span>Lưu vào điện thoại</span></Button>
-                </li> : ""
+                mediaViewerFeature.actions.length > 0 ? mediaViewerFeature.actions.map((action, index) => <li key={index}>
+                  <Button onClick={() => {
+                    action.action(mediaToView.find(item => item.postid == activeItem.postid))
+                    component.setState({ showMediaViewerMenu: false })
+                  }}><span>{action.label}</span></Button>
+                </li>) : ""
               }
             </ul>
           </div> : ""
@@ -940,9 +1043,118 @@ const renderGroupInviteDrawer = (component) => {
   )
 }
 
+const renderCreateAlbumDrawer = (component) => {
+  let {
+    postPrivacy,
+    albumName,
+    description,
+    isCreateAlbum
+  } = component.state
 
+  let {
+    showCreateAlbumDrawer
+  } = component.props
 
+  return (
+    <Drawer anchor="bottom" className="create-album-drawer" open={showCreateAlbumDrawer} onClose={() => component.handleCloseCreateDrawer()}>
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.handleCloseCreateDrawer()}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Tạo album mới</label>
+          </div>
+          <Button onClick={() => component.createAlbum()}>Tạo</Button>
+        </div>
+        <div className="filter"></div>
+        <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
+          <label>Tên album</label>
+          <TextField
+            className="custom-input"
+            variant="outlined"
+            placeholder="Tên album"
+            style={{
+              width: "100%",
+              marginBottom: "10px"
+            }}
+            value={albumName}
+            onChange={(e) => component.setState({ albumName: e.target.value, isChange: true })}
+          />
+          <TextField
+            className="custom-input"
+            variant="outlined"
+            placeholder="Mô tả album"
+            style={{
+              width: "100%",
+              marginBottom: "10px",
+            }}
+            multiline
+            className="auto-height-input"
+            value={description}
+            onChange={(e) => component.setState({ description: e.target.value, isChange: true })}
+          />
+          <span className="privacy-sumbit" onClick={() => component.setState({ showAlbumPrivacySelectOption: true })}>
+            <img src={postPrivacy.icon} />
+            <span>
+              <span>{postPrivacy.label}</span>
+              <span>{postPrivacy.description}</span>
+            </span>
+          </span>
+        </div>
+      </div>
+      {
+        isCreateAlbum ? <Loader type="dask-mode" isFullScreen={true} /> : ""
 
+      }
+    </Drawer>
+  )
+}
+
+const renderAlbumPrivacyMenuDrawer = (component) => {
+  let {
+    showAlbumPrivacySelectOption
+  } = component.state
+  let privacyOptions = objToArray(Privacies)
+  return (
+    <Drawer anchor="bottom" className="img-select-option" open={showAlbumPrivacySelectOption} onClose={() => component.setState({ showAlbumPrivacySelectOption: false })}>
+      <div className="option-header">
+        <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showAlbumPrivacySelectOption: false })}>
+          <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+        </IconButton>
+        <label>Quyền riêng tư</label>
+      </div>
+      <ul className="option-list">
+        {
+          privacyOptions.map((item, index) => <li key={index}>
+            <Button onClick={() => component.setState({ postPrivacy: item, showAlbumPrivacySelectOption: false, isChange: true })}>{item.label}</Button>
+          </li>)
+        }
+      </ul>
+    </Drawer>
+  )
+}
+
+const renderConfirmDrawer = (component) => {
+  let {
+    showConfim,
+    okCallback,
+    confirmTitle,
+    confirmMessage
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="confirm-drawer" open={showConfim} onClose={() => component.setState({ showConfim: false })}>
+      <div className='jon-group-confirm'>
+        <label>{confirmTitle}</label>
+        <p>{confirmMessage}</p>
+        <div className="mt20">
+          <Button className="bt-confirm" onClick={() => component.setState({ showConfim: false }, () => okCallback ? okCallback() : null)}>Đồng ý</Button>
+          <Button className="bt-submit" onClick={() => component.setState({ showConfim: false })}>Đóng</Button>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
 
 
 const groups = [

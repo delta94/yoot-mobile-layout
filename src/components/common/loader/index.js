@@ -14,13 +14,14 @@ export class Loader extends React.Component {
             type,
             isFullScreen,
             width,
-            height
+            height,
+            style
         } = this.props
         if (isFullScreen) {
             $("body").css("overflow", "hidden")
         }
         return (
-            <div className={"bg-overlay " + type + (isFullScreen ? " full-screen" : "")}>
+            <div className={"bg-overlay " + type + (isFullScreen ? " full-screen" : "")} style={style}>
                 <div>
                     <img className={"spinner-img"} src={loading} style={{ width: width, height: height }} />
                 </div>
