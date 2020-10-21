@@ -66,7 +66,6 @@ export class Index extends React.Component {
         this.setState({
             isLoading: true
         })
-        console.log("get posted")
         get(SOCIAL_NET_WORK_API, "Media/Index" + objToQuery(param), result => {
             if (result && result.result == 1) {
                 this.setState({
@@ -98,7 +97,6 @@ export class Index extends React.Component {
         this.setState({
             isLoading: true
         })
-        console.log("get avatar")
         get(SOCIAL_NET_WORK_API, "Media/Index" + objToQuery(param), result => {
             if (result && result.result == 1) {
                 this.setState({
@@ -130,7 +128,6 @@ export class Index extends React.Component {
         this.setState({
             isLoading: true
         })
-        console.log("get Cover")
         get(SOCIAL_NET_WORK_API, "Media/Index" + objToQuery(param), result => {
             if (result && result.result == 1) {
                 this.setState({
@@ -280,7 +277,6 @@ export class Index extends React.Component {
             albums
         } = this.state
 
-        console.log("postedImages", albums)
 
         return (
             <div className="media-drawer">
@@ -292,7 +288,7 @@ export class Index extends React.Component {
                                     <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                                         <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
                                     </IconButton>
-                                    <label>Album của {currentUser.fullName}</label>
+                                    <label>Album của {currentUser.fullname}</label>
                                 </div>
                             </div>
                             <div className="filter">
@@ -326,7 +322,7 @@ export class Index extends React.Component {
                                                     postedImages.map((item, index) => <li onClick={() => {
                                                         this.props.setMediaToViewer(postedImages)
                                                         this.props.toggleMediaViewerDrawer(true, {
-                                                            canDownload: true,
+                                                            actions: mediaGuestActions(this),
                                                             showInfo: true,
                                                             activeIndex: index
                                                         })
@@ -347,7 +343,7 @@ export class Index extends React.Component {
                                                     avatarImages.map((item, index) => <li onClick={() => {
                                                         this.props.setMediaToViewer(avatarImages)
                                                         this.props.toggleMediaViewerDrawer(true, {
-                                                            canDownload: true,
+                                                            actions: mediaGuestActions(this),
                                                             showInfo: true,
                                                             activeIndex: index
                                                         })
@@ -368,7 +364,7 @@ export class Index extends React.Component {
                                                     coverImages.map((item, index) => <li onClick={() => {
                                                         this.props.setMediaToViewer(coverImages)
                                                         this.props.toggleMediaViewerDrawer(true, {
-                                                            canDownload: true,
+                                                            actions: mediaGuestActions(this),
                                                             showInfo: true,
                                                             activeIndex: index
                                                         })
@@ -402,7 +398,7 @@ export class Index extends React.Component {
                                                         this.props.setCurrentAlbum(album)
                                                         this.props.toggleAlbumDetailDrawer(true)
                                                     }}>
-                                                        <div>
+                                                        <div style={{ background: "url(" + (defaultImage) + ")" }}>
                                                             <div className="demo-bg" style={{ background: "url(" + (album.topimgname) + ")" }} />
                                                         </div>
                                                         <span className="name">{album.albumname}</span>
@@ -465,3 +461,21 @@ function TabPanel(props) {
         </div>
     );
 }
+
+const mediaRootActions = (component) => ({
+    // onSaveImage: (value) => component.downloadImage(value.name),
+    onUpdateInfo: (value) => null,
+    onSetToAvatar: (value) => null,
+    onSetToBackground: (value) => null,
+    onUpdatePrivacy: (value) => null,
+    onDelete: (value) => null,
+    onSetToAlbumBackground: (value) => null
+})
+
+// const mediaGuestActions = (component) => ({
+//   // onSaveImage: (value) => component.downloadImage(value.name),
+//   // onSetToAvatar: (value) => null,
+//   // onSetToBackground: (value) => null,
+//   // onSetToAlbumBackground: (value) => null
+// })
+const mediaGuestActions = (component) => null

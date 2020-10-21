@@ -2,6 +2,7 @@ import {
   COMUNITY_ACCESS_KEY,
   SKILL_ACCESS_KEY,
   CAREER_GUIDANCE_ACCESS_KEY,
+  SOCKET_TOCKEN,
   USER_INFO
 } from "../constants/localStorageKeys";
 
@@ -33,10 +34,12 @@ export const signOut = () => {
 };
 
 export const signIn = tokens => {
-  const { comunityAccessToken, skillAccessToken, careerGuidanceAccessToken } = tokens;
+  const { comunityAccessToken, skillAccessToken, careerGuidanceAccessToken, socketToken } = tokens;
   window.localStorage.setItem(COMUNITY_ACCESS_KEY, comunityAccessToken);
   window.localStorage.setItem(SKILL_ACCESS_KEY, skillAccessToken);
   window.localStorage.setItem(CAREER_GUIDANCE_ACCESS_KEY, careerGuidanceAccessToken);
+  window.localStorage.setItem(SOCKET_TOCKEN, socketToken);
+
 };
 
 export const IsAuthenticatedRedir = connectedRouterRedirect({

@@ -8,8 +8,21 @@ import {
   toggleCreateGroupDrawer,
   togglePostDrawer,
   toggleGroupDrawer,
-  toggleGroupInviteDrawer
+  toggleGroupInviteDrawer,
+  toggleGroupDetailDrawer
 } from '../../actions/app'
+import {
+  setJoinedGroup,
+  setMyGroup,
+  setInvitedGroup,
+  acceptGroup,
+  joinGroup,
+  setCurrentGroup,
+  createGroupSuccess
+} from '../../actions/group'
+import {
+  setGroupPosted
+} from '../../actions/posted'
 import { connect } from 'react-redux'
 import {
   IconButton,
@@ -17,8 +30,16 @@ import {
   Drawer,
   TextField,
   InputAdornment,
-  Avatar
+  Avatar,
+  Badge,
+  FormControlLabel,
+  Checkbox,
+  ClickAwayListener,
+  AppBar,
+  Tabs,
+  Tab,
 } from '@material-ui/core'
+import SwipeableViews from 'react-swipeable-views';
 import {
   ChevronLeft as ChevronLeftIcon, SpaOutlined
 } from '@material-ui/icons'
@@ -26,6 +47,14 @@ import { StickyContainer, Sticky } from 'react-sticky';
 import Post from '../post'
 import $ from 'jquery'
 import { GroupPrivacies } from "../../constants/constants";
+import { get, postFormData } from "../../api";
+import { CurrentDate, SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import { objToQuery, objToArray, showNotification } from "../../utils/common";
+import EmptyPost from '../common/empty-post'
+import Loader from '../common/loader'
+import moment from 'moment'
+import Dropzone from 'react-dropzone'
+import MultiInput from '../common/multi-input'
 
 const Newfeed = require('../../assets/icon/Lesson.png')
 const Group1 = require('../../assets/icon/Group@1x.png')
@@ -38,8 +67,11 @@ const NewGr = require('../../assets/icon/NewGr@1x.png')
 const Members = require('../../assets/icon/Members@1x.png')
 const search = require('../../assets/icon/Find@1x.png')
 
+const checkIcon = require('../../assets/images/check.png')
+const checkedIcon = require('../../assets/images/checked.png')
 
 
+let currentDate = moment(new Date).format(CurrentDate)
 
 
 
@@ -47,17 +79,358 @@ class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      search: ""
+      search: "",
+      postedsCurrentPage: 0,
+      isEndOfPosteds: false,
+      isLoadMore: false,
+      allGroupPosteds: [],
+      searchKey: "",
+      groups: [],
+      groupsCurrentPage: 0,
+      isLoadMoreGroup: false,
+      isEndOfGroupList: false,
+      description: "",
+      policygroup: "",
+      groupType: null,
+      groupTabIndex: 0,
+      isEndOfMyGroup: false,
+      isEndOfJoinedGroup: false,
+      isEndOfInvitedGroup: false
     };
   }
 
+  handleGetPost(currentpage) {
+    let param = {
+      currentpage: currentpage,
+      currentdate: currentDate,
+      limit: 20,
+      groupid: 0,
+      isVideo: 0,
+      suggestGroup: 1,
+      forFriendId: 0,
+      albumid: 0,
+    }
+    this.setState({
+      isLoadMore: true,
+    })
+
+    get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetAllNewsFeed" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+
+        result.content.newsFeeds.map(item => {
+          if (item.iconlike < 0) item.iconlike = 0
+        })
+        this.setState({
+          isLoadMore: false
+        })
+        this.props.setGroupPosted(result.content.newsFeeds)
+
+        if (result.content.newsFeeds.length == 0) {
+          this.setState({
+            isEndOfPosteds: true,
+            isLoadMore: false
+          })
+        }
+      }
+    })
+  }
+
+  onSearchChange(e) {
+
+    this.setState({
+      searchKey: e.target.value,
+      groupsCurrentPage: 0,
+      isEndOfGroupList: false,
+      groups: []
+    }, () => {
+      this.handleGetAllGroup(0)
+    })
+  }
+
+  handleGetAllGroup(currentpage) {
+    let {
+      groups,
+      searchKey
+    } = this.state
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format(CurrentDate),
+      limit: 30,
+      skin: "All",
+      findstring: searchKey
+    }
+    this.setState({
+      isLoadMoreGroup: true
+    })
+    get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          groups: groups.concat(result.content.groupUsers),
+          isLoadMoreGroup: false
+        })
+        if (result.content.groupUsers.length == 0) {
+          this.setState({ isEndOfGroupList: true, isLoadMoreGroup: false })
+        }
+      }
+    })
+  }
+
+  getJoinedGroup(currentpage) {
+
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format(CurrentDate),
+      limit: 30,
+      skin: "Join",
+    }
+    this.setState({
+      isLoadMoreGroup: true
+    })
+    get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.props.setJoinedGroup(result.content.groupUsers)
+        this.setState({
+          isLoadMoreGroup: false
+        })
+        if (result.content.groupUsers.length == 0) {
+          this.setState({ isEndOfJoinedGroup: true, isLoadMoreGroup: false })
+        }
+      }
+    })
+  }
+
+  getMyGroup(currentpage) {
+
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format(CurrentDate),
+      limit: 30,
+      skin: "Manager",
+    }
+    this.setState({
+      isLoadMoreGroup: true
+    })
+    get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.props.setMyGroup(result.content.groupUsers)
+        this.setState({
+          isLoadMoreGroup: false
+        })
+        if (result.content.groupUsers.length == 0) {
+          this.setState({ isEndOfMyGroup: true, isLoadMoreGroup: false })
+        }
+      }
+    })
+  }
+
+  getInviteGroup(currentpage) {
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format(CurrentDate),
+      limit: 30,
+      skin: "IsInvite",
+    }
+    this.setState({
+      isLoadMoreGroup: true
+    })
+    get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.props.setInvitedGroup(result.content.groupUsers)
+        this.setState({
+          isLoadMoreGroup: false
+        })
+        if (result.content.groupUsers.length == 0) {
+          this.setState({ isEndOfInvitedGroup: true, isLoadMoreGroup: false })
+        }
+      }
+    })
+  }
+
+  onSearchGroupScroll() {
+    let element = $("#search-groups-box")
+    let {
+      groupsCurrentPage,
+      isLoadMoreGroup,
+      isEndOfGroupList,
+    } = this.state
+    if (element)
+      if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+        if (isLoadMoreGroup == false && isEndOfGroupList == false) {
+          this.setState({
+            groupsCurrentPage: groupsCurrentPage + 1,
+            isLoadMoreGroup: true,
+          }, () => {
+            this.handleGetAllGroup(groupsCurrentPage + 1)
+          })
+        }
+      }
+  }
+
+  joinGroup(groupid) {
+    let {
+      groups
+    } = this.state
+    get(SOCIAL_NET_WORK_API, "GroupUser/JoinGroupUser?groupid=" + groupid, result => {
+      if (result && result.result == 1) {
+        let groupIndex = groups.findIndex(item => item.groupid == groupid)
+        if (groupIndex >= 0) {
+          groups[groupIndex].status = 10
+        }
+        this.setState({
+          groups: groups,
+          showJoinGroupConfirm: false,
+          currentGroupId: null,
+          isRead: false
+        })
+      }
+    })
+  }
+
+  closeCreateDrawer() {
+    let {
+      isChanged
+    } = this.state
+    if (isChanged == true) {
+      this.setState({
+        showConfim: true,
+        okCallback: () => {
+          this.setState({
+            groupName: "",
+            groupCoverImage: null,
+            description: "",
+            policygroup: "",
+            groupType: null,
+            isChanged: false
+          })
+          this.props.toggleCreateGroupDrawer(false)
+        },
+        confirmTitle: "Bạn muốn rời khỏi trang này?",
+        confirmMessage: "Những thông tin vừa thay đổi vẫn chưa được lưu.",
+      })
+    } else {
+      this.setState({
+        groupName: "",
+        groupCoverImage: null,
+        description: "",
+        policygroup: "",
+        groupType: null,
+        isChanged: false
+      })
+      this.props.toggleCreateGroupDrawer(false)
+    }
+  }
+
+  handleGetGroupDetail(groupid) {
+    if (!groupid) return
+    get(SOCIAL_NET_WORK_API, "GroupUser/GetOneGroupUser?groupid=" + groupid, result => {
+      if (result && result.result == 1) {
+        this.props.createGroupSuccess(result.content.groupUser)
+      }
+    })
+  }
+
+  createGroup() {
+    let {
+      groupName,
+      groupCoverImage,
+      policygroup,
+      description,
+      groupType
+    } = this.state
+
+    let formData = new FormData
+
+    if (groupName && groupName != "") {
+      formData.append("name", groupName.toString())
+    }
+    else {
+      showNotification("", "Vui lòng nhập tên nhóm!")
+      return
+    }
+    if (groupType) {
+      formData.append("typegroup", groupType.code.toString())
+    } else {
+      showNotification("", "Vui lòng chọn quyền riêng tư!")
+      return
+    }
+
+    if (description && description != "") {
+      formData.append("description", description.toString())
+    }
+
+    if (policygroup && policygroup != "") {
+      formData.append("policygroup", JSON.stringify([
+        {
+          title: "",
+          description: policygroup,
+          id: 0
+        }
+      ]))
+    }
+
+    if (groupCoverImage) {
+      formData.append("background", groupCoverImage)
+    }
+
+    postFormData(SOCIAL_NET_WORK_API, "GroupUser/CreateGroupUser", formData, result => {
+      if (result && result.result == 1) {
+        this.handleGetGroupDetail(result.content.groupuser.id)
+        this.closeCreateDrawer()
+      }
+    })
+  }
+
+  handleAcceptGroup(group) {
+    if (group && group.groupid) {
+      this.props.acceptGroup(group.groupid, null, null, group)
+    }
+  }
+
+  handleJoinGroup(group) {
+    if (group && group.groupid) {
+      this.props.joinGroup(group.groupid)
+    }
+  }
+
+
   componentWillMount() {
     this.props.addHeaderContent(renderHeader(this))
-    this.props.addFooterContent(renderFooter(this.props.history))
+    this.props.addFooterContent(renderFooter(this))
     this.props.toggleHeader(true)
     this.props.toggleFooter(true)
+    this.handleGetPost(0)
+    document.addEventListener("scroll", () => {
+      let element = $("html")
+      let {
+        postedsCurrentPage,
+        isEndOfPosteds,
+        isLoadMore
+      } = this.state
+      let {
+        allGroupPosteds
+      } = this.props
+
+      if (!allGroupPosteds || allGroupPosteds.length == 0) return
+      if (element.scrollTop() + window.innerHeight >= element[0].scrollHeight) {
+        if (isLoadMore == false && isEndOfPosteds == false) {
+          this.setState({
+            postedsCurrentPage: postedsCurrentPage + 1,
+            isLoadMore: true
+          }, () => {
+            this.handleGetPost(postedsCurrentPage + 1)
+          })
+        }
+      }
+    })
   }
+
   render() {
+    let {
+      isLoadMore,
+    } = this.state
+    let {
+      allGroupPosteds
+    } = this.props
     return (
       <div className="community-page groups-page" >
         <StickyContainer className="container">
@@ -66,32 +439,75 @@ class Index extends React.Component {
               <div style={{ ...style, top: "60px", zIndex: 999 }}>
                 <div className="post-menu-list">
                   <div>
-                    <span className={"bt "} onClick={() => this.setState({ showSearchGroupDrawer: true })}><img src={Find} /><span>Tìm nhóm</span></span>
+                    <span className={"bt "} onClick={() => this.setState({ showSearchGroupDrawer: true }, () => this.handleGetAllGroup(0))}><img src={Find} /><span>Tìm nhóm</span></span>
                     <span className={"bt "} onClick={() => this.props.togglePostDrawer(true, true)}><img src={createPost} /><span>Tạo bài đăng</span></span>
                     <span className={"bt "} onClick={() => this.props.toggleCreateGroupDrawer(true)}><img src={NewGr} /><span>Tạo nhóm</span></span>
-                    <span className={"bt "} onClick={() => this.props.toggleGroupDrawer(true)}><img src={Members} /><span>DS nhóm của tôi</span></span>
-                    <span className={"bt "} onClick={() => this.props.toggleGroupInviteDrawer(true)}><img src={NewGr} /><span>Lời mới vào nhóm</span></span>
+                    <span className={"bt "} onClick={() => {
+                      this.props.toggleGroupDrawer(true)
+                      this.getJoinedGroup(0)
+                      this.getMyGroup(0)
+
+                    }}><img src={Members} /><span>DS nhóm của tôi</span></span>
+                    <span className={"bt "} onClick={() => {
+                      this.props.toggleGroupInviteDrawer(true)
+                      this.getInviteGroup(0)
+                    }}><img src={NewGr} /><span>Lời mời vào nhóm</span></span>
                   </div>
                 </div>
               </div>
             )}
           </Sticky>
-          <div className="page-detail" style={{ height: "2000px" }}>
-            <Post />
+          {
+            allGroupPosteds && allGroupPosteds.length == 0 ? <ul className="post-list">
+              <EmptyPost />
+            </ul> : ""
+          }
+          {
+            allGroupPosteds && allGroupPosteds.length > 0 ? <ul className="post-list">
+              {
+                allGroupPosteds.map((post, index) => <li key={index} >
+                  <Post data={post} history={this.props.history} userId={post.iduserpost} />
+                </li>)
+              }
+            </ul> : ""
+          }
+          <div style={{ height: "50px", background: "#f2f3f7", zIndex: 0 }}>
+            {
+              isLoadMore ? <Loader type="small" style={{ background: "#f2f3f7" }} width={30} height={30} /> : ""
+            }
           </div>
         </StickyContainer>
         {
           renderSearchGroupDrawer(this)
+        }
+        {
+          renderJoinGroupConfirm(this)
+        }
+        {
+          renderCreateGroupDrawer(this)
+        }
+        {
+          renderGroupListDrawer(this)
+        }
+        {
+          renderGroupInviteDrawer(this)
+        }
+        {
+          renderConfirmDrawer(this)
         }
       </div>
     );
   }
 }
 
+
 const mapStateToProps = state => {
   return {
     ...state.app,
-    ...state.user
+    ...state.user,
+    ...state.posted,
+    ...state.noti,
+    ...state.group
   }
 };
 
@@ -103,7 +519,16 @@ const mapDispatchToProps = dispatch => ({
   toggleCreateGroupDrawer: (isShow) => dispatch(toggleCreateGroupDrawer(isShow)),
   togglePostDrawer: (isShow, isPostToGroup) => dispatch(togglePostDrawer(isShow, isPostToGroup)),
   toggleGroupDrawer: (isShow) => dispatch(toggleGroupDrawer(isShow)),
-  toggleGroupInviteDrawer: (isShow) => dispatch(toggleGroupInviteDrawer(isShow))
+  toggleGroupInviteDrawer: (isShow) => dispatch(toggleGroupInviteDrawer(isShow)),
+  setGroupPosted: (posts) => dispatch(setGroupPosted(posts)),
+  setJoinedGroup: (groups) => dispatch(setJoinedGroup(groups)),
+  setMyGroup: (groups) => dispatch(setMyGroup(groups)),
+  setInvitedGroup: (groups) => dispatch(setInvitedGroup(groups)),
+  acceptGroup: (groupId, successCallback, errorCallback, currentGroup) => dispatch(acceptGroup(groupId, successCallback, errorCallback, currentGroup)),
+  joinGroup: (groupId, successCallback, errorCallback) => dispatch(joinGroup(groupId, successCallback, errorCallback)),
+  toggleGroupDetailDrawer: (isShow) => dispatch(toggleGroupDetailDrawer(isShow)),
+  setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
+  createGroupSuccess: (group) => dispatch(createGroupSuccess(group))
 });
 
 export default connect(
@@ -121,27 +546,35 @@ const renderHeader = (component) => {
     </div>
   )
 }
-const renderFooter = (history) => {
+
+const renderFooter = (component) => {
+  let {
+    woldNotiUnreadCount
+  } = component.props
   return (
     <div className="app-footer">
       <ul>
-        <li onClick={() => history.replace('/community')}>
+        <li onClick={() => component.props.history.replace('/community')}>
           <img src={Newfeed}></img>
           <span >Bản tin</span>
         </li>
-        <li onClick={() => history.replace('/videos')}>
+        <li onClick={() => component.props.history.replace('/videos')}>
           <img src={Videos}></img>
           <span >Video</span>
         </li>
-        <li onClick={() => history.replace('/groups')}>
+        <li onClick={() => component.props.history.replace('/groups')}>
           <img src={Group1}></img>
           <span style={{ color: "#f54746" }}>Nhóm</span>
         </li>
-        <li onClick={() => history.replace('/community-noti')}>
-          <img src={NotiBw}></img>
+        <li onClick={() => component.props.history.replace('/community-noti')}>
+          {
+            woldNotiUnreadCount > 0 ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
+              <img src={NotiBw}></img>
+            </Badge> : <img src={NotiBw}></img>
+          }
           <span>Thông báo</span>
         </li>
-        <li onClick={() => history.replace('/communiti-profile')}>
+        <li onClick={() => component.props.history.replace('/communiti-profile')}>
           <img src={ProfileBW}></img>
           <span>Cá nhân</span>
         </li>
@@ -152,8 +585,12 @@ const renderFooter = (history) => {
 
 const renderSearchGroupDrawer = (component) => {
   let {
-    showSearchGroupDrawer
+    showSearchGroupDrawer,
+    searchKey,
+    groups,
+    isLoadMoreGroup
   } = component.state
+
 
   return (
     <Drawer anchor="bottom" className="tag-friend-drawer" open={showSearchGroupDrawer} onClose={() => component.setState({ showSearchGroupDrawer: false })}>
@@ -172,6 +609,8 @@ const renderSearchGroupDrawer = (component) => {
             variant="outlined"
             placeholder="Nhập tên nhóm để tìm"
             className="search-box"
+            value={searchKey}
+            onChange={(e) => component.onSearchChange(e)}
             style={{
               width: "calc(100% - 20px",
               margin: "0px 0px 10px 10px",
@@ -185,20 +624,367 @@ const renderSearchGroupDrawer = (component) => {
             }}
           />
         </div>
+        <div className="drawer-content" id="search-groups-box" style={{ overflow: "scroll", width: "100vw" }} onScroll={() => component.onSearchGroupScroll()}>
+          <div className="my-group-list">
+            <ul>
+              {
+                groups.map((group, index) => <li key={index} onClick={() => component.setState({ showGroupForPostDrawer: false }, () => component.props.toggleGroupDetailDrawer(true))}>
+                  <Avatar className="avatar">
+                    <div className="img" style={{ background: 'url(' + group.thumbnail + ')' }} />
+                  </Avatar>
+                  <div className="group-info">
+                    <label>{group.groupname}</label>
+                    <span className={"privacy " + (group.typegroup == GroupPrivacies.Private.code ? "red" : "blued")}>
+                      {objToArray(GroupPrivacies).find(item => item.code == group.typegroup).label}
+                    </span>
+                    <span className="member-count">{group.nummember} thành viên</span>
+                  </div>
+                  {
+                    group.status == 0 ? <Button className="bt-submit" onClick={() => component.setState({ currentGroupId: group.groupid, showJoinGroupConfirm: true, isJoiningGroup: false })}>Tham gia</Button> : ""
+                  }
+                  {
+                    group.status == 10 ? <Button className="bt-cancel" >Đã gửi</Button> : ""
+                  }
+                </li>)
+              }
+            </ul>
+          </div>
+          <div style={{ height: "50px", background: "#fff", zIndex: 0 }}>
+            {
+              isLoadMoreGroup ? <Loader type="small" style={{ background: "#fff" }} width={30} height={30} /> : ""
+            }
+          </div>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+const renderJoinGroupConfirm = (component) => {
+  let {
+    showJoinGroupConfirm,
+    isRead,
+    currentGroupId,
+    isJoiningGroup
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="confirm-drawer" open={showJoinGroupConfirm} onClose={() => component.setState({ showJoinGroupConfirm: false, currentGroupId: null, isRead: false })}>
+      <div className='jon-group-confirm'>
+        <label>Nội quy nhóm</label>
+        <p>Vui lòng đọc kỹ và xác nhận nội quy nhóm trước khi tham gia nhóm.</p>
+        <div className="accept-role">
+          <FormControlLabel
+            control={<Checkbox checked={isRead} onChange={() => component.setState({ isRead: !isRead })} icon={<img src={checkIcon} style={{ width: 20, height: 20 }} />} checkedIcon={<img src={checkedIcon} style={{ width: 20, height: 20 }} />} name="checkedH" />}
+            label={<span>Xác nhận đã đọc nội quy</span>}
+            labelPlacement="start"
+          />
+        </div>
+        <div>
+          <Button className="bt-cancel" onClick={() => component.setState({ showJoinGroupConfirm: false, currentGroupId: null, isRead: false })}>Đóng</Button>
+          {
+            isRead ? <Button className="bt-submit" onClick={() => component.joinGroup(currentGroupId)}>Tham gia nhóm</Button> : <Button className="bt-submit" style={{ opacity: 0.5 }} disabled>Tham gia nhóm</Button>
+          }
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+const renderCreateGroupDrawer = (component) => {
+
+  let {
+    showCreateGroupDrawer,
+
+  } = component.props
+  let {
+    groupCoverImage,
+    description,
+    policygroup,
+    groupName,
+    groupType,
+    showGroupPrivacySelectOption
+  } = component.state
+
+  return (
+    <Drawer anchor="bottom" className="create-group-drawer" open={showCreateGroupDrawer} >
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.closeCreateDrawer()}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Tạo nhóm</label>
+          </div>
+          <Button className="bt-submit" onClick={() => component.createGroup()}>Hoàn tất</Button>
+        </div>
+        <div className="filter">
+        </div>
+        <div className="content-form" style={{ overflow: "scroll", width: "100vw", paddingBottom: "100px" }} >
+          <div>
+            <label>Tên nhóm</label>
+            <TextField
+              className="custom-input"
+              className="order-reason"
+              variant="outlined"
+              placeholder="Đặt tên nhóm"
+              value={groupName}
+              onChange={e => component.setState({ groupName: e.target.value, isChanged: true })}
+              style={{
+                width: "100%",
+                marginBottom: "10px",
+              }}
+            />
+            {
+              showCreateGroupDrawer ? <MultiInput
+                style={{
+                  minHeight: "100px",
+                  border: "1px solid rgba(0, 0, 0, 0.15)",
+                  marginBottom: "10px"
+                }}
+                onChange={value => component.setState({
+                  description: value.text,
+                  isChanged: value.text.length > 0 ? true : false
+                })}
+                topDown={true}
+                placeholder={"Mô tả nhóm"}
+                enableHashtag={false}
+                enableMention={false}
+                centerMode={false}
+                value={description}
+                suggestionClass="custom-suggestion"
+              /> : ""
+            }
+            <label>Tải lên ảnh bìa</label>
+            <div className="cover-image">
+              {
+                groupCoverImage ? <div className="image" style={{ background: 'url(' + URL.createObjectURL(groupCoverImage) + ')' }}></div> : ""
+              }
+              <Dropzone onDrop={acceptedFiles => component.setState({ groupCoverImage: acceptedFiles[0], isChanged: true })}>
+                {({ getRootProps, getInputProps }) => (
+                  <div {...getRootProps()} >
+                    <input {...getInputProps()} accept="image/*" multiple={false} />
+                    <Button className={groupCoverImage ? "light" : "dask"}>Tải ảnh khác</Button>
+                  </div>
+                )}
+              </Dropzone>
+
+            </div>
+            <label>Quy định nhóm</label>
+            {
+
+              showCreateGroupDrawer ? <MultiInput
+                style={{
+                  minHeight: "100px",
+                  border: "1px solid rgba(0, 0, 0, 0.15)",
+                  marginBottom: "10px"
+                }}
+                onChange={value => component.setState({
+                  policygroup: value.text,
+                  isChanged: value.text.length > 0 ? true : false
+                })}
+                topDown={true}
+                placeholder={"Quy định nhóm"}
+                enableHashtag={false}
+                enableMention={false}
+                centerMode={false}
+                value={policygroup}
+                suggestionClass="custom-suggestion"
+              /> : ""
+            }
+            <label>Quyền riêng tư</label>
+            <ClickAwayListener onClickAway={() => component.setState({ showGroupPrivacySelectOption: false })}>
+              <div className="group-type-select custom" onClick={() => component.setState({ showGroupPrivacySelectOption: !showGroupPrivacySelectOption })}>
+                <span className="title" >{groupType ? groupType.label : "Chọn quyền riêng tư"}</span>
+                {
+                  showGroupPrivacySelectOption ? <div className="options">
+                    <span onClick={() => component.setState({ groupType: GroupPrivacies.Public, isChanged: true })}>{GroupPrivacies.Public.label}</span>
+                    <span onClick={() => component.setState({ groupType: GroupPrivacies.Private, isChanged: true })}>{GroupPrivacies.Private.label}</span>
+                  </div> : ""
+                }
+              </div>
+            </ClickAwayListener>
+          </div>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+const renderGroupListDrawer = (component) => {
+
+  let {
+    showGroupDrawer,
+    joinedGroups,
+    myGroups
+  } = component.props
+  let {
+    groupTabIndex
+  } = component.state
+
+
+  return (
+    <Drawer anchor="bottom" className="group-drawer" open={showGroupDrawer} >
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => {
+            component.props.toggleGroupDrawer(false)
+            component.props.setJoinedGroup(null)
+            component.props.setMyGroup(null)
+          }}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Nhóm đã tham gia</label>
+          </div>
+          <div className="submit-bt" onClick={() => component.props.toggleCreateGroupDrawer(true)}>
+            <img src={NewGr} />
+            <span>Tạo nhóm</span>
+          </div>
+        </div>
+        <div className="filter">
+          <AppBar position="static" color="default" className={"custom-tab"}>
+            <Tabs
+              value={groupTabIndex}
+              onChange={(e, value) => component.setState({ groupTabIndex: value })}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="fullWidth"
+              aria-label="full width tabs example"
+              className="tab-header"
+            >
+              <Tab label="Nhóm đã tham gia" {...a11yProps(0)} className="tab-item" />
+              <Tab label="Nhóm đang quản lí" {...a11yProps(1)} className="tab-item" />
+            </Tabs>
+          </AppBar>
+        </div>
+        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} >
+          <SwipeableViews
+            index={groupTabIndex}
+            onChangeIndex={(value) => component.setState({ groupTabIndex: value })}
+            className="tab-content"
+          >
+            <TabPanel value={groupTabIndex} index={0} className="content-box">
+              <div className="top-groups joined-group">
+                {
+                  joinedGroups.map((item, key) => <div
+                    className="group-item"
+                    key={key}
+                    style={{ background: "url(" + item.backgroundimage + ")" }}
+                    onClick={() => {
+                      component.props.toggleGroupDetailDrawer(true)
+                      component.props.setCurrentGroup(item)
+                    }}
+                  >
+                    <div className="group-info">
+                      <Avatar aria-label="recipe" className="avatar">
+                        <div className="img" style={{ background: `url("${item.thumbnail}")` }} />
+                      </Avatar>
+                      <span className="group-name">{item.groupname}</span>
+                    </div>
+                    <span className="posted">{item.numpost} bài đăng</span>
+                    <div className="members-list">
+                      <span className="total">Thành viên: {item.nummember}</span>
+                      {
+                        item.managers ? <div className="member-avatar">
+                          {
+                            item.managers.map((item, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
+                              <div className="img" style={{ background: `url("${item.avatar}")` }} />
+                            </Avatar>
+                            )
+                          }
+                          {
+                            item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
+                              +{item.managers.length - 2}
+                            </Avatar> : ""
+                          }
+                        </div> : ""
+                      }
+                    </div>
+                  </div>)
+                }
+              </div>
+            </TabPanel>
+            <TabPanel value={groupTabIndex} index={1} >
+              <div className="top-groups joined-group">
+                {
+                  myGroups.map((item, key) => <div
+                    className="group-item"
+                    key={key}
+                    style={{ background: "url(" + item.backgroundimage + ")" }}
+                    onClick={() => {
+                      component.props.toggleGroupDetailDrawer(true)
+                      component.props.setCurrentGroup(item)
+                    }}
+                  >
+                    <div className="group-info">
+                      <Avatar aria-label="recipe" className="avatar">
+                        <div className="img" style={{ background: `url("${item.thumbnail}")` }} />
+                      </Avatar>
+                      <span className="group-name">{item.groupname}</span>
+                    </div>
+                    <span className="posted">{item.numpost} bài đăng</span>
+                    <div className="members-list">
+                      <span className="total">Thành viên: {item.nummember}</span>
+                      <div className="member-avatar">
+                        {
+                          item.managers.map((item, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
+                            <div className="img" style={{ background: `url("${item.avatar}")` }} />
+                          </Avatar>
+                          )
+                        }
+                        {
+                          item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
+                            +{item.managers.length - 2}
+                          </Avatar> : ""
+                        }
+                      </div>
+                    </div>
+                  </div>)
+                }
+              </div>
+            </TabPanel>
+          </SwipeableViews>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+const renderGroupInviteDrawer = (component) => {
+  let {
+    showGroupInviteDrawer,
+    invitedGroups
+  } = component.props
+
+  return (
+    <Drawer anchor="bottom" className="group-invite" open={showGroupInviteDrawer} onClose={() => component.props.toggleGroupInviteDrawer(false)}>
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.props.toggleGroupInviteDrawer(false)}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Lời mời vào nhóm</label>
+          </div>
+        </div>
+        <div className="filter"></div>
         <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
           <div className="my-group-list">
             <ul>
               {
-                groups.map((group, index) => <li key={index} onClick={() => component.setState({ groupSelected: group, showGroupForPostDrawer: false })}>
+                invitedGroups.map((group, index) => <li key={index} >
                   <Avatar className="avatar">
-                    <img src={group.groupAvatar} />
+                    <div className="img" style={{ background: `url("${group.thumbnail}")` }} />
                   </Avatar>
                   <div className="group-info">
-                    <label>{group.groupName}</label>
-                    <span className={"privacy " + (group.privacy == GroupPrivacies.Private.value ? "red" : "")}>{GroupPrivacies[group.privacy].label}</span>
-                    <span className="member-count">{group.members.length} thành viên</span>
+                    <label>{group.groupname}</label>
+                    <span className={"privacy mt05 " + (group.typegroup == GroupPrivacies.Private.code ? "red" : "blued")}>
+                      {objToArray(GroupPrivacies).find(item => item.code == group.typegroup).label}
+                    </span>
+                    <span className="member-count mt05">{group.nummember} thành viên</span>
+                    <Button className="bt-submit" onClick={() => component.handleAcceptGroup(group)}>Chấp nhận</Button>
+                    <Button className="bt-cancel" onClick={() => component.handleJoinGroup(group)}>Từ chối</Button>
                   </div>
-                  <Button className="bt-submit">Tham gia</Button>
                 </li>)
               }
             </ul>
@@ -209,118 +995,50 @@ const renderSearchGroupDrawer = (component) => {
   )
 }
 
-const groups = [
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://c.tadst.com/gfx/600x337/moon-photography-camera.jpg?1",
-    privacy: "Public",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "Mẹo vặt sinh viên",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://media.macphun.com/img/uploads/customer/how-to/579/15349456005b7d69405aabf4.32904503.jpg?q=85&w=1340",
-    posted: 373,
-    privacy: "Public",
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      },
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-    ]
-  },
-  {
-    groupName: "CHINH PHỤC NHÀ TUYỂN DỤNG",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://c.tadst.com/gfx/600x337/moon-photography-camera.jpg?1",
-    posted: 373,
-    privacy: "Private",
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ],
-    owner: true
-  },
-  {
-    groupName: "CƯỜI BỂ BỤNG",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://media.macphun.com/img/uploads/customer/how-to/579/15349456005b7d69405aabf4.32904503.jpg?q=85&w=1340",
-    posted: 373,
-    privacy: "Public",
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "1001 câu hỏi",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://c.tadst.com/gfx/600x337/moon-photography-camera.jpg?1",
-    posted: 373,
-    privacy: "Public",
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "NHỮNG ĐIỀU KÌ THÚ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://media.macphun.com/img/uploads/customer/how-to/579/15349456005b7d69405aabf4.32904503.jpg?q=85&w=1340",
-    posted: 373,
-    privacy: "Public",
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "Ờ, phượt đi",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://c.tadst.com/gfx/600x337/moon-photography-camera.jpg?1",
-    posted: 373,
-    privacy: "Public",
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      },
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-    ],
-    owner: true
-  }
-]
+const renderConfirmDrawer = (component) => {
+  let {
+    showConfim,
+    okCallback,
+    confirmTitle,
+    confirmMessage
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="confirm-drawer" open={showConfim} onClose={() => component.setState({ showConfim: false })}>
+      <div className='jon-group-confirm'>
+        <label>{confirmTitle}</label>
+        <p>{confirmMessage}</p>
+        <div className="mt20">
+          <Button className="bt-confirm" onClick={() => component.setState({ showConfim: false }, () => okCallback ? okCallback() : null)}>Đồng ý</Button>
+          <Button className="bt-submit" onClick={() => component.setState({ showConfim: false })}>Quay lại</Button>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+
+
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
+  };
+}
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <div>{children}</div>
+      )}
+    </div>
+  );
+}

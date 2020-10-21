@@ -3,8 +3,15 @@ import './style.scss'
 import {
     toggleAlbumDetailDrawer,
     toggleMediaViewerDrawer,
-    setMediaToViewer
+    setMediaToViewer,
+    togglePostDrawer,
+    selectAlbumToPost
 } from '../../actions/app'
+import {
+    setUserProfile,
+    getFolowedMe,
+    getMeFolowing
+} from '../../actions/user'
 import {
     Drawer,
     IconButton,
@@ -30,11 +37,12 @@ import SwipeableViews from 'react-swipeable-views';
 import {
     Privacies
 } from '../../constants/constants'
-import { objToArray, objToQuery, srcToFile } from "../../utils/common";
-import { get, post } from "../../api";
+import { objToArray, objToQuery, showNotification, srcToFile } from "../../utils/common";
+import { get, post, postFormData } from "../../api";
 import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
 import $ from 'jquery'
 import { saveAs } from 'file-saver';
+import Post from '../post'
 
 
 class Index extends React.Component {
@@ -48,7 +56,13 @@ class Index extends React.Component {
             albumDetail: null,
             isChange: false,
             posted: [],
-            imageInAlbum: []
+            imageInAlbum: [],
+            croppedImage: null,
+            crop: {
+                unit: '%',
+                width: 100,
+                height: 100
+            },
         };
     }
 
@@ -101,7 +115,6 @@ class Index extends React.Component {
             albumid: albumId
         }
         get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetAllNewsFeed" + objToQuery(param), result => {
-            let images = []
             result.content.newsFeeds.map(newsFeed => {
                 newsFeed.mediaPlays.map(media => {
                     media.createdate = newsFeed.createdate
@@ -247,17 +260,225 @@ class Index extends React.Component {
     }
 
     setImageToAlbumBackground(value) {
+        let that = this
         srcToFile(
             value.name,
             value.nameimage,
             'image/' + value.nameimage.split(".")[1]
         ).then(function (file) {
-            this.setState({
-                currentImage: file,
-                openUploadAvatarReview: true,
-                openCropperDrawer: true
-            })
+
+            const reader = new FileReader();
+            reader.addEventListener('load', () =>
+                that.setState({
+                    albumBackgroundSelected: reader.result,
+                    rootAlbumBackgroundToUpload: file,
+                    openUploadAlbumBackgroundReview: true,
+                    openAlbumBackgroundCropperDrawer: true
+                })
+            );
+            reader.readAsDataURL(file);
+
         })
+    }
+
+    updateAlbumBackground() {
+        let {
+            rootAlbumBackgroundToUpload,
+            albumBackgroundToUpload,
+            isProccessing,
+            albumDetail
+        } = this.state
+        var fr = new FileReader;
+        let that = this
+        if (isProccessing == true) return
+        this.setState({
+            isProccessing: true
+        })
+        fr.onload = function () {
+            var img = new Image;
+            img.onload = function () {
+
+                const formData = new FormData();
+
+                if (albumBackgroundToUpload) {
+                    let newfile = new File(
+                        [albumBackgroundToUpload.file],
+                        albumBackgroundToUpload.file.name,
+                        {
+                            type: albumBackgroundToUpload.file.type,
+                            lastModified: new Date,
+                            part: albumBackgroundToUpload.file.name
+                        }
+                    )
+                    formData.append("avatarcut_1_" + albumBackgroundToUpload.width + "_" + albumBackgroundToUpload.height, newfile)
+                } else {
+                    formData.append("avatarcut_1_" + img.width + "_" + img.height, rootAlbumBackgroundToUpload)
+                }
+
+                formData.append("albumid", albumDetail.albumid)
+                formData.append("avatarroot_0_" + img.width + "_" + img.height, rootAlbumBackgroundToUpload)
+
+
+                postFormData(SOCIAL_NET_WORK_API, "Media/UpdateBackground", formData, result => {
+                    that.getDetail(that.props.currentAlbum.albumid)
+                    that.setState({
+                        openAlbumBackgroundCropperDrawer: false,
+                        openUploadAlbumBackgroundReview: false,
+                        isReviewMode: false,
+                        isProccessing: false
+                    })
+                })
+            };
+            img.src = fr.result;
+        };
+        fr.readAsDataURL(rootAlbumBackgroundToUpload);
+    }
+
+    setImageToAvatar(value) {
+        let that = this
+        srcToFile(
+            value.name,
+            value.nameimage,
+            'image/' + value.nameimage.split(".")[1]
+        ).then(function (file) {
+            const reader = new FileReader();
+            reader.addEventListener('load', () =>
+                that.setState({
+                    avatarSelected: reader.result,
+                    rootAvatarToUpload: file,
+                    openUploadAvatarReview: true,
+                    openAvatarCropperDrawer: true
+                })
+            );
+            reader.readAsDataURL(file);
+
+        })
+
+    }
+
+    updateAvatar() {
+        let {
+            avatarToUpload,
+            rootAvatarToUpload,
+            isProccessing,
+            postContent
+        } = this.state
+        var fr = new FileReader;
+        let that = this
+        if (isProccessing == true) return
+        this.setState({
+            isProccessing: true
+        })
+        fr.onload = function () {
+            var img = new Image;
+            img.onload = function () {
+
+                const formData = new FormData();
+                if (avatarToUpload) {
+                    let avatarFileToUpload = new File(
+                        [avatarToUpload.file],
+                        avatarToUpload.file.name,
+                        {
+                            type: avatarToUpload.file.type,
+                            lastModified: new Date,
+                            part: avatarToUpload.file.name
+                        }
+                    )
+                    formData.append("avatarcut_1_" + avatarToUpload.width + "_" + avatarToUpload.height, avatarFileToUpload)
+                } else {
+                    formData.append("avatarcut_1_" + img.width + "_" + img.height, rootAvatarToUpload)
+                }
+
+                formData.append("content", postContent)
+                formData.append("avatarroot_0_" + img.width + "_" + img.height, rootAvatarToUpload)
+
+                postFormData(SOCIAL_NET_WORK_API, "User/UpdateAvatar", formData, result => {
+                    that.setState({
+                        openAvatarCropperDrawer: false,
+                        openUploadAvatarReview: false,
+                        isReviewMode: false,
+                        isProccessing: false
+                    })
+                    that.getProfile()
+                })
+            };
+            img.src = fr.result;
+        };
+        fr.readAsDataURL(rootAvatarToUpload);
+    }
+
+    setImageToBackground(value) {
+        let that = this
+        srcToFile(
+            value.name,
+            value.nameimage,
+            'image/' + value.nameimage.split(".")[1]
+        ).then(function (file) {
+            const reader = new FileReader();
+            reader.addEventListener('load', () =>
+                that.setState({
+                    backgroundSrc: reader.result,
+                    rootBackgroundToUpload: file,
+                    openUploadBackgroundReview: true,
+                    openBackgroundCropperDrawer: true
+                })
+            );
+            reader.readAsDataURL(file);
+
+        })
+
+    }
+
+    updateBackground() {
+        let {
+            backgroundToUpload,
+            rootBackgroundToUpload,
+            isProccessing
+        } = this.state
+        var fr = new FileReader;
+        let that = this
+        if (isProccessing == true) return
+        this.setState({
+            isProccessing: true
+        })
+        fr.onload = function () {
+            var img = new Image;
+            img.onload = function () {
+
+                const formData = new FormData();
+
+                if (backgroundToUpload) {
+                    let backgroundFileToUpload = new File(
+                        [backgroundToUpload.file],
+                        backgroundToUpload.file.name,
+                        {
+                            type: backgroundToUpload.file.type,
+                            lastModified: new Date,
+                            part: backgroundToUpload.file.name
+                        }
+                    )
+                    formData.append("avatarcut_1_" + backgroundToUpload.width + "_" + backgroundToUpload.height, backgroundFileToUpload)
+                } else {
+                    formData.append("avatarcut_1_" + img.width + "_" + img.height, rootBackgroundToUpload)
+                }
+
+                formData.append("content", "")
+                formData.append("avatarroot_0_" + img.width + "_" + img.height, rootBackgroundToUpload)
+
+
+                postFormData(SOCIAL_NET_WORK_API, "User/UpdateBackground", formData, result => {
+                    that.getProfile()
+                    that.setState({
+                        openBackgroundCropperDrawer: false,
+                        openUploadBackgroundReview: false,
+                        isReviewMode: false,
+                        isProccessing: false
+                    })
+                })
+            };
+            img.src = fr.result;
+        };
+        fr.readAsDataURL(rootBackgroundToUpload);
     }
 
     updateImagePrivacy() {
@@ -316,6 +537,28 @@ class Index extends React.Component {
         })
     }
 
+    getProfile() {
+        get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
+            if (result.result == 1) {
+                this.props.setUserProfile(result.content.user)
+                this.props.getFolowedMe(0)
+                this.props.getMeFolowing(0)
+            } else {
+                showNotification("", <span className="app-noti-message">{result.message}</span>, null)
+            }
+
+        })
+    }
+
+    postImage(albumDetail) {
+        this.props.togglePostDrawer(true, false, () => {
+            // setTimeout(() => {
+            //     $("#bt-select-image").click()
+            // }, 300);
+            this.props.selectAlbumToPost(albumDetail)
+        })
+    }
+
     componentWillReceiveProps(nextProps) {
         if (Object.entries(this.props.currentAlbum ? this.props.currentAlbum : {}).toString() != Object.entries(nextProps.currentAlbum ? nextProps.currentAlbum : {}).toString()) {
             this.getDetail(nextProps.currentAlbum.albumid)
@@ -336,147 +579,108 @@ class Index extends React.Component {
             albumName,
             posted,
             imageInAlbum,
-            isProccesing
+            isProccesing,
+            currentImage
         } = this.state
-        console.log("currentAlbum", albumDetail)
 
+        console.log("albumDetail", albumDetail)
         return (
-            <Drawer anchor="bottom" className="album-detail-drawer" open={showAlbumDetailDrawer} onClose={() => this.props.toggleAlbumDetailDrawer(false)}>
-                <div className="drawer-detail">
-                    <div className="drawer-header">
-                        <div className="direction" onClick={() => this.props.toggleAlbumDetailDrawer(false)}>
-                            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-                                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            <div>
+                <Drawer anchor="bottom" className="album-detail-drawer" open={showAlbumDetailDrawer} onClose={() => this.props.toggleAlbumDetailDrawer(false)}>
+                    <div className="drawer-detail">
+                        <div className="drawer-header">
+                            <div className="direction" onClick={() => this.props.toggleAlbumDetailDrawer(false)}>
+                                <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                                    <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+                                </IconButton>
+                                <label>Album</label>
+                            </div>
+                            <IconButton className="color-gray" onClick={() => this.setState({ showUpdateAlbumDrawer: true })}>
+                                <MoreHorizIcon />
                             </IconButton>
-                            <label>Album</label>
                         </div>
-                        <IconButton className="color-gray" onClick={() => this.setState({ showUpdateAlbumDrawer: true })}>
-                            <MoreHorizIcon />
-                        </IconButton>
-                    </div>
-                    <div className="filter"></div>
-                    {
-                        albumDetail ? <div className="drawer-content" id="album-content" style={{ overflow: "scroll", width: "100vw" }} onScroll={() => this.onScroll(tabIndex)}>
-                            <div className="album-background">
-                                <div style={{ background: "url(" + albumDetail.background + ")" }}></div>
-                            </div>
-                            <div className="name">
-                                <label>{albumDetail.albumname}</label>
-                                <span>{albumDetail.albumfortext}</span>
-                            </div>
-                            {
-                                albumDetail.userid == profile.id ? <div className="add-to-album">
-                                    <Avatar aria-label="recipe" className="avatar">
-                                        <img src={profile.avatar} style={{ width: "100%" }} />
-                                    </Avatar>
-                                    <span>Thêm ảnh vào album này</span>
-                                </div> : ""
-                            }
-                            <div className="detail">
-                                <AppBar position="static" color="default" className="custom-tab-1">
-                                    <Tabs
-                                        value={tabIndex}
-                                        onChange={(e, value) => this.setState({ tabIndex: value })}
-                                        indicatorColor="primary"
-                                        textColor="primary"
-                                        variant="fullWidth"
-                                        aria-label="full width tabs example"
-                                        className="tab-header"
+                        <div className="filter"></div>
+                        {
+                            albumDetail ? <div className="drawer-content" id="album-content" style={{ overflow: "scroll", width: "100vw" }} onScroll={() => this.onScroll(tabIndex)}>
+                                <div className="album-background">
+                                    <div style={{ background: "url(" + albumDetail.background + ")" }}></div>
+                                </div>
+                                <div className="name">
+                                    <label>{albumDetail.albumname}</label>
+                                    <span>{albumDetail.albumfortext}</span>
+                                </div>
+                                {
+                                    albumDetail.userid == profile.id ? <div className="add-to-album" onClick={() => this.postImage(albumDetail)}>
+                                        <Avatar aria-label="recipe" className="avatar">
+                                            <div className="img" style={{ background: `url("${profile.avatar}")` }} />
+                                        </Avatar>
+                                        <span>Thêm vào album này</span>
+                                    </div> : ""
+                                }
+                                <div className="detail">
+                                    <AppBar position="static" color="default" className="custom-tab-1">
+                                        <Tabs
+                                            value={tabIndex}
+                                            onChange={(e, value) => this.setState({ tabIndex: value })}
+                                            indicatorColor="primary"
+                                            textColor="primary"
+                                            variant="fullWidth"
+                                            aria-label="full width tabs example"
+                                            className="tab-header"
+                                        >
+                                            <Tab label={<i className="fas fa-th-large"></i>} {...a11yProps(0)} className="tab-item" />
+                                            <Tab label={<i className="fas fa-stream"></i>} {...a11yProps(1)} className="tab-item" />
+                                        </Tabs>
+                                    </AppBar>
+                                    <SwipeableViews
+                                        index={tabIndex}
+                                        onChangeIndex={(value) => this.setState({ tabIndex: value })}
+                                        className="tab-content"
                                     >
-                                        <Tab label={<i className="fas fa-th-large"></i>} {...a11yProps(0)} className="tab-item" />
-                                        <Tab label={<i className="fas fa-stream"></i>} {...a11yProps(1)} className="tab-item" />
-                                    </Tabs>
-                                </AppBar>
-                                <SwipeableViews
-                                    index={tabIndex}
-                                    onChangeIndex={(value) => this.setState({ tabIndex: value })}
-                                    className="tab-content"
-                                >
-                                    <TabPanel value={tabIndex} index={0} className="content-box">
-                                        <div className="image-posted image-box">
-                                            <ul className="image-list">
+                                        <TabPanel value={tabIndex} index={0} className="content-box">
+                                            <div className="image-posted image-box">
+                                                <ul className="image-list">
+                                                    {
+                                                        imageInAlbum.map((item, index) => <li onClick={() => {
+                                                            this.props.setMediaToViewer(imageInAlbum)
+                                                            this.props.toggleMediaViewerDrawer(true, {
+                                                                actions: profile && albumDetail && albumDetail.userid == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
+                                                                showInfo: true,
+                                                                activeIndex: index
+                                                            })
+                                                        }} >
+                                                            <div style={{ background: "url(" + item.name + ")" }} key={index}></div>
+                                                        </li>)
+                                                    }
+                                                </ul>
                                                 {
-                                                    imageInAlbum.map((item, index) => <li onClick={() => {
-                                                        this.props.setMediaToViewer(imageInAlbum)
-                                                        this.props.toggleMediaViewerDrawer(true, {
-                                                            actions: [
-                                                                {
-                                                                    label: "Lưu vào điện thoại",
-                                                                    action: (value) => this.downloadImage(value.name)
-                                                                },
-                                                                {
-                                                                    label: "Chỉnh sửa nội dung",
-                                                                    action: (value) => alert("Chỉnh sửa nội dung")
-                                                                },
-                                                                {
-                                                                    label: "Đặt làm ảnh đại diện",
-                                                                    action: (value) => alert("Đặt làm ảnh đại diện")
-                                                                },
-                                                                {
-                                                                    label: "Đặt làm ảnh bìa",
-                                                                    action: (value) => alert("Đặt làm ảnh bìa")
-                                                                },
-                                                                {
-                                                                    label: "Chỉnh sửa quyền riêng tư",
-                                                                    action: (value) => this.setState({
-                                                                        currentImage: value,
-                                                                        showUpdatePrivacyDrawer: true,
-                                                                        privacySelected: value.postfor,
-                                                                    })
-                                                                },
-                                                                {
-                                                                    label: "Xoá ảnh",
-                                                                    action: (value) => this.setState({
-                                                                        showConfim: true,
-                                                                        okCallback: () => this.deleteImage(value),
-                                                                        confirmTitle: "",
-                                                                        confirmMessage: "Khi xoá ảnh sẽ xoá luôn bài đăng, bạn vẫn muốn tiếp tục?"
-                                                                    })
-                                                                },
-                                                                {
-                                                                    label: "Đặt làm ảnh đại diện album",
-                                                                    action: (value) => this.setImageToAlbumBackground(value)
-                                                                }
-                                                            ],
-                                                            showInfo: true,
-                                                            activeIndex: index
-                                                        })
-                                                    }} >
-                                                        <div style={{ background: "url(" + item.name + ")" }} key={index}></div>
-                                                    </li>)
+                                                    isLoading == true && tabIndex == 0 ? <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div> : ""
                                                 }
-                                            </ul>
-                                            {
-                                                isLoading == true && tabIndex == 0 ? <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div> : ""
-                                            }
-                                        </div>
-                                    </TabPanel>
-                                    <TabPanel value={tabIndex} index={1} className="content-box">
-                                        <div className="avatar-image image-box">
-                                            {/* <ul className="image-list">
+                                            </div>
+                                        </TabPanel>
+                                        <TabPanel value={tabIndex} index={1} className="content-box">
+                                            <div className="album-posted">
                                                 {
-                                                    avatarImages.map((item, index) => <li onClick={() => {
-                                                        this.props.setMediaToViewer(avatarImages)
-                                                        this.props.toggleMediaViewerDrawer(true, {
-                                                            canDownload: true,
-                                                            showInfo: true,
-                                                            activeIndex: index
-                                                        })
-                                                    }} >
-                                                        <div style={{ background: "url(" + item.name + ")" }} key={index}></div>
-                                                    </li>)
+                                                    posted && posted.length > 0 ? <ul>
+                                                        {
+                                                            posted.map((post, index) => <li key={index}>
+                                                                <Post data={{ ...post, albumid: albumDetail.albumid }} history={this.props.history} />
+                                                            </li>)
+                                                        }
+                                                    </ul> : ""
                                                 }
-                                            </ul> */}
-                                            {
-                                                isLoading == true && tabIndex == 1 ? <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div> : ""
-                                            }
-                                        </div>
-                                    </TabPanel>
-                                </SwipeableViews>
-                            </div>
-                        </div> : ""
-                    }
-                </div>
+                                                {
+                                                    isLoading == true && tabIndex == 1 ? <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div> : ""
+                                                }
+                                            </div>
+                                        </TabPanel>
+                                    </SwipeableViews>
+                                </div>
+                            </div> : ""
+                        }
+                    </div>
+
+                </Drawer>
                 {
                     renderUpdateAlbumDrawer(this)
                 }
@@ -487,15 +691,27 @@ class Index extends React.Component {
                     renderConfirmDrawer(this)
                 }
                 {
-                    renderUpdateBackgroundReviewDrawer(this)
+                    renderUpdatePrivacyImageDrawer(this)
+                }
+                {
+                    renderUpdateAlbumBackgroundReviewDrawer(this)
                 }
                 {
                     renderCropperDrawer(this)
                 }
                 {
-                    renderUpdatePrivacyImageDrawer(this)
+                    renderUpdateAvatarReviewDrawer(this)
                 }
-            </Drawer>
+                {
+                    renderAvatarCropperDrawer(this)
+                }
+                {
+                    renderUpdateBackgroundReviewDrawer(this)
+                }
+                {
+                    renderBackgroundCropperDrawer(this)
+                }
+            </div>
         );
     }
 }
@@ -510,7 +726,12 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     toggleAlbumDetailDrawer: (isShow) => dispatch(toggleAlbumDetailDrawer(isShow)),
     toggleMediaViewerDrawer: (isShow, features) => dispatch(toggleMediaViewerDrawer(isShow, features)),
-    setMediaToViewer: (media) => dispatch(setMediaToViewer(media))
+    setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
+    setUserProfile: (user) => dispatch(setUserProfile(user)),
+    getFolowedMe: (currentpage) => dispatch(getFolowedMe(currentpage)),
+    getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage)),
+    togglePostDrawer: (isShow, isPostToGroup, successCallback) => dispatch(togglePostDrawer(isShow, isPostToGroup, successCallback)),
+    selectAlbumToPost: (album) => dispatch(selectAlbumToPost(album))
 });
 
 export default connect(
@@ -543,6 +764,24 @@ function TabPanel(props) {
         </div>
     );
 }
+
+const mediaRootActions = (component) => ({
+    // onSaveImage: (value) => component.downloadImage(value.name),
+    onUpdateInfo: (value) => null,
+    onSetToAvatar: (value) => null,
+    onSetToBackground: (value) => null,
+    onUpdatePrivacy: (value) => null,
+    onDelete: (value) => null,
+    onSetToAlbumBackground: (value) => null
+})
+
+// const mediaGuestActions = (component) => ({
+//   // onSaveImage: (value) => component.downloadImage(value.name),
+//   // onSetToAvatar: (value) => null,
+//   // onSetToBackground: (value) => null,
+//   // onSetToAlbumBackground: (value) => null
+// })
+const mediaGuestActions = (component) => null
 
 
 const renderConfirmDrawer = (component) => {
@@ -651,7 +890,7 @@ const renderAlbumPrivacyMenuDrawer = (component) => {
                 <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showAlbumPrivacySelectOption: false })}>
                     <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
                 </IconButton>
-                <label>Quyền riêng tư</label>
+                <label>Tác vụ</label>
             </div>
             <ul className="option-list">
                 {
@@ -661,100 +900,6 @@ const renderAlbumPrivacyMenuDrawer = (component) => {
                 }
             </ul>
         </Drawer>
-    )
-}
-
-const renderUpdateBackgroundReviewDrawer = (component) => {
-    let {
-        openUploadAvatarReview,
-        postContent,
-        isReviewMode,
-        avatarToUpload,
-        isProccessing
-    } = component.state
-    let {
-        profile
-    } = component.props
-    return (
-        <Drawer anchor="bottom" className="update-avatar-review-drawer" open={openUploadAvatarReview} onClose={() => component.setState({ openUploadAvatarReview: false })}>
-            <div className="drawer-detail media-drawer">
-                <div className="drawer-header">
-                    <div className="direction" onClick={() => isReviewMode == false ? component.setState({ openUploadAvatarReview: false }) : component.setState({ openCropperDrawer: true, isReviewMode: false })}>
-                        <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-                            <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-                        </IconButton>
-                        <label>{
-                            isReviewMode ? "Quay lại chỉnh sửa" : "Cập nhật ảnh đại diện"
-                        }
-                        </label>
-                    </div>
-                    <Button className="bt-submit" onClick={() => component.updateAvatar()}>Đăng</Button>
-                </div>
-                <div className="filter">
-                </div>
-                <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
-                    <div className="post-content">
-                        <MultiInput
-                            useHashtags={true}
-                            useMentions={true}
-                            placeholder="Nhập nội dung"
-                            onChange={(value) => console.log(value)}
-                            userOptions={[
-                                { fullname: 'User 1' },
-                                { fullname: 'User 2' },
-                                { fullname: 'User 3' }
-                            ]} />
-                    </div>
-                    <div className="profile-page" >
-                        <div className="user-avatar" style={{ background: "url(" + "" + ")" }}>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {
-                isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
-            }
-        </Drawer>
-    )
-}
-
-
-const renderCropperDrawer = (component) => {
-    let {
-        openCropperDrawer,
-        crop,
-        src,
-        croppedImage,
-        isProccessing,
-        currentImage
-    } = component.state
-    console.log("currentImage", currentImage)
-    return (
-        <Drawer anchor="bottom" className="cropper-drawer" open={openCropperDrawer} onClose={() => component.setState({ openCropperDrawer: false })}>
-            {
-                src ? <div className="drawer-detail">
-                    <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
-                        <Cropper
-                            src={currentImage}
-                            crop={crop}
-                            onCropped={(file) => component.setState({ croppedImage: file })}
-                        />
-                    </div>
-                    <div className="footer-drawer">
-                        <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
-                        <div>
-                            <Button onClick={() => component.setState({ openCropperDrawer: false })}>Huỷ</Button>
-                            <Button onClick={() => component.setState({ openCropperDrawer: false, isReviewMode: true, avatarToUpload: croppedImage })}>Chế độ xem trước</Button>
-                            <Button onClick={() => component.setState({ avatarToUpload: croppedImage }, () => component.updateAvatar())}>Đăng bài</Button>
-                        </div>
-                    </div>
-
-                </div> : ""
-            }
-            {
-                isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
-            }
-        </Drawer >
     )
 }
 
@@ -810,3 +955,287 @@ const renderUpdatePrivacyImageDrawer = (component) => {
     )
 }
 
+const renderUpdateAlbumBackgroundReviewDrawer = (component) => {
+    let {
+        openUploadAlbumBackgroundReview,
+        isReviewMode,
+        isProccessing,
+        albumBackgroundToUpload
+    } = component.state
+    return (
+        <div>
+            <Drawer anchor="bottom" className="update-avatar-review-drawer upate-background-album" open={openUploadAlbumBackgroundReview} onClose={() => component.setState({ openUploadAlbumBackgroundReview: false })}>
+                <div className="drawer-detail media-drawer">
+                    <div className="drawer-header">
+                        <div className="direction" onClick={() => isReviewMode == false ? component.setState({ openUploadAlbumBackgroundReview: false }) : component.setState({ openCropperDrawer: true, isReviewMode: false })}>
+                            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+                            </IconButton>
+                            <label>{
+                                isReviewMode ? "Quay lại chỉnh sửa" : "Cập nhật ảnh đại diện"
+                            }
+                            </label>
+                        </div>
+                        <Button className="bt-submit" onClick={() => component.updateAlbumBackground()}>Đăng</Button>
+                    </div>
+                    <div className="filter">
+                    </div>
+                    <div className="content-form" style={{ overflow: "scroll" }}>
+                        {
+                            albumBackgroundToUpload ? <div className="profile-page" >
+                                <div className="background-box" style={{ background: "url(" + (URL.createObjectURL(albumBackgroundToUpload.file)) + ")" }}>
+                                </div>
+                            </div> : ""
+                        }
+                    </div>
+                </div>
+
+            </Drawer>
+            {
+                isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+            }
+        </div>
+    )
+}
+
+const renderCropperDrawer = (component) => {
+    let {
+        openAlbumBackgroundCropperDrawer,
+        crop,
+        isProccessing,
+        albumBackgroundSelected,
+        albumBackgroundCropped
+    } = component.state
+
+    return (
+        <div>
+            <Drawer anchor="bottom" className="cropper-drawer" open={openAlbumBackgroundCropperDrawer} onClose={() => component.setState({ openAlbumBackgroundCropperDrawer: false })}>
+                {
+                    albumBackgroundSelected ? <div className="drawer-detail">
+                        <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+                            <Cropper
+                                src={albumBackgroundSelected}
+                                crop={crop}
+                                onCropped={(file) => component.setState({ albumBackgroundCropped: file })}
+                            />
+                        </div>
+                        <div className="footer-drawer">
+                            <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
+                            <div>
+                                <Button onClick={() => component.setState({ openAlbumBackgroundCropperDrawer: false })}>Huỷ</Button>
+                                <Button onClick={() => component.setState({ openAlbumBackgroundCropperDrawer: false, isReviewMode: true, albumBackgroundToUpload: albumBackgroundCropped })}>Chế độ xem trước</Button>
+                                <Button onClick={() => component.setState({ albumBackgroundToUpload: albumBackgroundCropped }, () => component.updateAlbumBackground())}>Đăng bài</Button>
+                            </div>
+                        </div>
+
+                    </div> : ""
+                }
+
+            </Drawer >
+            {
+                isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+            }
+        </div>
+    )
+}
+
+const renderUpdateAvatarReviewDrawer = (component) => {
+    let {
+        openUploadAvatarReview,
+        postContent,
+        isReviewMode,
+        avatarToUpload,
+        isProccessing
+    } = component.state
+    let {
+        profile
+    } = component.props
+    return (
+        <div>
+            < Drawer anchor="bottom" className="update-avatar-review-drawer" open={openUploadAvatarReview} onClose={() => component.setState({ openUploadAvatarReview: false })}>
+                <div className="drawer-detail media-drawer">
+                    <div className="drawer-header">
+                        <div className="direction" onClick={() => isReviewMode == false ? component.setState({ openUploadAvatarReview: false }) : component.setState({ openCropperDrawer: true, isReviewMode: false })}>
+                            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+                            </IconButton>
+                            <label>{
+                                isReviewMode ? "Quay lại chỉnh sửa" : "Cập nhật ảnh đại diện"
+                            }
+                            </label>
+                        </div>
+                        <Button className="bt-submit" onClick={() => component.updateAvatar()}>Đăng</Button>
+                    </div>
+                    <div className="filter">
+                    </div>
+                    <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+                        <div className="post-content">
+                            <MultiInput
+                                disabledInput={true}
+                                useHashtags={true}
+                                useMentions={true}
+                                placeholder="Nhập nội dung"
+                                onChange={(value) => console.log(value)}
+                                userOptions={[
+                                    { fullname: 'User 1' },
+                                    { fullname: 'User 2' },
+                                    { fullname: 'User 3' }
+                                ]}
+                                disabledInput={false}
+                            />
+                        </div>
+                        <div className="profile-page" >
+                            <div className="cover-img" style={{ background: "url(" + (profile ? profile.avatar : "") + ")" }}>
+                            </div>
+                            <div className="user-avatar" style={{ background: "url(" + (avatarToUpload && avatarToUpload.file ? URL.createObjectURL(avatarToUpload.file) : (profile ? profile.avatar : "")) + ")" }}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Drawer >
+            {
+                isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+            }
+        </div>
+    )
+}
+
+const renderAvatarCropperDrawer = (component) => {
+    let {
+        openAvatarCropperDrawer,
+        crop,
+        avatarCroped,
+        avatarSelected,
+        isProccessing
+    } = component.state
+    return (
+        <div>
+            <Drawer anchor="bottom" className="cropper-drawer" open={openAvatarCropperDrawer} onClose={() => component.setState({ openAvatarCropperDrawer: false })}>
+                {
+                    avatarSelected ? <div className="drawer-detail">
+                        <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+                            <Cropper
+                                src={avatarSelected}
+                                crop={crop}
+                                onCropped={(file) => component.setState({ avatarCroped: file })}
+                            />
+                        </div>
+                        <div className="footer-drawer">
+                            <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
+                            <div>
+                                <Button onClick={() => component.setState({ openAvatarCropperDrawer: false })}>Huỷ</Button>
+                                <Button onClick={() => component.setState({ openAvatarCropperDrawer: false, isReviewMode: true, avatarToUpload: avatarCroped })}>Chế độ xem trước</Button>
+                                <Button onClick={() => component.setState({ avatarToUpload: avatarCroped }, () => component.updateAvatar())}>Đăng bài</Button>
+                            </div>
+                        </div>
+
+                    </div> : ""
+                }
+
+            </Drawer >
+            {
+                isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+            }
+        </div>
+    )
+}
+
+const renderUpdateBackgroundReviewDrawer = (component) => {
+    let {
+        openUploadBackgroundReview,
+        postContent,
+        isReviewMode,
+        backgroundToUpload,
+        isProccessing
+    } = component.state
+    let {
+        profile
+    } = component.props
+    return (
+        <div>
+            <Drawer anchor="bottom" className="update-avatar-review-drawer" open={openUploadBackgroundReview} onClose={() => component.setState({ openUploadBackgroundReview: false })}>
+                <div className="drawer-detail media-drawer">
+                    <div className="drawer-header">
+                        <div className="direction" onClick={() => isReviewMode == false ? component.setState({ openUploadBackgroundReview: false }) : component.setState({ openBackgroundCropperDrawer: true, isReviewMode: false })}>
+                            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+                            </IconButton>
+                            <label>{
+                                isReviewMode ? "Quay lại chỉnh sửa" : "Cập nhật ảnh đại diện"
+                            }
+                            </label>
+                        </div>
+                        <Button className="bt-submit" onClick={() => component.updateBackground()}>Đăng</Button>
+                    </div>
+                    <div className="filter">
+                    </div>
+                    <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+                        <div className="post-content">
+                            <MultiInput
+                                placeholder="Nhập nội dung"
+                                onChange={(value) => console.log(value)}
+                                useHashtags={false}
+                                useMentions={false}
+                                userOptions={[
+                                    { fullname: 'User 1' },
+                                    { fullname: 'User 2' },
+                                    { fullname: 'User 3' }
+                                ]}
+                            />
+                        </div>
+                        <div className="profile-page" >
+                            <div className="cover-img" style={{ background: "url(" + (backgroundToUpload && backgroundToUpload.file ? URL.createObjectURL(backgroundToUpload.file) : (profile ? profile.background : "")) + ")" }}>
+                            </div>
+                            <div className="user-avatar" style={{ background: "url(" + (profile ? profile.avatar : "") + ")" }}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </Drawer>
+            {
+                isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+            }
+        </div>
+    )
+}
+
+const renderBackgroundCropperDrawer = (component) => {
+    let {
+        openBackgroundCropperDrawer,
+        crop,
+        backgroundSrc,
+        backgroundCroppedImage,
+        isProccessing
+    } = component.state
+    return (
+        <div>
+            <Drawer anchor="bottom" className="cropper-drawer" open={openBackgroundCropperDrawer} onClose={() => component.setState({ openBackgroundCropperDrawer: false })}>
+                {
+                    backgroundSrc ? <div className="drawer-detail">
+                        <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+                            <Cropper
+                                src={backgroundSrc}
+                                crop={crop}
+                                onCropped={(file) => component.setState({ backgroundCroppedImage: file })}
+                            />
+                        </div>
+                        <div className="footer-drawer">
+                            <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
+                            <div>
+                                <Button onClick={() => component.setState({ openBackgroundCropperDrawer: false })}>Huỷ</Button>
+                                <Button onClick={() => component.setState({ openBackgroundCropperDrawer: false, isReviewMode: true, backgroundToUpload: backgroundCroppedImage })}>Chế độ xem trước</Button>
+                                <Button onClick={() => component.setState({ backgroundToUpload: backgroundCroppedImage }, () => component.updateBackground())}>Đăng bài</Button>
+                            </div>
+                        </div>
+
+                    </div> : ""
+                }
+            </Drawer >
+
+            {
+                isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+            }
+        </div>
+    )
+}

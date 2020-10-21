@@ -113,6 +113,30 @@
             }
         }
         .video{
+            .custom-bt-control-bar{
+                position: fixed;
+                top: calc(50% - 10px);
+                width: 44%;
+                left: 28%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                button{
+                    color: #fff;
+                    background: rgba(43, 51, 63, 0.7);
+                    padding: 5px;
+                }
+                
+            }
+            .fullscreen-overlay{
+                background: none;
+                z-index: 100;
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                width: 40px;
+                height: 30px;
+            }
             > div{
                 width: 100% !important;
                 height: fit-content !important;
@@ -167,6 +191,9 @@
                 border-radius: 7px;
                 box-shadow: 0px 0px 1px rgba(0,0,0,0.2);
                 margin-bottom: 10px;
+                &.active{
+                    background: #ededed;
+                }
                 > div:first-child{
                     display: flex;
                     align-items: center;
@@ -230,26 +257,42 @@
         .tab-content{
             padding: 0px;
         }
+        .content-box{
+            padding: 10px;
+        }
         .exercise-list{
-            > label{
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            border-radius: 7px;
+            .list-header{
+                padding: 15px 10px;
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                height: 40px;
-                font-family: Roboto-Regular;
+                justify-content: space-between;
+                > label{
+                    font-family: Roboto-Medium;
+                }
+                > span{
+                    font-family: Roboto-Regular;
+                }
+                .reward{
+                    > span{
+                        font-family: Roboto-Regular;
+                        > span{
+                            font-family: Roboto-Medium;
+                        }
+                    }
+                }
             }
             .exercise-item{
-                box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-                width: calc(100% - 20px);
-                border-radius: 10px;
-                margin-left: 10px;
-                padding: 10px;
+                padding: 0px 10px 10px;
                 box-sizing: border-box;
-                margin-bottom: 10px;
+                text-align: center;
+                > img{
+                    width: 100%;
+                    margin-top: 10px;
+                    border: 1px solid #666
+                }
                 > div{
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
                     > label{
                         font-family: Roboto-Medium;
                         font-size: 1.1rem;
@@ -261,16 +304,98 @@
                             width: 15px;
                         }
                     }
+                    .video{
+                        position: relative;
+                        .video-react-control-bar {
+                            margin-top: -30px;
+                            position: unset !important;
+                        }
+                        .custom-bt-control-bar{
+                            position: absolute !important;
+                        }
+                        .fullscreen-overlay{
+                            background: none;
+                            z-index: 100;
+                            position: absolute;
+                            right: 0;
+                            bottom: 0;
+                            width: 40px;
+                            height: 30px;
+                        }
+                    }
+                    > img{
+                        width: 100%;
+                        margin-top: 10px;
+                        border: 1px solid #666
+                    }
                 }
-                > img{
-                    width: 100%;
-                    margin-top: 10px;
-                    box-shadow: 0px 0px 1px rgba(0,0,0,0.1);
+                
+                .box-upload-file{
+                    input{
+                        display: none !important;
+                    }
+                    .file-selected{
+                        background: #fff;
+                        box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+                        margin: 10px;
+                        border-radius: 7px;
+                        display: flex;
+                        align-items: center;
+                        img{
+                            width: 40px;
+                            padding: 10px;
+                        }
+                        .file-info{
+                            width: 100%;
+                            > span{
+                                display: flex;
+                                
+                            }
+                            .name{
+                                font-family: Roboto-Medium;
+                            }
+                            .size{
+                                font-family: Roboto-Regular;
+                                color: #777;
+                            }
+                        }
+                        > button{
+                            width: fit-content !important;
+                            span{
+                                font-family: Roboto-Medium;;
+                            }
+                        }
+                        svg{
+                            padding: 5px;
+                            background: #e5e5e5;
+                            color: #EE5554;
+                            border-radius: 100px;
+                            margin-right: 10px;
+                        }
+                    }
+                    .bt-upload-file{
+                        background: #fbf2f3;
+                        border: 1px dashed #ed807d;
+                        border-radius: 7px;
+                        display: flex;
+                        align-items: center;
+                        margin: 10px;
+                        img{
+                            width: 40px;
+                            padding: 10px;
+                        }
+                        span{
+                            font-family: Roboto-Medium;
+                            color:  #EE5554;
+                        }
+                    }
                 }
-                > button{
-                    margin-top: 10px;
+                .aply-exercise{
+                    width: 50% !important;
+                    margin: 20px auto;
                 }
             }
+
         }
     }
     .history{
@@ -287,7 +412,7 @@
         .reports{
             border-radius: 7px;
             padding: 10px;
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.2);
             margin-top: 10px;
             > label{
                 font-family: Roboto-Medium;
@@ -312,12 +437,15 @@
                         display: flex;
                         align-items: center;
                         margin-bottom: 10px;
+                        width: 100%;
+                        justify-content: space-between;
                         button{
                             margin-right: 10px;
+                            width: fit-content !important;
                             &:last-child{
                                 margin-right: 0px;
                             }
-                            > span{
+                            > span:first-child{
                                 font-family: Roboto-Regular;
                                 white-space: nowrap;
                                 padding: 0px 10px;
@@ -329,43 +457,54 @@
                 .task-content{
                     video{
                         width: 100% ;
+                        
                     }
                 }
                 .assess{
                     text-align: center;
                     > span{
                         font-family: Roboto-Regular;
-                        color: #aaa;
+                        color: #666;
                         display: inline-block;
                         margin: 10px 0px;
                         text-align: left;
                         width: 100%;
                     }
                     > div{
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                        .assessor{
+                        > div{
                             display: flex;
                             align-items: center;
-                            .avatar{
-                                img{
-                                    width: 40%;
+                            justify-content: space-between;
+                            .assessor{
+                                display: flex;
+                                align-items: center;
+                                .avatar{
+                                    img{
+                                        width: 40%;
+                                    }
+                                }
+                                .name{
+                                    font-family: Roboto-Medium;
+                                }
+                                > span{
+                                    font-family:  Roboto-Regular;
+                                    margin-left: 10px;
                                 }
                             }
-                            > span{
+                            .status{
+                                color: #53a6dc;
+                                font-family: 1rem;
                                 font-family:  Roboto-Regular;
-                                margin-left: 10px
                             }
-                        }
-                        .status{
-                            color: #53a6dc;
                         }
                     }
                     > img{
                         width: 30px;
                         display: inline-block;
                         margin: 10px auto;
+                    }
+                    .noti-ring{
+                        color: #EE5554;
                     }
                     
                 }
@@ -504,6 +643,158 @@
                 width: fit-content !important;
                 margin-left: 10px;
             }
+        }
+    }
+}
+
+.assess-page{
+    background: #ededed;
+    .exercise-scource{
+        padding: 10px 10px 20px;
+        background: #fff;
+        > label{
+            font-size: 1.2rem;
+            font-family: Roboto-Medium;
+        }
+        .empty-record{
+            padding: 10px;
+            color: #53a6dc;
+            font-family: Roboto-Medium;
+            background: #f5fafd;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.15);
+            margin: 20px 0px;
+            border-radius: 7px;
+            > span{
+                display: inline-block;
+                width: 100%;
+                text-align: center;
+            }
+        }
+    }
+    
+    .exercise-list{
+        margin-bottom: 10px;
+        .exercise-item{
+            .list-header{
+                padding: 10px;
+                background: #fff;
+                label{
+                    font-family: Roboto-Medium;
+                }
+            }
+            .exercise-content{
+                padding: 10px;
+                background: #fff;
+                > .video{
+                    border-radius: 10px;
+                    overflow: hidden;
+                    margin-bottom: 15px;
+                }
+                > img{
+                    width: 100%;
+                    border: 1px solid #888;
+                }
+                margin-bottom: 10px;
+            }
+             .homework-list{
+                background: #fff;
+                padding: 10px;
+                margin-bottom: 10px;
+                > label{
+                    font-family: Roboto-Medium;
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 20px;
+                }
+                .user{
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 10px;
+                    .avatar{
+                        width: 35px;
+                        height: 35px;
+                        margin-right: 10px;
+                    }
+                    .info{
+                        .name{
+                            display: inline-block;
+                            width: 100%;
+                            font-family: Roboto-Medium;
+                            margin-bottom: 3px;
+                        }
+                        .date{
+                            display: flex;
+                            width: 100%;
+                            font-family:  Roboto-Regular;
+                            align-items: center;
+                            color: #777;
+                            svg{
+                                width: 7px;
+                                height: 7px;
+                                margin: 0px 5px
+                            }
+                        }
+                    }
+                }
+                .homework-name{
+                    margin-bottom: 10px;
+                    span{
+                        font-family:  Roboto-Regular;
+                    }
+                }
+                .video{
+                    border-radius: 10px;
+                    overflow: hidden;
+                }
+                .rating{
+                    >label{
+                        font-family: Roboto-Medium;
+                        display: inline-block;
+                        width: 100%;
+                        margin: 15px 0px;
+                    }
+                    .rating-list{
+                        display: grid;
+                        grid-template-columns: repeat(10,1fr);
+                        li{
+                            text-align: center;
+                            > span{
+                                font-family: Roboto-Medium;
+                            }
+                            > button{
+                                padding: 0px;
+                                width: 100%;
+                                svg{
+                                    width: 2.7rem;
+                                    height: 2.7rem;
+                                }
+                            }
+                        }
+                    }
+                }
+                .review-text{
+                    margin-top: 20px;
+                }
+                .submit{
+                    text-align: center;
+                    margin: 20px 0px 10px;
+                    .bt-submit{
+                        width: 50% !important;
+                    }
+                }
+            }
+        }
+    }
+   
+}
+#my-pdf{
+    width: 100% !important;
+    background: #ededed;
+    .react-pdf__Page{
+        width: 100% !important;
+        margin-bottom: 5px;
+        canvas{
+            width: 100% !important;
         }
     }
 }

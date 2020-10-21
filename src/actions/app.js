@@ -3,6 +3,8 @@ import {
     get
 } from '../api'
 
+
+export const SET_PROCCESS_DURATION = "app@SET_PROCCESS_DURATION"
 export const TOGGLE_HEADER = "app@TOGGLE_HEADER"
 export const ADD_HEADER_CONTENT = "app@ADD_HEADER_CONTENT"
 export const ADD_FOOTER_CONTENT = "app@ADD_FOOTER_CONTENT"
@@ -17,8 +19,9 @@ export const TOGGLE_FIND_FRIEND_DRAWER = "app@TOGGLE_FIND_FRIEND_DRAWER"
 export const TOGGLE_POST_DRAWER = "app@TOGGLE_POST_DRAWER"
 export const TOGGLE_MEDIA_VIEWER_DRAWER = "app@TOGGLE_MEDIA_VIEWER_DRAWER"
 export const SET_MEDIA_TO_VIEWER = 'app@SET_MEDIA_TO_VIEWER'
+export const UPDATE_MEDIA_TO_VIEWER = 'app@UPDATE_MEDIA_TO_VIEWER'
+export const REMOVE_MEDIA_FROM_VIEWER = 'app@REMOVE_MEDIA_FROM_VIEWER'
 export const TOGGLE_USER_PAGE = 'app@TOGGLE_USER_PAGE'
-export const TOGGLE_REPORT_DRAWER = "app@TOGGLE_REPORT_DRAWER"
 export const TOGGLE_GROUP_DRAWER = "app@TOGGLE_GROUP_DRAWER"
 export const TOGGLE_CREATE_GROUP_DRAWER = "app@TOGGLE_CREATE_GROUP_DRAWER"
 export const TOGGLE_GROUP_INVITE_DRAWER = "app@TOGGLE_GROUP_INVITE_DRAWER"
@@ -31,7 +34,18 @@ export const SET_CURRENT_FRIEND_ID = "app@SET_CURRENT_FRIEND_ID"
 export const TOGGLE_CREATE_ALBUM_DRAWER = "app@TOGGLE_CREATE_ALBUM_DRAWER"
 export const TOGGLE_ALBUM_DETAIL_DRAWER = "app@TOGGLE_ALBUM_DETAIL_DRAWER"
 export const SET_CURRENNT_ALBUM = "app@SET_CURRENNT_ALBUM"
+export const SELECT_ALBUM_TO_POST = "app@SELECT_ALBUM_TO_POST"
+export const TOGGLE_GROUP_DETAIL_DRAWER = "app@TOGGLE_GROUP_DETAIL_DRAWER"
 
+
+export const setProccessDuration = (percent) => {
+    return dispatch => {
+        dispatch({
+            type: SET_PROCCESS_DURATION,
+            payload: percent
+        })
+    }
+}
 
 export const toggleHeader = (isShow) => {
     return dispatch => {
@@ -55,7 +69,7 @@ export const addHeaderContent = (headerContent) => {
     return dispatch => {
         dispatch({
             type: ADD_HEADER_CONTENT,
-            payload: headerContent
+            payload: headerContent,
         })
     }
 }
@@ -145,6 +159,16 @@ export const togglePostDrawer = (isShow, isPostToGroup, successCallback) => {
         if (successCallback) successCallback()
     }
 }
+
+export const selectAlbumToPost = (album) => {
+    return dispatch => {
+        dispatch({
+            type: SELECT_ALBUM_TO_POST,
+            payload: album,
+        })
+    }
+}
+
 export const toggleMediaViewerDrawer = (isShow, feature) => {
     return dispatch => {
         dispatch({
@@ -164,11 +188,21 @@ export const setMediaToViewer = (media) => {
     }
 }
 
-export const toggleReportDrawer = (isShow) => {
+export const updateMediaViewed = (media) => {
     return dispatch => {
         dispatch({
-            type: TOGGLE_REPORT_DRAWER,
-            payload: isShow,
+            type: UPDATE_MEDIA_TO_VIEWER,
+            payload: media,
+        })
+    }
+}
+
+
+export const removeMediaViewed = (media) => {
+    return dispatch => {
+        dispatch({
+            type: REMOVE_MEDIA_FROM_VIEWER,
+            payload: media,
         })
     }
 }
@@ -280,6 +314,15 @@ export const setCurrentAlbum = (album) => {
         dispatch({
             type: SET_CURRENNT_ALBUM,
             payload: album,
+        })
+    }
+}
+
+export const toggleGroupDetailDrawer = (isShow) => {
+    return dispatch => {
+        dispatch({
+            type: TOGGLE_GROUP_DETAIL_DRAWER,
+            payload: isShow,
         })
     }
 }

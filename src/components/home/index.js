@@ -5,11 +5,15 @@ import {
   addFooterContent,
   toggleHeader,
   toggleFooter,
-  toggleUserPageDrawer
+  toggleUserPageDrawer,
+  toggleGroupDetailDrawer
 } from '../../actions/app'
 import {
   setCurrenUserDetail,
 } from '../../actions/user'
+import {
+  setCurrentGroup
+} from '../../actions/group'
 import {
   joinGroup,
   acceptGroup
@@ -42,6 +46,10 @@ import moment from 'moment'
 import { objToQuery } from "../../utils/common";
 import Loader from '../common/loader'
 import $ from 'jquery'
+import ClickTooltip from '../common/click-tooltip'
+import {
+  GroupPrivacies
+} from '../../constants/constants'
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/ProfileBW.png')
@@ -72,512 +80,13 @@ const settings = {
   autoplay: true,
 };
 
-const member = [
-  {
-    coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-    fullName: "Nguyễn Thị Vân Anh",
-    point: 20,
-    liked: 1231,
-    folow: 221,
-    posted: 2533,
-    birthday: new Date(),
-    gender: "Nam",
-    friends: [
-      {
-        coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-        avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-        fullName: "Nguyễn Thị Vân Anh 1",
-        point: 111,
-        liked: 111,
-        folow: 111,
-        posted: 111,
-        birthday: new Date(),
-        gender: "Nam",
-        friends: [
-          {
-            coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-            avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-            fullName: "Nguyễn Thị Vân Anh 11",
-            point: 111,
-            liked: 111,
-            folow: 111,
-            posted: 111,
-            birthday: new Date(),
-            gender: "Nam",
-            friends: [
-
-            ],
-            folowing: [
-              {
-                avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-                fullName: "Apple Ánh"
-              },
-              {
-                avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-                fullName: "Võ Gia Huy"
-              },
-              {
-                avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-                fullName: "Quynh"
-              }
-            ],
-            folowed: [
-              {
-                avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-                fullName: "Võ Gia Huy"
-              },
-              {
-                avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-                fullName: "Apple Ánh"
-              },
-              {
-                avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-                fullName: "Quynh"
-              }
-            ],
-            jobs: [
-              {
-                position: "Nhân viên Thiết kế",
-                company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-                description: "Không có mô tả",
-                start: "10/20/2019",
-                end: "10/20/2020"
-              }
-            ],
-            studies: [
-              {
-                majors: "Nhân viên Thiết kế",
-                school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-                className: "D15_MT3DH",
-                graduate: "Khá",
-                masv: "DH12283",
-                start: "1999",
-                end: "2004",
-                isFinish: true
-              }
-            ],
-            address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-            email: "btcvn07@gmail.com",
-            skills: ["Quản lý thời gian", "Lãnh đạo"],
-            hopies: "Ca hát, thể thao",
-            orderSkills: "Ca hát",
-            mutualFriendCount: 2
-
-          }
-
-        ],
-        folowing: [
-          {
-            avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-            fullName: "Apple Ánh"
-          },
-          {
-            avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-            fullName: "Võ Gia Huy"
-          },
-          {
-            avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-            fullName: "Quynh"
-          }
-        ],
-        folowed: [
-          {
-            avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-            fullName: "Võ Gia Huy"
-          },
-          {
-            avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-            fullName: "Apple Ánh"
-          },
-          {
-            avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-            fullName: "Quynh"
-          }
-        ],
-        jobs: [
-          {
-            position: "Nhân viên Thiết kế",
-            company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-            description: "Không có mô tả",
-            start: "10/20/2019",
-            end: "10/20/2020"
-          }
-        ],
-        studies: [
-          {
-            majors: "Nhân viên Thiết kế",
-            school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-            className: "D15_MT3DH",
-            graduate: "Khá",
-            masv: "DH12283",
-            start: "1999",
-            end: "2004",
-            isFinish: true
-          }
-        ],
-        address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-        email: "btcvn07@gmail.com",
-        skills: ["Quản lý thời gian", "Lãnh đạo"],
-        hopies: "Ca hát, thể thao",
-        orderSkills: "Ca hát",
-        mutualFriendCount: 2
-      },
-      {
-        coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-        avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-        fullName: "Nguyễn Thị Vân Anh 2",
-        point: 222,
-        liked: 222,
-        folow: 222,
-        posted: 222,
-        birthday: new Date(),
-        gender: "Nam",
-        friends: [
-
-        ],
-        folowing: [
-          {
-            avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-            fullName: "Apple Ánh"
-          },
-          {
-            avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-            fullName: "Võ Gia Huy"
-          },
-          {
-            avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-            fullName: "Quynh"
-          }
-        ],
-        folowed: [
-          {
-            avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-            fullName: "Võ Gia Huy"
-          },
-          {
-            avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-            fullName: "Apple Ánh"
-          },
-          {
-            avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-            fullName: "Quynh"
-          }
-        ],
-        jobs: [
-          {
-            position: "Nhân viên Thiết kế",
-            company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-            description: "Không có mô tả",
-            start: "10/20/2019",
-            end: "10/20/2020"
-          }
-        ],
-        studies: [
-          {
-            majors: "Nhân viên Thiết kế",
-            school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-            className: "D15_MT3DH",
-            graduate: "Khá",
-            masv: "DH12283",
-            start: "1999",
-            end: "2004",
-            isFinish: true
-          }
-        ],
-        address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-        email: "btcvn07@gmail.com",
-        skills: ["Quản lý thời gian", "Lãnh đạo"],
-        hopies: "Ca hát, thể thao",
-        orderSkills: "Ca hát",
-        mutualFriendCount: 20
-      },
-    ],
-    folowing: [
-      {
-        avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-        fullName: "Apple Ánh"
-      },
-      {
-        avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-        fullName: "Võ Gia Huy"
-      },
-      {
-        avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-        fullName: "Quynh"
-      }
-    ],
-    folowed: [
-      {
-        avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-        fullName: "Võ Gia Huy"
-      },
-      {
-        avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-        fullName: "Apple Ánh"
-      },
-      {
-        avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-        fullName: "Quynh"
-      }
-    ],
-    jobs: [
-      {
-        position: "Nhân viên Thiết kế",
-        company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-        description: "Không có mô tả",
-        start: "10/20/2019",
-        end: "10/20/2020"
-      }
-    ],
-    studies: [
-      {
-        majors: "Nhân viên Thiết kế",
-        school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-        className: "D15_MT3DH",
-        graduate: "Khá",
-        masv: "DH12283",
-        start: "1999",
-        end: "2004",
-        isFinish: true
-      }
-    ],
-    address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-    email: "btcvn07@gmail.com",
-    skills: ["Quản lý thời gian", "Lãnh đạo"],
-    hopies: "Ca hát, thể thao",
-    orderSkills: "Ca hát"
-  },
-  {
-    coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-    fullName: "Bảo Ngọc",
-    point: 20,
-    liked: 1231,
-    folow: 221,
-    posted: 2533,
-    birthday: new Date(),
-    gender: "Nam",
-    friends: [
-
-    ],
-    folowing: [
-      {
-        avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-        fullName: "Apple Ánh"
-      },
-      {
-        avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-        fullName: "Võ Gia Huy"
-      },
-      {
-        avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-        fullName: "Quynh"
-      }
-    ],
-    folowed: [
-      {
-        avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-        fullName: "Võ Gia Huy"
-      },
-      {
-        avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-        fullName: "Apple Ánh"
-      },
-      {
-        avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-        fullName: "Quynh"
-      }
-    ],
-    jobs: [
-      {
-        position: "Nhân viên Thiết kế",
-        company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-        description: "Không có mô tả",
-        start: "10/20/2019",
-        end: "10/20/2020"
-      }
-    ],
-    studies: [
-      {
-        majors: "Nhân viên Thiết kế",
-        school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-        className: "D15_MT3DH",
-        graduate: "Khá",
-        masv: "DH12283",
-        start: "1999",
-        end: "2004",
-        isFinish: true
-      }
-    ],
-    address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-    email: "btcvn07@gmail.com",
-    skills: ["Quản lý thời gian", "Lãnh đạo"],
-    hopies: "Ca hát, thể thao",
-    orderSkills: "Ca hát"
-  },
-]
-
-const groups = [
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://c.tadst.com/gfx/600x337/moon-photography-camera.jpg?1",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://media.macphun.com/img/uploads/customer/how-to/579/15349456005b7d69405aabf4.32904503.jpg?q=85&w=1340",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      },
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-    ]
-  },
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://c.tadst.com/gfx/600x337/moon-photography-camera.jpg?1",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ],
-    owner: true
-  },
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://media.macphun.com/img/uploads/customer/how-to/579/15349456005b7d69405aabf4.32904503.jpg?q=85&w=1340",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://c.tadst.com/gfx/600x337/moon-photography-camera.jpg?1",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://media.macphun.com/img/uploads/customer/how-to/579/15349456005b7d69405aabf4.32904503.jpg?q=85&w=1340",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://c.tadst.com/gfx/600x337/moon-photography-camera.jpg?1",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      },
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-    ],
-    owner: true
-  },
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://media.macphun.com/img/uploads/customer/how-to/579/15349456005b7d69405aabf4.32904503.jpg?q=85&w=1340",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://c.tadst.com/gfx/600x337/moon-photography-camera.jpg?1",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-  {
-    groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",
-    groupAvatar: "https://i.pinimg.com/originals/b8/61/3b/b8613b448bc615045a663186783aa85c.jpg",
-    coverImage: "https://media.macphun.com/img/uploads/customer/how-to/579/15349456005b7d69405aabf4.32904503.jpg?q=85&w=1340",
-    posted: 373,
-    members: [
-      {
-        avatar: "https://photographyandthemac.com/wp-content/uploads/2019/04/heron700px.jpg"
-      },
-      {
-        avatar: "https://bucket.nhanh.vn/store1/42431/ps/20200227/fujifilm_x_t4_mirrorless_digital_camera__body_only__silver_.jpg"
-      }
-    ]
-  },
-]
 
 class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       tabIndex: 0,
-      joinGroupProccessingId: 80,
+      joinGroupProccessingId: null,
       isRead: false,
       topGroups: [],
       topUsers: [],
@@ -818,8 +327,8 @@ class Index extends React.Component {
                 aria-label="full width tabs example"
                 className="tab-header"
               >
-                <Tab label="Thành viên tích cực" {...a11yProps(0)} className="tab-item" />
-                <Tab label="Nhóm chất lượng" {...a11yProps(1)} className="tab-item" />
+                <Tab label="Thành viên tích cực" {...a11yProps(0)} className="tab-item" onClick={() => tabIndex == 0 ? this.setState({ showRankDrawer: true, rankTabIndex: tabIndex }) : ""} />
+                <Tab label="Nhóm chất lượng" {...a11yProps(1)} className="tab-item" onClick={() => tabIndex == 1 ? this.setState({ showRankDrawer: true, rankTabIndex: tabIndex }) : ""} />
               </Tabs>
             </AppBar>
             <SwipeableViews
@@ -830,38 +339,44 @@ class Index extends React.Component {
               <TabPanel value={tabIndex} index={0} className="content-box">
                 <div className="top-members">
                   {
-                    topUsers ? topUsers.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} onClick={() => {
-                      this.props.setCurrenUserDetail(item)
-                      this.props.toggleUserPageDrawer(true)
-                    }}>
-                      <div className="member-avatar">
+                    topUsers ? topUsers.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} style={{ position: 'relative' }}>
+                      <div className="overlay" onClick={() => {
+                        this.props.setCurrenUserDetail(item)
+                        this.props.toggleUserPageDrawer(true)
+                      }}></div>
+                      <div className="member-avatar" >
                         <Avatar aria-label="recipe" className="avatar">
-                          <img src={item.avatar} style={{ width: "100%" }} />
+                          <div className="img" style={{ background: `url("${item.avatar}")` }} />
                         </Avatar>
                       </div>
                       <div className="user-info">
                         <span className="rank">#{key + 1}</span>
                         <span className="user-name">{item.fullname}</span>
                         <span className="point">
-                          <span>Điển YOOT: {item.point}</span>
-                          <img src={coin} />
+                          <span>Điểm YOOT: {item.point}</span>
                         </span>
-                        <div className="react-reward">
-                          <ul>
-                            <li>
+                      </div>
+                      <div className="react-reward">
+                        <ul>
+                          <li>
+                            <ClickTooltip className="item like-count" title="Số lượt thích" placement="top-start">
                               <span><img src={like}></img></span>
                               <span>{item.numlike}</span>
-                            </li>
-                            <li>
+                            </ClickTooltip>
+                          </li>
+                          <li>
+                            <ClickTooltip className="item follow-count" title="Số người theo dõi" placement="top">
                               <span><img src={follower}></img></span>
                               <span>{item.numfollow}</span>
-                            </li>
-                            <li>
+                            </ClickTooltip>
+                          </li>
+                          <li>
+                            <ClickTooltip className="item post-count" title="Số bài đăng" placement="top-end">
                               <span><img src={donePractice}></img></span>
                               <span>{item.numpost}</span>
-                            </li>
-                          </ul>
-                        </div>
+                            </ClickTooltip>
+                          </li>
+                        </ul>
                       </div>
                     </div>) : ""
                   }
@@ -871,32 +386,47 @@ class Index extends React.Component {
               <TabPanel value={tabIndex} index={1} >
                 <div className="top-groups">
                   {
-                    topGroups ? topGroups.map((item, key) => <div className="group-item" key={key} style={{ background: "url(" + item.backgroundimage + ")" }}>
-                      <div className="group-info">
-                        <Avatar aria-label="recipe" className="avatar">
-                          <img src={item.thumbnail} style={{ width: "100%" }} />
-                        </Avatar>
-                        <span className="group-name">{item.groupname}</span>
-                      </div>
-                      <span className="posted">{item.numpost} bài đăng</span>
-                      <div className="members-list">
-                        <span className="total">Thành viên: {item.nummember}</span>
-                        <div>
-                          {
-                            item.managers && item.managers.length > 0 ? <div className="member-avatar">
-                              {
-                                item.managers.map((manager, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
-                                  <img src={manager.avatar} style={{ width: "100%" }} />
-                                </Avatar>
-                                )
-                              }
-                              {
-                                item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
-                                  +{item.managers.length - 2}
-                                </Avatar> : ""
-                              }
-                            </div> : ""
-                          }
+                    topGroups ? topGroups.map((item, key) =>
+                      <div
+                        className="group-item"
+                        key={key}
+                        style={{ background: "url(" + item.backgroundimage + ")" }}
+
+                      >
+                        <div className="overlay" onClick={() => {
+                          this.props.toggleGroupDetailDrawer(true)
+                          this.props.setCurrentGroup(item)
+                        }} />
+                        <div className="group-info">
+                          <Avatar aria-label="recipe" className="avatar">
+                            <div className="img" style={{ background: `url("${item.thumbnail}")` }} />
+                          </Avatar>
+                          <span className="group-name ellipsit">{item.groupname}</span>
+                        </div>
+                        <span className="posted">{item.numpost} bài đăng  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{GroupPrivacies[item.typegroupname].label}</span>
+                        <div className="members-list" style={{ position: "relative" }}>
+
+                          <span className="total">Thành viên: {item.nummember}</span>
+                          <div className="members-list">
+                            {
+                              item.managers && item.managers.length > 0 ? <div className="member-avatar">
+                                {
+                                  item.managers.map((manager, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
+                                    <div className="img" style={{ background: `url("${manager.avatar}")` }} />
+                                  </Avatar>
+                                  )
+                                }
+                                {
+                                  item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
+                                    +{item.managers.length - 2}
+                                  </Avatar> : ""
+                                }
+                              </div> : ""
+                            }
+
+                          </div>
+                        </div>
+                        <div className="actions">
                           {
                             item.status == 0 ? <span className="action-bt sumit" onClick={() => this.setState({ currentGroupId: item.groupid, showJoinGroupConfirm: true, isJoiningGroup: true })}>
                               Tham gia
@@ -914,9 +444,7 @@ class Index extends React.Component {
                             </span> : ""
                           }
                         </div>
-                      </div>
-
-                    </div>) : ""
+                      </div>) : ""
                   }
                   <span className="link-to-standing" onClick={() => this.setState({ showRankDrawer: true, rankTabIndex: tabIndex })}>Đến bảng xếp hạng</span>
                 </div>
@@ -951,7 +479,9 @@ const mapDispatchToProps = dispatch => ({
   toggleUserPageDrawer: (isShow) => dispatch(toggleUserPageDrawer(isShow)),
   setCurrenUserDetail: (user) => dispatch(setCurrenUserDetail(user)),
   joinGroup: (groupId, successCallback, errorCallback) => dispatch(joinGroup(groupId, successCallback, errorCallback)),
-  acceptGroup: (groupId, successCallback, errorCallback) => dispatch(acceptGroup(groupId, successCallback, errorCallback))
+  acceptGroup: (groupId, successCallback, errorCallback) => dispatch(acceptGroup(groupId, successCallback, errorCallback)),
+  setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
+  toggleGroupDetailDrawer: (isShow) => dispatch(toggleGroupDetailDrawer(isShow))
 });
 
 
@@ -1022,21 +552,37 @@ const renderJoinGroupConfirm = (component) => {
     showJoinGroupConfirm,
     isRead,
     currentGroupId,
-    isJoiningGroup
+    isJoiningGroup,
+    topGroups
   } = component.state
+  let currnetGroup = topGroups.find(item => item.groupid == currentGroupId)
   return (
     <Drawer anchor="bottom" className="confirm-drawer" open={showJoinGroupConfirm} onClose={() => component.setState({ showJoinGroupConfirm: false, currentGroupId: null })}>
       <div className='jon-group-confirm'>
-        <label>Nội quy nhóm</label>
-        <p>Vui lòng đọc kỹ và xác nhận nội quy nhóm trước khi tham gia nhóm.</p>
+        <label style={{ textAlign: "left", fontSize: "1.2rem", fontWeight: 'bold' }}>Nội quy nhóm</label>
+        <p style={{ textAlign: "left" }}>Vui lòng đọc kỹ và xác nhận nội quy nhóm trước khi tham gia nhóm.</p>
         <div className="accept-role">
+          <div className="groupUser-policies">
+            {
+              currnetGroup && currnetGroup.groupUserPolicies && currnetGroup.groupUserPolicies.length > 0 ? <ul>
+                {
+                  currnetGroup.groupUserPolicies.map((policy, index) => <li key={index}>
+                    <pre>
+                      {
+                        policy.description
+                      }
+                    </pre>
+                  </li>)
+                }
+              </ul> : ""
+            }
+          </div>
           <FormControlLabel
             control={<Checkbox checked={isRead} onChange={() => component.setState({ isRead: !isRead })} icon={<img src={checkIcon} style={{ width: 20, height: 20 }} />} checkedIcon={<img src={checkedIcon} style={{ width: 20, height: 20 }} />} name="checkedH" />}
-            label={<span>Xác nhận đã đọc nội quy</span>}
             labelPlacement="start"
           />
         </div>
-        <div>
+        <div style={{ justifyContent: "flex-end" }}>
           <Button className="bt-cancel" onClick={() => component.setState({ showJoinGroupConfirm: false, currentGroupId: null })}>Đóng</Button>
           {
             isRead ? <Button className="bt-submit" onClick={() => isJoiningGroup == true ? component.joinGroup(currentGroupId) : component.acceptGroup(currentGroupId)}>Tham gia nhóm</Button> : <Button className="bt-submit" style={{ opacity: 0.5 }} disabled>Tham gia nhóm</Button>
@@ -1058,6 +604,8 @@ const renderTopRankDrawer = (component) => {
     showRankDrawer,
     isLoadMoreGroup
   } = component.state
+
+  console.log("topGroups", topGroups)
 
 
   return (
@@ -1102,38 +650,44 @@ const renderTopRankDrawer = (component) => {
               <TabPanel value={rankTabIndex} index={0} className="content-box">
                 <div className="top-members">
                   {
-                    topUsers ? topUsers.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} onClick={() => {
-                      component.props.setCurrenUserDetail(item)
-                      component.props.toggleUserPageDrawer(true)
-                    }}>
-                      <div className="member-avatar">
+                    topUsers ? topUsers.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} style={{ position: 'relative' }}>
+                      <div className="overlay" onClick={() => {
+                        this.props.setCurrenUserDetail(item)
+                        this.props.toggleUserPageDrawer(true)
+                      }}></div>
+                      <div className="member-avatar" >
                         <Avatar aria-label="recipe" className="avatar">
-                          <img src={item.avatar} style={{ width: "100%" }} />
+                          <div className="img" style={{ background: `url("${item.avatar}")` }} />
                         </Avatar>
                       </div>
                       <div className="user-info">
                         <span className="rank">#{key + 1}</span>
                         <span className="user-name">{item.fullname}</span>
                         <span className="point">
-                          <span>Điển YOOT: {item.point}</span>
-                          <img src={coin} />
+                          <span>Điểm YOOT: {item.point}</span>
                         </span>
-                        <div className="react-reward">
-                          <ul>
-                            <li>
+                      </div>
+                      <div className="react-reward">
+                        <ul>
+                          <li>
+                            <ClickTooltip className="item like-count" title="Số lượt thích" placement="top-start">
                               <span><img src={like}></img></span>
                               <span>{item.numlike}</span>
-                            </li>
-                            <li>
+                            </ClickTooltip>
+                          </li>
+                          <li>
+                            <ClickTooltip className="item follow-count" title="Số người theo dõi" placement="top">
                               <span><img src={follower}></img></span>
                               <span>{item.numfollow}</span>
-                            </li>
-                            <li>
+                            </ClickTooltip>
+                          </li>
+                          <li>
+                            <ClickTooltip className="item post-count" title="Số bài đăng" placement="top-end">
                               <span><img src={donePractice}></img></span>
                               <span>{item.numpost}</span>
-                            </li>
-                          </ul>
-                        </div>
+                            </ClickTooltip>
+                          </li>
+                        </ul>
                       </div>
                     </div>) : ""
                   }
@@ -1148,11 +702,11 @@ const renderTopRankDrawer = (component) => {
                     topGroups ? topGroups.map((item, key) => <div className="group-item" key={key} style={{ background: "url(" + item.backgroundimage + ")" }}>
                       <div className="group-info">
                         <Avatar aria-label="recipe" className="avatar">
-                          <img src={item.thumbnail} style={{ width: "100%" }} />
+                          <div className="img" style={{ background: `url("${item.thumbnail}")` }} />
                         </Avatar>
-                        <span className="group-name">{item.groupname}</span>
+                        <span className="group-name ellipsit">{item.groupname}</span>
                       </div>
-                      <span className="posted">{item.numpost} bài đăng</span>
+                      <span className="posted">{item.numpost} bài đăng  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{GroupPrivacies[item.typegroupname].label}</span>
                       <div className="members-list">
                         <span className="total">Thành viên: {item.nummember}</span>
                         <div>
@@ -1160,7 +714,7 @@ const renderTopRankDrawer = (component) => {
                             item.managers && item.managers.length > 0 ? <div className="member-avatar">
                               {
                                 item.managers.map((manager, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
-                                  <img src={manager.avatar} style={{ width: "100%" }} />
+                                  <div className="img" style={{ background: `url("${manager.avatar}")` }} />
                                 </Avatar>
                                 )
                               }

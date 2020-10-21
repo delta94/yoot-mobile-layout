@@ -6,6 +6,11 @@ import {
   toggleHeader,
   toggleFooter,
 } from '../../actions/app'
+import {
+  setSkillNoti,
+  readNoti,
+  getSkillNoti
+} from '../../actions/noti'
 import { connect } from 'react-redux'
 import {
   IconButton,
@@ -15,7 +20,14 @@ import {
 import {
   ChevronLeft as ChevronLeftIcon
 } from '@material-ui/icons'
+import { CurrentDate, SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import { objToQuery, showNotification } from "../../utils/common";
 import moment from 'moment'
+import { get } from "../../api";
+import $ from 'jquery'
+import Noti from './noti'
+
+let currentdate = moment(new Date).format(CurrentDate)
 
 const noti = require('../../assets/icon/NotiBw1.png')
 const Newfeed = require('../../assets/icon/Lesson.png')
@@ -26,30 +38,128 @@ class Index extends React.Component {
     this.state = {
     };
   }
-  componentWillMount() {
+  hanldeGetSkillNoti(currentpage) {
+    let param = {
+      currentpage: currentpage,
+      currentdate: currentdate,
+      limit: 30,
+      typeproject: 2
+    }
+    this.setState({
+      isLoadMore: true,
+    })
+    get(SOCIAL_NET_WORK_API, "Notification/GetListNotification" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          isLoadMore: false
+        })
+
+        this.props.setSkillNoti(result.content.notifications)
+
+        if (result.content.notifications.length == 0) {
+          this.setState({
+            isEndOfNoti: true,
+            isLoadMore: false
+          })
+        }
+      }
+    })
+  }
+
+  onNotiClick(noti) {
+    switch (noti.type) {
+      case 5: {
+        get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetOneNewsFeed?newsfeedid=" + noti.postid, result => {
+          if (result && result.result == 1) {
+            this.setState({
+              currentPost: result.content.newsFeed
+            })
+            this.setState({
+              showCommentDrawer: true
+            })
+          }
+          else {
+            this.setState({
+              okCallback: () => this.setState({ showConfim: false }),
+              confirmTitle: "",
+              confirmMessage: result.content.message,
+              showConfim: true
+            })
+          }
+        })
+        this.setState({
+          showCommentDrawer: true
+        })
+      }
+      case 35: {
+        get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetOneNewsFeed?newsfeedid=" + noti.postid, result => {
+          if (result && result.result == 1) {
+            this.setState({
+              currentPost: result.content.newsFeed
+            })
+            this.setState({
+              showCommentDrawer: true
+            })
+          } else {
+            this.setState({
+              okCallback: () => this.setState({ showConfim: false }),
+              confirmTitle: "",
+              confirmMessage: result.message,
+              showConfim: true
+            })
+          }
+        })
+
+      }
+    }
+    get(SOCIAL_NET_WORK_API, "Notification/UpdateViewNotification?notificationid=" + noti.notificationid, result => {
+      if (result && result.result == 1) {
+        this.props.readNoti(noti.notificationid)
+      }
+    })
+  }
+
+  componentDidMount() {
     this.props.addHeaderContent(renderHeader(this))
     this.props.addFooterContent(renderFooter(this.props.history))
     this.props.toggleHeader(true)
     this.props.toggleFooter(true)
+    this.props.getSkillNoti()
+    document.addEventListener("scroll", () => {
+      let element = $("html")
+      let {
+        notiCurrentPage,
+        isEndOfNoti,
+        isLoadMore
+      } = this.state
+
+      if (element.scrollTop() + window.innerHeight >= element[0].scrollHeight) {
+        if (isLoadMore == false && isEndOfNoti == false) {
+          this.setState({
+            notiCurrentPage: notiCurrentPage + 1,
+            isLoadMore: true
+          }, () => {
+            this.hanldeGetSkillNoti(notiCurrentPage + 1)
+          })
+        }
+      }
+    })
   }
   render() {
+    let {
+      skillNoties
+    } = this.props
+    console.log("worldNoties", skillNoties)
     return (
-      <div className="skills-noti" >
+      <div className="skills-noti community-page groups-page" >
         <ul>
           {
-            noties.map((noti, index) => <li className={"noti-item" + (noti.type == "canAction" ? " action" : "")} key={index}>
-              <Avatar className="avatar"><img src={noti.avatar} /></Avatar>
-              <div className="noti-info">
-                <span className="message">{noti.message}</span>
-                {
-                  noti.type == "canAction" ? <div className="actions">
-                    <Button className="bt-submit">Chấp nhận</Button>
-                    <Button className="bt-cancel">Từ chối</Button>
-                  </div> : ""
-                }
-                <span className="time">{moment(noti.time).format("DD/MM/YYYY hh:mm")}</span>
-              </div>
-            </li>)
+            skillNoties.map((noti, index) => <Noti
+              key={index}
+              data={noti}
+              onNotiClick={noti => this.onNotiClick(noti)}
+              history={this.props.history}
+            />)
           }
         </ul>
       </div>
@@ -60,6 +170,8 @@ class Index extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.app,
+    ...state.user,
+    ...state.noti
   }
 };
 
@@ -68,6 +180,9 @@ const mapDispatchToProps = dispatch => ({
   addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
   toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
+  setSkillNoti: (noties) => dispatch(setSkillNoti(noties)),
+  readNoti: (notiId) => dispatch(readNoti(notiId)),
+  getSkillNoti: () => dispatch(getSkillNoti())
 });
 
 export default connect(
@@ -102,26 +217,3 @@ const renderFooter = (history) => {
   )
 }
 
-const noties = [
-  {
-    avatar: "https://us.123rf.com/450wm/anekoho/anekoho1803/anekoho180300019/103156248-wooded-bridge-to-pavilion-at-koh-kood-island-with-white-sand-beauty-beach-and-kayak-boat-this-immage.jpg?ver=6",
-    message: "Bạn và Hậu đã trở thành bạn bè của nhau.",
-    time: new Date()
-  },
-  {
-    avatar: "https://us.123rf.com/450wm/anekoho/anekoho1803/anekoho180300019/103156248-wooded-bridge-to-pavilion-at-koh-kood-island-with-white-sand-beauty-beach-and-kayak-boat-this-immage.jpg?ver=6",
-    message: "Bạn và Hậu đã trở thành bạn bè của nhau.",
-    time: new Date()
-  },
-  {
-    avatar: "https://us.123rf.com/450wm/anekoho/anekoho1803/anekoho180300019/103156248-wooded-bridge-to-pavilion-at-koh-kood-island-with-white-sand-beauty-beach-and-kayak-boat-this-immage.jpg?ver=6",
-    message: "YOOT đã gửi cho bạn lời mời tham gia nhóm ABC.",
-    time: new Date(),
-    type: "canAction"
-  },
-  {
-    avatar: "https://us.123rf.com/450wm/anekoho/anekoho1803/anekoho180300019/103156248-wooded-bridge-to-pavilion-at-koh-kood-island-with-white-sand-beauty-beach-and-kayak-boat-this-immage.jpg?ver=6",
-    message: "Bạn và Hậu đã trở thành bạn bè của nhau.",
-    time: new Date()
-  }
-]

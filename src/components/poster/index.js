@@ -4,7 +4,19 @@ import {
     togglePostDrawer,
     toggleMediaViewerDrawer,
     setMediaToViewer,
+    toggleCreateAlbumDrawer,
+    selectAlbumToPost,
+    setProccessDuration
 } from '../../actions/app'
+import {
+    setCurrentPosted,
+    createPostSuccess,
+    updatePosted
+} from '../../actions/posted'
+import {
+    setJoinedGroup,
+    setCurrentGroup
+} from '../../actions/group'
 import { connect } from 'react-redux'
 import {
     Drawer,
@@ -22,10 +34,17 @@ import {
     Done as DoneIcon,
     ExpandMore as ExpandMoreIcon
 } from '@material-ui/icons'
-import { Privacies, GroupPrivacies } from '../../constants/constants';
-import { objToArray } from '../../utils/common';
+import { Privacies, GroupPrivacies, backgroundList } from '../../constants/constants';
+import { objToArray, objToQuery, srcToFile } from '../../utils/common';
 import Dropzone from 'react-dropzone'
+import MultiInput from '../common/multi-input'
+import { MentionsInput, Mention } from 'react-mentions'
 import $ from 'jquery'
+import { postFormData, get } from '../../api';
+import { SOCIAL_NET_WORK_API, CurrentDate } from '../../constants/appSettings';
+import { showInfo } from '../../utils/app';
+import Loader from '../common/loader'
+import moment from 'moment'
 
 const uploadImage = require('../../assets/icon/upload_image.png')
 const uploadVideo = require('../../assets/icon/upload_video.png')
@@ -35,68 +54,7 @@ const color = require('../../assets/icon/color@1x.png')
 const defaultImage = "https://dapp.dblog.org/img/default.jpg"
 const search = require('../../assets/icon/Find@1x.png')
 
-const bg01 = require('../../assets/background/bg01.png')
-const bg02 = require('../../assets/background/bg02.png')
-const bg03 = require('../../assets/background/bg03.png')
-const bg04 = require('../../assets/background/bg04.png')
-const bg05 = require('../../assets/background/bg05.png')
-const bg06 = require('../../assets/background/bg06.png')
-const bg07 = require('../../assets/background/bg07.png')
-const bg08 = require('../../assets/background/bg08.png')
-const bg09 = require('../../assets/background/bg09.png')
-const bg10 = require('../../assets/background/bg10.png')
-const bg11 = require('../../assets/background/bg11.png')
 
-const backgroundList = [
-    {
-        id: 0,
-        background: null
-    },
-    {
-        id: 1,
-        background: bg01
-    },
-    {
-        id: 2,
-        background: bg02
-    },
-    {
-        id: 3,
-        background: bg03
-    },
-    {
-        id: 4,
-        background: bg04
-    },
-    {
-        id: 5,
-        background: bg05
-    },
-    {
-        id: 6,
-        background: bg06
-    },
-    {
-        id: 7,
-        background: bg07
-    },
-    {
-        id: 8,
-        background: bg08
-    },
-    {
-        id: 9,
-        background: bg09
-    },
-    {
-        id: 10,
-        background: bg10
-    },
-    {
-        id: 11,
-        background: bg11
-    }
-]
 
 
 export class Index extends React.Component {
@@ -104,103 +62,508 @@ export class Index extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            privacy: Privacies.Public,
-            postPrivacy: Privacies.Friend,
+            privacySelected: Privacies.Public,
+            postPrivacy: Privacies.Public,
             showPostPrivacySelectOption: false,
             imageSelected: [],
+            postedImage: [],
             videoSelected: [],
+            postedVideo: [],
             showAlbumSelectDrawer: false,
             albumSelected: null,
             tagedFrieds: [],
-            showGroupForPostDrawer: false
+            showGroupForPostDrawer: false,
+            postContent: "",
+            mentionSelected: [],
+            hashtagSelected: [],
+            searchKey: "",
+            friends: [],
+            isChange: false,
+            albums: []
         };
         this.imageDrop = React.createRef()
     }
 
     handleReset() {
         this.setState({
-            privacy: Privacies.Public
+            privacySelected: Privacies.Public,
+            postPrivacy: Privacies.Public,
+            showPostPrivacySelectOption: false,
+            imageSelected: [],
+            videoSelected: [],
+            showAlbumSelectDrawer: false,
+            tagedFrieds: [],
+            showGroupForPostDrawer: false,
+            postContent: "",
+            mentionSelected: [],
+            hashtagSelected: [],
+            searchKey: "",
+            isChange: false,
+            nfid: null,
+            postedVideo: [],
+            postedImage: [],
         })
     }
 
-    handleCloseDrawer() {
-        this.props.togglePostDrawer(false)
-        this.handleReset()
+    handleCloseDrawer(isForce) {
+        if (isForce == true) {
+            this.handleReset()
+            this.props.togglePostDrawer(false)
+        } else {
+            if (this.state.isChange == true) {
+                this.setState({
+                    showConfim: true,
+                    okCallback: () => {
+                        this.props.togglePostDrawer(false)
+                        this.handleReset()
+                        this.props.setCurrentPosted(null)
+                    },
+                    confirmTitle: "Huỷ chỉnh sửa bài đăng?",
+                    confirmMessage: "Nếu bạn huỷ bây giờ, bài chỉnh sửa của bạn sẽ bị bỏ đi."
+                })
+            } else {
+                this.handleReset()
+                this.props.setCurrentPosted(null)
+                this.props.togglePostDrawer(false)
+            }
+        }
     }
-    handleTakePhotoAnimationDone(dataUri) {
-        this.setState({
-            dataUri: dataUri
-        })
+
+    selectImage(acceptedFiles) {
+        let {
+            imageSelected
+        } = this.state
+        let that = this
+
+        if (acceptedFiles && acceptedFiles.length > 0) {
+            this.setState({
+                videoSelected: [],
+                postedVideo: []
+            })
+            acceptedFiles.map(image => {
+                var fr = new FileReader;
+                fr.onload = function () {
+                    var img = new Image;
+                    img.onload = function () {
+                        imageSelected = imageSelected.concat({ file: image, width: img.width, height: img.height })
+                        that.setState({ imageSelected: imageSelected, isBackgroundSelect: false, isChange: true, backgroundSelected: null })
+                    };
+                    img.src = fr.result;
+                };
+                fr.readAsDataURL(image);
+            })
+        }
     }
+
+    selectVideo(acceptedFiles) {
+        let {
+            videoSelected
+        } = this.state
+        let that = this
+
+        if (acceptedFiles && acceptedFiles.length > 0) {
+            this.setState({
+                imageSelected: [],
+                postedImage: []
+            })
+            acceptedFiles.map((video, index) => {
+                var fr = new FileReader;
+                fr.onload = function () {
+
+                    var dataUrl = fr.result;
+                    var videoId = "videoMain-" + index;
+                    var $videoEl = $('<video id="' + videoId + '"></video>');
+                    $("body").append($videoEl);
+                    $videoEl.attr('src', dataUrl);
+
+                    var videoTagRef = $videoEl[0];
+                    videoTagRef.addEventListener('loadedmetadata', function (e) {
+                        videoSelected = videoSelected.concat({ file: video, width: videoTagRef.videoWidth, height: videoTagRef.videoHeight, backgroundSelected: null })
+                        that.setState({ videoSelected: videoSelected, isBackgroundSelect: false, isChange: true })
+                    });
+                };
+                fr.readAsDataURL(video);
+            })
+        }
+    }
+
     handleDeleteImage(image) {
         let {
             imageSelected
         } = this.state
-        imageSelected = imageSelected.filter(item => item != image)
+        imageSelected = imageSelected.filter(item => item.file != image.file)
         this.setState({
-            imageSelected
+            imageSelected: imageSelected,
+            isChange: true
         })
     }
+
+    handleDeletePostedImage(image) {
+        let {
+            postedImage,
+
+        } = this.state
+        postedImage = postedImage.filter(e => e.detailimageid != image.detailimageid)
+        this.setState({
+            postedImage: postedImage
+        })
+    }
+
+    handleDeletePostedVideo(video) {
+        let {
+            postedVideo
+        } = this.state
+        postedVideo = postedVideo.filter(e => e.detailimageid != video.detailimageid)
+        this.setState({
+            postedVideo: postedVideo
+        })
+    }
+
     handleDeleteVideo(video) {
         let {
             videoSelected
         } = this.state
         videoSelected = videoSelected.filter(item => item != video)
         this.setState({
-            videoSelected
+            videoSelected: videoSelected,
+            isChange: true
         })
     }
+
     handleTagFriend(friend) {
         let {
             tagedFrieds
         } = this.state
-        let existFriend = tagedFrieds.find(item => item.id == friend.id)
+        let existFriend = tagedFrieds.find(item => item.friendid == friend.friendid)
         if (existFriend) {
-            tagedFrieds = tagedFrieds.filter(item => item.id != friend.id)
+            tagedFrieds = tagedFrieds.filter(item => item.friendid != friend.friendid)
         } else {
             tagedFrieds.push(friend)
         }
         this.setState({
-            tagedFrieds
+            tagedFrieds: tagedFrieds,
+            isChange: true
         })
     }
+
     handleSelectBackground(background) {
         this.setState({
             backgroundSelected: background,
-
+            isChange: true
         })
     }
-    handleInputChange(value) {
 
-        let inputValue = value.target.value
-
-        inputValue.replace("@", <span style={{ color: "red" }}>@</span>)
-
+    getFriends(currentpage) {
+        let {
+            friends,
+            searchKey
+        } = this.state
+        let param = {
+            currentpage: currentpage,
+            currentdate: moment(new Date).format(CurrentDate),
+            limit: 20,
+            status: "Friends",
+            forFriendId: 0,
+            groupid: 0,
+            findstring: searchKey
+        }
         this.setState({
-            postContent: inputValue
+            isLoadMore: true
         })
-
-        if (inputValue) {
-            if (inputValue.match(/\n/g)) {
-                if (inputValue.match(/\n/g).length > 4) {
+        get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
+            if (result && result.result == 1) {
+                this.setState({
+                    friends: friends.concat(result.content.userInvites),
+                    isLoadMore: false
+                })
+                if (result.content.userInvites.length == 0) {
                     this.setState({
-                        backgroundSelected: backgroundList[0]
+                        isEndOfFriends: true
                     })
                 }
             }
-            if (inputValue.length > 150) {
+        })
+    }
+
+    getAlbum(currentpage, userId) {
+        let param = {
+            currentpage: currentpage,
+            currentdate: moment(new Date).format(CurrentDate),
+            limit: 20,
+            userid: userId
+        }
+        let {
+            albums
+        } = this.state
+        this.setState({
+            isLoading: true
+        })
+        get(SOCIAL_NET_WORK_API, "Media/GetListAlbum" + objToQuery(param), result => {
+
+            if (result && result.result == 1) {
                 this.setState({
-                    backgroundSelected: backgroundList[0]
+                    albums: albums.concat(result.content.albums),
+                    isLoading: false
+                })
+                if (result.content.medias.length == 0) {
+                    this.setState({
+                        isEndOfAlbums: true
+                    })
+                }
+            }
+        })
+    }
+
+    getJoinedGroup(currentpage) {
+
+        let param = {
+            currentpage: currentpage,
+            currentdate: moment(new Date).format(CurrentDate),
+            limit: 30,
+            skin: "Join",
+        }
+        this.setState({
+            isLoadMoreGroup: true
+        })
+        get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + objToQuery(param), result => {
+            if (result && result.result == 1) {
+                this.props.setJoinedGroup(result.content.groupUsers)
+                this.setState({
+                    isLoadMoreGroup: false
+                })
+                if (result.content.groupUsers.length == 0) {
+                    this.setState({ isEndOfJoinedGroup: true, isLoadMoreGroup: false })
+                }
+            }
+        })
+    }
+
+    handlePost() {
+        let {
+            postContent,
+            mentionSelected,
+            hashtagSelected,
+            privacySelected,
+            isPosting,
+            backgroundSelected,
+            tagedFrieds,
+            imageSelected,
+            videoSelected,
+            nfid,
+            postedImage,
+            postedVideo
+        } = this.state
+        let {
+            albumSelected,
+            profile
+        } = this.props
+        if (isPosting == true) return
+        this.setState({
+            isPosting: true
+        })
+
+        let data = new FormData
+
+        data.append("content", postContent)
+        data.append("postfor", privacySelected.code.toString())
+        data.append("postshareid", '0')
+        if (/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?./gm.test(postContent)) {
+            data.append("isvideo", '1')
+        }
+        else {
+            data.append("isvideo", '0')
+        }
+        let currentIndex = 0
+        if (nfid > 0) {
+            data.append("id", nfid.toString())
+            let nameMediaPlays = []
+            // debugger
+
+            postedVideo.map(video => nameMediaPlays.push(video.name.split('/').slice(-1).pop()))
+            postedImage.map(image => nameMediaPlays.push(image.name.split('/').slice(-1).pop()))
+
+            data.append("nameMediaPlays", JSON.stringify(nameMediaPlays))
+            currentIndex = nameMediaPlays.length
+        } else {
+            data.append("nameimage", '')
+        }
+        if (mentionSelected.length > 0) {
+            let ids = []
+            mentionSelected.map(item => ids.push(item.id))
+            data.append("labeltags", JSON.stringify(ids))
+        }
+
+        if (tagedFrieds.length > 0) {
+            let ids = []
+            tagedFrieds.map(item => ids.push(item.friendid))
+            data.append("tags", JSON.stringify(ids))
+        }
+
+        if (hashtagSelected.length > 0)
+            data.append("hashtags", JSON.stringify(hashtagSelected))
+
+        if (backgroundSelected && backgroundSelected.id != 0) {
+            data.append("background", backgroundSelected.id.toString())
+            data.set("nameMediaPlays", JSON.stringify([]))
+        } else {
+            data.append("background", '0')
+        }
+
+        if (imageSelected.length > 0) {
+            imageSelected.map((image, index) => {
+                data.append("image_" + (index + currentIndex) + "_" + image.width + "_" + image.height, image.file)
+            })
+        }
+
+        data.append("numimage", (imageSelected.length + postedImage.length).toString())
+
+        if (videoSelected.length > 0) {
+            videoSelected.map((video, index) => {
+                data.append("video_" + (index + currentIndex) + "_" + video.width + "_" + video.height, video.file)
+            })
+        }
+
+        data.append("numvideo", (videoSelected.length + postedVideo.length).toString())
+
+        if (albumSelected != null || albumSelected != undefined) {
+            data.append("albumid", albumSelected.albumid.toString())
+        }
+        this.setState({
+            isPosting: false
+        })
+        this.handleCloseDrawer(true)
+        this.props.setProccessDuration(80)
+        let endPoint = "PostNewsFeed/CreateNewsFeed"
+        if (nfid) {
+            endPoint = "PostNewsFeed/EditNewsFeed"
+        }
+        postFormData(SOCIAL_NET_WORK_API, endPoint, data, result => {
+            if (result.result == 1) {
+                if (nfid > 0) {
+                    this.props.updatePosted({ ...result.content.newsFeeds, isPendding: true }, profile.id)
+                } else {
+                    this.props.createPostSuccess({ ...result.content.newsFeeds, isPendding: true }, profile.id)
+                }
+                this.props.setProccessDuration(20)
+            }
+        })
+    }
+
+    setImageUrlToFile(value) {
+        let that = this
+        srcToFile(
+            value.name,
+            value.nameimage,
+            'image/' + value.nameimage.split(".")[1]
+        ).then(function (file) {
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+                let { imageSelected } = that.state
+                imageSelected.push({
+                    file: file,
+                    width: value.width,
+                    height: value.height
+                })
+                that.setState({
+                    imageSelected: imageSelected,
                 })
             }
+
+            );
+            reader.readAsDataURL(file);
+
+        })
+
+    }
+    setVideoUrlToFile(value) {
+        let that = this
+        srcToFile(
+            value.name,
+            value.nameimage,
+            'image/' + value.nameimage.split(".")[1]
+        ).then(function (file) {
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+                let { videoSelected } = that.state
+                videoSelected.push({
+                    file: file,
+                    width: value.width,
+                    height: value.height
+                })
+                that.setState({
+                    videoSelected: videoSelected,
+                })
+            }
+
+            );
+            reader.readAsDataURL(file);
+
+        })
+
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.showPostDrawer == true && nextProps.showPostDrawer != this.props.showPostDrawer) {
+            let currentPost = nextProps.currentPost
+            if (!currentPost) return
+            let {
+                albums,
+                tagedFrieds,
+                postedImage,
+                postedVideo
+            } = this.state
+            let privacyOptions = objToArray(Privacies)
+            let privacySelected = privacyOptions.find(privacy => privacy.code == currentPost.postforid)
+            let albumSelected = albums.find(album => album.albumid == currentPost.albumid)
+
+            if (currentPost.mediaPlays.length > 0) {
+                currentPost.mediaPlays.map(media => {
+                    if (media.typeobject == 1) {
+                        postedImage.push(media)
+                    } else {
+                        postedVideo.push(media)
+                    }
+                })
+            }
+
+            this.props.selectAlbumToPost(albumSelected)
+
+            if (currentPost.usersTag && currentPost.usersTag.length > 0) {
+                currentPost.usersTag.map(item => {
+                    let friend = {
+                        friendname: item.fullname,
+                        friendid: item.id
+                    }
+                    tagedFrieds.push(friend)
+                })
+            }
+
+            this.setState({
+                nfid: currentPost.nfid,
+                postContent: currentPost.nfcontent,
+                backgroundSelected: currentPost.backgroundid > 0 ? backgroundList[currentPost.backgroundid] : null,
+                isBackgroundSelect: currentPost.backgroundid > 0 ? true : false,
+                privacySelected: privacySelected ? privacySelected : Privacies.Public,
+                tagedFrieds: tagedFrieds,
+
+            })
+            setTimeout(() => {
+                this.setState({
+                    mentionSelected: currentPost.usersLabelTag
+                })
+            }, 1000);
         }
     }
 
+    componentDidMount() {
+        this.getFriends(0)
+        this.getAlbum(0, 0)
+        this.getJoinedGroup(0)
+    }
 
     render() {
         return (
             <div className="poster-content">
-
                 {
                     renderPostDrawer(this)
                 }
@@ -217,6 +580,9 @@ export class Index extends React.Component {
                 {
                     renderGroupForPostDrawer(this)
                 }
+                {
+                    renderConfirmDrawer(this)
+                }
             </div >
         )
     }
@@ -224,7 +590,9 @@ export class Index extends React.Component {
 const mapStateToProps = state => {
     return {
         ...state.app,
-        ...state.user
+        ...state.user,
+        ...state.posted,
+        ...state.group
     }
 };
 
@@ -232,6 +600,14 @@ const mapDispatchToProps = dispatch => ({
     togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
     toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
     setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
+    toggleCreateAlbumDrawer: (isShow, callback) => dispatch(toggleCreateAlbumDrawer(isShow, callback)),
+    selectAlbumToPost: (album) => dispatch(selectAlbumToPost(album)),
+    setProccessDuration: (percent) => dispatch(setProccessDuration(percent)),
+    setCurrentPosted: (post) => dispatch(setCurrentPosted(post)),
+    createPostSuccess: (post, userId) => dispatch(createPostSuccess(post, userId)),
+    updatePosted: (post, userId) => dispatch(updatePosted(post, userId)),
+    setJoinedGroup: (groups) => dispatch(setJoinedGroup(groups)),
+    setCurrentGroup: (group) => dispatch(setCurrentGroup(group))
 });
 
 export default connect(
@@ -246,177 +622,211 @@ export default connect(
 const renderPostDrawer = (component) => {
     let {
         showPostDrawer,
-        isPostToGroup
+        isPostToGroup,
+        albumSelected
     } = component.props
     let {
-        privacy,
+        privacySelected,
         imageSelected,
         videoSelected,
-        albumSelected,
         groupSelected,
         isBackgroundSelect,
         backgroundSelected,
-        postContent
+        postContent,
+        isPosting,
+        mentionSelected,
+        tagedFrieds,
+        postedImage,
+        postedVideo,
+        nfid,
+        isChange
     } = component.state
 
+    let {
+        currentGroup
+    } = component.props
+
+    console.log("postedVideo", postedVideo)
+
     return (
-        <Drawer anchor="bottom" className="poster-drawer" open={showPostDrawer} onClose={() => component.handleCloseDrawer()}>
-            <div className="drawer-detail">
-                <div className="drawer-header">
-                    <div className="direction" onClick={() => component.handleCloseDrawer()}>
-                        <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-                            <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-                        </IconButton>
-                        <label>Tạo bài đăng</label>
+        <div>
+            <Drawer anchor="bottom" className="poster-drawer" open={showPostDrawer} >
+                <div className="drawer-detail">
+                    <div className="drawer-header">
+                        <div className="direction" onClick={() => component.handleCloseDrawer()}>
+                            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+                            </IconButton>
+                            <label>{nfid ? "Chỉnh sửa" : "Tạo bài đăng mới"}</label>
+                        </div>
+                        <Button className={isChange ? "bt-submit" : "bt-cancel"} style={{ width: "fit-content" }} onClick={() => component.handlePost()}>Đăng</Button>
                     </div>
-                    <Button className="bt-submit" style={{ width: "fit-content" }}>Đăng</Button>
-                </div>
-                <div className="filter">
-                    {
-                        isPostToGroup ? <div className="group-select-options" onClick={() => component.setState({ showGroupForPostDrawer: true })}>
-                            {
-                                groupSelected ? <span>{groupSelected.groupName}</span> : <span>Chọn nhóm</span>
-                            }
-                            <ExpandMoreIcon />
-                        </div> : ""
-                    }
-                    <ul>
-                        <li>
-                            <Dropzone onDrop={acceptedFiles => { component.setState({ imageSelected: imageSelected.concat(acceptedFiles), isBackgroundSelect: false }) }}>
-                                {({ getRootProps, getInputProps }) => (
-                                    <div {...getRootProps()} id="bt-select-image">
-                                        <input {...getInputProps()} accept="image/*" />
-                                        <img src={uploadImage} />
-                                        <span>Tải ảnh</span>
-                                    </div>
-                                )}
-                            </Dropzone>
-                        </li>
-                        <li>
-                            <Dropzone onDrop={acceptedFiles => component.setState({ videoSelected: acceptedFiles, isBackgroundSelect: false })}>
-                                {({ getRootProps, getInputProps }) => (
-                                    <div {...getRootProps()} id="bt-select-video">
-                                        <input {...getInputProps()} accept="video/*" />
-                                        <img src={uploadVideo} />
-                                        <span>Tải video</span>
-                                    </div>
-                                )}
-                            </Dropzone>
-                        </li>
-                        <li onClick={() => component.setState({ showAlbumSelectDrawer: true })} id="bt-create-album">
-                            <img src={album} />
-                            <span>Tạo Album</span>
-                        </li>
-                        <li onClick={() => component.setState({ showTagFriendDrawer: true })}>
-                            <img src={tag} />
-                            <span>Gắn thẻ</span>
-                        </li>
-                        <li onClick={() => component.setState({ isBackgroundSelect: true, backgroundSelected: backgroundList[0] })}>
-                            <img src={color} />
-                            <span>Màu nền</span>
-                        </li>
-                    </ul>
-                </div>
-                <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
-                    <TextField
-                        className="custom-input"
-                        variant="outlined"
-                        placeholder="Bạn viết gì đi..."
-                        style={{
-                            width: "100%",
-                            marginBottom: "10px",
-                            background: "url(" + (backgroundSelected ? backgroundSelected.background : "") + ")",
-                            overflow: "hidden",
-                            borderRadius: "7px"
-                        }}
-                        value={postContent}
-                        onChange={value => component.handleInputChange(value)}
-                        multiline
-                        className={"auto-height-input " + (backgroundSelected && backgroundSelected.id != 0 ? "have-background" : "")}
-                    />
-                    <div className={"post-role " + (backgroundSelected && backgroundSelected.id != 0 ? "have-background" : "")}>
+                    <div className="filter">
                         {
-                            albumSelected ? <span className="bt-sumbit" >
-                                <img src={album} />
-                                <span>{albumSelected.name}</span>
-                                <IconButton onClick={() => component.setState({ albumSelected: null })}><CloseIcon /></IconButton>
-                            </span> : ""
-                        }
-                        <span className="bt-sumbit" onClick={() => component.setState({ showPostPrivacySelectOption: true })}>
-                            <img src={privacy.icon} />
-                            <span>{privacy.label}</span>
-                        </span>
-                    </div>
-                    <div className="media-selected">
-                        {
-                            imageSelected ? <div className="image-list media-list">
+                            isPostToGroup ? <div className="group-select-options" onClick={() => component.setState({ showGroupForPostDrawer: true })}>
                                 {
-                                    imageSelected.map((image, index) => <div style={{ background: "url(" + URL.createObjectURL(image) + ")" }} key={index} onClick={() => {
-                                        component.props.setMediaToViewer({
-                                            commentCount: 30,
-                                            likeCount: 10,
-                                            content: "React Images Viewer is free to use for personal and commercial projects under the MIT license.Attribution is not required, but greatly appreciated.It does not have to be user- facing and can remain within the code.",
-                                            userName: "Tester 001202",
-                                            date: new Date,
-                                            medias: [
-                                                {
-                                                    type: "image",
-                                                    url: URL.createObjectURL(image)
-                                                }
-                                            ]
-                                        })
-                                        component.props.toggleMediaViewerDrawer(true, { canDownload: true, showInfo: false })
-                                    }}>
-                                        <IconButton onClick={() => component.handleDeleteImage(image)}><CloseIcon /></IconButton>
-                                    </div>)
+                                    currentGroup ? <span>{currentGroup.groupname}</span> : <span>Chọn nhóm</span>
                                 }
+                                <ExpandMoreIcon />
                             </div> : ""
                         }
-                        {
-                            videoSelected ? <div className="video-list media-list">
-                                {
-                                    videoSelected.map((video, index) => <div key={index} onClick={() => {
-                                        component.props.setMediaToViewer({
-                                            commentCount: 30,
-                                            likeCount: 10,
-                                            content: "React Images Viewer is free to use for personal and commercial projects under the MIT license.Attribution is not required, but greatly appreciated.It does not have to be user- facing and can remain within the code.",
-                                            userName: "Tester 001202",
-                                            date: new Date,
-                                            medias: [
-                                                {
-                                                    type: "video",
-                                                    url: URL.createObjectURL(video)
-                                                }
-                                            ]
-                                        })
-                                        component.props.toggleMediaViewerDrawer(true, { canDownload: true, showInfo: false })
-                                    }}>
-                                        <div className="overlay">
-                                            <PlayCircleOutlineIcon />
+                        <ul>
+                            <li>
+                                <Dropzone onDrop={acceptedFiles => component.selectImage(acceptedFiles)}>
+                                    {({ getRootProps, getInputProps }) => (
+                                        <div {...getRootProps()} id="bt-select-image">
+                                            <input {...getInputProps()} accept="image/*" />
+                                            <img src={uploadImage} />
+                                            <span>Tải ảnh</span>
                                         </div>
-                                        <video src={URL.createObjectURL(video)} />
-                                        <IconButton onClick={() => component.handleDeleteVideo(video)}><CloseIcon /></IconButton>
-                                    </div>)
-                                }
+                                    )}
+                                </Dropzone>
+                            </li>
+                            <li>
+                                <Dropzone onDrop={acceptedFiles => component.selectVideo(acceptedFiles)}>
+                                    {({ getRootProps, getInputProps }) => (
+                                        <div {...getRootProps()} id="bt-select-video">
+                                            <input {...getInputProps()} accept="video/*" />
+                                            <img src={uploadVideo} />
+                                            <span>Tải video</span>
+                                        </div>
+                                    )}
+                                </Dropzone>
+                            </li>
+                            <li onClick={() => component.setState({ showAlbumSelectDrawer: true, albums: [] }, () => component.getAlbum(0, 0))} id="bt-create-album">
+                                <img src={album} />
+                                <span>Tạo Album</span>
+                            </li>
+                            <li onClick={() => component.setState({ showTagFriendDrawer: true })}>
+                                <img src={tag} />
+                                <span>Gắn thẻ</span>
+                            </li>
+                            <li onClick={() => component.setState({ isBackgroundSelect: true, backgroundSelected: backgroundList[0] })}>
+                                <img src={color} />
+                                <span>Màu nền</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
+
+                        <MultiInput
+                            style={{
+                                minHeight: "320px",
+                                padding: "15px",
+                                background: backgroundSelected ? ("url(" + backgroundSelected.background + ")") : "#fff"
+                            }}
+                            onChange={value => component.setState({
+                                postContent: value.text,
+                                mentionSelected: value.mentionSelected,
+                                hashtagSelected: value.hashtagSelected,
+                                isChange: value.text != ""
+                            })}
+                            topDown={true}
+                            placeholder={"Bạn viết gì đi..."}
+                            enableHashtag={true}
+                            enableMention={true}
+                            centerMode={backgroundSelected && backgroundSelected.id != 0}
+                            value={postContent}
+                        />
+
+                        <div className={"post-role " + (backgroundSelected && backgroundSelected.id != 0 ? "have-background" : "")}>
+                            {
+                                albumSelected ? <span className="bt-sumbit" >
+                                    <img src={album} />
+                                    <span>{albumSelected.albumname}</span>
+                                    <IconButton onClick={() => component.props.selectAlbumToPost(null)}><CloseIcon /></IconButton>
+                                </span> : ""
+                            }
+                            <span className="bt-sumbit" onClick={() => component.setState({ showPostPrivacySelectOption: true })}>
+                                <img src={privacySelected.icon} />
+                                <span>{privacySelected.label}</span>
+                            </span>
+                        </div>
+                        {
+                            tagedFrieds && tagedFrieds.length > 0 ? <div className="tags-selected">
+                                <ul>
+                                    {
+                                        tagedFrieds.map((tag, index) => <li key={index} className="tag-item">
+                                            <span>{tag.friendname}</span>
+                                        </li>)
+                                    }
+                                </ul>
+                            </div> : ""
+                        }
+                        <div className="media-selected">
+                            {
+                                postedImage && postedImage.length > 0 || imageSelected && imageSelected.length > 0 ? <div className="image-list media-list">
+                                    {
+                                        postedImage && postedImage.map((image, index) => <div key={index} >
+                                            <div style={{ background: "url(" + image.name + ")" }}></div>
+                                            <IconButton onClick={() => component.handleDeletePostedImage(image)}><CloseIcon /></IconButton>
+                                        </div>)
+                                    }
+                                    {
+                                        imageSelected && imageSelected.map((image, index) => <div key={index} >
+                                            <div style={{ background: "url(" + URL.createObjectURL(image.file) + ")" }}></div>
+                                            <IconButton onClick={() => component.handleDeleteImage(image)}><CloseIcon /></IconButton>
+                                        </div>)
+                                    }
+                                </div> : ""
+                            }
+                            {
+                                postedVideo && postedVideo.length > 0 || videoSelected && videoSelected.length > 0 ? <div className="video-list media-list">
+                                    {
+                                        postedVideo && postedVideo.map((video, index) => <div key={index} >
+                                            <div className="overlay">
+                                                <PlayCircleOutlineIcon />
+                                            </div>
+                                            <div className="video-content">
+                                                <video style={{
+                                                    width: video.width > video.height ? "auto" : "100%",
+                                                    height: video.height > video.width ? "auto" : "100%"
+                                                }} src={video.name} />
+                                            </div>
+                                            <IconButton onClick={() => component.handleDeletePostedVideo(video)}><CloseIcon /></IconButton>
+                                        </div>)
+                                    }
+                                    {
+                                        videoSelected && videoSelected.map((video, index) => <div key={index} >
+                                            <div className="overlay">
+                                                <PlayCircleOutlineIcon />
+                                            </div>
+                                            <div className="video-content">
+                                                <video style={{
+                                                    width: video.width > video.height ? "auto" : "100%",
+                                                    height: video.height > video.width ? "auto" : "100%"
+                                                }} src={URL.createObjectURL(video.file)} />
+                                            </div>
+                                            <IconButton onClick={() => component.handleDeleteVideo(video)}><CloseIcon /></IconButton>
+                                        </div>)
+                                    }
+
+                                </div> : ""
+                            }
+                        </div>
+
+
+
+                        {
+                            isBackgroundSelect ? <div className="background-list">
+                                <ul>
+                                    {
+                                        backgroundList.map((item, index) => <li key={index} style={{ background: "url(" + (item ? item.background : "") + ")" }}>
+                                            <Button onClick={() => component.handleSelectBackground(item)}>
+                                                <span className={"radio " + (backgroundSelected && backgroundSelected.id == index ? "active" : "")}></span>
+                                            </Button>
+                                        </li>)
+                                    }
+                                </ul>
                             </div> : ""
                         }
                     </div>
-                    {
-                        isBackgroundSelect ? <div className="background-list">
-                            <ul>
-                                {
-                                    backgroundList.map((item, index) => <li key={index} style={{ background: "url(" + (item ? item.background : "") + ")" }}>
-                                        <Button onClick={() => component.handleSelectBackground(item)}>
-                                            <span className={"radio " + (backgroundSelected && backgroundSelected.id == index ? "active" : "")}></span>
-                                        </Button>
-                                    </li>)
-                                }
-                            </ul>
-                        </div> : ""
-                    }
                 </div>
-            </div>
-        </Drawer>
+            </Drawer>
+            {
+                isPosting ? <Loader type="dask-mode" isFullScreen={true} /> : ""
+            }
+        </div>
     )
 }
 
@@ -432,12 +842,12 @@ const renderPostPrivacyMenuDrawer = (component) => {
                 <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showPostPrivacySelectOption: false })}>
                     <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
                 </IconButton>
-                <label>Quyền riêng tư</label>
+                <label>Tác vụ</label>
             </div>
             <ul className="option-list">
                 {
                     privacyOptions.map((item, index) => <li key={index}>
-                        <Button onClick={() => component.setState({ privacy: item, showPostPrivacySelectOption: false })}>{item.label}</Button>
+                        <Button onClick={() => component.setState({ privacySelected: item, showPostPrivacySelectOption: false })}>{item.label}</Button>
                     </li>)
                 }
             </ul>
@@ -446,31 +856,11 @@ const renderPostPrivacyMenuDrawer = (component) => {
 }
 
 
-
-
 const renderAlbumSelectDrawer = (component) => {
     let {
-        showAlbumSelectDrawer
+        showAlbumSelectDrawer,
+        albums
     } = component.state
-    const albums = [
-        {
-            name: "abc",
-            id: 122,
-            items: [
-                "https://www.robertwalters.com.hk/content/dam/robert-walters/global/images/article-images/digital-neon.jpg",
-                "https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png",
-                "https://cdn.jpegmini.com/user/images/slider_puffin_before_mobile.jpg",
-                "https://dyl80ryjxr1ke.cloudfront.net/external_assets/hero_examples/hair_beach_v1785392215/original.jpeg",
-                "https://photofolio.co.uk/wp-content/uploads/2015/01/stock-images-636x476.jpg",
-            ]
-        },
-        {
-            name: "def",
-            id: 123,
-            items: [
-            ]
-        }
-    ]
 
     return (
         <Drawer anchor="bottom" className="select-album-drawer" open={showAlbumSelectDrawer} onClose={() => component.setState({ showAlbumSelectDrawer: false })}>
@@ -489,18 +879,24 @@ const renderAlbumSelectDrawer = (component) => {
                 <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
                     <div className="album image-box">
                         <ul>
-                            <li className="add-bt" onClick={() => component.setState({ showCreateAlbumDrawer: true })}>
+                            <li className="add-bt" onClick={() => component.props.toggleCreateAlbumDrawer(true, () => {
+                                component.setState({
+                                    albums: [],
+                                    albumsCurrentPage: 0,
+                                    isEndOfAlbums: false
+                                }, () => component.getAlbum(0, 0))
+                            })}>
                                 <div className="demo-bg" >
                                     <AddIcon />
                                 </div>
                                 <span className="name">Tạo album</span>
                             </li>
                             {
-                                albums.map((album, index) => <li key={index} onClick={() => component.setState({ albumSelected: album, showAlbumSelectDrawer: false })}>
-                                    <div>
-                                        <div className="demo-bg" style={{ background: "url(" + (album.items.length > 0 ? album.items[0] : defaultImage) + ")" }} />
+                                albums.map((album, index) => <li key={index} onClick={() => component.setState({ showAlbumSelectDrawer: false }, () => component.props.selectAlbumToPost(album))}>
+                                    <div style={{ background: "url(" + (defaultImage) + ")" }}>
+                                        <div className="demo-bg" style={{ background: "url(" + (album.background) + ")" }} />
                                     </div>
-                                    <span className="name">{album.name}</span>
+                                    <span className="name">{album.albumname}</span>
                                 </li>)
                             }
                         </ul>
@@ -511,61 +907,12 @@ const renderAlbumSelectDrawer = (component) => {
     )
 }
 
-
-
 const renderTagFriendDrawer = (component) => {
     let {
         showTagFriendDrawer,
-        tagedFrieds
+        tagedFrieds,
+        friends
     } = component.state
-
-    const friends = [
-        {
-            id: 1,
-            fullName: "Bảo Ngọc",
-            avatar: "https://pajulahti.com/wp-content/uploads/2017/04/500x500.jpeg"
-        },
-        {
-            id: 2,
-            fullName: "Nguyễn Thị Lê Dân",
-            avatar: "https://gigamall.vn/data/2019/05/06/10385426_logo-bobapop-500x500.jpg"
-        },
-        {
-            id: 3,
-            fullName: "Đặng Lê Trúc Linh",
-            avatar: "https://gigamall.vn/data/2019/09/03/16244113_LOGO-ADOI-500x500.jpg"
-        },
-        {
-            id: 4,
-            fullName: "Bảo Ngọc",
-            avatar: "https://pajulahti.com/wp-content/uploads/2017/04/500x500.jpeg"
-        },
-        {
-            id: 5,
-            fullName: "Nguyễn Thị Lê Dân",
-            avatar: "https://gigamall.vn/data/2019/05/06/10385426_logo-bobapop-500x500.jpg"
-        },
-        {
-            id: 6,
-            fullName: "Đặng Lê Trúc Linh",
-            avatar: "https://gigamall.vn/data/2019/09/03/16244113_LOGO-ADOI-500x500.jpg"
-        },
-        {
-            id: 7,
-            fullName: "Bảo Ngọc",
-            avatar: "https://pajulahti.com/wp-content/uploads/2017/04/500x500.jpeg"
-        },
-        {
-            id: 8,
-            fullName: "Nguyễn Thị Lê Dân",
-            avatar: "https://gigamall.vn/data/2019/05/06/10385426_logo-bobapop-500x500.jpg"
-        },
-        {
-            id: 9,
-            fullName: "Đặng Lê Trúc Linh",
-            avatar: "https://gigamall.vn/data/2019/09/03/16244113_LOGO-ADOI-500x500.jpg"
-        }
-    ]
 
     return (
         <Drawer anchor="bottom" className="tag-friend-drawer" open={showTagFriendDrawer} onClose={() => component.setState({ showTagFriendDrawer: false })}>
@@ -577,7 +924,7 @@ const renderTagFriendDrawer = (component) => {
                         </IconButton>
                         <label>Gắn thẻ bạn bè</label>
                     </div>
-                    <Button >Xong</Button>
+                    <Button onClick={() => component.setState({ showTagFriendDrawer: false })}>Xong</Button>
                 </div>
                 <div className="filter">
                     <TextField
@@ -602,7 +949,7 @@ const renderTagFriendDrawer = (component) => {
                             tagedFrieds.length > 0 ? <ul>
                                 {
                                     tagedFrieds.map((friend, index) => <li key={index}>
-                                        <span>{friend.fullName}{index >= 0 ? ", " : ""}</span>
+                                        <span>{friend.friendname}{index >= 0 ? ", " : ""}</span>
                                     </li>)
                                 }
 
@@ -614,31 +961,38 @@ const renderTagFriendDrawer = (component) => {
                     </div>
                 </div>
                 <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
-                    <div className="friend-list">
-                        <ul>
-                            {
-                                friends.map((friend, index) => <li key={index} onClick={() => component.handleTagFriend(friend)}>
-                                    <Avatar aria-label="recipe" className="avatar">
-                                        <img src={friend.avatar} style={{ width: "100%" }} />
-                                    </Avatar>
-                                    <label>{friend.fullName}</label>
-                                    <div className={"selected-radio " + (tagedFrieds.find(item => item.id == friend.id) ? "active" : "")}>
-                                        <DoneIcon />
-                                    </div>
-                                </li>)
-                            }
-                        </ul>
-                    </div>
+                    {
+                        friends && friends.length > 0 ? < div className="friend-list">
+                            <ul>
+                                {
+                                    friends.map((friend, index) => <li key={index} onClick={() => component.handleTagFriend(friend)}>
+                                        <Avatar aria-label="recipe" className="avatar">
+                                            <div className="img" style={{ background: `url("${friend.friend_thumbnail_avatar}")` }} />
+                                        </Avatar>
+                                        <label>{friend.friendname}</label>
+                                        <div className={"selected-radio " + (tagedFrieds.find(item => item.friendid == friend.friendid) ? "active" : "")}>
+                                            <DoneIcon />
+                                        </div>
+                                    </li>)
+                                }
+                            </ul>
+                        </div> : ""
+                    }
                 </div>
             </div>
-        </Drawer>
+        </Drawer >
     )
 }
+
 
 const renderGroupForPostDrawer = (component) => {
     let {
         showGroupForPostDrawer,
     } = component.state
+    let {
+        joinedGroups
+    } = component.props
+
 
     return (
         <Drawer anchor="bottom" className="tag-friend-drawer" open={showGroupForPostDrawer} onClose={() => component.setState({ showGroupForPostDrawer: false })}>
@@ -672,21 +1026,50 @@ const renderGroupForPostDrawer = (component) => {
                 </div>
                 <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
                     <div className="my-group-list">
-                        <ul>
-                            {
-                                groups.map((group, index) => <li key={index} onClick={() => component.setState({ groupSelected: group, showGroupForPostDrawer: false })}>
-                                    <Avatar className="avatar">
-                                        <img src={group.groupAvatar} />
-                                    </Avatar>
-                                    <div className="group-info">
-                                        <label>{group.groupName}</label>
-                                        <span className={"privacy " + (group.privacy == GroupPrivacies.Private.value ? "red" : "")}>{GroupPrivacies[group.privacy].label}</span>
-                                        <span className="member-count">{group.members.length} thành viên</span>
-                                    </div>
-                                </li>)
-                            }
-                        </ul>
+                        {
+                            joinedGroups && joinedGroups.length > 0 ? <ul>
+                                {
+                                    joinedGroups.map((group, index) => <li key={index} onClick={() => component.setState({ showGroupForPostDrawer: false }, () => component.props.setCurrentGroup(group))}>
+                                        <Avatar className="avatar">
+                                            <img src={group.thumbnail} />
+                                        </Avatar>
+                                        <div className="group-info">
+                                            <label>{group.groupname}</label>
+                                            <span className={"privacy " + (group.typegroup == GroupPrivacies.Private.code ? "red" : "blued")}>{GroupPrivacies[group.typegroupname].label}</span>
+                                            <span className="member-count">{group.nummember} thành viên</span>
+                                        </div>
+                                    </li>)
+                                }
+                            </ul> : ""
+                        }
                     </div>
+                </div>
+            </div>
+        </Drawer>
+    )
+}
+
+const renderConfirmDrawer = (component) => {
+    let {
+        showConfim,
+        okCallback,
+        confirmTitle,
+        confirmMessage
+    } = component.state
+    return (
+        <Drawer anchor="bottom" className="confirm-drawer type-drawer" open={showConfim} onClose={() => component.setState({ showConfim: false })}>
+            <div className="option-header">
+                <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showPostPrivacySelectOption: false })}>
+                    <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+                </IconButton>
+                <label>{confirmTitle}</label>
+            </div>
+            <div className='jon-group-confirm'>
+                {/* <label>{confirmTitle}</label> */}
+                <p>{confirmMessage}</p>
+                <div className="mt20" style={{ display: "block" }}>
+                    <Button className="bt-submit" style={{ maxWidth: "unset" }} onClick={() => component.setState({ showConfim: false })}>Tiếp tục chỉnh sửa</Button>
+                    <Button className="bt-confirm" style={{ maxWidth: "unset" }} onClick={() => component.setState({ showConfim: false }, () => okCallback ? okCallback() : null)}>Vẫn muốn huỷ</Button>
                 </div>
             </div>
         </Drawer>

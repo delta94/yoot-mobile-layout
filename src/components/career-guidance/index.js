@@ -141,12 +141,11 @@ const renderScholarDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullName}</span>
                 <span className="point">
-                  <span>Điển YOOT: {profile.point}</span>
-                  <img src={coin} />
+                  <span>Điểm YOOT: {profile.point}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={profile.avatar} style={{ width: "100%" }} />
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
               </Avatar>
             </div>
           </div>
@@ -207,12 +206,11 @@ const renderStyleTestDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullName}</span>
                 <span className="point">
-                  <span>Điển YOOT: {profile.point}</span>
-                  <img src={coin} />
+                  <span>Điểm YOOT: {profile.point}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={profile.avatar} style={{ width: "100%" }} />
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
               </Avatar>
             </div>
           </div>
@@ -335,12 +333,11 @@ const renderDISCDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullName}</span>
                 <span className="point">
-                  <span>Điển YOOT: {profile.point}</span>
-                  <img src={coin} />
+                  <span>Điểm YOOT: {profile.point}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={profile.avatar} style={{ width: "100%" }} />
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
               </Avatar>
             </div>
           </div>
@@ -412,12 +409,11 @@ const renderYourJobDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullName}</span>
                 <span className="point">
-                  <span>Điển YOOT: {profile.point}</span>
-                  <img src={coin} />
+                  <span>Điểm YOOT: {profile.point}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={profile.avatar} style={{ width: "100%" }} />
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
               </Avatar>
             </div>
           </div>
@@ -475,12 +471,11 @@ const renderYourMajorsDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullName}</span>
                 <span className="point">
-                  <span>Điển YOOT: {profile.point}</span>
-                  <img src={coin} />
+                  <span>Điểm YOOT: {profile.point}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={profile.avatar} style={{ width: "100%" }} />
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
               </Avatar>
             </div>
           </div>

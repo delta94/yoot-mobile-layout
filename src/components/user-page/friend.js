@@ -472,7 +472,7 @@ class Index extends React.Component {
                                                             this.props.toggleUserPageDrawer(true)
                                                         }}>
                                                             <Avatar aria-label="recipe" className="avatar">
-                                                                <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                                <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                             </Avatar>
                                                         </div>
                                                         <div className="info-action">
@@ -498,7 +498,7 @@ class Index extends React.Component {
                                                 friendsWithFriends.map((item, index) => <li key={index} className="friend-layout">
                                                     <div className="friend-info" >
                                                         <Avatar aria-label="recipe" className="avatar">
-                                                            <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                            <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                         </Avatar>
                                                         <label>
                                                             <span className="name">{item.friendname}</span>
@@ -526,7 +526,7 @@ class Index extends React.Component {
                                                 allUsers.map((item, index) => <li key={index} className="friend-layout">
                                                     <div className="friend-info" >
                                                         <Avatar aria-label="recipe" className="avatar">
-                                                            <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                            <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                         </Avatar>
                                                         <label>
                                                             <span className="name">{item.friendname}</span>

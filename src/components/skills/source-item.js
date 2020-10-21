@@ -5,19 +5,34 @@ import {
   addFooterContent,
   toggleHeader,
   toggleFooter,
+  toggleMediaViewerDrawer,
+  setMediaToViewer,
 } from '../../actions/app'
 import { connect } from 'react-redux'
+import { PDFReader } from 'reactjs-pdf-reader';
 import {
   IconButton,
   LinearProgress,
-  CircularProgress
+  CircularProgress,
+  Drawer,
+  Avatar
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon,
-  PlayCircleFilled as PlayCircleFilledIcon
+  PlayCircleFilled as PlayCircleFilledIcon,
+  PlayArrow as PlayArrowIcon,
+  Replay10 as Replay10Icon,
+  Forward10 as Forward10Icon,
+  Pause as PauseIcon,
+  CheckCircleOutline as CheckCircleOutlineIcon
 } from '@material-ui/icons'
 import { StickyContainer, Sticky } from 'react-sticky';
 import ReactPlayer from 'react-player'
+import { get, post } from "../../api";
+import { SCHOOL_API } from "../../constants/appSettings";
+import { Player, ControlBar, BigPlayButton } from 'video-react';
+import $ from 'jquery'
+import { components } from "react-select";
 
 const practice = require('../../assets/icon/practice.png')
 const evaluate = require('../../assets/icon/evaluate.png')
@@ -30,71 +45,265 @@ class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      srouceDetail: null,
+      lessions: [],
+      currentLesstion: null,
+      numPages: 1,
     };
+    this.player = React.createRef()
   }
-  componentWillMount() {
+
+  getSourceDetail(sourceId) {
+    get(SCHOOL_API, "Course/getonecourse?course=" + sourceId, result => {
+      if (result && result.StatusCode == 1) {
+        this.setState({ srouceDetail: result.Data[0] })
+      }
+    })
+  }
+
+  getLession(sourceId) {
+    get(SCHOOL_API, "Course/getlessions?course=" + sourceId, result => {
+      if (result && result.StatusCode == 1) {
+        this.setState({
+          lessions: result.Data,
+          currentLesstion: result.Data[0]
+        })
+      }
+    })
+  }
+
+
+
+  setStudyTime(LESSON_FK, TIME_SEEN_VIDEO, isfinish) {
+    let {
+      profile
+    } = this.props
+    if (!profile) return
+    let param = {
+      "ID": 0,
+      "LESSON_FK": LESSON_FK,
+      "TIME_SEEN_VIDEO": TIME_SEEN_VIDEO,
+      "STUDENT_FK": profile.id,
+      "isfinish": isfinish == true ? 1 : 0
+    }
+    post(SCHOOL_API, "Course/timeStudyLesson", param)
+  }
+
+  handlePlayVideo() {
+    let {
+      lessions,
+      currentLesstion
+    } = this.state
+
+    console.log("currentLesstion", currentLesstion)
+
+    let video = this.player.current
+    let lestionIndex = lessions.findIndex(lession => lession.ID == currentLesstion.ID)
+
+    this.handleChangeCurrentTime(lessions[lestionIndex].timeseen)
+
+    if (video) {
+      this.handleSetMuted(true)
+      video.play()
+      video.subscribeToStateChange((state, prevState) => {
+
+        console.log("state", state)
+
+        if (lestionIndex >= 0) {
+          lessions[lestionIndex].timeseen = state.currentTime > lessions[lestionIndex].timeseen ? parseInt(state.currentTime) : lessions[lestionIndex].timeseen
+        }
+
+        if (state.ended == true) {
+          this.setStudyTime(lessions[lestionIndex].ID, lessions[lestionIndex].VIDEO_TIME, true)
+        }
+        if (state.paused == true) {
+          this.setStudyTime(lessions[lestionIndex].ID, parseInt(state.currentTime), false)
+        }
+
+        this.setState({
+          isPlaying: !state.paused
+        })
+      })
+      this.setState({
+        isPlaying: true
+      })
+    }
+  }
+
+  handlePauseVideo() {
+    let video = this.player.current
+    if (video) {
+      video.pause()
+      this.setState({
+        isPlaying: false
+      })
+    }
+  }
+
+  handleSetMuted(isMuted) {
+    let video = this.player.current
+    if (video) {
+      video.muted = isMuted
+      this.setState({
+        isMuted: isMuted
+      })
+    }
+  }
+
+  handleFullScreen() {
+    let {
+      isFullScreen
+    } = this.state
+    let video = this.player.current
+    if (video) {
+      video.toggleFullscreen()
+      this.setState({
+        isFullScreen: !isFullScreen
+      }, () => {
+        this.handleSetMuted(isFullScreen)
+      })
+    }
+  }
+
+  handleChangeCurrentTime(seconds) {
+    let video = this.player.current
+    if (video) {
+      const { player } = video.getState();
+      video.seek(player.currentTime + seconds)
+    }
+  }
+
+  componentDidMount() {
     this.props.addHeaderContent(renderHeader(this))
-    this.props.addFooterContent(renderFooter(this.props.history))
+    this.props.addFooterContent(renderFooter(this))
     this.props.toggleHeader(true)
     this.props.toggleFooter(true)
+    let { sourceId } = this.props.match.params
+    if (!sourceId) return
+    this.getSourceDetail(sourceId)
+    this.getLession(sourceId)
   }
   render() {
+    let {
+      srouceDetail,
+      lessions,
+      currentLesstion,
+      isPlaying,
+    } = this.state
+
+    console.log("srouceDetail", srouceDetail)
+
     return (
       <div className="source-item-page" >
-        <StickyContainer className="container">
+        <StickyContainer className="container pb01">
           <Sticky topOffset={-60} >
             {({ style }) => (
-              <div style={{ ...style, top: "60px", zIndex: 999 }}>
-                <div className="lesson-video">
-                  <label className="source-name">{lesson.name}</label>
-                  <div className="reward">
-                    <span>Đã hoàn thành: <span className="red"> {lesson.lessonFinish}/{lesson.lessonCount}</span></span>
-                    <span className="reward-point">1 VIDEO thưởng {lesson.reward} <img src={Coins_Y} /></span>
-                  </div>
-                  <div className="proccess">
-                    <LinearProgress value={lesson.lessonFinish * 100 / lesson.lessonCount} className="proccess-bar" variant="determinate" />
-                    <span>+ 0 <img src={Coins_Y} /></span>
-                  </div>
-                  <div className="video">
-                    <ReactPlayer url='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' controls playing={true} />
-                  </div>
-                  <div className="lesson-name">
-                    <PlayCircleFilledIcon />
-                    <span>Giới thiệu bản thân</span>
-                  </div>
-                </div>
+              <div style={{ ...style, top: "60px", zIndex: 999, background: "#fff" }}>
+                {
+                  srouceDetail ? <div className="lesson-video">
+                    <label className="source-name">{srouceDetail.NAME}</label>
+                    <div className="reward">
+                      <span>Đã hoàn thành: <span className="red"> {srouceDetail.numfinish}/{srouceDetail.numtotal}</span></span>
+                      <span className="reward-point">1 VIDEO thưởng {srouceDetail.totalpoint / srouceDetail.numtotal}</span>
+                    </div>
+                    <div className="proccess">
+                      <LinearProgress value={(srouceDetail.numfinish * 100) / srouceDetail.numtotal} className="proccess-bar" variant="determinate" />
+                      <span>+ {srouceDetail.finishpoint} <img src={Coins_Y} /></span>
+                    </div>
+                    {
+                      currentLesstion ? <div className="video">
+                        <Player
+                          ref={this.player}
+                          // poster={media.thumbnailname}
+                          src={currentLesstion.linkvideo}
+                          playsInline={true}
+
+                        >
+                          <ControlBar autoHide={true} >
+                            <div className="custom-bt-control-bar">
+                              <IconButton onClick={() => this.handleChangeCurrentTime(-10)}><Replay10Icon /></IconButton>
+                              <IconButton onClick={() => isPlaying == true ? this.handlePauseVideo() : this.handlePlayVideo()}>
+                                {
+                                  isPlaying == true ? <PauseIcon /> : <PlayArrowIcon />
+                                }
+                              </IconButton>
+                              <IconButton onClick={() => this.handleChangeCurrentTime(10)}><Forward10Icon /></IconButton>
+                            </div>
+                            <div className="fullscreen-overlay" onClick={() => {
+                              this.handlePauseVideo()
+                              this.props.setMediaToViewer([{ ...currentLesstion, name: currentLesstion.linkvideo }])
+                              this.props.toggleMediaViewerDrawer(true, {
+                                showInfo: false,
+                                activeIndex: 0,
+                                isvideo: true
+                              })
+                            }}></div>
+                          </ControlBar>
+                        </Player>
+                      </div> : ""
+                    }
+
+                    {
+                      currentLesstion ? <div className="lesson-name">
+                        <PlayCircleFilledIcon />
+                        <span>{currentLesstion.NAME}</span>
+                      </div> : ""
+                    }
+                  </div> : ""
+                }
               </div>
             )}
           </Sticky>
           <div className="lesson-list">
             <label>Tài liệu</label>
-            <ul className="document">
-              {
-                lesson.documents.map((document, index) => <li key={index}>
-                  <div>
-                    {
-                      document.type == "pdf" ? <img src={pdf_download} /> : ""
-                    }
-                    <span>{document.fileName}</span>
-                  </div>
-                </li>)
-              }
-            </ul>
+            {
+              srouceDetail && srouceDetail.DOCUMNETs.length > 0 ? <ul className="document">
+                {
+                  srouceDetail.DOCUMNETs.map((document, index) => <li key={index}
+                    onClick={() => this.setState({ showDocumentReviewDrawer: true, currentDucument: document })}
+                  >
+                    <div>
+                      {
+                        document.LINK.split('.').slice(-1).pop().toLowerCase() == "pdf" ? <img src={pdf_download} /> : ""
+                      }
+                      <span>{document.NAME}</span>
+                    </div>
+                  </li>)
+                }
+              </ul> : ""
+            }
             <label>Bài học</label>
-            <ul className="lesson">
-              {
-                lesson.lessons.map((document, index) => <li key={index}>
-                  <div className="name">
-                    <PlayCircleFilledIcon />
-                    <span>{document.fileName}</span>
-                  </div>
-                  <CircularProgress className="process" variant="static" value={index == 0 ? 25 : 0} size={22} thickness={6} />
-                </li>)
-              }
-            </ul>
+            {
+              lessions && lessions.length > 0 ? <ul className="lesson">
+                {
+                  lessions.map((lession, index) => <li
+                    className={lession.ID == currentLesstion.ID ? "active" : ""}
+                    key={index}
+                    onClick={() => this.setState({
+                      currentLesstion: lession
+                    }, () => setTimeout(() => {
+                      this.handlePlayVideo()
+                    }, 300))}
+                  >
+                    <div className="name">
+                      <PlayCircleFilledIcon />
+                      <span>{lession.NAME}</span>
+                    </div>
+                    {
+                      lession.isfinish == 1 ?
+                        <CheckCircleOutlineIcon style={{ color: "#2980b9" }} />
+                        : <CircularProgress className="process" variant="static" value={lession.timeseen * 100 / lession.VIDEO_TIME} size={22} thickness={6} />
+                    }
+                  </li>)
+                }
+              </ul> : ""
+            }
           </div>
         </StickyContainer>
-      </div>
+        {
+          renderDocumentDrawer(this)
+        }
+      </div >
     );
   }
 }
@@ -102,6 +311,7 @@ class Index extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.app,
+    ...state.user
   }
 };
 
@@ -110,6 +320,8 @@ const mapDispatchToProps = dispatch => ({
   addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
   toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
+  setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
+  toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
 });
 
 export default connect(
@@ -120,14 +332,15 @@ export default connect(
 const renderHeader = (component) => {
   return (
     <div className="app-header">
-      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.props.history.goBack()}>
+      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.props.history.push('/skills')}>
         <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
       </IconButton>
       <label>Khoá học</label>
     </div>
   )
 }
-const renderFooter = (history) => {
+const renderFooter = (component) => {
+  let { sourceId } = component.props.match.params
   return (
     <div className="app-footer">
       <ul>
@@ -135,11 +348,11 @@ const renderFooter = (history) => {
           <img src={Newfeed}></img>
           <span style={{ color: "#f54746" }}>Bài học</span>
         </li>
-        <li onClick={() => history.push("/skills/1219/exercise")}>
+        <li onClick={() => component.props.history.push(`/skills/${sourceId}/exercise`)}>
           <img src={practice}></img>
           <span >Thực hành</span>
         </li>
-        <li onClick={() => history.push("/skills/1219/assess")}>
+        <li onClick={() => component.props.history.push(`/skills/${sourceId}/assess`)}>
           <img src={evaluate}></img>
           <span >Đánh giá</span>
         </li>
@@ -148,39 +361,57 @@ const renderFooter = (history) => {
   )
 }
 
-const lesson = {
-  name: "Nghệ thuật Diễn Thuyết Truyền Cảm Hứng",
-  lessonCount: 10,
-  lessonFinish: 5,
-  reward: 500,
-  documents: [
-    {
-      fileName: "Nghệ thuật Diễn Thuyết Truyền Cảm Hứng",
-      type: "pdf"
-    }
-  ],
-  lessons: [
-    {
-      fileName: "1 - Giới thiệu bản thân",
-    },
-    {
-      fileName: "1 - Giới thiệu bản thân",
-    },
-    {
-      fileName: "1 - Giới thiệu bản thân",
-    },
-    {
-      fileName: "1 - Giới thiệu bản thân",
-    },
-    {
-      fileName: "1 - Giới thiệu bản thân",
-    },
-    {
-      fileName: "1 - Giới thiệu bản thân",
-    },
-    {
-      fileName: "1 - Giới thiệu bản thân",
-    }
-  ]
-}
 
+const renderDocumentDrawer = (component) => {
+  let {
+    showDocumentReviewDrawer,
+    currentDucument,
+    numPages
+  } = component.state
+  let {
+    profile
+  } = component.props
+
+  console.log("currentDucument", currentDucument)
+  return (
+    <Drawer anchor="bottom" className="share-drawer poster-drawer" open={showDocumentReviewDrawer} >
+      <div className="drawer-detail">
+        < div className="drawer-header" >
+          <div className="direction" onClick={() => component.setState({ showDocumentReviewDrawer: false })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Tài liệu</label>
+          </div>
+          {
+            profile ? <div className="user-reward">
+              <div className="profile">
+                <span className="user-name">{profile.fullname}</span>
+                <span className="point">
+                  <span>Điểm YOOT: {profile.mempoint}</span>
+                </span>
+              </div>
+              <Avatar aria-label="recipe" className="avatar">
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
+              </Avatar>
+            </div> : ""
+          }
+        </div >
+        <div className="filter"></div>
+        <div style={{ overflow: "scroll" }} >
+          {
+            currentDucument ? <div>
+              <PDFReader
+                url={currentDucument.LINK}
+                showAllPage={true}
+                style={{
+                  width: "100%"
+                }}
+              />
+            </div> : ""
+          }
+        </div>
+      </div >
+    </Drawer>
+  )
+}

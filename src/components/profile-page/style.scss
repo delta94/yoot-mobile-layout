@@ -221,6 +221,7 @@
         border-top: 10px solid rgba(0,0,0,0.06);
         margin-top: 10px;
         position: relative;
+        overflow-x: hidden;
         > label{
             font-size: 1.2rem;
             font-family: Roboto-Medium;
@@ -330,6 +331,7 @@
     > div:last-child{
         min-height: 300px;
         border-radius: 25px 25px 0px 0px;
+        height: fit-content !important;
     }
     .option-header{
         display: flex;
@@ -361,7 +363,7 @@
             > button{
                 width: 100%;
                 > span{
-                    font-family: Roboto-Regular;
+                    font-family: Roboto-Medium;
                     text-transform: none;
                     font-size: 1.1rem;
                     color: #666;
@@ -375,6 +377,7 @@
     &.full{
         > div:last-child{
             border-radius: 0px !important;
+            height: 100% !important;
         }
     }
     > div:last-child{
@@ -453,6 +456,11 @@
                 font-family: Roboto-Medium;
             }
         }
+        .custome-menu{
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
         ul{
             padding-left: 30px;
             li{
@@ -482,17 +490,21 @@
                         background: #f44645;
                         font-family: Roboto-Regular;
                         margin-bottom: 5px;
+                        min-width: 40%;
+                        text-align: center;
+                        
                         span{
                             color: #fff;
+                            
                         }
                     }
                 }
             }
         }
-        button{
+        > button{
             position: absolute;
-            top: 0px;
-            right: 10px;
+            top: calc(50% - 24px);
+            right: 0px;
         }
         .add-bt{
             display: flex;
@@ -511,7 +523,7 @@
                 font-family: Roboto-Regular;
             }
         }
-        .job{
+        ul.job{
             padding: 4px;
             margin-top: 10px;
             img{
@@ -523,6 +535,11 @@
                 position: relative;
                 > img{
                     width: 20px;
+                }
+                .custome-menu{
+                    position: absolute;
+                    top: -10px !important;
+                    right: -14px;
                 }
                 > div{
                     margin-left: 20px;
@@ -544,12 +561,7 @@
                         color: #777;
                     }
                 }
-                > button{
-                    position: absolute;
-                    top: -10px;
-                    right: -4px;
-
-                }
+                
             }
         }
     }
@@ -577,13 +589,39 @@
             align-items: center;
             justify-content: center;
         }
+        .gender-select.custom{
+            position: relative;
+            .options{
+                position: absolute;
+                top: 100%;
+                left: 0px;
+                width: 100%;
+                border: 1px solid rgba(0,0,0,0.15);
+                border-radius: 7px;
+                > span{
+                    width: 100%;
+                    display: flex;
+                    box-sizing: border-box;
+                    margin: 0px;
+                    background: none !important;
+                    color: #555;
+                    padding: 10px;
+                    border-bottom: 1px solid rgba(0,0,0,0.15);
+                    border-radius: 0px;
+                    &:last-child{
+                        border-bottom: none;
+                    }
+                }
+
+            }
+        }
         .custom-input-field{
             display: flex;
             align-items: center;
             .input-field{
                 margin-right: 10px;
-                width: 60%;
-                
+                width: 50%;
+               
                 &.year-input{
                     input{
                         margin-left: 0px !important;
@@ -591,7 +629,10 @@
                 }
                 &:last-child{
                     margin-right: 0px;
-                    width: 40%;
+                    width: 50%;
+                    .custom-input{
+                        width: 100%;
+                    }
                 }
             }
         }
@@ -603,7 +644,7 @@
             margin-bottom: 20px;
         }
         > button{
-            margin-top: 50px;
+            margin-top: 90px;
         }
     }
 }
@@ -625,7 +666,6 @@
                 padding: 0px 20px 20px;
                 border-bottom: 10px solid rgba(0,0,0,0.06);
                 padding-top: 20px;
-                
             }
             
             > label{
@@ -760,12 +800,26 @@
     li{
         height: 100px;
         background: #EDEDED;
+        position: relative;
         > div{
             width: 100%;
             height: 100%;
             background-size: cover !important;
             background-position: 50% 50% !important;
             background-repeat: no-repeat !important;
+        }
+        > button{
+            position: absolute;
+            color: #fff;
+            background: rgba(0,0,0,0.3);
+            z-index: 1;
+            padding: 0px;
+            top: calc(50% - 18px);
+            left: calc(50% - 18px);
+            svg{
+                width: 36px;
+                height: 36px;
+            }
         }
     }
 }
@@ -776,12 +830,14 @@
         grid-column-gap: 10px;
         grid-row-gap: 10px;
         li{
-            height: 150px;
             >div{
                 border: 1px solid rgba(0,0,0,0.2);
-                height: calc(100% - 35px);
+                height: calc(50vw - 15px);
                 padding: 3px;
                 box-sizing: border-box;
+                background-repeat: no-repeat !important;
+                background-size: cover !important;
+                background-position: 50% 50% !important;
                 > div{
                     height: 100%;
                     background-repeat: no-repeat !important;
@@ -834,51 +890,17 @@
         
     }
 }
-.cropper-drawer{
-    background: #0e1013 !important;
-    .drawer-detail{
-        display: grid;
-        grid-template-rows: auto min-content;
-        height: 80vh;
-        > div{
-            background: #0e1013 !important;
-        }
-        .drawer-content{
-            display: flex;
-            align-items: center;
-        }
-        .footer-drawer{
-            > label{
-                display: inline-block;
-                width: 100%;
-                text-align: center;
-                color: rgba(255,255,255,0.8);
-                padding-top: 10px;
-            }
-            > div{
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 10px;                
-                >button{
-                    color: rgba(255,255,255,0.8);
-                    min-width: fit-content;
-                    span{
-                        font-family: Roboto-Regular;
-                        text-transform: none !important;
-                        width: fit-content;
-                    }
-                }
-            }
-        }
-    }
-}
+
 .congraduate-select{
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 10px;
     .input-field{
+        width: calc(50% - 5px) !important;
+        > label{
+            display: flex;
+        }
         > div{
             padding-right: 25px;
             border: 1px solid rgba(0,0,0,0.15);

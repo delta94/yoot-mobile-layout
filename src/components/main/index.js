@@ -28,8 +28,7 @@ import {
   Tab,
   Button,
   TextField,
-  InputAdornment,
-  Radio
+  Radio,
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon,
@@ -43,18 +42,20 @@ import {
   togglePostDrawer,
   toggleMediaViewerDrawer,
   toggleUserPageDrawer,
-  toggleReportDrawer,
   toggleGroupDrawer,
   toggleCreateGroupDrawer,
   toggleGroupInviteDrawer,
   toggleCreateAlbumDrawer,
+  setProccessDuration
 } from '../../actions/app'
 import {
-  setCurrenUserDetail,
   setUserProfile,
   getFolowedMe,
   getMeFolowing
 } from '../../actions/user'
+import {
+  setUnreadNotiCount
+} from '../../actions/noti'
 import {
   GroupPrivacies,
   Privacies
@@ -62,7 +63,7 @@ import {
 import SwipeableViews from 'react-swipeable-views';
 import moment from 'moment'
 import Slider from "react-slick";
-import Dropzone from 'react-dropzone'
+
 import { objToArray, showNotification, fromNow } from "../../utils/common";
 import { get, post } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
@@ -70,6 +71,10 @@ import Friends from './friend'
 import SearchFriends from './search-friend'
 import Loader from '../common/loader'
 import Realtime from '../realtime'
+import Player from '../common/player'
+import LoadingBar from 'react-top-loading-bar'
+import GroupDetail from '../groups/detail'
+import MediaViewr from './viewer'
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const search = require('../../assets/icon/Find@1x.png')
@@ -77,10 +82,7 @@ const like1 = require('../../assets/icon/like1@1x.png')
 const likeActive = require('../../assets/icon/like@1x.png')
 const comment = require('../../assets/icon/comment1@1x.png')
 const share = require('../../assets/icon/share1@1x.png')
-const report = require('../../assets/icon/report@1x.png')
-const block = require('../../assets/icon/block@1x.png')
-const unfollow = require('../../assets/icon/unfollow@1x.png')
-const unfriend = require('../../assets/icon/unfriend@1x.png')
+
 const NewGr = require('../../assets/icon/NewGr@1x.png')
 
 
@@ -100,6 +102,14 @@ class Main extends React.Component {
       albumName: '',
       description: ''
     }
+  }
+
+  getUnreadNoti() {
+    get(SOCIAL_NET_WORK_API, "Notification/CountNotificationNoRead?typeproject=1", result => {
+      if (result && result.result == 1) {
+        this.props.setUnreadNotiCount(result.content.noUnRead)
+      }
+    })
   }
 
   getProfile() {
@@ -175,12 +185,11 @@ class Main extends React.Component {
 
   componentWillMount() {
     this.getProfile()
+    this.getUnreadNoti()
   }
 
   componentWillReceiveProps(nextProps) {
     if (Object.entries(this.props.mediaViewerFeature ? this.props.mediaViewerFeature : {}).toString() != Object.entries(nextProps.mediaViewerFeature ? nextProps.mediaViewerFeature : {}).toString()) {
-      console.log("mediaViewerSlider", this.sliderX)
-
       if (this.slider) {
 
         // this.slider.current.slickGoTo(10)
@@ -198,27 +207,37 @@ class Main extends React.Component {
       profile,
       headerContent,
       footerContent,
+      progressDuration
     } = this.props
 
 
     return (
       <div className="wrapper">
         <Realtime />
+        <div id="proccess-bar" className={progressDuration > 0 ? "active" : ""}>
+          <LoadingBar
+            color='#3ea2e0'
+            height={5}
+            background="#ededed"
+            progress={progressDuration}
+            onLoaderFinished={() => this.props.setProccessDuration(-100)}
+            loaderSpeed={1000}
+          />
+        </div>
         <div className={"fix-header " + (showHeader ? "showed" : "hided") + (window.location.pathname == '/videos' ? " dask-mode" : "")} >
           <div className="direction">
             {headerContent}
           </div>
           {
-            profile ? <div className="user-reward">
+            profile && window.location.pathname != "/setting" ? <div className="user-reward">
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điển YOOT: {profile.mempoint}</span>
-                  <img src={coin} />
+                  <span>Điểm YOOT: {profile.mempoint}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={profile.avatar} style={{ width: "100%" }} />
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
               </Avatar>
             </div> : ""
           }
@@ -235,10 +254,10 @@ class Main extends React.Component {
             <Route exact path="/groups" component={Groups} />
             <Route exact path="/communiti-profile" component={Profile} />
             <Route exact path="/community-noti" component={CommunityNoti} />
-            <Route exact path="/skills" component={Skills} />
+            <Route exact path="/skills/:sourceId/exercise" component={Exercise} />
+            <Route exact path="/skills/:sourceId/assess" component={Assess} />
             <Route exact path="/skills/:sourceId" component={SourceItem} />
-            <Route exact path="/skills/1219/exercise" component={Exercise} />
-            <Route exact path="/skills/1219/assess" component={Assess} />
+            <Route exact path="/skills" component={Skills} />
             <Route exact path="/skills-noti" component={SourceNoti} />
             <Route exact path="/career-guidance" component={CareerGuidance} />
 
@@ -254,31 +273,17 @@ class Main extends React.Component {
         {
           renderUserPageDrawer(this)
         }
-        {
-          renderUserDetailDrawer(this)
-        }
         <Friends />
         <SearchFriends />
-        {
+        <MediaViewr />
+        {/* {
           renderMediaViewer(this)
-        }
+        } */}
         {
           renderMediaViewerMenu(this)
         }
         {
-          renderReportDrawer(this)
-        }
-        {
-          renderGroupDrawer(this)
-        }
-        {
-          renderCreateGroupDrawer(this)
-        }
-        {
           renderGroupPrivacyMenuDrawer(this)
-        }
-        {
-          renderGroupInviteDrawer(this)
         }
         {
           renderCreateAlbumDrawer(this)
@@ -289,7 +294,10 @@ class Main extends React.Component {
         {
           renderConfirmDrawer(this)
         }
-        <Album />
+        {
+          renderGroupDetailDrawer(this)
+        }
+        <Album history={this.props.history} />
       </div>
 
     );
@@ -299,7 +307,8 @@ class Main extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.app,
-    ...state.user
+    ...state.user,
+    ...state.group
   }
 };
 
@@ -310,7 +319,6 @@ const mapDispatchToProps = dispatch => ({
   toggleFriendDrawer: (isShow) => dispatch(toggleFriendDrawer(isShow)),
   togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
   toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
-  toggleReportDrawer: (isShow) => dispatch(toggleReportDrawer(isShow)),
   toggleGroupDrawer: (isShow) => dispatch(toggleGroupDrawer(isShow)),
   toggleCreateGroupDrawer: (isShow) => dispatch(toggleCreateGroupDrawer(isShow)),
   toggleGroupInviteDrawer: (isShow) => dispatch(toggleGroupInviteDrawer(isShow)),
@@ -318,6 +326,8 @@ const mapDispatchToProps = dispatch => ({
   getFolowedMe: (currentpage) => dispatch(getFolowedMe(currentpage)),
   getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage)),
   toggleCreateAlbumDrawer: (isShow) => dispatch(toggleCreateAlbumDrawer(isShow)),
+  setProccessDuration: (value) => dispatch(setProccessDuration(value)),
+  setUnreadNotiCount: (number) => dispatch(setUnreadNotiCount(number))
 });
 
 export default connect(
@@ -326,181 +336,9 @@ export default connect(
 )(Main);
 
 
-function a11yProps(index) {
-  return {
-    id: `full-width-tab-${index}`,
-    'aria-controls': `full-width-tabpanel-${index}`,
-  };
-}
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <div>{children}</div>
-      )}
-    </div>
-  );
-}
 
-const renderUserDetailDrawer = (component) => {
-  let {
-    userDetailFolowTabIndex
-  } = component.state
-  let {
-    showUserDetail,
-    userDetail,
-    profile
-  } = component.props
-  return (
-    <Drawer anchor="bottom" className="drawer-detail" open={showUserDetail} onClose={() => component.props.toggleUserDetail(false)}>
-      {
-        profile ? <div className="drawer-detail">
-          <div className="drawer-header">
-            <div className="direction" onClick={() => component.props.toggleUserDetail(false)}>
-              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-              </IconButton>
-              <label>Trang cá nhân</label>
-            </div>
-            <div className="user-reward">
-              <div className="profile">
-                <span className="user-name">{profile.fullname}</span>
-                <span className="point">
-                  <span>Điển YOOT: {profile.mempoint}</span>
-                  <img src={coin} />
-                </span>
-              </div>
-              <Avatar aria-label="recipe" className="avatar">
-                <img src={profile.avatar} style={{ width: "100%" }} />
-              </Avatar>
-            </div>
-          </div>
-          <div className="filter"></div>
-          <div style={{ overflow: "scroll" }}>
-            <AppBar position="static" color="default" className={"custom-tab"}>
-              <Tabs
-                value={userDetailFolowTabIndex}
-                onChange={(e, value) => component.setState({ userDetailFolowTabIndex: value })}
-                indicatorColor="primary"
-                textColor="primary"
-                variant="fullWidth"
-                aria-label="full width tabs example"
-                className="tab-header"
-              >
-                <Tab label={"Người theo dõi " + (profile.foloweds ? ("(" + profile.foloweds.length + ")") : "")} {...a11yProps(0)} className="tab-item" />
-                <Tab label={"Đang theo dõi " + (profile.folowings ? ("(" + profile.folowings.length + ")") : "")} {...a11yProps(1)} className="tab-item" />
-              </Tabs>
-            </AppBar>
-            <SwipeableViews
-              index={userDetailFolowTabIndex}
-              onChangeIndex={(value) => component.setState({ userDetailFolowTabIndex: value })}
-              className="tab-content"
-            >
-              <TabPanel value={userDetailFolowTabIndex} index={0} className="content-box">
-                <div className="folowed-list">
-                  {
-                    profile.foloweds && profile.foloweds.length > 0 ? <ul>
-                      {
-                        profile.foloweds.map((item, index) => <li className="small-user-layout" key={index}>
-                          <Avatar aria-label="recipe" className="avatar">
-                            <img src={item.friendavatar} style={{ width: "100%" }} />
-                          </Avatar>
-                          <span className="user-name">{item.friendname}</span>
-                          <Button style={{ background: "#f44645", color: "#fff" }}>Theo dõi</Button>
-                        </li>)
-                      }
-                    </ul> : <span className="list-empty-message">Chưa có ai theo dõi</span>
-                  }
-                </div>
-              </TabPanel>
-              <TabPanel value={userDetailFolowTabIndex} index={1} >
-                <div className="folowing-list">
-                  {
-                    profile.folowings && profile.folowings.length > 0 ? <ul>
-                      {
-                        profile.folowings.map((item, index) => <li className="small-user-layout" key={index}>
-                          <Avatar aria-label="recipe" className="avatar">
-                            <img src={item.friendavatar} style={{ width: "100%" }} />
-                          </Avatar>
-                          <span className="user-name">{item.friendname}</span>
-                          <Button style={{ background: "rgba(0,0,0,0.05)" }}>Bỏ theo dõi</Button>
-                        </li>)
-                      }
-                    </ul> : <span className="list-empty-message">Chưa theo dõi bất kì ai</span>
-                  }
-                </div>
-              </TabPanel>
-            </SwipeableViews>
-            {/* <div className="job-reward info-box">
-              <label>Công việc</label>
-              {
-                userDetail.jobs[0] ? <span>Từng làm tại <b>{userDetail.jobs[0].position}</b> tại <b>{userDetail.jobs[0].company}</b></span> : "-/-"
-              }
-              {
-                userDetail.jobs[0] ? <p>{userDetail.jobs[0].description}</p> : "-/-"
-              }
-            </div>
-            {
-              userDetail.studies[0] ? <div className="job-reward info-box">
-                <label>Học vấn</label>
-                <span>Từng học <b>{userDetail.studies[0].majors}</b> tại <b>{userDetail.studies[0].school}</b></span>
-                <span><b>Mã hớp: </b>{userDetail.studies[0].className}</span>
-                <span><b>Loại tốt nghiệp: </b>{userDetail.studies[0].graduate}</span>
-              </div> : ""
-            }
-            <div className="job-reward info-box">
-              <label>Sống tại</label>
-              <span>{userDetail.address}</span>
-            </div>
-            <div className="job-reward info-box">
-              <label>Thông tin liên hệ</label>
-              <span className="email">{userDetail.email}</span>
-            </div>
-            <div className="job-reward info-box">
-              <label>Thông tin cơ bản</label>
-              <ul>
-                <li>
-                  <label>{userDetail.gender}</label>
-                  <span>Giới tính</span>
-                </li>
-                <li>
-                  <label>{moment(userDetail.birthday).format("D [tháng] M, YYYY")}</label>
-                  <span>Ngày sinh</span>
-                </li>
-              </ul>
-            </div>
-            <div className="job-reward info-box">
-              <label>Kỹ năng & sở trường</label>
-              <ul>
-                <li>
-                  <label>Kỹ năng</label>
-                  <span>-/-</span>
-                </li>
-                <li>
-                  <label>Sở trường</label>
-                  <span>-/-</span>
-                </li>
-              </ul>
-            </div>
-            <div className="job-reward info-box">
-              <label>Đang theo dõi <span>Xem tất cả</span></label>
-            </div> */}
-          </div>
-
-        </div> : ""
-      }
-    </Drawer>
-  )
-}
 
 const renderUserPageDrawer = (component) => {
   let {
@@ -541,6 +379,10 @@ const renderMediaViewer = (component) => {
     initialSlide: mediaViewerFeature && mediaViewerFeature.activeIndex ? mediaViewerFeature && mediaViewerFeature.activeIndex : 0
   };
 
+  if (!activeItem) {
+    activeItem = mediaToView && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0 ? mediaToView[mediaViewerFeature.activeIndex] : null
+  }
+
   return (
     <Drawer anchor="bottom" className="media-viewer" open={showMediaViewerDrawer} onClose={() => component.props.toggleMediaViewerDrawer(false)}>
       <div className="viewer-content" >
@@ -555,25 +397,26 @@ const renderMediaViewer = (component) => {
             component.props.toggleMediaViewerDrawer(false)
           }}><CloseIcon /></IconButton>
           {
-            mediaViewerFeature ? <IconButton onClick={(e) => component.setState({ showMediaViewerMenu: true })}>
+            mediaViewerFeature && mediaViewerFeature.actions ? <IconButton onClick={(e) => component.setState({ showMediaViewerMenu: true })}>
               <MoreVertIcon />
             </IconButton> : ""
           }
         </div>
-        <div className="viewer-detail" onClick={() => component.setState({ isHideMediaHeadFoot: !isHideMediaHeadFoot })}>
+        <div className="viewer-detail" >
           {
             mediaToView && mediaToView.length > 0 ? <Slider {...settings} >
               {
                 mediaToView.map((item, index) => <div key={index}>
                   {
-                    item.typeobject == 1 ? <img src={item.nameroot ? item.nameroot : item.name} /> : <video controls={true} autoPlay={true}>
-                      <source src={item.nameroot ? item.nameroot : item.name} type="video/mp4"></source>
-                    </video>
+                    item.typeobject == 1 ? <img src={item.nameroot ? item.nameroot : item.name} /> : <div onClick={(e) => e.target != e.currentTarget ? component.setState({ isHideMediaHeadFoot: !isHideMediaHeadFoot }) : ""}>
+                      <Player video={item} />
+                    </div>
                   }
                 </div>)
               }
             </Slider> : ""
           }
+          <div className="overlay" onClick={(e) => e.target != e.currentTarget ? component.setState({ isHideMediaHeadFoot: !isHideMediaHeadFoot }) : ""}></div>
         </div>
         {
           mediaViewerFeature && mediaViewerFeature.showInfo ? <div className={"viewer-footer " + (isHideMediaHeadFoot ? "hide" : "")}>
@@ -586,7 +429,7 @@ const renderMediaViewer = (component) => {
                   <pre>{activeItem.postcontent}</pre>
                 </div>
                 <div className="post-time">
-                  <span>{fromNow(activeItem.createdate, new Date)}</span>
+                  <span>{fromNow(moment(activeItem.createdate), new Date)}</span>
                 </div>
               </div> : ""
             }
@@ -659,7 +502,7 @@ const renderMediaViewerMenu = (component) => {
           mediaViewerFeature && mediaViewerFeature.actions ? <div className="menu-list">
             <ul>
               {
-                mediaViewerFeature.actions.length > 0 ? mediaViewerFeature.actions.map((action, index) => <li key={index}>
+                mediaViewerFeature.actions.length > 0 ? mediaViewerFeature.actions.map((action, index) => action && <li key={index}>
                   <Button onClick={() => {
                     action.action(mediaToView.find(item => item.postid == activeItem.postid))
                     component.setState({ showMediaViewerMenu: false })
@@ -669,310 +512,6 @@ const renderMediaViewerMenu = (component) => {
             </ul>
           </div> : ""
         }
-      </div>
-    </Drawer>
-  )
-}
-
-const renderReportDrawer = (component) => {
-
-  let {
-    showReportDrawer
-  } = component.props
-  let {
-    reActionSelected
-  } = component.state
-
-  return (
-    <Drawer anchor="bottom" className="report-drawer" open={showReportDrawer} onClose={() => component.props.toggleReportDrawer(false)}>
-      <div className="drawer-detail">
-        <div className="drawer-header">
-          <div className="direction" onClick={() => component.props.toggleReportDrawer(false)}>
-            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-            </IconButton>
-            <label>Báo cáo bài đăng</label>
-          </div>
-        </div>
-        <div className="filter">
-        </div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} >
-          <div>
-            <img src={report} />
-            <label>Bạn thấy bài đăng này có dấu hiệu nào dưới đây?</label>
-            <div className="reason-box">
-              <ul>
-                <li><Button>Hoạt động tình dục</Button></li>
-                <li><Button>Quảng bá và bán hàng trái phép</Button></li>
-                <li><Button>Tự tử, tự gây thương tích</Button></li>
-                <li><Button>Dấu hiệu bạo động</Button></li>
-                <li><Button>Ngược đãi động vật</Button></li>
-                <li><Button>Lạm dụng trẻ em</Button></li>
-                <li><Button>Lừa đảo</Button></li>
-                <li><Button>Chửi rủa</Button></li>
-                <li><Button>Spam</Button></li>
-                <li><Button>Khủng bố</Button></li>
-              </ul>
-              <div>
-                <TextField
-                  className="custom-input"
-                  className="order-reason"
-                  variant="outlined"
-                  placeholder="Khác (Ghi tối đa 20 chữ)"
-                  style={{
-                    width: "100%",
-                    marginBottom: "10px",
-                  }}
-                  multiline
-                />
-              </div>
-            </div>
-          </div>
-          <div className="re-action">
-            <label>Bạn có muốn?</label>
-            <ul>
-              <li>
-                <img src={block} />
-                <div>
-                  <label>Chặn hoàng hải long</label>
-                  <span>Bạn và người này sẽ không nhìn thấy bài đăng và liên hệ với nhau.</span>
-                </div>
-                <Radio
-                  checked={reActionSelected == "block"}
-                  onChange={(e) => component.setState({ reActionSelected: e.target.value })}
-                  value="block"
-                />
-              </li>
-              <li>
-                <img src={unfollow} />
-                <div>
-                  <label>Bỏ theo dõi hoàng hải long</label>
-                  <span>Bạn sẽ không nhìn thấy những bài đăng từ người này nhưng vẫn là bạn bè của nhau.</span>
-                </div>
-                <Radio
-                  checked={reActionSelected == "unfollow"}
-                  onChange={(e) => component.setState({ reActionSelected: e.target.value })}
-                  value="unfollow"
-                />
-              </li>
-              <li>
-                <img src={unfriend} />
-                <div>
-                  <label>Huỷ kết bạn hoàng hải long</label>
-                  <span>Hai bạn không còn trong danh sách bạn bè của nhau trên YOOT.</span>
-                </div>
-                <Radio
-                  checked={reActionSelected == "unfriend"}
-                  onChange={(e) => component.setState({ reActionSelected: e.target.value })}
-                  value="unfriend"
-                />
-              </li>
-            </ul>
-            <Button className="bt-submit">Báo cáo</Button>
-          </div>
-        </div>
-      </div>
-    </Drawer>
-  )
-}
-
-const renderGroupDrawer = (component) => {
-
-  let {
-    showGroupDrawer
-  } = component.props
-  let {
-    groupTabIndex
-  } = component.state
-
-  return (
-    <Drawer anchor="bottom" className="group-drawer" open={showGroupDrawer} onClose={() => component.props.toggleGroupDrawer(false)}>
-      <div className="drawer-detail">
-        <div className="drawer-header">
-          <div className="direction" onClick={() => component.props.toggleGroupDrawer(false)}>
-            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-            </IconButton>
-            <label>Nhóm đã tham gia</label>
-          </div>
-          <div className="submit-bt" onClick={() => component.props.toggleCreateGroupDrawer(true)}>
-            <img src={NewGr} />
-            <span>Tạo nhóm</span>
-          </div>
-        </div>
-        <div className="filter">
-          <AppBar position="static" color="default" className={"custom-tab"}>
-            <Tabs
-              value={groupTabIndex}
-              onChange={(e, value) => component.setState({ groupTabIndex: value })}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="fullWidth"
-              aria-label="full width tabs example"
-              className="tab-header"
-            >
-              <Tab label="Nhóm đã tham gia" {...a11yProps(0)} className="tab-item" />
-              <Tab label="Nhóm đang quản lí" {...a11yProps(1)} className="tab-item" />
-            </Tabs>
-          </AppBar>
-        </div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} >
-          <SwipeableViews
-            index={groupTabIndex}
-            onChangeIndex={(value) => this.setState({ groupTabIndex: value })}
-            className="tab-content"
-          >
-            <TabPanel value={groupTabIndex} index={0} className="content-box">
-              <div className="top-groups">
-                {
-                  groups.map((item, key) => <div className="group-item" key={key} style={{ background: "url(" + item.coverImage + ")" }}>
-                    <div className="group-info">
-                      <Avatar aria-label="recipe" className="avatar">
-                        <img src={item.groupAvatar} style={{ width: "100%" }} />
-                      </Avatar>
-                      <span className="group-name">{item.groupName}</span>
-                    </div>
-                    <span className="posted">{item.posted} bài đăng</span>
-                    <div className="members-list">
-                      <span className="total">Thành viên: {item.members.length}</span>
-                      <div className="member-avatar">
-                        {
-                          item.members.map((item, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
-                            <img src={item.avatar} style={{ width: "100%" }} />
-                          </Avatar>
-                          )
-                        }
-                        {
-                          item.members.length > 2 ? < Avatar aria-label="recipe" className="avatar">
-                            +{item.members.length - 2}
-                          </Avatar> : ""
-                        }
-                      </div>
-                    </div>
-                  </div>)
-                }
-              </div>
-            </TabPanel>
-            <TabPanel value={groupTabIndex} index={1} >
-              <div className="top-groups">
-                {
-                  groups.map((item, key) => <div className="group-item" key={key} style={{ background: "url(" + item.coverImage + ")" }}>
-                    <div className="group-info">
-                      <Avatar aria-label="recipe" className="avatar">
-                        <img src={item.groupAvatar} style={{ width: "100%" }} />
-                      </Avatar>
-                      <span className="group-name">{item.groupName}</span>
-                    </div>
-                    <span className="posted">{item.posted} bài đăng</span>
-                    <div className="members-list">
-                      <span className="total">Thành viên: {item.members.length}</span>
-                      <div className="member-avatar">
-                        {
-                          item.members.map((item, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
-                            <img src={item.avatar} style={{ width: "100%" }} />
-                          </Avatar>
-                          )
-                        }
-                        {
-                          item.members.length > 2 ? < Avatar aria-label="recipe" className="avatar">
-                            +{item.members.length - 2}
-                          </Avatar> : ""
-                        }
-                      </div>
-                    </div>
-                  </div>)
-                }
-              </div>
-            </TabPanel>
-          </SwipeableViews>
-        </div>
-      </div>
-    </Drawer>
-  )
-}
-
-const renderCreateGroupDrawer = (component) => {
-
-  let {
-    showCreateGroupDrawer,
-
-  } = component.props
-  let {
-    groupCoverImage,
-    groupPrivacy
-  } = component.state
-
-  return (
-    <Drawer anchor="bottom" className="create-group-drawer" open={showCreateGroupDrawer} onClose={() => component.props.toggleCreateGroupDrawer(false)}>
-      <div className="drawer-detail">
-        <div className="drawer-header">
-          <div className="direction" onClick={() => component.props.toggleCreateGroupDrawer(false)}>
-            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-            </IconButton>
-            <label>Tạo nhóm</label>
-          </div>
-          <Button className="bt-submit">Hoàn tất</Button>
-        </div>
-        <div className="filter">
-        </div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} >
-          <div>
-            <label>Tên nhóm</label>
-            <TextField
-              className="custom-input"
-              className="order-reason"
-              variant="outlined"
-              placeholder="Đặt tên nhóm"
-              style={{
-                width: "100%",
-                marginBottom: "10px",
-              }}
-            />
-            <TextField
-              className="custom-input"
-              className="input-multiline"
-              variant="outlined"
-              placeholder="Mô tả nhóm"
-              style={{
-                width: "100%",
-                marginBottom: "10px",
-              }}
-              multiline
-            />
-            <label>Tải lên ảnh bìa</label>
-            <div className="cover-image">
-              {
-                groupCoverImage ? <div className="image" style={{ background: 'url(' + URL.createObjectURL(groupCoverImage) + ')' }}></div> : ""
-              }
-              <Dropzone onDrop={acceptedFiles => component.setState({ groupCoverImage: acceptedFiles[0] })}>
-                {({ getRootProps, getInputProps }) => (
-                  <div {...getRootProps()} >
-                    <input {...getInputProps()} accept="image/*" />
-                    <Button className={groupCoverImage ? "light" : "dask"}>Tải ảnh khác</Button>
-                  </div>
-                )}
-              </Dropzone>
-
-            </div>
-            <label>Quy định nhóm</label>
-            <TextField
-              className="custom-input"
-              className="input-multiline"
-              variant="outlined"
-              placeholder="Quy định nhóm"
-              style={{
-                width: "100%",
-                marginBottom: "10px",
-              }}
-              multiline
-            />
-            <label>Quyền riêng tư</label>
-            <div className="group-privacy" onClick={() => component.setState({ showGroupPrivacySelectOption: true })}>
-              <span>{groupPrivacy.label}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </Drawer>
   )
@@ -989,7 +528,7 @@ const renderGroupPrivacyMenuDrawer = (component) => {
         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showGroupPrivacySelectOption: false })}>
           <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
         </IconButton>
-        <label>Quyền riêng tư</label>
+        <label>Tác vụ</label>
       </div>
       <ul className="option-list">
         {
@@ -1052,7 +591,8 @@ const renderCreateAlbumDrawer = (component) => {
   } = component.state
 
   let {
-    showCreateAlbumDrawer
+    showCreateAlbumDrawer,
+    profile
   } = component.props
 
   return (
@@ -1063,7 +603,7 @@ const renderCreateAlbumDrawer = (component) => {
             <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
               <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
             </IconButton>
-            <label>Tạo album mới</label>
+            <label>{profile ? profile.fullname : "Tạo album"}</label>
           </div>
           <Button onClick={() => component.createAlbum()}>Tạo</Button>
         </div>
@@ -1122,7 +662,7 @@ const renderAlbumPrivacyMenuDrawer = (component) => {
         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showAlbumPrivacySelectOption: false })}>
           <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
         </IconButton>
-        <label>Quyền riêng tư</label>
+        <label>Tác vụ</label>
       </div>
       <ul className="option-list">
         {
@@ -1152,6 +692,21 @@ const renderConfirmDrawer = (component) => {
           <Button className="bt-submit" onClick={() => component.setState({ showConfim: false })}>Đóng</Button>
         </div>
       </div>
+    </Drawer>
+  )
+}
+
+const renderGroupDetailDrawer = (component) => {
+  let {
+    showGroupDetail,
+    currentGroup
+  } = component.props
+
+  return (
+    <Drawer anchor="bottom" className="group-detail" open={showGroupDetail}>
+      {
+        currentGroup ? <GroupDetail history={component.props.history} /> : ""
+      }
     </Drawer>
   )
 }

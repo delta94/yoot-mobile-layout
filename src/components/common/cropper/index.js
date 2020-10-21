@@ -90,8 +90,8 @@ export class Loader extends React.Component {
             );
             if (this.props.onCropped) this.props.onCropped({
                 file: croppedImageUrl,
-                width: crop.width,
-                height: crop.height,
+                width: parseInt(crop.width),
+                height: parseInt(crop.height),
                 extention: fileExtention
             })
             // this.setState({ croppedImageUrl });
@@ -115,6 +115,11 @@ export class Loader extends React.Component {
                     onComplete={this.onCropComplete}
                     onChange={this.onCropChange}
                     keepSelection={true}
+                    ruleOfThirds={true}
+                    imageStyle={{
+                        maxHeight: "80vh",
+                        maxWidth: "calc(100vw - 20px)"
+                    }}
                 />
             </div>
         )

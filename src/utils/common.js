@@ -4,6 +4,9 @@ import { DATETIME_FORMAT, DATE_FORMAT } from "../constants/appSettings";
 import { confirmAlert } from 'react-confirm-alert'
 import NumberFormat from 'react-number-format';
 import { showInfo } from './app';
+import {
+  FiberManualRecord as FiberManualRecordIcon
+} from '@material-ui/icons'
 
 export const jsonFromUrlParams = search => {
   if (!search) return {};
@@ -109,7 +112,7 @@ export const showNotification = (title, message, onOK) => {
   });
 };
 
-export const showConfirm = (title, message, onOK, onCancel, okLabel, cancelLabel) => {
+export const showConfirm = (title, message, onOK, onCancel, okButton, cancelButton) => {
   confirmAlert({
     title: title,
     message: message,
@@ -141,32 +144,77 @@ export const NumberFormatCustom = (props) => {
         });
       }}
       allowLeadingZeros
+      format={"##########"}
     />
   );
 }
-export const fromNow = (date = moment().now(), now) => {
-  if (moment(now).dayOfYear() - moment(date).dayOfYear() < 4 && moment(now).dayOfYear() - moment(date).dayOfYear() > -100) {
+
+export const fromNow = (date = moment().now(), now, hideDate) => {
+  if (moment(now).dayOfYear() - moment(date).dayOfYear() < 100 && moment(now).dayOfYear() - moment(date).dayOfYear() > -100) {
     let result = moment(date).from(moment(now))
+    let output = ""
     if (result.indexOf('a few seconds') >= 0 || result.indexOf('in a minute') >= 0) {
-      return 'Vài giây trước';
+      output = 'Vừa đăng';
     }
     if (result.indexOf('AM') >= 0 || result.indexOf('Am') >= 0 || result.indexOf('am') >= 0) {
-      return 'sa';
+      output = 'sa';
     }
     if (result.indexOf('PM') >= 0 || result.indexOf('Pm') >= 0 || result.indexOf('pm') >= 0) {
-      return 'ch';
+      output = 'ch';
     }
-    if (result.indexOf('a minute ago') >= 0) return result.replace('a minute ago', '1 phút trước');
-    if (result.indexOf('minutes ago') >= 0) return result.replace('minutes ago', 'phút trước');
-    if (result.indexOf('an hour ago') >= 0) return result.replace('an hour ago', '1 giờ trước');
-    if (result.indexOf('hours ago') >= 0) return result.replace('hours ago', 'giờ trước');
-    if (result.indexOf('months ago') >= 0) return result.replace('months ago', 'tháng trước');
-    if (result.indexOf('a day ago') >= 0) return result.replace('a day ago', 'hôm qua');
 
-    if (parseInt(result.split('days ago')[0]) <= 5) return result.replace('days ago', 'ngày trước');
+    if (result.indexOf('a minute ago') >= 0)
+      output = result.replace('a minute ago', '1 phút trước');
+
+    if (result.indexOf('minutes ago') >= 0)
+      output = result.replace('minutes ago', 'phút trước');
+
+    if (result.indexOf('an hour ago') >= 0)
+      output = result.replace('an hour ago', '1 giờ trước');
+
+    if (result.indexOf('hours ago') >= 0)
+      output = result.replace('hours ago', 'giờ trước');
+
+    if (result.indexOf('a day ago') >= 0)
+      output = result.replace('a day ago', 'hôm qua');
+
+    if (result.indexOf('days ago') >= 0)
+      return <span style={{ display: "flex", alignItems: "center" }}>
+        {
+          hideDate ? "" : moment(date).format("DD/MM/yyyy HH:mm")
+        }
+        {
+          hideDate ? "" : <FiberManualRecordIcon style={{ width: 6, height: 6, opacity: 0.5, margin: '0px 5px' }} />
+        }
+        {result.replace('days ago', 'ngày trước')}
+      </span>
+
+    if (result.indexOf('a month ago') >= 0)
+      return <span style={{ display: "flex", alignItems: "center" }}>
+        {
+          hideDate ? "" : moment(date).format("DD/MM/yyyy HH:mm")
+        }
+        {
+          hideDate ? "" : <FiberManualRecordIcon style={{ width: 6, height: 6, opacity: 0.5, margin: '0px 5px' }} />
+        }
+        {result.replace('a month ago', '1 tháng trước')}
+      </span>
+
+    if (result.indexOf('months ago') >= 0)
+      return <span style={{ display: "flex", alignItems: "center" }}>
+        {
+          hideDate ? "" : moment(date).format("DD/MM/yyyy HH:mm")
+        }
+        {
+          hideDate ? "" : <FiberManualRecordIcon style={{ width: 6, height: 6, opacity: 0.5, margin: '0px 5px' }} />
+        }
+        {result.replace('months ago', 'tháng trước')}
+      </span>
+
+    return output
   }
-  // return result
-  return moment(date).format('DD/MM/YYYY HH:mm');
+  return ""
+  // return moment(date).format('DD/MM/YYYY HH:mm');
 };
 
 
@@ -175,6 +223,12 @@ export const srcToFile = (src, fileName, mimeType) => {
     .then(function (res) { return res.arrayBuffer(); })
     .then(function (buf) { return new File([buf], fileName, { type: mimeType }); })
   );
+}
+
+export const getFileSize = size => {
+  if (size > 1048576) return `${parseInt(size / 1048576)}MB`
+  if (size > 1024) return `${parseInt(size / 1024)}KB`
+  return `${size}Bytes`
 }
 
 export const copyToClipboard = (str, successCallback) => {
@@ -188,4 +242,37 @@ export const copyToClipboard = (str, successCallback) => {
   document.execCommand('copy');
   document.body.removeChild(el);
   showInfo("Đã sao chép liên kết")
-}; 
+};
+
+export const removeAccents = (str) => {
+  var AccentsMap = [
+    "aàảãáạăằẳẵắặâầẩẫấậ",
+    "AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬ",
+    "dđ", "DĐ",
+    "eèẻẽéẹêềểễếệ",
+    "EÈẺẼÉẸÊỀỂỄẾỆ",
+    "iìỉĩíị",
+    "IÌỈĨÍỊ",
+    "oòỏõóọôồổỗốộơờởỡớợ",
+    "OÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢ",
+    "uùủũúụưừửữứự",
+    "UÙỦŨÚỤƯỪỬỮỨỰ",
+    "yỳỷỹýỵ",
+    "YỲỶỸÝỴ"
+  ];
+  for (var i = 0; i < AccentsMap.length; i++) {
+    var re = new RegExp('[' + AccentsMap[i].substr(1) + ']', 'g');
+    var char = AccentsMap[i][0];
+    str = str.replace(re, char);
+  }
+  return str;
+}
+
+export const formatCurrency = (value, fix) => {
+  if (!value || value == 0 || Math.abs(value) < 0.00000001) return "";
+  // value = round(value, 0);
+  // var fix = getFix(value, fix);
+  var result = parseFloat(value).toFixed(0).replace(/\d(?=(\d{3})+\.)/g, "$&.");
+
+  return result;
+};

@@ -26,6 +26,7 @@ import {
 import { showNotification, objToArray, objToQuery } from '../../utils/common';
 import { connect } from 'react-redux'
 import Loader from '../common/loader'
+import CustomMenu from '../common/custom-menu'
 
 const job = require('../../assets/icon/job@1x.png')
 
@@ -185,19 +186,10 @@ export class Index extends React.Component {
                     <label>Mô tả công việc:</label>
                     <span>{item.description}</span>
                 </div>
-                <IconButton onClick={(e) => this.setState({ showLocalMenu: true, anchor: e.target })}>
-                    <MoreHorizIcon />
-                </IconButton>
-                <Menu
-                    className="custom-menu"
-                    anchorEl={anchor}
-                    keepMounted
-                    open={showLocalMenu}
-                    onClose={() => this.setState({ showLocalMenu: false })}
-                >
+                <CustomMenu>
                     <MenuItem onClick={() => this.setState({ showLocalMenu: false, showUpdateForm: true }, () => this.handleSetDefault())}>Chỉnh sửa</MenuItem>
                     <MenuItem onClick={() => this.setState({ showLocalMenu: false, showDeleteExpConfirm: true })}>Xoá</MenuItem>
-                </Menu>
+                </CustomMenu>
 
                 <Drawer anchor="bottom" className="drawer-form" open={showUpdateForm} onClose={() => this.setState({ showUpdateForm: false })}>
                     <div className="form-header">
@@ -241,7 +233,7 @@ export class Index extends React.Component {
                             <div className='input-field'>
                                 <label>Ngày bắt đầu</label>
                                 <div>
-                                    <FormControl variant="outlined" className={"custom-select ml15"}>
+                                    <FormControl variant="outlined" className={"custom-select ml20"}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={fromMonth}
@@ -252,7 +244,7 @@ export class Index extends React.Component {
                                             }
                                         </NativeSelect>
                                     </FormControl>
-                                    <FormControl variant="outlined" className={"custom-select ml15"}>
+                                    <FormControl variant="outlined" className={"custom-select ml20"}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={fromYear}
@@ -268,7 +260,7 @@ export class Index extends React.Component {
                             <div className='input-field'>
                                 <label>Ngày kết thúc</label>
                                 <div>
-                                    <FormControl variant="outlined" className={"custom-select ml15"}>
+                                    <FormControl variant="outlined" className={"custom-select ml20"}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={toMonth}
@@ -279,7 +271,7 @@ export class Index extends React.Component {
                                             }
                                         </NativeSelect>
                                     </FormControl>
-                                    <FormControl variant="outlined" className={"custom-select ml15"}>
+                                    <FormControl variant="outlined" className={"custom-select ml20"}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={toYear}
@@ -373,11 +365,11 @@ const renderDeleteExpConfirm = (component) => {
     return (
         <Drawer anchor="bottom" className="confirm-drawer" open={showDeleteExpConfirm} onClose={() => component.setState({ showDeleteExpConfirm: false })}>
             <div className='jon-group-confirm'>
-                <label>Xoá thông tin kinh nghiệm làm việc.</label>
+                <label>Xoá thông tin kinh nghiệm làm việc?</label>
                 <p>Bạn có chắc chắn muốn xoá thông tin này không?</p>
                 <div className="mt20">
-                    <Button className="bt-cancel" onClick={() => component.setState({ showDeleteExpConfirm: false })}>Huỷ</Button>
-                    <Button className="bt-submit" onClick={() => component.handleDeleteExp()}>Xoá</Button>
+                    <Button className="bt-confirm" onClick={() => component.handleDeleteExp()}>Xoá</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showDeleteExpConfirm: false })}>Huỷ</Button>
                 </div>
             </div>
             {
@@ -398,8 +390,8 @@ const renderCloseForm = (component) => {
                 <label>Bạn muốn rời khỏi trang này?</label>
                 <p>Những thông tin vừa thay đổi vẫn chưa được lưu.</p>
                 <div className="mt20">
-                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false })}>Đồng ý rời khỏi</Button>
-                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại thay đổi</Button>
+                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false })}>Đồng ý</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại</Button>
                 </div>
             </div>
         </Drawer>

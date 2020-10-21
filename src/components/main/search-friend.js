@@ -1,7 +1,8 @@
 import React from "react";
 import './style.scss'
 import {
-    toggleSeachFriends
+    toggleSeachFriends,
+    toggleUserPageDrawer
 } from '../../actions/app'
 import {
     setCurrenUserDetail,
@@ -331,9 +332,12 @@ class Index extends React.Component {
                             <ul>
                                 {
                                     allUsers.map((item, index) => <li key={index} className="friend-layout">
-                                        <div className="friend-info" >
+                                        <div className="friend-info" onClick={() => {
+                                            this.props.setCurrenUserDetail(item)
+                                            this.props.toggleUserPageDrawer(true)
+                                        }}>
                                             <Avatar aria-label="recipe" className="avatar">
-                                                <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                             </Avatar>
                                             <label>
                                                 <span className="name">{item.friendname}</span>
@@ -386,6 +390,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
     toggleSeachFriends: (isShow) => dispatch(toggleSeachFriends(isShow)),
+    toggleUserPageDrawer: (isShow) => dispatch(toggleUserPageDrawer(isShow)),
+    setCurrenUserDetail: (user) => dispatch(setCurrenUserDetail(user)),
 });
 
 export default connect(

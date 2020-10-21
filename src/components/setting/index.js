@@ -44,7 +44,8 @@ import {
   InputAdornment,
   AppBar,
   Tabs,
-  Tab
+  Tab,
+  Badge
 } from "@material-ui/core";
 import moment from 'moment'
 import { signOut } from "../../auth";
@@ -61,7 +62,7 @@ import 'react-image-crop/lib/ReactCrop.scss';
 import Cropper from '../common/cropper'
 import { postFormData, get, post } from "../../api";
 import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
-import { showNotification, objToQuery, jsonFromUrlParams } from "../../utils/common";
+import { showNotification, objToQuery, jsonFromUrlParams, formatCurrency } from "../../utils/common";
 import { signIn } from '../../auth'
 import $ from 'jquery'
 
@@ -286,7 +287,6 @@ class Index extends React.Component {
       limit: 20
     }
     get(SOCIAL_NET_WORK_API, "User/GetHistoryPoint" + objToQuery(param), result => {
-      console.log("User/GetHistoryPoint", result)
       if (result.staus == 1) {
         this.setState({
           historyPoints: result.content.histories
@@ -372,7 +372,6 @@ class Index extends React.Component {
     })
     post(SOCIAL_NET_WORK_API, "User/ChangePasswordUser", param, (result) => {
       if (result.result == 1) {
-        console.log("result", result)
         let { profile } = this.props
         let loginParam = {
           phone: profile.phone,
@@ -383,7 +382,8 @@ class Index extends React.Component {
             signIn({
               comunityAccessToken: result.content.myToken,
               skillAccessToken: result.content.myTokenTraining,
-              careerGuidanceAccessToken: result.content.myTokenBuildYS
+              careerGuidanceAccessToken: result.content.myTokenBuildYS,
+              socketToken: result.content.myTokenNotifi
             });
             this.props.toggleChangePasswordForm(false)
 
@@ -601,7 +601,7 @@ class Index extends React.Component {
             </li>
             <li>
               <Button onClick={() => {
-                this.props.setCurrenUserDetail(data)
+                this.props.setCurrenUserDetail(profile)
                 this.props.toggleUserHistory(true)
                 this.getHistoryPoint(0)
               }}>Lịch sử tích điểm</Button>
@@ -649,7 +649,8 @@ class Index extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.app,
-    ...state.user
+    ...state.user,
+    ...state.noti
   }
 };
 
@@ -719,15 +720,19 @@ export default connect(
 const renderHeader = () => {
   return (
     <div className="app-header">
-      <label>Cài đặt</label>
+      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+        <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+      </IconButton>
+      <label>Quản lý tài khoản</label>
     </div>
   )
 }
 
-
-
 const renderFooter = (component) => {
   let pathName = window.location.pathname
+  let {
+    woldNotiUnreadCount
+  } = component.props
   return (
     pathName == "/communiti-profile" ? <div className="app-footer">
       <ul>
@@ -744,7 +749,11 @@ const renderFooter = (component) => {
           <span>Nhóm</span>
         </li>
         <li onClick={() => component.props.history.replace('/community-noti')}>
-          <img src={NotiBw}></img>
+          {
+            woldNotiUnreadCount > 0 ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
+              <img src={NotiBw}></img>
+            </Badge> : <img src={NotiBw}></img>
+          }
           <span>Thông báo</span>
         </li>
         <li onClick={() => component.props.history.replace('/communiti-profile')}>
@@ -777,10 +786,14 @@ const renderFooter = (component) => {
 
 const renderUserMenuDrawer = (component) => {
   let {
-    showUserMenu
+    showUserMenu,
+    isLoadHistory
   } = component.state
+  let {
+    profile
+  } = component.props
   return (
-    <Drawer anchor="right" className="user-menu" open={showUserMenu} onClose={() => component.setState({ showUserMenu: false })}>
+    <Drawer anchor="right" className="user-menu full" open={showUserMenu} onClose={() => component.setState({ showUserMenu: false })}>
       <div className="menu-header">
         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showUserMenu: false })}>
           <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
@@ -793,9 +806,9 @@ const renderUserMenuDrawer = (component) => {
         </li>
         <li>
           <Button onClick={() => {
-            component.props.setCurrenUserDetail(data)
+            component.props.setCurrenUserDetail(profile)
             component.props.toggleUserHistory(true)
-            component.getHistoryPoint()
+            component.getHistoryPoint(0)
           }}>Lịch sử tích điểm</Button>
         </li>
         <li>
@@ -810,10 +823,10 @@ const renderUserMenuDrawer = (component) => {
           <Button style={{ background: "#ff5a59" }} onClick={() => signOut()}>Đăng xuất tài khoản</Button>
         </li>
       </ul>
+
     </Drawer>
   )
 }
-
 
 const renderUpdateProfileDrawer = (component) => {
   let {
@@ -840,21 +853,27 @@ const renderUpdateProfileDrawer = (component) => {
   )
 }
 
-
 const renderUserHistoryDrawer = (component) => {
   let {
     showUserHistory,
-    userDetail
+    userDetail,
+    profile
   } = component.props
   let {
     historyPoints,
     isLoadHistory
   } = component.state
 
+  console.log("profile", profile.mempoint)
+
   return (
-    <Drawer anchor="right" open={showUserHistory} onClose={() => component.props.toggleUserHistory(false)}>
+    <Drawer anchor="right"
+      open={showUserHistory}
+      onClose={() => component.props.toggleUserHistory(false)}
+      style={{ height: "100%", position: "fixed" }}
+    >
       {
-        userDetail ? <div className="drawer-detail">
+        profile ? <div className="drawer-detail">
           <div className="drawer-header">
             <div className="direction" onClick={() => component.props.toggleUserHistory(false)}>
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
@@ -864,19 +883,18 @@ const renderUserHistoryDrawer = (component) => {
             </div>
             <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{userDetail.fullName}</span>
+                <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điển YOOT: {userDetail.point}</span>
-                  <img src={coin} />
+                  <span>Điểm YOOT: {formatCurrency(profile.mempoint, 0)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={userDetail.avatar} style={{ width: "100%" }} />
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
               </Avatar>
             </div>
           </div>
           <div className="filter"></div>
-          <div style={{ overflow: "scroll", width: "100vw" }} id="history-list" onScroll={() => component.onScroll()}>
+          <div style={{ overflow: "scroll", width: "100%" }} id="history-list" onScroll={() => component.onScroll()}>
             {
 
               historyPoints && historyPoints.length > 0 ? <ul className="user-history">
@@ -961,7 +979,12 @@ const renderChangePasswordDrawer = (component) => {
           </div>
         </div>
         <div className="filter"></div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="content-form" style={{
+          height: "calc(100vh - 60px)",
+          width: "100vw",
+          display: "flex",
+          alignItems: "center"
+        }}>
           <div>
             <TextField
               className="custom-input"
@@ -1015,7 +1038,7 @@ const renderChangePasswordDrawer = (component) => {
               placeholder="Nhập lại mật khẩu mới"
               style={{
                 width: "100%",
-                marginBottom: "50px"
+                marginBottom: "10px"
               }}
               type={isShowConfirmPass ? "text" : "password"}
               value={confirmPassForChange}
@@ -1032,7 +1055,7 @@ const renderChangePasswordDrawer = (component) => {
                 ),
               }}
             />
-            <Button variant="contained" className={"bt-submit"} onClick={() => component.changePassword()}>Lưu thông tin</Button>
+            <Button variant="contained" className={"bt-submit"} onClick={() => component.changePassword()}>Lưu thay đổi</Button>
             <Button variant="contained" className={"bt-cancel"} onClick={() => component.setState({
               oldPassForChange: "",
               newPassForChange: "",
@@ -1084,7 +1107,7 @@ const renderBlockFriendDrawer = (component) => {
                       this.props.toggleUserPageDrawer(true)
                     }}>
                       <Avatar aria-label="recipe" className="avatar">
-                        <img src={item.friendavatar} style={{ width: "100%" }} />
+                        <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                       </Avatar>
                       <label onClick={() => {
                         this.props.setCurrenUserDetail(item)
@@ -1162,7 +1185,7 @@ const renderFriendsForBlockDrawer = (component) => {
                       this.props.toggleUserPageDrawer(true)
                     }}>
                       <Avatar aria-label="recipe" className="avatar">
-                        <img src={item.friendavatar} style={{ width: "100%" }} />
+                        <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                       </Avatar>
                       <label onClick={() => {
                         this.props.setCurrenUserDetail(item)
@@ -1208,310 +1231,4 @@ const renderConfirmDrawer = (component) => {
       </div>
     </Drawer>
   )
-}
-
-
-
-
-
-function a11yProps(index) {
-  return {
-    id: `full-width-tab-${index}`,
-    'aria-controls': `full-width-tabpanel-${index}`,
-  };
-}
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <div>{children}</div>
-      )}
-    </div>
-  );
-}
-
-
-const data = {
-  coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-  avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-  fullName: "hoang hai long",
-  point: 20,
-  liked: 1231,
-  folow: 221,
-  posted: 2533,
-  birthday: new Date(),
-  gender: "Nam",
-  friends: [
-    {
-      coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-      avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-      fullName: "Nguyễn Thị Vân Anh 1",
-      point: 111,
-      liked: 111,
-      folow: 111,
-      posted: 111,
-      birthday: new Date(),
-      gender: "Nam",
-      friends: [
-        {
-          coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-          avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-          fullName: "Nguyễn Thị Vân Anh 11",
-          point: 111,
-          liked: 111,
-          folow: 111,
-          posted: 111,
-          birthday: new Date(),
-          gender: "Nam",
-          friends: [
-
-          ],
-          folowing: [
-            {
-              avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-              fullName: "Apple Ánh"
-            },
-            {
-              avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-              fullName: "Võ Gia Huy"
-            },
-            {
-              avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-              fullName: "Quynh"
-            }
-          ],
-          folowed: [
-            {
-              avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-              fullName: "Võ Gia Huy"
-            },
-            {
-              avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-              fullName: "Apple Ánh"
-            },
-            {
-              avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-              fullName: "Quynh"
-            }
-          ],
-          jobs: [
-            {
-              position: "Nhân viên Thiết kế",
-              company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-              description: "Không có mô tả",
-              start: "10/20/2019",
-              end: "10/20/2020"
-            }
-          ],
-          studies: [
-            {
-              majors: "Nhân viên Thiết kế",
-              school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-              className: "D15_MT3DH",
-              graduate: "Khá",
-              masv: "DH12283",
-              start: "1999",
-              end: "2004",
-              isFinish: true
-            }
-          ],
-          address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-          email: "btcvn07@gmail.com",
-          skills: ["Quản lý thời gian", "Lãnh đạo"],
-          hopies: "Ca hát, thể thao",
-          orderSkills: "Ca hát",
-          mutualFriendCount: 2
-
-        }
-
-      ],
-      folowing: [
-        {
-          avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-          fullName: "Apple Ánh"
-        },
-        {
-          avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-          fullName: "Võ Gia Huy"
-        },
-        {
-          avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-          fullName: "Quynh"
-        }
-      ],
-      folowed: [
-        {
-          avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-          fullName: "Võ Gia Huy"
-        },
-        {
-          avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-          fullName: "Apple Ánh"
-        },
-        {
-          avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-          fullName: "Quynh"
-        }
-      ],
-      jobs: [
-        {
-          position: "Nhân viên Thiết kế",
-          company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-          description: "Không có mô tả",
-          start: "10/20/2019",
-          end: "10/20/2020"
-        }
-      ],
-      studies: [
-        {
-          majors: "Nhân viên Thiết kế",
-          school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-          className: "D15_MT3DH",
-          graduate: "Khá",
-          masv: "DH12283",
-          start: "1999",
-          end: "2004",
-          isFinish: true
-        }
-      ],
-      address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-      email: "btcvn07@gmail.com",
-      skills: ["Quản lý thời gian", "Lãnh đạo"],
-      hopies: "Ca hát, thể thao",
-      orderSkills: "Ca hát",
-      mutualFriendCount: 2
-    },
-    {
-      coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-      avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-      fullName: "Nguyễn Thị Vân Anh 2",
-      point: 222,
-      liked: 222,
-      folow: 222,
-      posted: 222,
-      birthday: new Date(),
-      gender: "Nam",
-      friends: [
-
-      ],
-      folowing: [
-        {
-          avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-          fullName: "Apple Ánh"
-        },
-        {
-          avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-          fullName: "Võ Gia Huy"
-        },
-        {
-          avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-          fullName: "Quynh"
-        }
-      ],
-      folowed: [
-        {
-          avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-          fullName: "Võ Gia Huy"
-        },
-        {
-          avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-          fullName: "Apple Ánh"
-        },
-        {
-          avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-          fullName: "Quynh"
-        }
-      ],
-      jobs: [
-        {
-          position: "Nhân viên Thiết kế",
-          company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-          description: "Không có mô tả",
-          start: "10/20/2019",
-          end: "10/20/2020"
-        }
-      ],
-      studies: [
-        {
-          majors: "Nhân viên Thiết kế",
-          school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-          className: "D15_MT3DH",
-          graduate: "Khá",
-          masv: "DH12283",
-          start: "1999",
-          end: "2004",
-          isFinish: true
-        }
-      ],
-      address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-      email: "btcvn07@gmail.com",
-      skills: ["Quản lý thời gian", "Lãnh đạo"],
-      hopies: "Ca hát, thể thao",
-      orderSkills: "Ca hát",
-      mutualFriendCount: 20
-    }
-  ],
-  folowing: [
-    {
-      avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-      fullName: "Apple Ánh"
-    },
-    {
-      avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-      fullName: "Võ Gia Huy"
-    },
-    {
-      avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-      fullName: "Quynh"
-    }
-  ],
-  folowed: [
-    {
-      avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-      fullName: "Võ Gia Huy"
-    },
-    {
-      avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-      fullName: "Apple Ánh"
-    },
-    {
-      avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-      fullName: "Quynh"
-    }
-  ],
-  jobs: [
-    {
-      position: "Nhân viên Thiết kế",
-      company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-      description: "Không có mô tả",
-      start: "10/20/2019",
-      end: "10/20/2020"
-    }
-  ],
-  studies: [
-    {
-      majors: "Nhân viên Thiết kế",
-      school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-      className: "D15_MT3DH",
-      graduate: "Khá",
-      masv: "DH12283",
-      start: "1999",
-      end: "2004",
-      isFinish: true
-    }
-  ],
-  address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-  email: "btcvn07@gmail.com",
-  skills: ["Quản lý thời gian", "Lãnh đạo"],
-  hopies: "Ca hát, thể thao",
-  orderSkills: "Ca hát"
 }

@@ -1,0 +1,90 @@
+.click-tooltip{
+  position: relative;
+  div[role="tooltip"]{
+    opacity: 1;
+    margin-bottom: 15px;
+    position: relative;
+    > div{
+      margin: 0px !important;
+      padding: 10px 30px;
+      background: #fff;
+      border-radius: 5px;
+      font-size: 1rem;
+      color: #333;
+      position: absolute;
+      white-space: nowrap;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+  }
+  &.top-end{
+    div[role="tooltip"]{
+      > div{
+        bottom: 0px;
+        right: -10px;
+        &::after{
+          right: 15px;
+        }
+        &::before{
+          right: 15px;
+        }
+      }
+    }
+  }
+  &.top{
+    div[role="tooltip"]{
+      position: absolute;
+      > div{
+        position: relative;
+        bottom: 100%;
+        &::after{
+          left: calc(50%) ;
+        }
+        &::before{
+          left: calc(50%) ;
+        }
+      }
+    }
+  }
+  &.top-start{
+    div[role="tooltip"]{
+      > div{
+        bottom: 0px;
+        left: -10px;
+        &::after{
+          left: 15px;
+        }
+        &::before{
+          left: 15px;
+        }
+      }
+    }
+  }
+  &.top-start,&.top-end,&.top{
+    div[role="tooltip"]{
+      > div{
+        &::after{
+          content: '';
+          border-top: 14px solid #fff;
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-bottom: 10px solid transparent;
+          position: absolute;
+          top: 100%;
+          z-index: 1;
+        }
+        &::before{
+          content: '';
+          width: 13px;
+          height: 15px;
+          position: absolute;
+          top: calc(100% - 10px);
+          z-index: 0 !important;
+          box-shadow: 7px 7px 5px rgba(0,0,0,0.07);
+          transform: rotate(45deg);
+          background: none !important;
+        }
+      }
+    }
+  }
+}

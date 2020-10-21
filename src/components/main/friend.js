@@ -181,7 +181,6 @@ class Index extends React.Component {
             isLoadMore: true
         })
         get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
-            console.log("result", result)
             if (result && result.result == 1) {
                 this.setState({
                     waitings: waitings.concat(result.content.userInvites),
@@ -472,8 +471,6 @@ class Index extends React.Component {
             showFriendDrawer
         } = this.props
 
-        console.log("suggestFriends", suggestFriends)
-
         return (
             userDetail ? <div className="friend-page" >
                 <Drawer anchor="bottom" className="friend-drawer" open={showFriendDrawer} onClose={() => this.onCloseDrawer()}>
@@ -546,7 +543,7 @@ class Index extends React.Component {
                                                             this.props.toggleUserPageDrawer(true)
                                                         }}>
                                                             <Avatar aria-label="recipe" className="avatar">
-                                                                <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                                <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                             </Avatar>
                                                         </div>
                                                         <div className="info-action">
@@ -576,7 +573,7 @@ class Index extends React.Component {
                                                             this.props.toggleUserPageDrawer(true)
                                                         }}>
                                                             <Avatar aria-label="recipe" className="avatar">
-                                                                <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                                <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                             </Avatar>
                                                         </div>
                                                         <div className="info-action">
@@ -606,7 +603,7 @@ class Index extends React.Component {
                                                             this.props.toggleUserPageDrawer(true)
                                                         }}>
                                                             <Avatar aria-label="recipe" className="avatar">
-                                                                <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                                <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                             </Avatar>
                                                         </div>
                                                         <div className="info-action">
@@ -640,7 +637,7 @@ class Index extends React.Component {
                                                             this.props.toggleUserPageDrawer(true)
                                                         }}>
                                                             <Avatar aria-label="recipe" className="avatar">
-                                                                <img src={item.friendavatar} style={{ width: "100%" }} />
+                                                                <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                             </Avatar>
                                                         </div>
                                                         <div className="info-action">

@@ -10,6 +10,17 @@ export const LIKE_POSTED = "posted@LIKE_POSTED"
 export const DISLIKE_POSTED = "posted@DISLIKE_POSTED"
 export const LIKE_IMAGE = "posted@LIKE_IMAGE"
 export const DISLIKE_IMAGE = "posted@DISLIKE_IMAGE"
+export const SET_CURRENT_POST = "posted@SET_CURRENT_POST"
+export const DELETE_POST_SUCCESS = "posted@DELETE_POST_SUCCESS"
+export const CREATE_POST_SUCCESS = "posted@CREATE_POST_SUCCESS"
+export const SET_USER_POSTEDS = "posted@SET_USER_POSTEDS"
+export const CHANGE_COMMENT_COUNT = "posted@CHANGE_COMMENT_COUNT"
+export const CHANGE_COMMENT_COUNT_FOR_IMAGE = "posted@CHANGE_COMMENT_COUNT_FOR_IMAGE"
+export const ENABLE_POST = "posted@ENABLE_POST"
+export const SET_ALL_POSTED = "posted@SET_ALL_POSTED"
+export const SET_VIDEO_POSTED = "posted@SET_VIDEO_POSTED"
+export const SET_GROUP_POSTED = "posted@SET_GROUP_POSTED"
+export const SET_CURRENT_GROUP_POSTED = "post@SET_CURRENT_GROUP_POSTED"
 
 export const setMePosted = (posteds) => {
     return dispatch => {
@@ -21,67 +32,186 @@ export const setMePosted = (posteds) => {
     }
 }
 
-export const updatePosted = (posted, targetKey) => {
+export const setCurrentPosted = (post) => {
+    return dispatch => {
+        dispatch({
+            type: SET_CURRENT_POST,
+            payload: post
+        })
+
+    }
+}
+
+export const updatePosted = (posted, userId) => {
     return dispatch => {
         dispatch({
             type: UPDATE_POSTED,
             payload: posted,
-            targetKey: targetKey
+            userId: userId
         })
 
     }
 }
 
-export const likePosted = (postId, iconCode, targetKey) => {
+export const likePosted = (post, iconCode, targetKey, userId) => {
     return dispatch => {
         dispatch({
             type: LIKE_POSTED,
-            postId: postId,
+            payload: post,
             iconCode: iconCode,
-            targetKey: targetKey
+            targetKey: targetKey,
+            userId: userId
         })
 
     }
 }
 
-export const dislikePosted = (postId, targetKey) => {
+export const dislikePosted = (post, targetKey, userId) => {
     return dispatch => {
         dispatch({
             type: DISLIKE_POSTED,
-            postId: postId,
-            targetKey: targetKey
+            payload: post,
+            targetKey: targetKey,
+            userId: userId
         })
 
     }
 }
 
 
-export const likeImage = (postId, imageId, iconCode, targetKey) => {
+export const likeImage = (post, imageId, iconCode, userId) => {
     return dispatch => {
         dispatch({
             type: LIKE_IMAGE,
-            postId: postId,
+            payload: post,
             imageId: imageId,
             iconCode: iconCode,
-            targetKey: targetKey
+            userId: userId
         })
 
     }
 }
 
-export const dislikeImage = (postId, imageId, targetKey) => {
+export const dislikeImage = (post, imageId, userId) => {
     return dispatch => {
         dispatch({
             type: DISLIKE_IMAGE,
-            postId: postId,
+            payload: post,
             imageId: imageId,
-            targetKey: targetKey
+            userId: userId
+        })
+
+    }
+}
+
+export const createPostSuccess = (post, userId) => {
+    return dispatch => {
+        dispatch({
+            type: CREATE_POST_SUCCESS,
+            payload: post,
+            userId: userId
+        })
+
+    }
+}
+
+export const deletePostSuccess = (postId, userId) => {
+    return dispatch => {
+        dispatch({
+            type: DELETE_POST_SUCCESS,
+            payload: postId,
+            userId: userId
+        })
+
+    }
+}
+
+export const setUserPosted = (posteds, userId) => {
+    return dispatch => {
+        dispatch({
+            type: SET_USER_POSTEDS,
+            payload: posteds,
+            userId: userId
         })
 
     }
 }
 
 
+export const changeCommentCountForPost = (number, postId, userId) => {
+    return dispatch => {
+        dispatch({
+            type: CHANGE_COMMENT_COUNT,
+            payload: number,
+            userId: userId,
+            postId: postId
+        })
 
+    }
+}
+
+
+export const changeCommentCountForImage = (number, postId, userId, detailimageid) => {
+    return dispatch => {
+        dispatch({
+            type: CHANGE_COMMENT_COUNT_FOR_IMAGE,
+            payload: number,
+            postId: postId,
+            userId: userId,
+            detailimageid: detailimageid
+        })
+
+    }
+}
+
+export const endablePost = (post) => {
+    return dispatch => {
+        dispatch({
+            type: ENABLE_POST,
+            payload: post,
+        })
+
+    }
+}
+
+
+export const setAllPosted = (posts) => {
+    return dispatch => {
+        dispatch({
+            type: SET_ALL_POSTED,
+            payload: posts,
+        })
+
+    }
+}
+
+export const setVideoPosted = (posts) => {
+    return dispatch => {
+        dispatch({
+            type: SET_VIDEO_POSTED,
+            payload: posts,
+        })
+
+    }
+}
+export const setGroupPosted = (posts) => {
+    return dispatch => {
+        dispatch({
+            type: SET_GROUP_POSTED,
+            payload: posts,
+        })
+
+    }
+}
+
+export const setCurrentGroupPosted = (posts) => {
+    return dispatch => {
+        dispatch({
+            type: SET_CURRENT_GROUP_POSTED,
+            payload: posts,
+        })
+
+    }
+}
 
 

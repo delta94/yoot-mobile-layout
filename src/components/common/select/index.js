@@ -67,7 +67,9 @@ class Index extends React.Component {
             style,
             haveConfirm,
             optionStyle,
-            searchable
+            searchable,
+            closeButtonStyle,
+            actionStyle
         } = this.props
         if (searchable && searchKey != '' && searchKey && options && options.length > 0)
             options = options.filter(item => cleanAccents(item.label.toLowerCase()).indexOf(cleanAccents(searchKey.toLowerCase())) >= 0)
@@ -121,8 +123,11 @@ class Index extends React.Component {
                             }
                         </ul>
                     </div>
-                    <div className="action">
-                        <Button onClick={() => this.setState({ showOptions: false })}>Đóng</Button>
+                    <div className="action" style={actionStyle}>
+                        {
+                            clearable == true ? <Button className="bt-cancel" onClick={() => this.handleSelect(null)}>Gỡ bỏ</Button> : ""
+                        }
+                        <Button style={closeButtonStyle} onClick={() => this.setState({ showOptions: false })}>Đóng</Button>
                         {
                             haveConfirm ? <Button onClick={() => this.handleConfirm()}>Xác nhận</Button> : ""
                         }

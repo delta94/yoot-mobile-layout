@@ -1,11 +1,42 @@
 .custom-cropper{
-  > div{
-    width: calc(100vw - 40px);
-    margin-left: 20px;
-  }
+ margin: 0px auto;
 }
 .cropper-drawer{
-  .drawer-content{
-    display: block !important;
-  }
+    background: #0e1013 !important;
+    .drawer-detail{
+        display: grid;
+        grid-template-rows: auto min-content;
+        height: 100%;
+        > div{
+            background: #0e1013 !important;
+        }
+        .drawer-content{
+            display: flex;
+            align-items: center;
+        }
+        .footer-drawer{
+            > label{
+                display: inline-block;
+                width: 100%;
+                text-align: center;
+                color: rgba(255,255,255,0.8);
+                padding-top: 10px;
+            }
+            > div{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px;                
+                >button{
+                    color: rgba(255,255,255,0.8);
+                    min-width: fit-content;
+                    span{
+                        font-family: Roboto-Regular;
+                        text-transform: none !important;
+                        width: fit-content;
+                    }
+                }
+            }
+        }
+    }
 }

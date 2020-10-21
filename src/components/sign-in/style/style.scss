@@ -63,8 +63,11 @@
   .accept-role{
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     margin-top: 10px;
+    .groupUser-policies{
+      
+    }
     > label{
       margin: 0px;
       width: fit-content;

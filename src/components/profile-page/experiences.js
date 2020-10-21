@@ -142,7 +142,7 @@ export class Index extends React.Component {
         return (
             <div className="content-box">
                 <label>
-                    <PlayArrowIcon />
+                    <img src={require('../../assets/icon/Arrow@1x.png')} style={{ width: "15px", height: "15px", margin: "0px 4px" }} />
                     <span>Kinh nghiệm làm việc</span>
                 </label>
                 <div className="add-bt" onClick={() => this.setState({ showAddForm: true })}>
@@ -196,7 +196,7 @@ export class Index extends React.Component {
                             <div className='input-field'>
                                 <label>Ngày bắt đầu</label>
                                 <div>
-                                    <FormControl variant="outlined" className={"custom-select ml15"}>
+                                    <FormControl variant="outlined" className={"custom-select ml20 "}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={fromMonth}
@@ -207,7 +207,7 @@ export class Index extends React.Component {
                                             }
                                         </NativeSelect>
                                     </FormControl>
-                                    <FormControl variant="outlined" className={"custom-select ml15"}>
+                                    <FormControl variant="outlined" className={"custom-select ml20 "}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={fromYear}
@@ -223,7 +223,7 @@ export class Index extends React.Component {
                             <div className='input-field'>
                                 <label>Ngày kết thúc</label>
                                 <div>
-                                    <FormControl variant="outlined" className={"custom-select ml15"}>
+                                    <FormControl variant="outlined" className={"custom-select ml20"}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={toMonth}
@@ -234,7 +234,7 @@ export class Index extends React.Component {
                                             }
                                         </NativeSelect>
                                     </FormControl>
-                                    <FormControl variant="outlined" className={"custom-select ml15"}>
+                                    <FormControl variant="outlined" className={"custom-select ml20"}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={toYear}
@@ -325,8 +325,8 @@ const renderCloseForm = (component) => {
                 <label>Bạn muốn rời khỏi trang này?</label>
                 <p>Những thông tin vừa thay đổi vẫn chưa được lưu.</p>
                 <div className="mt20">
-                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showAddForm: false }, () => component.handleResetState())}>Đồng ý rời khỏi</Button>
-                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại thay đổi</Button>
+                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showAddForm: false }, () => component.handleResetState())}>Đồng ý</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại</Button>
                 </div>
             </div>
         </Drawer>

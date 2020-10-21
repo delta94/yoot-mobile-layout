@@ -22,6 +22,7 @@ import {
 import { showNotification } from '../../utils/common';
 import { connect } from 'react-redux'
 import Loader from '../common/loader'
+import CustomMenu from '../common/custom-menu'
 
 export class Index extends React.Component {
 
@@ -215,11 +216,11 @@ export class Index extends React.Component {
         return (
             <div className="content-box">
                 <label>
-                    <PlayArrowIcon />
+                    <img src={require('../../assets/icon/Arrow@1x.png')} style={{ width: "15px", height: "15px", margin: "0px 4px" }} />
                     <span>Kỹ năng sở trường</span>
                 </label>
                 <ul>
-                    <li>
+                    <li className="mt10 ml13">
                         <label>Kỹ năng</label>
                         {
                             data.userSkill ? <ul className="skills">
@@ -234,34 +235,26 @@ export class Index extends React.Component {
                             </ul> : ""
                         }
                     </li>
-                    <li>
+                    <li className="mt10 ml13">
                         <label style={{ display: "inline-block", width: "100%" }}>Sở thích</label>
                         {
                             data.likes ? <span>{data.likes}</span> : ""
                         }
                     </li>
-                    <li>
+                    <li className="mt10 ml13">
                         <label style={{ display: "inline-block", width: "100%" }}>Kỹ năng đặc biệt / tài lẻ</label>
                         {
                             data.special ? <span>{data.special}</span> : ""
                         }
                     </li>
                 </ul>
-                <IconButton onClick={(e) => this.setState({ showLocalMenu: true, anchor: e.target })}>
-                    <MoreHorizIcon />
-                </IconButton>
-                <Menu
-                    className="custom-menu"
-                    anchorEl={anchor}
-                    keepMounted
-                    open={showLocalMenu}
-                    onClose={() => this.setState({ showLocalMenu: false })}
-                >
+                <CustomMenu>
                     <MenuItem onClick={() => this.setState({ showLocalMenu: false, showUpdateForm: true }, () => {
                         this.handleSetDefault()
                     })}>Chỉnh sửa</MenuItem>
                     <MenuItem onClick={() => this.setState({ showLocalMenu: false, showDeleteConfirm: true })}>Xoá</MenuItem>
-                </Menu>
+                </CustomMenu>
+
                 <Drawer anchor="bottom" className="drawer-form update-skill" open={showUpdateForm} onClose={() => this.setState({ showUpdateForm: false })}>
                     <div className="form-header">
                         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => this.handleClose()}>
@@ -352,10 +345,9 @@ const renderDeleteConfirm = (component) => {
                 <label>Xoá thông tin sở trường.</label>
                 <p>Bạn có chắc chắn muốn xoá thông tin này không?</p>
                 <div className="mt20">
-                    <Button className="bt-cancel" onClick={() => component.setState({ showDeleteConfirm: false })}>Huỷ</Button>
-                    <Button className="bt-submit" onClick={() => component.handleDelete()}>
-                        Xoá
-                    </Button>
+                    <Button className="bt-confirm" onClick={() => component.handleDelete()}>Xoá</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showDeleteConfirm: false })}>Huỷ</Button>
+
                 </div>
             </div>
             {
@@ -377,8 +369,8 @@ const renderCloseForm = (component) => {
                 <label>Bạn muốn rời khỏi trang này?</label>
                 <p>Những thông tin vừa thay đổi vẫn chưa được lưu.</p>
                 <div className="mt20">
-                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false, isChange: false })}>Đồng ý rời khỏi</Button>
-                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại thay đổi</Button>
+                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false, isChange: false })}>Đồng ý</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại</Button>
                 </div>
             </div>
         </Drawer>

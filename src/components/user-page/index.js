@@ -15,6 +15,9 @@ import {
   setCurrenUserDetail
 } from '../../actions/user'
 import {
+  setUserPosted
+} from '../../actions/posted'
+import {
   PhotoCamera as PhotoCameraIcon,
   ChevronLeft as ChevronLeftIcon,
   Add as AddIcon,
@@ -39,6 +42,10 @@ import Loader from '../common/loader'
 import { objToQuery } from "../../utils/common";
 import Friends from './friend'
 import Medias from './medias'
+import Videos from './videos'
+import Post from '../post'
+import $ from 'jquery'
+import ClickTooltip from '../common/click-tooltip'
 
 
 const coin = require('../../assets/icon/Coins_Y.png')
@@ -69,7 +76,16 @@ class Index extends React.Component {
       isLoadMore: false,
       friends: [],
       isEndOfFriends: false,
-      friendsCurrentPage: 0
+      friendsCurrentPage: 0,
+      followeds: [],
+      followings: [],
+      userDetailFolowTabIndex: 0,
+      postedsCurrentPage: 0,
+      isEndOfPosteds: false,
+      isLoading: false,
+      numOfFollowed: 0,
+      numOfFollowing: 0,
+      numOfFriend: 0
     };
   }
   getProfile(id) {
@@ -82,6 +98,89 @@ class Index extends React.Component {
           userDetail: result.content.user
         })
         this.getFriends(id, friendsCurrentPage)
+        this.getFollowed(0, id)
+        this.getFollowing(0, id)
+        this.getFollowedCount(id)
+        this.getFollowingCount(id)
+      }
+    })
+  }
+
+  getFollowedCount(userId) {
+    let param = {
+      currentdate: moment(new Date).format(CurrentDate),
+      status: "Followed",
+      forFriendId: userId,
+    }
+    let queryParam = objToQuery(param)
+    get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + queryParam, result => {
+      if (result.result == 1) {
+        this.setState({
+          numOfFollowed: result.content.count
+        })
+      }
+    })
+  }
+
+  getFollowingCount(userId) {
+    let param = {
+      currentdate: moment(new Date).format(CurrentDate),
+      status: "Following",
+      forFriendId: userId,
+    }
+    let queryParam = objToQuery(param)
+    get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + queryParam, result => {
+      if (result.result == 1) {
+        this.setState({
+          numOfFollowing: result.content.count
+        })
+      }
+    })
+  }
+
+  getFollowed(currentPage, userId) {
+    let param = {
+      currentpage: currentPage,
+      currentdate: moment(new Date).format(CurrentDate),
+      limit: 20,
+      status: "Followed",
+      forFriendId: userId,
+      groupid: 0
+    }
+    let queryParam = objToQuery(param)
+    get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + queryParam, result => {
+      if (result.result == 1) {
+        let {
+          followeds
+        } = this.state
+        followeds = followeds.concat(result.content.userInvites)
+        this.setState({
+          followeds: followeds
+        })
+      }
+    })
+  }
+
+
+  getFollowing(currentPage, userId) {
+    let param = {
+      currentpage: currentPage,
+      currentdate: moment(new Date).format(CurrentDate),
+      limit: 20,
+      status: "Following",
+      forFriendId: userId,
+      groupid: 0
+    }
+    let queryParam = objToQuery(param)
+    get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + queryParam, result => {
+      if (result.result == 1) {
+        let {
+          followings
+        } = this.state
+        followings = followings.concat(result.content.userInvites)
+        this.setState({
+          followings: followings
+        })
       }
     })
   }
@@ -115,6 +214,77 @@ class Index extends React.Component {
       }
     })
   }
+
+
+
+  getPosted(userId, currentpage) {
+    let {
+      userPosteds,
+      userDetail
+    } = this.props
+    let posteds = []
+    if (userDetail && userPosteds[userDetail.id]) {
+      posteds = posteds.concat(userPosteds[userDetail.id])
+    }
+
+    let param = {
+      currentpage: currentpage,
+      currentdate: moment(new Date).format(CurrentDate),
+      limit: 20,
+      groupid: 0,
+      isVideo: 0,
+      suggestGroup: 0,
+      forFriendId: userId,
+      albumid: 0
+    }
+    this.setState({
+      isLoadMore: true,
+    })
+    get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetAllNewsFeed" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          isLoadMore: false
+        })
+        result.content.newsFeeds.map(item => {
+          if (item.iconlike < 0) item.iconlike = 0
+        })
+        this.props.setUserPosted(posteds.concat(result.content.newsFeeds), userId)
+        if (result.content.newsFeeds.length == 0) {
+          this.setState({
+            isEndOfPosteds: true,
+            isLoadMore: false
+          })
+        }
+      }
+    })
+  }
+
+  onScroll() {
+    // let {
+    //   userDetail
+    // } = this.props
+    // if (!userDetail) return
+    // userDetail.id = userDetail.userid
+    // let element = $("#user-page-" + userDetail.id)
+    // let {
+    //   isLoading,
+    //   isEndOfPosteds,
+    //   postedsCurrentPage,
+    // } = this.state
+
+    // if (element)
+    //   if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+    //     if (isLoading == false && isEndOfPosteds == false) {
+    //       this.setState({
+    //         postedsCurrentPage: postedsCurrentPage + 1,
+    //         isLoading: false
+    //       }, () => {
+    //         this.getPosted(userDetail.id, postedsCurrentPage)
+    //       })
+    //     }
+    //   }
+  }
+
   addFriend(friendId) {
     let param = {
       friendid: friendId
@@ -194,6 +364,7 @@ class Index extends React.Component {
       }
     })
   }
+
   folowFriend(friendid) {
     let param = {
       friendid: friendid
@@ -209,25 +380,54 @@ class Index extends React.Component {
     })
   }
 
+  getNumOfFriend(friendid) {
+    let param = {
+      currentdate: moment(new Date).format(CurrentDate),
+      status: "Friends",
+      forFriendId: friendid,
+    }
+    get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + objToQuery(param), result => {
+      if (result.result == 1) {
+        this.setState({
+          numOfFriend: result.content.count
+        })
+      }
+    })
+  }
+
   componentDidMount() {
     let {
       userDetail,
     } = this.props
-    if (userDetail)
+    if (userDetail) {
       this.getProfile(userDetail.friendid)
+      this.getPosted(userDetail.friendid, 0)
+      this.getNumOfFriend(userDetail.friendid)
+    }
   }
+
   render() {
     let {
-      showUserMenu,
+      openVideoDrawer,
       userDetail,
       friends,
       showFriendDrawer,
-      openMediaDrawer
+      openMediaDrawer,
+      numOfFriend
     } = this.state
 
+
     let {
-      onClose
+      onClose,
+      userPosteds
     } = this.props
+
+    let posteds = []
+    if (userDetail) {
+      posteds = userPosteds[userDetail.id]
+    }
+
+
 
     return (
       <div className="drawer-detail">
@@ -243,12 +443,12 @@ class Index extends React.Component {
               <div className="profile">
                 <span className="user-name">{userDetail.fullname}</span>
                 <span className="point">
-                  <span>Điển YOOT: {userDetail.mempoint}</span>
+                  <span>Điểm YOOT: {userDetail.mempoint}</span>
                 </span>
 
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={userDetail.avatar} style={{ width: "100%" }} />
+                <div className="img" style={{ background: `url("${userDetail.avatar}")` }} />
               </Avatar>
             </div> : <ContentLoader
               speed={2}
@@ -266,7 +466,7 @@ class Index extends React.Component {
           }
         </div >
         <div className="filter"></div>
-        <div style={{ overflow: "scroll" }}>
+        <div style={{ overflow: "scroll" }} onScroll={() => this.onScroll()} id={"user-page-scrolling"}>
           {
             userDetail ? <div className="profile-page user-page" >
               <div className="none-bg">
@@ -288,16 +488,22 @@ class Index extends React.Component {
               <div className="react-reward">
                 <ul>
                   <li>
-                    <span><img src={like}></img></span>
-                    <span>{userDetail.numlike}</span>
+                    <ClickTooltip className="item like-count" title="Số lượt thích" placement="top-start">
+                      <span><img src={like}></img></span>
+                      <span>{userDetail.numlike}</span>
+                    </ClickTooltip>
                   </li>
                   <li>
-                    <span><img src={follower}></img></span>
-                    <span>{userDetail.numfollow}</span>
+                    <ClickTooltip className="item follow-count" title="Số người theo dõi" placement="top">
+                      <span><img src={follower}></img></span>
+                      <span>{userDetail.numfollow}</span>
+                    </ClickTooltip>
                   </li>
                   <li>
-                    <span><img src={donePractice}></img></span>
-                    <span>{userDetail.numpost}</span>
+                    <ClickTooltip className="item post-count" title="Số bài đăng" placement="top-end">
+                      <span><img src={donePractice}></img></span>
+                      <span>{userDetail.numpost}</span>
+                    </ClickTooltip>
                   </li>
                 </ul>
               </div>
@@ -354,15 +560,13 @@ class Index extends React.Component {
                     </li> : ""
                   }
                 </ul>
-                <span className="view-detail-link" onClick={() => {
-                  this.props.setCurrenUserDetail(userDetail)
-                  this.props.toggleUserDetail(true)
-                }}>{">>> Xem thêm thông tin của"} {userDetail.fullname}</span>
+                <span className="view-detail-link" onClick={() => this.setState({ showUserDetail: true })}>{">>> Xem thêm thông tin của"} {userDetail.fullname}</span>
               </div>
 
               <div className="friend-reward">
                 <label>Bạn bè</label>
-                <span>{10} người bạn</span>
+                <span>{numOfFriend} người bạn</span>
+
                 <div className="friend-list">
                   {
                     friends.length > 0 && friends.slice(0, 6).map((item, index) => <div key={index} className="friend-item" onClick={() => {
@@ -394,6 +598,17 @@ class Index extends React.Component {
                   </li>
                 </ul>
               </div>
+              <div className="posted">
+                {
+                  posteds && posteds.length > 0 ? <ul>
+                    {
+                      posteds.map((post, index) => <li key={index} >
+                        <Post data={post} history={this.props.history} userId={userDetail.id} containerRef={document.getElementById("user-page-scrolling")} />
+                      </li>)
+                    }
+                  </ul> : ""
+                }
+              </div>
 
               <Friends open={showFriendDrawer} userDetail={userDetail} onClose={() => this.setState({ showFriendDrawer: false })} />
               {
@@ -403,17 +618,25 @@ class Index extends React.Component {
                 renderMediaDrawer(this)
               }
               {
-                renderVideoDrawer(this)
-              }
-              {
                 renderUserPageDrawer(this)
               }
               {
                 renderConfirmDrawer(this)
               }
+              {
+                renderUserDetailDrawer(this)
+              }
               <Medias open={openMediaDrawer} onClose={() => this.setState({ openMediaDrawer: false })} currentUser={userDetail} />
+              <Videos open={openVideoDrawer} onClose={() => this.setState({ openVideoDrawer: false })} currentUser={userDetail} />
+
             </div> : <Loader type={"small"} width={30} height={30} />
           }
+          {/* {
+
+            posteds && posteds.length > 0 && posteds.map((post, index) =>
+              <Post data={post} key={index} history={this.props.history} containerRef={document.getElementById("user-page-scrolling")} />
+            )
+          } */}
         </div>
 
       </div >
@@ -424,7 +647,8 @@ class Index extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.app,
-    ...state.user
+    ...state.user,
+    ...state.posted
   }
 };
 
@@ -438,7 +662,8 @@ const mapDispatchToProps = dispatch => ({
   togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
   toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
   setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
-  toggleUserPageDrawer: (isShow) => dispatch(toggleUserPageDrawer(isShow))
+  toggleUserPageDrawer: (isShow) => dispatch(toggleUserPageDrawer(isShow)),
+  setUserPosted: (userId, currentpage) => dispatch(setUserPosted(userId, currentpage))
 });
 
 export default connect(
@@ -613,7 +838,7 @@ const renderMediaDrawer = (component) => {
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                 <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
               </IconButton>
-              <label>Album của {userDetail.fullName}</label>
+              <label>Album của {userDetail.fullname}</label>
             </div>
           </div>
           <div className="filter">
@@ -699,7 +924,7 @@ const renderMediaDrawer = (component) => {
                     </li>
                     {
                       albums.map((album, index) => <li key={index}>
-                        <div>
+                        <div style={{ background: "url(" + (defaultImage) + ")" }}>
                           <div className="demo-bg" style={{ background: "url(" + (album.items.length > 0 ? album.items[0] : defaultImage) + ")" }} />
                         </div>
                         <span className="name">{album.name}</span>
@@ -716,30 +941,189 @@ const renderMediaDrawer = (component) => {
   )
 }
 
-const renderVideoDrawer = (component) => {
+
+const renderUserDetailDrawer = (component) => {
   let {
-    openVideoDrawer
+    showUserDetail,
+    followeds,
+    followings,
+    userDetail,
+    userDetailFolowTabIndex,
+    numOfFollowed,
+    numOfFollowing
   } = component.state
-  let {
-    userDetail
-  } = component.props
+
   return (
-    <Drawer anchor="bottom" open={openVideoDrawer} onClose={() => component.setState({ openVideoDrawer: false })}>
+    <Drawer anchor="bottom" className="drawer-detail" open={showUserDetail} onClose={() => component.setState({ showUserDetail: false })}>
       {
-        userDetail ? <div className="drawer-detail media-drawer">
+        userDetail ? <div className="drawer-detail">
           <div className="drawer-header">
-            <div className="direction" onClick={() => component.setState({ openVideoDrawer: false })}>
+            <div className="direction" onClick={() => component.setState({ showUserDetail: false })}>
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                 <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
               </IconButton>
-              <label>Video của {userDetail.fullName}</label>
+              <label>Trang cá nhân</label>
+            </div>
+            <div className="user-reward">
+              <div className="profile">
+                <span className="user-name">{userDetail.fullname}</span>
+                <span className="point">
+                  <span>Điểm YOOT: {userDetail.mempoint}</span>
+                </span>
+              </div>
+              <Avatar aria-label="recipe" className="avatar">
+                <div className="img" style={{ background: `url("${userDetail.avatar}")` }} />
+              </Avatar>
             </div>
           </div>
-          <div className="filter">
+          <div className="filter"></div>
+          <div style={{ overflow: "scroll" }}>
+            <AppBar position="static" color="default" className={"custom-tab"}>
+              <Tabs
+                value={userDetailFolowTabIndex}
+                onChange={(e, value) => component.setState({ userDetailFolowTabIndex: value })}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="fullWidth"
+                aria-label="full width tabs example"
+                className="tab-header"
+              >
+                <Tab label={"Người theo dõi "} {...a11yProps(0)} className="tab-item" />
+                <Tab label={"Đang theo dõi "} {...a11yProps(1)} className="tab-item" />
+              </Tabs>
+            </AppBar>
+            <SwipeableViews
+              index={userDetailFolowTabIndex}
+              onChangeIndex={(value) => component.setState({ userDetailFolowTabIndex: value })}
+              className="tab-content"
+            >
+              <TabPanel value={userDetailFolowTabIndex} index={0} className="content-box">
+                <div className="friend-count">
+                  <span>Số lượng</span>
+                  <span className="red">{numOfFollowed}</span>
+                </div>
+                <div className="folowed-list">
+                  {
+                    followeds && followeds.length > 0 ? <ul>
+                      {
+                        followeds.map((item, index) => <li className="small-user-layout" key={index}>
+                          <Avatar aria-label="recipe" className="avatar" onClick={() => {
+                            component.setState({
+                              showUserPage: true,
+                              currentUserDetail: item
+                            })
+                          }}>
+                            <img src={item.friendavatar} style={{ width: "100%" }} />
+                          </Avatar>
+                          <span className="user-name" onClick={() => {
+                            component.setState({
+                              showUserPage: true,
+                              currentUserDetail: item
+                            })
+                          }}>{item.friendname}</span>
+                          <Button style={{ background: "#f44645", color: "#fff" }}>Theo dõi</Button>
+                        </li>)
+                      }
+                    </ul> : <span className="list-empty-message">Chưa có ai theo dõi</span>
+                  }
+                </div>
+              </TabPanel>
+              <TabPanel value={userDetailFolowTabIndex} index={1} >
+                <div className="friend-count">
+                  <span>Số lượng</span>
+                  <span className="red">{numOfFollowing}</span>
+                </div>
+                <div className="folowing-list">
+                  {
+                    followings && followings.length > 0 ? <ul>
+                      {
+                        followings.map((item, index) => <li className="small-user-layout" key={index}>
+                          <Avatar aria-label="recipe" className="avatar" onClick={() => {
+                            component.setState({
+                              showUserPage: true,
+                              currentUserDetail: item
+                            })
+                          }}>
+                            <img src={item.friendavatar} style={{ width: "100%" }} />
+                          </Avatar>
+                          <span className="user-name" onClick={() => {
+                            component.setState({
+                              showUserPage: true,
+                              currentUserDetail: item
+                            })
+                          }}>{item.friendname}</span>
+                          <Button style={{ background: "rgba(0,0,0,0.05)" }}>Bỏ theo dõi</Button>
+                        </li>)
+                      }
+                    </ul> : <span className="list-empty-message">Chưa theo dõi bất kì ai</span>
+                  }
+                </div>
+              </TabPanel>
+            </SwipeableViews>
+            <div className="job-reward info-box">
+              <label>Công việc</label>
+              {
+                userDetail.userExperience[0] ? <span>Từng làm <b>{userDetail.userExperience[0].title}</b> tại <b>{userDetail.userExperience[0].companyname}</b></span> : "-/-"
+              }
+              {
+                userDetail.userExperience[0] ? <p>{userDetail.userExperience[0].description}</p> : "-/-"
+              }
+            </div>
+            <div className="job-reward info-box">
+              <label>Học vấn</label>
+              {
+                userDetail.userStudyGraduation[0] ? <span>Từng học <b>{userDetail.userStudyGraduation[0].specialized}</b> tại <b>{userDetail.userStudyGraduation[0].schoolname}</b></span> : ""
+              }
+              {
+                userDetail.userStudyGraduation[0] ? <span><b>Trình độ: </b>{userDetail.userStudyGraduation[0].qualificationname}</span> : ""
+              }
+              {
+                userDetail.userStudyGraduation[0] ? <span><b>Mã hớp: </b>{userDetail.userStudyGraduation[0].codeclass}</span> : ""
+              }
+              {
+                userDetail.userStudyGraduation[0] ? <span><b>Loại tốt nghiệp: </b>{userDetail.userStudyGraduation[0].graduationname}</span> : ""
+              }
+            </div>
+            <div className="job-reward info-box">
+              <label>Sống tại</label>
+              <span>{userDetail.address}</span>
+            </div>
+            <div className="job-reward info-box">
+              <label>Thông tin liên hệ</label>
+              <span className="email">{userDetail.email}</span>
+            </div>
+            <div className="job-reward info-box">
+              <label>Thông tin cơ bản</label>
+              <ul>
+                <li>
+                  <label>{userDetail.gendertext}</label>
+                  <span>Giới tính</span>
+                </li>
+                <li>
+                  <label>{moment(userDetail.birthday).format("D [tháng] M, YYYY")}</label>
+                  <span>Ngày sinh</span>
+                </li>
+              </ul>
+            </div>
+            <div className="job-reward info-box">
+              <label>Kỹ năng & sở trường</label>
+              <ul>
+                <li>
+                  <label>Kỹ năng</label>
+                  {
+                    userDetail.userSkill && userDetail.userSkill.length > 0 ? <ul className="skill-list">
+                      {
+                        userDetail.userSkill.map((item, index) => <li key={index}>
+                          <span>{item.skill_name}</span>
+                        </li>)
+                      }
+                    </ul> : ""
+                  }
+                </li>
+              </ul>
+            </div>
           </div>
-          <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
 
-          </div>
         </div> : ""
       }
     </Drawer>

@@ -8,6 +8,7 @@ import {
     FormControl,
     Menu,
     MenuItem,
+    ClickAwayListener
 } from '@material-ui/core'
 import {
     MoreHoriz as MoreHorizIcon,
@@ -27,7 +28,10 @@ import {
 } from '../../actions/user'
 import { connect } from "react-redux"
 import { Loader } from '../common/loader'
-import {NumberFormatCustom} from '../../utils/common'
+import { NumberFormatCustom } from '../../utils/common'
+import CustomMenu from '../common/custom-menu'
+import { request } from 'https';
+
 
 export class Index extends React.Component {
 
@@ -45,7 +49,8 @@ export class Index extends React.Component {
             addressPrivacy: Privacies.Public,
             dateOfBirthPrivacy: Privacies.Public,
             yearOfBirthPrivacy: Privacies.Public,
-            genderPrivacy: Privacies.Public
+            genderPrivacy: Privacies.Public,
+            showGenderSelect: false
         };
     }
 
@@ -122,7 +127,6 @@ export class Index extends React.Component {
                 levelid: genderPrivacy.code
             }
         ]
-        console.log("privacys", privacys)
         post(SOCIAL_NET_WORK_API, "User/EditProfile", param, result => {
             if (result.result == 1) {
                 this.getProfile()
@@ -190,7 +194,8 @@ export class Index extends React.Component {
             showYearOfBirthPrivacyList,
             yearOfBirthPrivacy,
             genderPrivacy,
-            showGenderPrivacyList
+            showGenderPrivacyList,
+            showGenderSelect
         } = this.state
         let {
             data
@@ -199,7 +204,7 @@ export class Index extends React.Component {
         return (
             <div className="content-box">
                 <label>
-                    <PlayArrowIcon />
+                    <img src={require('../../assets/icon/Arrow@1x.png')} style={{ width: "15px", height: "15px", margin: "0px 4px" }} />
                     <span>Thông tin cá nhân</span>
                 </label>
                 <ul>
@@ -209,6 +214,10 @@ export class Index extends React.Component {
                     <li>
                         <label>Email: </label>
                         <span>{data.email}</span>
+                    </li>
+                    <li>
+                        <label>Địa chỉ: </label>
+                        <span>{data.address}</span>
                     </li>
                     <li>
                         <label>Ngày sinh: </label>
@@ -262,18 +271,9 @@ export class Index extends React.Component {
                         <div className='input-field'>
                             <label>
                                 Địa chỉ
-                                 <IconButton onClick={(e) => this.setState({ showAddressPrivacyList: true, anchor: e.target })}>
-                                    {
-                                        addressPrivacy ? <img src={addressPrivacy.icon}></img> : ""
-                                    }
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                <Menu
-                                    className="privacy-menu"
-                                    anchorEl={anchor}
-                                    keepMounted
-                                    open={showAddressPrivacyList}
-                                    onClose={() => this.setState({ showAddressPrivacyList: false })}
+                                < CustomMenu
+                                    centerMode={true}
+                                    customButton={addressPrivacy ? <img src={addressPrivacy.icon}></img> : ""}
                                 >
                                     {
                                         PrivaciesOptions.map((privacy, index) => <MenuItem key={index} onClick={() => this.setState({ showAddressPrivacyList: false, addressPrivacy: privacy })}>
@@ -284,7 +284,7 @@ export class Index extends React.Component {
                                             </div>
                                         </MenuItem>)
                                     }
-                                </Menu>
+                                </CustomMenu>
                             </label>
                             <TextField
                                 className="custom-input"
@@ -302,18 +302,9 @@ export class Index extends React.Component {
                             <div className='input-field'>
                                 <label>
                                     Ngày sinh
-                                     <IconButton onClick={(e) => this.setState({ showDateOfBirthPrivacyList: true, anchor: e.target })}>
-                                        {
-                                            dateOfBirthPrivacy ? <img src={dateOfBirthPrivacy.icon}></img> : ""
-                                        }
-                                        <ExpandMoreIcon />
-                                    </IconButton>
-                                    <Menu
-                                        className="privacy-menu"
-                                        anchorEl={anchor}
-                                        keepMounted
-                                        open={showDateOfBirthPrivacyList}
-                                        onClose={() => this.setState({ showDateOfBirthPrivacyList: false })}
+                                    < CustomMenu
+                                        centerMode={true}
+                                        customButton={dateOfBirthPrivacy ? <img src={dateOfBirthPrivacy.icon}></img> : ""}
                                     >
                                         {
                                             PrivaciesOptions.map((privacy, index) => <MenuItem key={index} onClick={() => this.setState({ showDateOfBirthPrivacyList: false, dateOfBirthPrivacy: privacy })}>
@@ -324,9 +315,9 @@ export class Index extends React.Component {
                                                 </div>
                                             </MenuItem>)
                                         }
-                                    </Menu>
+                                    </CustomMenu>
                                 </label>
-                                <div className="date-select">
+                                <div className="date-select pr10">
                                     <FormControl variant="outlined" className={"custom-select"}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
@@ -338,7 +329,7 @@ export class Index extends React.Component {
                                             }
                                         </NativeSelect>
                                     </FormControl>
-                                    <FormControl variant="outlined" className={"custom-select ml15"}>
+                                    <FormControl variant="outlined" className={"custom-select ml20"}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={mounthOfBirth}
@@ -354,18 +345,9 @@ export class Index extends React.Component {
                             <div className='input-field year-input'>
                                 <label>
                                     Năm sinh
-                                     <IconButton onClick={(e) => this.setState({ showYearOfBirthPrivacyList: true, anchor: e.target })}>
-                                        {
-                                            yearOfBirthPrivacy ? <img src={yearOfBirthPrivacy.icon}></img> : ""
-                                        }
-                                        <ExpandMoreIcon />
-                                    </IconButton>
-                                    <Menu
-                                        className="privacy-menu"
-                                        anchorEl={anchor}
-                                        keepMounted
-                                        open={showYearOfBirthPrivacyList}
-                                        onClose={() => this.setState({ showYearOfBirthPrivacyList: false })}
+                                    < CustomMenu
+                                        centerMode={true}
+                                        customButton={yearOfBirthPrivacy ? <img src={yearOfBirthPrivacy.icon}></img> : ""}
                                     >
                                         {
                                             PrivaciesOptions.map((privacy, index) => <MenuItem key={index} onClick={() => this.setState({ showYearOfBirthPrivacyList: false, yearOfBirthPrivacy: privacy })}>
@@ -376,7 +358,7 @@ export class Index extends React.Component {
                                                 </div>
                                             </MenuItem>)
                                         }
-                                    </Menu>
+                                    </CustomMenu>
                                 </label>
                                 <div>
                                     <TextField
@@ -386,7 +368,7 @@ export class Index extends React.Component {
                                         value={yearOfBirth}
                                         InputProps={{
                                             inputComponent: NumberFormatCustom,
-                                          }}
+                                        }}
                                         onChange={e => this.setState({ yearOfBirth: e.target.value })}
                                     />
                                 </div>
@@ -395,18 +377,9 @@ export class Index extends React.Component {
                         <div className='input-field  mt10'>
                             <label>
                                 Giới tính
-                                 <IconButton onClick={(e) => this.setState({ showGenderPrivacyList: true, anchor: e.target })}>
-                                    {
-                                        genderPrivacy ? <img src={genderPrivacy.icon}></img> : ""
-                                    }
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                                <Menu
-                                    className="privacy-menu"
-                                    anchorEl={anchor}
-                                    keepMounted
-                                    open={showGenderPrivacyList}
-                                    onClose={() => this.setState({ showGenderPrivacyList: false })}
+                                < CustomMenu
+                                    centerMode={true}
+                                    customButton={genderPrivacy ? <img src={genderPrivacy.icon}></img> : ""}
                                 >
                                     {
                                         PrivaciesOptions.map((privacy, index) => <MenuItem key={index} onClick={() => this.setState({ showGenderPrivacyList: false, genderPrivacy: privacy })}>
@@ -417,17 +390,21 @@ export class Index extends React.Component {
                                             </div>
                                         </MenuItem>)
                                     }
-                                </Menu>
+                                </CustomMenu>
                             </label>
-                            <div className="gender-select">
-                                <span className="title">Giới tính</span>
-                                <div className="options">
-                                    <span className={gender == "Nam" ? "active" : ""} onClick={() => this.setState({ gender: "Nam" })}>Nam</span>
-                                    <span className={gender == "Nữ" ? "active" : ""} onClick={() => this.setState({ gender: "Nữ" })}>Nữ</span>
+                            <ClickAwayListener onClickAway={() => this.setState({ showGenderSelect: false })}>
+                                <div className="gender-select custom" onClick={() => this.setState({ showGenderSelect: !showGenderSelect })}>
+                                    <span className="title" >{gender}</span>
+                                    {
+                                        showGenderSelect ? <div className="options">
+                                            <span className={gender == "Nam" ? "active" : ""} onClick={() => this.setState({ gender: "Nam" })}>Nam</span>
+                                            <span className={gender == "Nữ" ? "active" : ""} onClick={() => this.setState({ gender: "Nữ" })}>Nữ</span>
+                                        </div> : ""
+                                    }
                                 </div>
-                            </div>
+                            </ClickAwayListener>
                         </div>
-                        <Button variant="contained" className={"bt-submit"} onClick={() => this.updateProfile()}>Lưu thông tin</Button>
+                        <Button variant="contained" className={"bt-submit"} onClick={() => this.updateProfile()}>CẬP NHẬT</Button>
 
                         {
                             isUpdatePreccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""
@@ -437,7 +414,7 @@ export class Index extends React.Component {
                 {
                     renderCloseForm(this)
                 }
-            </div>
+            </div >
         )
     }
 }
@@ -465,8 +442,8 @@ const renderCloseForm = (component) => {
                 <label>Bạn muốn rời khỏi trang này?</label>
                 <p>Những thông tin vừa thay đổi vẫn chưa được lưu.</p>
                 <div className="mt20">
-                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false })}>Đồng ý rời khỏi</Button>
-                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại thay đổi</Button>
+                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false })}>Đồng ý</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại</Button>
                 </div>
             </div>
         </Drawer>

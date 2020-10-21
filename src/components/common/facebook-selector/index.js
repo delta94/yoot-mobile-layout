@@ -1,5 +1,9 @@
 import React from 'react';
-import { Tooltip, ClickAwayListener, Button } from '@material-ui/core'
+import {
+    Tooltip,
+    Button
+} from '@material-ui/core'
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import LongPress from 'react-long'
 import {
     ReactSelectorIcon
@@ -18,6 +22,27 @@ export class FacebookSelector extends React.Component {
         }
     }
 
+    onClickAway = () => {
+        setTimeout(() => {
+            this.setState({ open: false })
+        }, 100)
+    }
+
+    onLongPress = () => {
+        this.setState({ open: true })
+    }
+
+    onPress = () => {
+        let {
+            open
+        } = this.state
+        let {
+            onShortPress
+        } = this.props
+        if (open == false)
+            onShortPress(ReactSelectorIcon[1])
+    }
+
     render() {
         let {
             onReaction,
@@ -29,13 +54,11 @@ export class FacebookSelector extends React.Component {
             open
         } = this.state
         return (
-            <ClickAwayListener className="d" onClickAway={() => setTimeout(() => {
-                this.setState({ open: false })
-            }, 100)}>
+            <ClickAwayListener onClickAway={this.onClickAway}>
                 <LongPress
                     time={300}
-                    onLongPress={() => this.setState({ open: true })}
-                    onPress={() => onShortPress(ReactSelectorIcon[1])}
+                    onLongPress={this.onLongPress}
+                    onPress={this.onPress}
                 >
                     {
                         active ? <Button style={{ color: ReactSelectorIcon[active].color }}><img src={ReactSelectorIcon[active].icon} />{type == "MiniButton" ? "" : ReactSelectorIcon[active].disciption}</Button>
@@ -45,13 +68,12 @@ export class FacebookSelector extends React.Component {
                 <div className={"facebook-selector" + (open ? "" : " close")}>
                     {
                         ReactSelectorIcon.map((icon) => icon ? <Tooltip key={icon.code} title={<h5>{icon.disciption}</h5>} placement="top" >
-                            <div style={{ backgroundImage: "url(" + icon.icon + ")" }} onClick={() => onReaction(icon)}>
+                            <div style={{ backgroundImage: "url(" + icon.icon + ")" }} onClick={() => icon.code > 0 ? onReaction(icon) : ""}>
                             </div>
                         </Tooltip> : "")
                     }
                 </div>
-
-            </ClickAwayListener >
+            </ClickAwayListener>
         );
     }
 }

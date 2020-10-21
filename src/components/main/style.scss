@@ -5,8 +5,11 @@
   margin: 0px auto;
   position: relative;
 }
+.video-react-big-play-button{
+  display: none !important;
+}
 .fix-header{
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 0.5px solid rgba(0,0,0,0.1);
   height: 60px;
   width: 100%;
   background: #fff;
@@ -24,6 +27,7 @@
 
   &.dask-mode{
     background: #222;
+    border-bottom: none !important;
     .direction{
       .app-header{
         color: #ccc;
@@ -45,7 +49,7 @@
         }
         .point{
           background: rgba(255,255,255,0.08);
-          padding: 0px 2px 0px 10px;
+          padding: 0px 10px 0px 10px;
           display: flex;
           align-items: center;
           justify-content: flex-end;
@@ -79,7 +83,9 @@
       }
     }
   }
-  .user-reward{
+  
+}
+.user-reward{
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -96,7 +102,7 @@
       }
       .point{
         background: rgba(0,0,0,0.08);
-        padding: 0px 2px 0px 10px;
+        padding: 0px 10px 0px 10px;
         display: flex;
         align-items: center;
         justify-content: flex-end;
@@ -113,9 +119,7 @@
       }
     }
   }
-}
 .fix-footer{
-  border-top: 1px solid rgba(0,0,0,0.15);
   height: 70px;
   width: 100%;
   position: fixed;
@@ -123,7 +127,7 @@
   left: 0px;
   background: #fff;
   transition: height 0.2s ease-in-out;
-  z-index: 10;
+  z-index: 1000;
   &.hided{
     height: 0px !important;
     overflow: hidden;
@@ -149,8 +153,10 @@
   height: 100%;
   font-family: Roboto-Regular;
   color: #aaa;
+  border-top: 1px solid rgba(0,0,0,0.15);
   &.dask-mode{
-    background: #222;
+    background: #000;
+    border: none !important;
   }
   ul{
     display: flex;
@@ -165,12 +171,11 @@
         height: 20px;
         margin-bottom: 5px;
       }
-      span{
+      > span:last-child{
         white-space: nowrap;
         font-size:0.9rem;
-        display: flex;
         width: 100%;
-        justify-content: center;
+        display: inline-block;
       }
     }
   }
@@ -179,8 +184,9 @@
 .drawer-detail{
   display: grid;
   grid-template-rows: min-content min-content auto;
-  height: 100vh;
-  .folowing-list{
+  height: 100%;
+  .folowing-list,
+  .folowed-list{
     max-height: 260px;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -196,6 +202,7 @@
     justify-content: space-between;
     padding: 0px 10px 0px 0px;
     box-sizing: border-box;
+    // overflow-x: hidden;
     .direction{
       display: flex;
       align-items: center;
@@ -222,7 +229,7 @@
         }
         .point{
           background: rgba(0,0,0,0.08);
-          padding: 0px 2px 0px 10px;
+          padding: 0px 10px 0px 10px;
           display: flex;
           align-items: center;
           justify-content: flex-end;
@@ -302,6 +309,22 @@
         margin: 0px;
         margin-top: 5px;
         color: #777;
+      }
+      ul.skill-list{
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        grid-column-gap: 10px;
+        grid-row-gap: 10px;
+        li{
+          border: none;
+          border-radius: 3px;
+          background: #ff5a5a;
+          text-align: center;
+          padding: 10px 0px;
+          span{
+            color: #fff !important;
+          }
+        }
       }
     }
     ul{
@@ -473,6 +496,17 @@
     }
   }
 }
+.friend-count{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 15px;
+  > span{
+    font-family: Roboto-Medium;
+    font-family: 1.1rem;
+    
+  }
+}
 .find-friends{
   .drawer-header{
     border-bottom: none;
@@ -486,6 +520,7 @@
       background: rgba(0, 0, 0, 0.06);
     }
   }
+
   .friend-list{
     ul{
       li{
@@ -575,9 +610,21 @@
     height: calc(100% - 45px);
     display: flex;
     align-items: center;
+    position: relative;
+    overflow: scroll;
+    .overlay{
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
     .slick-slider{
       width: 100%;
       outline: none !important;
+      position: relative;
+      z-index: 1;
       .slick-list{
         > div{
           display: flex;
@@ -612,6 +659,7 @@
     left: 0px;
     width: 100%;
     background: rgba(0,0,0,0.8);
+    z-index: 10;
     &.hide{
       opacity: 0;
       pointer-events: none;
@@ -704,6 +752,7 @@
     background: #fff;
     min-height: 250px;
     border-radius: 20px 20px 0px 0px;
+    height: fit-content !important;
   }
 }
 .menu-content{
@@ -753,12 +802,17 @@
   }
   .content-form{
     > div{
-      padding: 0px 20px;
+      padding: 0px 15px;
       box-sizing: border-box;
       > img{
         width: 40px;
         margin: 0px auto;
         display: block;
+      }
+      > p{
+        color: #ff5a5a;
+        text-align: center;
+        font-family: Roboto-Medium;
       }
       > label{
         font-family: Roboto-Medium;
@@ -775,6 +829,15 @@
             margin-right: 7px;
             margin-bottom: 7px;
             background: rgba(0,0,0,0.06);
+            &.active{
+              background: #ff5a5a;
+              color: #fff;
+               button{
+                > span{
+                  color: #fff;
+                }
+              }
+            }
             button{
               > span{
                 font-family: Roboto-Regular;
@@ -783,14 +846,6 @@
               }
             }
           }
-        }
-        fieldset{
-          border: none !important;
-          background: rgba(0,0,0,0.06) !important;
-          min-height: 100px;
-        }
-        .order-reason{
-          min-height: 100px;
         }
       }
     }
@@ -803,7 +858,7 @@
         li{
           display: flex;
           align-items: flex-start;
-          margin-bottom: 10px;
+          margin-bottom: 20px;
           img{
             width: 35px;
             margin-right: 10px;
@@ -936,6 +991,7 @@
 .friend-actions-drawer{
   > div:last-child{
     border-radius: 20px 20px 0px 0px;
+    height: fit-content !important;
   }
   .drawer-content{
     padding: 20px;
@@ -1054,6 +1110,27 @@
           }
         }
       }
+    }
+  }
+}
+
+.upate-background-album{
+  .profile-page{
+    > .background-box{
+      width: 100%;
+      height: 230px;
+      background-size: cover !important;
+      background-position: 50% 50% !important;
+      background-repeat: no-repeat !important;
+    }
+  }
+}
+.album-posted{
+  background: #ededed;
+  padding: 10px;
+  ul{
+    li{
+      margin-bottom: 10px;
     }
   }
 }

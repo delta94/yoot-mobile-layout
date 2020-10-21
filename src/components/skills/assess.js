@@ -5,24 +5,34 @@ import {
   addFooterContent,
   toggleHeader,
   toggleFooter,
+  toggleMediaViewerDrawer,
+  setMediaToViewer,
 } from '../../actions/app'
 import { connect } from 'react-redux'
 import {
   IconButton,
-  AppBar,
-  Tabs,
-  Tab,
   Button,
   Avatar,
   Drawer
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon,
-  Cancel as CancelIcon
+  Cancel as CancelIcon,
+  Replay10 as Replay10Icon,
+  Forward10 as Forward10Icon,
+  Pause as PauseIcon,
+  PlayArrow as PlayArrowIcon,
+  FiberManualRecord as FiberManualRecordIcon
 } from '@material-ui/icons'
-import { StickyContainer, Sticky } from 'react-sticky';
-import SwipeableViews from 'react-swipeable-views';
+import { Player, ControlBar, BigPlayButton } from 'video-react';
 import Dropzone from 'react-dropzone'
+import { SCHOOL_API } from "../../constants/appSettings";
+import { get, post, postFormData } from "../../api";
+import { objToQuery, getFileSize, showNotification, fromNow } from '../../utils/common'
+import moment from 'moment'
+import { RatingList } from "../../constants/constants";
+import MultiInput from '../common/multi-input'
+import Loader from '../common/loader'
 
 const practice = require('../../assets/icon/practice.png')
 const evaluate1 = require('../../assets/icon/evaluate1.png')
@@ -39,18 +49,323 @@ class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      tabIndex: 0,
+      exercises: [],
+      srouceDetail: null,
+      playingIndex: null,
+      inProccessing: false,
+      homeworks: [],
+      reviewers: [],
+      reviews: null
     };
+    this.video = []
   }
+
+  handleInit() {
+    let { sourceId } = this.props.match.params
+    if (!sourceId) return
+    this.getSourceDetail(sourceId)
+    this.getExercises(sourceId)
+    this.getReviews(sourceId)
+  }
+
+  getSourceDetail(sourceId) {
+    get(SCHOOL_API, "Course/getonecourse?course=" + sourceId, result => {
+      if (result && result.StatusCode == 1) {
+        this.setState({ srouceDetail: result.Data[0] })
+      }
+    })
+  }
+
+  getExercises(sourceId) {
+    let param = {
+      type: 2,
+      courseid: sourceId
+    }
+    get(SCHOOL_API, "Course/exercises" + objToQuery(param), result => {
+      if (result && result.StatusCode == 1) {
+        this.setState({
+          exercises: result.Data
+        })
+      }
+    })
+  }
+
+  getReviews(sourceId) {
+    let param = {
+      courseId: sourceId,
+      status: 0
+    }
+    get(SCHOOL_API, "Course/reviews" + objToQuery(param), result => {
+      if (result && result.StatusCode == 1) {
+        result.Data.map((review, reviewIndex) => {
+          this.video[reviewIndex] = Array.from({ length: review.exerciseLinkVideos.length + 1 }, (_, i) => React.createRef())
+        })
+        this.setState({
+          reviews: result.Data
+        })
+      }
+    })
+  }
+
+  handlePlayVideo(videoRef, index) {
+
+    this.video.map((item) => {
+      item.map(i => {
+        this.handlePauseVideo(i)
+      })
+    })
+
+    let video = videoRef.current
+
+    if (video) {
+      video.play()
+      this.setState({
+        playingIndex: index
+      })
+    }
+  }
+
+  handlePauseVideo(videoRef) {
+    let video = videoRef.current
+    if (video) {
+      video.pause()
+      this.setState({
+        playingIndex: null
+      })
+    }
+  }
+
+  handleChangeCurrentTime(seconds, videoRef) {
+    let video = videoRef.current
+    if (video) {
+      const { player } = video.getState();
+      video.seek(player.currentTime + seconds)
+    }
+  }
+
+  handleSelectRate(review, rate) {
+    let {
+      reviews
+    } = this.state
+    let reviewIndex = reviews.findIndex(item => item.ID == review.ID)
+    if (reviewIndex >= 0) {
+      reviews[reviewIndex].yourRate = rate.code
+    }
+    this.setState({
+      reviews
+    })
+  }
+
+  handleChangeReviewText(review, value) {
+    let {
+      reviews
+    } = this.state
+    let reviewIndex = reviews.findIndex(item => item.ID == review.ID)
+    if (reviewIndex >= 0) {
+      reviews[reviewIndex].reviewText = value.text
+    }
+    this.setState({
+      reviews
+    })
+  }
+  handleSubmitReview(review) {
+    if (!review.yourRate) {
+      showNotification("", "Vui lòng chấm điểm trước khi gửi")
+      return
+    }
+    let param = {
+      "reviewId": review.ID,
+      "COMMENT": review.reviewText,
+      "criterias": [
+        {
+          "criteria": 0,
+          "star": review.yourRate
+        }
+      ]
+    }
+    post(SCHOOL_API, "Course/reviews", param, (result) => {
+      if (result && result.StatusCode == 1) {
+        this.handleInit()
+      }
+    })
+  }
+
   componentWillMount() {
     this.props.addHeaderContent(renderHeader(this))
-    this.props.addFooterContent(renderFooter(this.props.history))
+    this.props.addFooterContent(renderFooter(this))
     this.props.toggleHeader(true)
     this.props.toggleFooter(true)
+    this.handleInit()
   }
   render() {
+    let {
+      tabIndex,
+      exercises,
+      srouceDetail,
+      playingIndex,
+      fileSelected,
+      inProccessing,
+      homeworks,
+      reviewers,
+      reviews
+    } = this.state
+
+    console.log("reviews", reviews)
     return (
       <div className="assess-page" >
+        {
+          srouceDetail ? <div className="exercise-scource">
+            <label className="red">{srouceDetail.NAME}</label>
+            {
+              reviews && reviews.length == 0 ? <div className="empty-record">
+                <span>Chưa có bài tập nào chờ bạn đánh giá</span>
+              </div> : ""
+            }
+            {
+              !reviews ? <div style={{ height: "50px", background: "#fff", zIndex: 0 }}>
+                {
+                  <Loader type="small" style={{ background: "#fff" }} width={30} height={30} />
+                }
+              </div> : ""
+            }
+          </div> : ""
+        }
 
+        <div className="exercise-list">
+          {
+            reviews && reviews.length > 0 && reviews.map((item, reviewIndex) => <div key={reviewIndex} className="exercise-item">
+              <div className="list-header">
+                <label>Đề bài</label>
+              </div>
+              {
+                item.exerciseLinkVideos.length > 0 && item.exerciseLinkVideos.map((media, index) => <div className="exercise-content">
+                  <div className="video">
+                    <Player
+                      ref={this.video[reviewIndex][0]}
+                      poster={item.EX_IMAGE_PATH}
+                      src={media}
+                      playsInline={true}
+                      key={index}
+                      className={"custome-video-layout" + (playingIndex == `${reviewIndex}-${index}` ? " active" : " inactive")}
+                    >
+                      <ControlBar autoHide={true} >
+                        <div className={"custom-bt-control-bar"}>
+                          {
+                            playingIndex == `${reviewIndex}-${index}` ? <IconButton onClick={() => this.handleChangeCurrentTime(-10, this.video[reviewIndex][0])}><Replay10Icon /></IconButton> : ""
+                          }
+                          <IconButton onClick={() => playingIndex == `${reviewIndex}-${index}` ? this.handlePauseVideo(this.video[reviewIndex][0]) : this.handlePlayVideo(this.video[reviewIndex][0], `${reviewIndex}-${index}`)}>
+                            {
+                              playingIndex == `${reviewIndex}-${index}` ? <PauseIcon /> : <PlayArrowIcon />
+                            }
+                          </IconButton>
+                          {
+                            playingIndex == `${reviewIndex}-${index}` ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video[reviewIndex][0])}><Forward10Icon /></IconButton> : ""
+                          }
+                        </div>
+                        <div className="fullscreen-overlay" onClick={() => {
+                          this.handlePauseVideo(this.video[reviewIndex][0])
+                          this.props.setMediaToViewer([{ name: media }])
+                          this.props.toggleMediaViewerDrawer(true, {
+                            showInfo: false,
+                            activeIndex: 0,
+                            isvideo: true
+                          })
+                        }}></div>
+                      </ControlBar>
+                    </Player>
+                  </div>
+                  {
+                    item.exerciseMedias.length > 0 && item.exerciseMedias.map((image, index) => <img key={index} src={image.link} />)
+                  }
+                </div>)
+              }
+              <div className="homework-list">
+                <label>Người gửi chấm:</label>
+                <div className="user">
+                  <Avatar aria-label="recipe" className="avatar">
+                    <div className="img" style={{ background: `url("${item.STUDENT_AVATAR}")` }} />
+                  </Avatar>
+                  <div className="info">
+                    <span className="name">{item.STUDENT}</span>
+                    <span className="date">
+                      <span>{moment(item.CREATE_DATE).format("DD/MM/YYYY HH:mm")}</span>
+                      <FiberManualRecordIcon />
+                      <span>{fromNow(moment(item.CREATE_DATE), moment(new Date))}</span>
+                    </span>
+                  </div>
+                </div>
+                <div className="homework-name">
+                  <span>{item.NAME}</span>
+                </div>
+                <div className="video">
+                  <Player
+                    ref={this.video[reviewIndex][1]}
+                    poster={item.IMAGE}
+                    src={item.LINK_VIDEO}
+                    playsInline={true}
+                    className={"custome-video-layout" + (playingIndex == `${reviewIndex}-${1}` ? " active" : " inactive")}
+                  >
+                    <ControlBar autoHide={true} >
+                      <div className={"custom-bt-control-bar"}>
+                        {
+                          playingIndex == `${reviewIndex}-${1}` ? <IconButton onClick={() => this.handleChangeCurrentTime(-10, this.video[reviewIndex][1])}><Replay10Icon /></IconButton> : ""
+                        }
+                        <IconButton onClick={() => playingIndex == `${reviewIndex}-${1}` ? this.handlePauseVideo(this.video[reviewIndex][1]) : this.handlePlayVideo(this.video[reviewIndex][1], `${reviewIndex}-${1}`)}>
+                          {
+                            playingIndex == `${reviewIndex}-${1}` ? <PauseIcon /> : <PlayArrowIcon />
+                          }
+                        </IconButton>
+                        {
+                          playingIndex == `${reviewIndex}-${1}` ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video[reviewIndex][1])}><Forward10Icon /></IconButton> : ""
+                        }
+                      </div>
+                      <div className="fullscreen-overlay" onClick={() => {
+                        this.handlePauseVideo(this.video[reviewIndex][1])
+                        this.props.setMediaToViewer([{ name: item.LINK_VIDEO }])
+                        this.props.toggleMediaViewerDrawer(true, {
+                          showInfo: false,
+                          activeIndex: 0,
+                          isvideo: true
+                        })
+                      }}></div>
+                    </ControlBar>
+                  </Player>
+                </div>
+                <div className="rating">
+                  <label>Đánh giá của bạn: <span style={{ color: item.yourRate ? RatingList[item.yourRate - 1].color : "" }}>{item.yourRate ? item.yourRate : 0}/10</span></label>
+                  <ul className="rating-list">
+                    {
+                      RatingList.map((rate, index) => <li key={index} onClick={() => this.handleSelectRate(item, rate)}>
+                        <IconButton style={{ color: rate.color }}><FiberManualRecordIcon /></IconButton>
+                        <span>{rate.label}</span>
+                      </li>)
+                    }
+                  </ul>
+                </div>
+                <div className='review-text'>
+                  <MultiInput
+                    ref={this.commentInput}
+                    style={{
+                      minHeight: "120px",
+                      border: "1px solid rgba(0,0,0,0.15)",
+                    }}
+                    onChange={value => this.handleChangeReviewText(item, value)}
+                    topDown={false}
+                    placeholder={"Ý kiến của bạn"}
+                    enableHashtag={false}
+                    enableMention={false}
+                    centerMode={false}
+                    value={item.reviewText}
+                  />
+                </div>
+                <div className="submit">
+                  <Button className="bt-submit" onClick={() => this.handleSubmitReview(item)}>Gửi đánh giá</Button>
+                </div>
+              </div>
+            </div>)
+          }
+        </div>
       </div>
     );
   }
@@ -67,6 +382,8 @@ const mapDispatchToProps = dispatch => ({
   addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
   toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
+  setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
+  toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
 });
 
 export default connect(
@@ -84,15 +401,16 @@ const renderHeader = (component) => {
     </div>
   )
 }
-const renderFooter = (history) => {
+const renderFooter = (component) => {
+  let { sourceId } = component.props.match.params
   return (
     <div className="app-footer">
       <ul>
-        <li onClick={() => history.push("/skills/2131")}>
+        <li onClick={() => component.props.history.push(`/skills/${sourceId}`)}>
           <img src={Newfeed}></img>
           <span >Bài học</span>
         </li>
-        <li onClick={() => history.push("/skills/1219/exercise")}>
+        <li onClick={() => component.props.history.push(`/skills/${sourceId}/exercise`)}>
           <img src={practice}></img>
           <span >Thực hành</span>
         </li>

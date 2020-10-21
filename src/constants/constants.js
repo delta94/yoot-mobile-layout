@@ -11,21 +11,85 @@ const sad = require('../assets/icon/Feeling/sad.png')
 const huhu = require('../assets/icon/Feeling/huhu.png')
 const angry = require('../assets/icon/Feeling/Angry.png')
 
+const bg01 = require('../assets/background/bg01.png')
+const bg02 = require('../assets/background/bg02.png')
+const bg03 = require('../assets/background/bg03.png')
+const bg04 = require('../assets/background/bg04.png')
+const bg05 = require('../assets/background/bg05.png')
+const bg06 = require('../assets/background/bg06.png')
+const bg07 = require('../assets/background/bg07.png')
+const bg08 = require('../assets/background/bg08.png')
+const bg09 = require('../assets/background/bg09.png')
+const bg10 = require('../assets/background/bg10.png')
+const bg11 = require('../assets/background/bg11.png')
+
+export const backgroundList = [
+    {
+        id: 0,
+        background: null
+    },
+    {
+        id: 1,
+        background: bg01
+    },
+    {
+        id: 2,
+        background: bg02
+    },
+    {
+        id: 3,
+        background: bg03
+    },
+    {
+        id: 4,
+        background: bg04
+    },
+    {
+        id: 5,
+        background: bg05
+    },
+    {
+        id: 6,
+        background: bg06
+    },
+    {
+        id: 7,
+        background: bg07
+    },
+    {
+        id: 8,
+        background: bg08
+    },
+    {
+        id: 9,
+        background: bg09
+    },
+    {
+        id: 10,
+        background: bg10
+    },
+    {
+        id: 11,
+        background: bg11
+    }
+]
+
 export const Privacies = {
     Public: {
         value: "Public",
         label: "Công khai",
         icon: require('../assets/icon/group.png'),
         icon1: require('../assets/icon/group1.png'),
-        description: "Mọi người đều xem được",
-        code: 2
+        description: "Tất cả mọi người",
+        code: 2,
+        active: true
     },
     Friend: {
         value: "Friend",
         label: "Bạn bè",
         icon: require('../assets/icon/Friend_celected.png'),
         icon1: require('../assets/icon/Friend.png'),
-        description: "Bạn bè của bạn trên YOOT",
+        description: "Bạn bè của bạn",
         code: 3
     },
     Private: {
@@ -33,7 +97,7 @@ export const Privacies = {
         label: "Chỉ mình tôi",
         icon: require('../assets/icon/Private_Selected.png'),
         icon1: require('../assets/icon/Private.png'),
-        description: "Chỉ tôi mới xem được",
+        description: "Chỉ mình tôi",
         code: 4
     }
 }
@@ -44,15 +108,70 @@ export const GroupPrivacies = {
         label: "Nhóm công khai",
         icon: require('../assets/icon/group.png'),
         icon1: require('../assets/icon/group1.png'),
-        description: "Mọi người đều xem được"
+        description: "Mọi người đều xem được",
+        code: 1
     },
     Private: {
         value: "Private",
         label: "Nhóm riêng tư",
         icon: require('../assets/icon/Private_Selected.png'),
-        description: "Chỉ tôi mới xem được"
+        description: "Chỉ tôi mới xem được",
+        code: 2
     }
 }
+
+export const RatingList = [
+    {
+        label: 1,
+        color: '#d83b34',
+        code: 1
+    },
+    {
+        label: 2,
+        color: '#d83b34',
+        code: 2
+    },
+    {
+        label: 3,
+        color: '#d83b34',
+        code: 3
+    },
+    {
+        label: 4,
+        color: '#d83b34',
+        code: 4
+    },
+    {
+        label: 5,
+        color: '#4caae8',
+        code: 5
+    },
+    {
+        label: 6,
+        color: '#4caae8',
+        code: 6
+    },
+    {
+        label: 7,
+        color: '#4caae8',
+        code: 7
+    },
+    {
+        label: 8,
+        color: '#75e75e',
+        code: 8
+    },
+    {
+        label: 9,
+        color: '#75e75e',
+        code: 9
+    },
+    {
+        label: 10,
+        color: '#75e75e',
+        code: 10
+    }
+]
 
 export const ReactSelectorIcon = [
     null,

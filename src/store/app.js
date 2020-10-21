@@ -13,8 +13,9 @@ import {
     TOGGLE_POST_DRAWER,
     TOGGLE_MEDIA_VIEWER_DRAWER,
     SET_MEDIA_TO_VIEWER,
+    UPDATE_MEDIA_TO_VIEWER,
+    REMOVE_MEDIA_FROM_VIEWER,
     TOGGLE_USER_PAGE,
-    TOGGLE_REPORT_DRAWER,
     TOGGLE_GROUP_DRAWER,
     TOGGLE_CREATE_GROUP_DRAWER,
     TOGGLE_GROUP_INVITE_DRAWER,
@@ -26,10 +27,14 @@ import {
     SET_CURRENT_FRIEND_ID,
     TOGGLE_CREATE_ALBUM_DRAWER,
     TOGGLE_ALBUM_DETAIL_DRAWER,
-    SET_CURRENNT_ALBUM
+    SET_CURRENNT_ALBUM,
+    SELECT_ALBUM_TO_POST,
+    SET_PROCCESS_DURATION,
+    TOGGLE_GROUP_DETAIL_DRAWER
 } from '../actions/app'
 
 const initialState = {
+    progressDuration: 0,
     showHeader: false,
     headerContent: null,
     showFooter: false,
@@ -60,15 +65,26 @@ const initialState = {
     showCreateAlbumDrawer: false,
     currentAlbum: null,
     createAlbumSuccessCallback: null,
-    updateAlbumSuccessCallback: null
+    updateAlbumSuccessCallback: null,
+    albumSelected: null,
+    showGroupDetail: false
 };
 
 export default (state = initialState, action) => {
     let {
-        showHeader
+        showHeader,
+        mediaToView
     } = state
 
     switch (action.type) {
+        case SET_PROCCESS_DURATION: {
+            let { progressDuration } = state
+            progressDuration = progressDuration + action.payload
+            if (progressDuration < 0 || progressDuration > 100) progressDuration = 0
+            return Object.assign({}, state, {
+                progressDuration: progressDuration
+            });
+        }
         case TOGGLE_HEADER: {
             return Object.assign({}, state, {
                 showHeader: action.payload
@@ -81,7 +97,7 @@ export default (state = initialState, action) => {
         }
         case ADD_HEADER_CONTENT: {
             return Object.assign({}, state, {
-                headerContent: action.payload
+                headerContent: action.payload,
             });
         }
         case ADD_FOOTER_CONTENT: {
@@ -141,14 +157,25 @@ export default (state = initialState, action) => {
                 mediaToView: action.payload,
             });
         }
+        case UPDATE_MEDIA_TO_VIEWER: {
+            let mediaIndex = mediaToView.findIndex(media => media.idmedia == action.payload.idmedia)
+            if (mediaIndex >= 0) {
+                mediaToView[mediaIndex] = action.payload
+            }
+            return Object.assign({}, state, {
+                mediaToView: mediaToView
+            });
+        }
+        case REMOVE_MEDIA_FROM_VIEWER: {
+            let newMedias = mediaToView.filter(media => media.idmedia != action.payload.idmedia)
+
+            return Object.assign({}, state, {
+                mediaToView: newMedias
+            });
+        }
         case TOGGLE_USER_PAGE: {
             return Object.assign({}, state, {
                 showUserPage: action.payload,
-            });
-        }
-        case TOGGLE_REPORT_DRAWER: {
-            return Object.assign({}, state, {
-                showReportDrawer: action.payload,
             });
         }
         case TOGGLE_GROUP_DRAWER: {
@@ -215,6 +242,16 @@ export default (state = initialState, action) => {
             });
         }
 
+        case SELECT_ALBUM_TO_POST: {
+            return Object.assign({}, state, {
+                albumSelected: action.payload,
+            });
+        }
+        case TOGGLE_GROUP_DETAIL_DRAWER: {
+            return Object.assign({}, state, {
+                showGroupDetail: action.payload,
+            });
+        }
 
         default:
             return state;

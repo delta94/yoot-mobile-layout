@@ -20,7 +20,8 @@ import {
 } from '../../actions/app'
 import {
   setMePosted,
-  likePosted
+  likePosted,
+  setUserPosted
 } from '../../actions/posted'
 import {
   setUserProfile,
@@ -48,6 +49,10 @@ import {
   Avatar,
   TextField,
   InputAdornment,
+  AppBar,
+  Tabs,
+  Tab,
+  Badge
 } from "@material-ui/core";
 import moment from 'moment'
 import { signOut } from "../../auth";
@@ -64,12 +69,14 @@ import 'react-image-crop/lib/ReactCrop.scss';
 import Cropper from '../common/cropper'
 import { postFormData, get, post } from "../../api";
 import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
-import { showNotification, objToQuery, jsonFromUrlParams } from "../../utils/common";
+import { showNotification, objToQuery, jsonFromUrlParams, formatCurrency } from "../../utils/common";
 import { signIn } from '../../auth'
 import $ from 'jquery'
 import Medias from './medias'
+import Videos from './videos'
 import Post from '../post'
 import { result } from "lodash";
+import ClickTooltip from '../common/click-tooltip'
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/Profile.png')
@@ -132,7 +139,11 @@ class Index extends React.Component {
       isEndOfFriends: false,
       searchKey: "",
       isEndOfPosteds: false,
-      postedsCurrentPage: 0
+      postedsCurrentPage: 0,
+      postIndexActive: 1,
+      userDetailFolowTabIndex: 0,
+      showUserDetail: false,
+      allUsers: []
     };
   }
 
@@ -190,6 +201,7 @@ class Index extends React.Component {
       }
     })
   }
+
   removeSuggest(friendId) {
     let {
       suggestFriends
@@ -228,10 +240,14 @@ class Index extends React.Component {
     }
     if (!friendid) return
     get(SOCIAL_NET_WORK_API, "Friends/RemoveFriends" + objToQuery(param), result => {
+
       if (result && result.result == 1) {
+        let newFriends = friends.filter(friend => friend.friendid != friendid)
+        let newAllUsers = allUsers.filter(friend => friend.friendid != friendid)
+
         this.setState({
-          friends: friends.filter(friend => friend.friendid != friendid),
-          allUsers: allUsers.filter(friend => friend.friendid != friendid),
+          friends: newFriends ? newFriends : friends,
+          allUsers: newAllUsers ? newAllUsers : allUsers,
           showFriendActionsDrawer: false
         })
       }
@@ -360,7 +376,6 @@ class Index extends React.Component {
       img.onload = function () {
 
         const formData = new FormData();
-
         if (avatarToUpload) {
           let avatarFileToUpload = new File(
             [avatarToUpload.file],
@@ -371,13 +386,13 @@ class Index extends React.Component {
               part: avatarToUpload.file.name
             }
           )
-          formData.append("image_1_" + avatarToUpload.width + "_" + avatarToUpload.height, avatarFileToUpload)
+          formData.append("avatarcut_1_" + avatarToUpload.width + "_" + avatarToUpload.height, avatarFileToUpload)
         } else {
-          formData.append("image_1_" + img.width + "_" + img.height, rootAvatarToUpload)
+          formData.append("avatarcut_1_" + img.width + "_" + img.height, rootAvatarToUpload)
         }
 
-        formData.append("content", postContent)
-        formData.append("imageroot_0_" + img.width + "_" + img.height, rootAvatarToUpload)
+        formData.append("content", postContent ? postContent : "")
+        formData.append("avatarroot_0_" + img.width + "_" + img.height, rootAvatarToUpload)
 
 
         postFormData(SOCIAL_NET_WORK_API, "User/UpdateAvatar", formData, result => {
@@ -416,7 +431,8 @@ class Index extends React.Component {
     let {
       backgroundToUpload,
       rootBackgroundToUpload,
-      isProccessing
+      isProccessing,
+      postContent
     } = this.state
     var fr = new FileReader;
     let that = this
@@ -440,13 +456,13 @@ class Index extends React.Component {
               part: backgroundToUpload.file.name
             }
           )
-          formData.append("image_1_" + backgroundToUpload.width + "_" + backgroundToUpload.height, backgroundFileToUpload)
+          formData.append("avatarcut_1_" + backgroundToUpload.width + "_" + backgroundToUpload.height, backgroundFileToUpload)
         } else {
-          formData.append("image_1_" + img.width + "_" + img.height, rootBackgroundToUpload)
+          formData.append("avatarcut_1_" + img.width + "_" + img.height, rootBackgroundToUpload)
         }
 
-        formData.append("content", "")
-        formData.append("imageroot_0_" + img.width + "_" + img.height, rootBackgroundToUpload)
+        formData.append("content", postContent ? postContent : "")
+        formData.append("avatarroot_0_" + img.width + "_" + img.height, rootBackgroundToUpload)
 
 
         postFormData(SOCIAL_NET_WORK_API, "User/UpdateBackground", formData, result => {
@@ -525,6 +541,22 @@ class Index extends React.Component {
     }
   }
 
+  getAllFriendCount() {
+    let param = {
+      currentdate: moment(new Date).format(CurrentDate),
+      status: "Friends",
+      forFriendId: 0,
+    }
+
+    get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + objToQuery(param), result => {
+      if (result.result == 1) {
+        this.setState({
+          friendsCount: result.content.count,
+        })
+      }
+    })
+  }
+
   getFriends(currentpage) {
     let {
       friends,
@@ -542,6 +574,9 @@ class Index extends React.Component {
     this.setState({
       isLoadMore: true
     })
+
+
+
     get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + objToQuery(param), result => {
       if (result.result == 1) {
         this.setState({
@@ -608,7 +643,6 @@ class Index extends React.Component {
     })
     post(SOCIAL_NET_WORK_API, "User/ChangePasswordUser", param, (result) => {
       if (result.result == 1) {
-        console.log("result", result)
         let { profile } = this.props
         let loginParam = {
           phone: profile.phone,
@@ -619,7 +653,8 @@ class Index extends React.Component {
             signIn({
               comunityAccessToken: result.content.myToken,
               skillAccessToken: result.content.myTokenTraining,
-              careerGuidanceAccessToken: result.content.myTokenBuildYS
+              careerGuidanceAccessToken: result.content.myTokenBuildYS,
+              socketToken: result.content.myTokenNotifi
             });
             this.props.toggleChangePasswordForm(false)
 
@@ -698,8 +733,15 @@ class Index extends React.Component {
 
   getPosted(currentpage, userId) {
     let {
-      myPosteds
+      userPosteds
     } = this.props
+
+    let myPosteds = []
+
+    if (userId && userPosteds && userPosteds[userId]) {
+      myPosteds = myPosteds.concat(userPosteds[userId])
+    }
+
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
@@ -718,7 +760,7 @@ class Index extends React.Component {
         this.setState({
           isLoadMore: false
         })
-        this.props.setMePosted(myPosteds.concat(result.content.newsFeeds))
+        this.props.setUserPosted(myPosteds.concat(result.content.newsFeeds), userId)
         if (result.content.newsFeeds.length == 0) {
           this.setState({
             isEndOfPosteds: true,
@@ -736,6 +778,11 @@ class Index extends React.Component {
     this.props.toggleHeader(false)
     this.props.toggleFooter(true)
     this.getRejectFriends(0, 0)
+    let {
+      profile
+    } = this.props
+    if (profile)
+      this.getPosted(0, profile.id)
     document.addEventListener("scroll", () => {
       let element = $("html")
       let {
@@ -744,9 +791,14 @@ class Index extends React.Component {
         isLoadMore
       } = this.state
       let {
-        myPosteds
+        userPosteds,
+        profile
       } = this.props
-      if (myPosteds.length == 0) return
+      let myPosteds = []
+      if (profile && userPosteds) {
+        myPosteds = userPosteds[profile.id]
+      }
+      if (!myPosteds || myPosteds.length == 0) return
       if (element.scrollTop() + window.innerHeight >= element[0].scrollHeight) {
         if (isLoadMore == false && isEndOfPosteds == false) {
           this.setState({
@@ -769,7 +821,6 @@ class Index extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("nextProps", nextProps)
     if (Object.entries(this.props.profile ? this.props.profile : {}).toString() != Object.entries(nextProps.profile ? nextProps.profile : {}).toString()) {
       this.getPosted(0, nextProps.profile.id)
     }
@@ -782,26 +833,36 @@ class Index extends React.Component {
       numOfFriend,
       friends,
       openMediaDrawer,
-      isLoadMore
+      isLoadMore,
+      postIndexActive,
+      openVideoDrawer,
     } = this.state
     let {
       profile,
-      myPosteds
+      userPosteds
     } = this.props
 
-    console.log("myPosteds", myPosteds)
+    let myPosteds = []
+    if (profile && userPosteds) {
+      myPosteds = userPosteds[profile.id]
+    }
 
+    console.log("profile", profile)
     return (
       profile ? <div className="profile-page" >
         <div className="cover-img" style={{ background: "url(" + profile.background + ")" }}>
           <div className="overlay" onClick={() => {
             this.props.setMediaToViewer(profile.listBackground)
-            this.props.toggleMediaViewerDrawer(true, { canDownload: true, showInfo: true })
+            this.props.toggleMediaViewerDrawer(true, {
+              actions: mediaRootActions(this),
+              showInfo: true,
+              activeIndex: 0
+            })
           }}></div>
           <Dropzone onDrop={acceptedFiles => this.onSelectBackgroundFile(acceptedFiles)}>
             {({ getRootProps, getInputProps }) => (
               <div {...getRootProps()}>
-                <input {...getInputProps()} accept="image/*" />
+                <input {...getInputProps()} accept="image/*" multiple={false} />
                 <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                   <PhotoCameraIcon style={{ color: "#ff5a59", width: "20px", height: "20px" }} />
                 </IconButton>
@@ -814,9 +875,13 @@ class Index extends React.Component {
         <div className="user-avatar" >
           <div className="overlay" onClick={() => {
             this.props.setMediaToViewer(profile.listAvatar)
-            this.props.toggleMediaViewerDrawer(true, { canDownload: true, showInfo: true })
+            this.props.toggleMediaViewerDrawer(true, {
+              actions: mediaRootActions(this),
+              showInfo: true,
+              activeIndex: 0
+            })
           }} style={{ background: "url(" + profile.avatar + ")" }}></div>
-          <Dropzone onDrop={acceptedFiles => this.onSelectAvatarFile(acceptedFiles)}>
+          <Dropzone onDrop={acceptedFiles => this.onSelectAvatarFile(acceptedFiles)} multiple={false}>
             {({ getRootProps, getInputProps }) => (
               <div {...getRootProps()}>
                 <input {...getInputProps()} accept="image/*" />
@@ -842,16 +907,22 @@ class Index extends React.Component {
         <div className="react-reward">
           <ul>
             <li>
-              <span><img src={like}></img></span>
-              <span>{profile.numlike}</span>
+              <ClickTooltip className="item like-count" title="Số lượt thích" placement="top-start">
+                <span><img src={like}></img></span>
+                <span>{profile.numlike}</span>
+              </ClickTooltip>
             </li>
             <li>
-              <span><img src={follower}></img></span>
-              <span>{profile.isfollowme}</span>
+              <ClickTooltip className="item follow-count" title="Số người theo dõi" placement="top">
+                <span><img src={follower}></img></span>
+                <span>{profile.isfollowme}</span>
+              </ClickTooltip>
             </li>
             <li>
-              <span><img src={donePractice}></img></span>
-              <span>{profile.numpost}</span>
+              <ClickTooltip className="item post-count" title="Số bài đăng" placement="top-end">
+                <span><img src={donePractice}></img></span>
+                <span>{profile.numpost}</span>
+              </ClickTooltip>
             </li>
           </ul>
         </div>
@@ -883,10 +954,7 @@ class Index extends React.Component {
               </li> : ""
             }
           </ul>
-          <span className="view-detail-link" onClick={() => {
-            this.props.setCurrenUserDetail(data)
-            this.props.toggleUserDetail(true)
-          }}>{">>> Xem thêm thông tin của"} {profile.fullname}</span>
+          <span className="view-detail-link" onClick={() => this.setState({ showUserDetail: true })}>{">>> Xem thêm thông tin của"} {profile.fullname}</span>
         </div>
 
         <Button className="update-button" style={{ background: "#f44645" }} onClick={() => this.setState({ showUpdateProfile: true })}>Cập nhật thông tin cá nhân</Button>
@@ -922,7 +990,7 @@ class Index extends React.Component {
 
         <div className="post-bt" onClick={() => this.props.togglePostDrawer(true)}>
           <Avatar aria-label="recipe" className="avatar">
-            <img src={data.avatar} style={{ width: "100%" }} />
+            <div className="img" style={{ background: `url("${profile.avatar}")` }} />
           </Avatar>
           <span>Bạn viết gì đi...</span>
         </div>
@@ -941,11 +1009,14 @@ class Index extends React.Component {
         </div>
 
         <div className="posted">
+
           {
             myPosteds && myPosteds.length > 0 ? <ul>
               {
                 myPosteds.map((post, index) => <li key={index} >
-                  <Post data={post} />
+                  {
+                    post.isPendding ? "" : <Post data={post} history={this.props.history} userId={profile.id} />
+                  }
                 </li>)
               }
             </ul> : ""
@@ -972,9 +1043,7 @@ class Index extends React.Component {
           renderFriendsForBlockDrawer(this)
         }
         <Medias open={openMediaDrawer} onClose={() => this.setState({ openMediaDrawer: false })} userDetail={profile} />
-        {
-          renderVideoDrawer(this)
-        }
+        <Videos open={openVideoDrawer} onClose={() => this.setState({ openVideoDrawer: false })} userDetail={profile} />
         {
           renderUpdateAvatarReviewDrawer(this)
         }
@@ -997,6 +1066,9 @@ class Index extends React.Component {
         {
           renderFriendActionsDrawer(this)
         }
+        {
+          renderUserDetailDrawer(this)
+        }
         <div style={{ height: "50px", background: "#f0f0f0", zIndex: 0 }}>
           {
             isLoadMore ? <Loader type="small" style={{ background: "#f0f0f0" }} width={30} height={30} /> : ""
@@ -1009,11 +1081,11 @@ class Index extends React.Component {
 
 const mapStateToProps = state => {
   // const myPosteds = state.posted.myPosteds
-  console.log("mapStateToProps", state)
   return {
     ...state.app,
     ...state.user,
-    myPosteds: state.posted.myPosteds
+    ...state.posted,
+    ...state.noti
   }
 };
 
@@ -1039,6 +1111,7 @@ const mapDispatchToProps = dispatch => ({
   toggleSeachFriends: (isShow) => dispatch(toggleSeachFriends(isShow)),
   setCurrentFriendId: (friendId) => dispatch(setCurrentFriendId(friendId)),
   setMePosted: (posteds) => dispatch(setMePosted(posteds)),
+  setUserPosted: (userId, currentpage) => dispatch(setUserPosted(userId, currentpage))
 
 });
 
@@ -1050,7 +1123,15 @@ export default connect(
 
 
 
-
+const mediaRootActions = (component) => ({
+  // onSaveImage: (value) => component.downloadImage(value.name),
+  onUpdateInfo: (value) => null,
+  onSetToAvatar: (value) => component.getProfile(),
+  onSetToBackground: (value) => component.getProfile(),
+  onUpdatePrivacy: (value) => null,
+  onDelete: (value) => null,
+  onSetToAlbumBackground: (value) => null
+})
 
 
 
@@ -1058,6 +1139,9 @@ export default connect(
 
 const renderFooter = (component) => {
   let pathName = window.location.pathname
+  let {
+    woldNotiUnreadCount
+  } = component.props
   return (
     pathName == "/communiti-profile" ? <div className="app-footer">
       <ul>
@@ -1074,7 +1158,11 @@ const renderFooter = (component) => {
           <span>Nhóm</span>
         </li>
         <li onClick={() => component.props.history.replace('/community-noti')}>
-          <img src={NotiBw}></img>
+          {
+            woldNotiUnreadCount > 0 ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
+              <img src={NotiBw}></img>
+            </Badge> : <img src={NotiBw}></img>
+          }
           <span>Thông báo</span>
         </li>
         <li onClick={() => component.props.history.replace('/communiti-profile')}>
@@ -1110,6 +1198,9 @@ const renderUserMenuDrawer = (component) => {
     showUserMenu,
     isLoadHistory
   } = component.state
+  let {
+    profile
+  } = component.props
   return (
     <Drawer anchor="right" className="user-menu full" open={showUserMenu} onClose={() => component.setState({ showUserMenu: false })}>
       <div className="menu-header">
@@ -1124,7 +1215,7 @@ const renderUserMenuDrawer = (component) => {
         </li>
         <li>
           <Button onClick={() => {
-            component.props.setCurrenUserDetail(data)
+            component.props.setCurrenUserDetail(profile)
             component.props.toggleUserHistory(true)
             component.getHistoryPoint(0)
           }}>Lịch sử tích điểm</Button>
@@ -1145,7 +1236,6 @@ const renderUserMenuDrawer = (component) => {
     </Drawer>
   )
 }
-
 
 const renderUpdateProfileDrawer = (component) => {
   let {
@@ -1172,21 +1262,27 @@ const renderUpdateProfileDrawer = (component) => {
   )
 }
 
-
 const renderUserHistoryDrawer = (component) => {
   let {
     showUserHistory,
-    userDetail
+    userDetail,
+    profile
   } = component.props
   let {
     historyPoints,
     isLoadHistory
   } = component.state
 
+  console.log("profile", profile.mempoint)
+
   return (
-    <Drawer anchor="right" open={showUserHistory} onClose={() => component.props.toggleUserHistory(false)}>
+    <Drawer anchor="right"
+      open={showUserHistory}
+      onClose={() => component.props.toggleUserHistory(false)}
+      style={{ height: "100%", position: "fixed" }}
+    >
       {
-        userDetail ? <div className="drawer-detail">
+        profile ? <div className="drawer-detail">
           <div className="drawer-header">
             <div className="direction" onClick={() => component.props.toggleUserHistory(false)}>
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
@@ -1196,19 +1292,18 @@ const renderUserHistoryDrawer = (component) => {
             </div>
             <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{userDetail.fullName}</span>
+                <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điển YOOT: {userDetail.point}</span>
-                  <img src={coin} />
+                  <span>Điểm YOOT: {formatCurrency(profile.mempoint, 0)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
-                <img src={userDetail.avatar} style={{ width: "100%" }} />
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
               </Avatar>
             </div>
           </div>
           <div className="filter"></div>
-          <div style={{ overflow: "scroll", width: "100vw" }} id="history-list" onScroll={() => component.onScroll()}>
+          <div style={{ overflow: "scroll", width: "100%" }} id="history-list" onScroll={() => component.onScroll()}>
             {
 
               historyPoints && historyPoints.length > 0 ? <ul className="user-history">
@@ -1293,7 +1388,12 @@ const renderChangePasswordDrawer = (component) => {
           </div>
         </div>
         <div className="filter"></div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="content-form" style={{
+          height: "calc(100vh - 60px)",
+          width: "100vw",
+          display: "flex",
+          alignItems: "center"
+        }}>
           <div>
             <TextField
               className="custom-input"
@@ -1347,7 +1447,7 @@ const renderChangePasswordDrawer = (component) => {
               placeholder="Nhập lại mật khẩu mới"
               style={{
                 width: "100%",
-                marginBottom: "50px"
+                marginBottom: "10px"
               }}
               type={isShowConfirmPass ? "text" : "password"}
               value={confirmPassForChange}
@@ -1364,7 +1464,7 @@ const renderChangePasswordDrawer = (component) => {
                 ),
               }}
             />
-            <Button variant="contained" className={"bt-submit"} onClick={() => component.changePassword()}>Lưu thông tin</Button>
+            <Button variant="contained" className={"bt-submit"} onClick={() => component.changePassword()}>Lưu thay đổi</Button>
             <Button variant="contained" className={"bt-cancel"} onClick={() => component.setState({
               oldPassForChange: "",
               newPassForChange: "",
@@ -1416,7 +1516,7 @@ const renderBlockFriendDrawer = (component) => {
                       this.props.toggleUserPageDrawer(true)
                     }}>
                       <Avatar aria-label="recipe" className="avatar">
-                        <img src={item.friendavatar} style={{ width: "100%" }} />
+                        <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                       </Avatar>
                       <label onClick={() => {
                         this.props.setCurrenUserDetail(item)
@@ -1494,7 +1594,7 @@ const renderFriendsForBlockDrawer = (component) => {
                       this.props.toggleUserPageDrawer(true)
                     }}>
                       <Avatar aria-label="recipe" className="avatar">
-                        <img src={item.friendavatar} style={{ width: "100%" }} />
+                        <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                       </Avatar>
                       <label onClick={() => {
                         this.props.setCurrenUserDetail(item)
@@ -1524,11 +1624,14 @@ const renderFriendsForBlockDrawer = (component) => {
 const renderAllFriendsDrawer = (component) => {
   let {
     friends,
-    showAllFriendsDrawer
+    showAllFriendsDrawer,
+    numOfFriend
   } = component.state
   let {
     profile
   } = component.props
+
+
   return (
     <Drawer anchor="bottom" className="find-friends" open={showAllFriendsDrawer} >
       <div className="drawer-detail">
@@ -1567,13 +1670,17 @@ const renderAllFriendsDrawer = (component) => {
           />
         </div>
         <div style={{ overflow: "scroll", width: "100vw" }} id="all-user-list" onScroll={() => component.onAllUserScroll()}>
+          <div className="friend-count">
+            <span>Số lượng</span>
+            <span className="red">{numOfFriend}</span>
+          </div>
           <div className="friend-list" >
             <ul>
               {
                 friends.map((item, index) => <li key={index} className="friend-layout">
                   <div className="friend-info" >
                     <Avatar aria-label="recipe" className="avatar">
-                      <img src={item.friendavatar} style={{ width: "100%" }} />
+                      <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                     </Avatar>
                     <label>
                       <span className="name">{item.friendname}</span>
@@ -1666,43 +1773,13 @@ const renderFriendActionsDrawer = (component) => {
             </li>
           </ul>
           <Button className="bt-submit" onClick={() => component.setState({
+            showFriendActionsDrawer: false,
             okCallback: () => component.removeFriend(currentFriend.friendid),
             confirmTitle: "",
             confirmMessage: "Bạn có chắc chắn muốn xoá người này khỏi danh sách bạn bè không?",
             showConfim: true
           })}>Huỷ kết bạn</Button>
         </div> : ''
-      }
-    </Drawer>
-  )
-}
-
-
-const renderVideoDrawer = (component) => {
-  let {
-    openVideoDrawer
-  } = component.state
-  let {
-    profile
-  } = component.props
-  return (
-    <Drawer anchor="bottom" open={openVideoDrawer} onClose={() => component.setState({ openVideoDrawer: false })}>
-      {
-        profile ? <div className="drawer-detail media-drawer">
-          <div className="drawer-header">
-            <div className="direction" onClick={() => component.setState({ openVideoDrawer: false })}>
-              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-              </IconButton>
-              <label>Video của {profile.fullName}</label>
-            </div>
-          </div>
-          <div className="filter">
-          </div>
-          <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
-
-          </div>
-        </div> : ""
       }
     </Drawer>
   )
@@ -1732,23 +1809,18 @@ const renderUpdateAvatarReviewDrawer = (component) => {
             }
             </label>
           </div>
-          <Button className="bt-submit" onClick={() => component.updateAvatar()}>Đăng</Button>
+          <Button onClick={() => component.updateAvatar()}>Đăng</Button>
         </div>
         <div className="filter">
         </div>
         <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
           <div className="post-content">
             <MultiInput
-              disabledInput = {true}
-              useHashtags={true}
-              useMentions={true}
-              placeholder="Nhập nội dung"
-              onChange={(value) => console.log(value)}
-              userOptions={[
-                { fullname: 'User 1' },
-                { fullname: 'User 2' },
-                { fullname: 'User 3' }
-              ]} />
+              style={{ padding: "15px 0px", border: "none" }}
+              onChange={value => component.setState({ postContent: value.text })}
+              topDown={true}
+              placeholder={"Nhập nội dung"}
+            />
           </div>
           <div className="profile-page" >
             <div className="cover-img" style={{ background: "url(" + profile.avatar + ")" }}>
@@ -1777,7 +1849,7 @@ const renderCropperDrawer = (component) => {
     <Drawer anchor="bottom" className="cropper-drawer" open={openCropperDrawer} onClose={() => component.setState({ openCropperDrawer: false })}>
       {
         src ? <div className="drawer-detail">
-          <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+          <div className="drawer-content" style={{ background: "#f2f3f7" }}>
             <Cropper
               src={src}
               crop={crop}
@@ -1787,7 +1859,7 @@ const renderCropperDrawer = (component) => {
           <div className="footer-drawer">
             <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
             <div>
-              <Button onClick={() => component.setState({ openCropperDrawer: false })}>Huỷ</Button>
+              <Button onClick={() => component.setState({ openCropperDrawer: false, isReviewMode: false })}>Huỷ</Button>
               <Button onClick={() => component.setState({ openCropperDrawer: false, isReviewMode: true, avatarToUpload: croppedImage })}>Chế độ xem trước</Button>
               <Button onClick={() => component.setState({ avatarToUpload: croppedImage }, () => component.updateAvatar())}>Đăng bài</Button>
             </div>
@@ -1826,24 +1898,18 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
             }
             </label>
           </div>
-          <Button className="bt-submit" onClick={() => component.updateBackground()}>Đăng</Button>
+          <Button onClick={() => component.updateBackground()}>Đăng</Button>
         </div>
         <div className="filter">
         </div>
         <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
           <div className="post-content">
             <MultiInput
-              placeholder="Nhập nội dung"
-              onChange={(value) => console.log(value)}
-              useHashtags={false}
-              useMentions={false}
-              userOptions={[
-                { fullname: 'User 1' },
-                { fullname: 'User 2' },
-                { fullname: 'User 3' }
-              ]}
+              style={{ padding: "15px 0px", border: "none" }}
+              onChange={value => component.setState({ postContent: value.text })}
+              topDown={true}
+              placeholder={"Nhập nội dung"}
             />
-
           </div>
           <div className="profile-page" >
             <div className="cover-img" style={{ background: "url(" + (backgroundToUpload && backgroundToUpload.file ? URL.createObjectURL(backgroundToUpload.file) : profile.background) + ")" }}>
@@ -1882,7 +1948,7 @@ const renderBackgroundCropperDrawer = (component) => {
           <div className="footer-drawer">
             <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
             <div>
-              <Button onClick={() => component.setState({ openBackgroundCropperDrawer: false })}>Huỷ</Button>
+              <Button onClick={() => component.setState({ openBackgroundCropperDrawer: false, isReviewMode: false })}>Huỷ</Button>
               <Button onClick={() => component.setState({ openBackgroundCropperDrawer: false, isReviewMode: true, backgroundToUpload: backgroundCroppedImage })}>Chế độ xem trước</Button>
               <Button onClick={() => component.setState({ backgroundToUpload: backgroundCroppedImage }, () => component.updateBackground())}>Đăng bài</Button>
             </div>
@@ -1897,6 +1963,178 @@ const renderBackgroundCropperDrawer = (component) => {
   )
 }
 
+const renderUserDetailDrawer = (component) => {
+  let {
+    userDetailFolowTabIndex,
+    showUserDetail
+  } = component.state
+  let {
+    profile
+  } = component.props
+  return (
+    <Drawer anchor="bottom" className="drawer-detail" open={showUserDetail} onClose={() => component.setState({ showUserDetail: false })}>
+      {
+        profile ? <div className="drawer-detail">
+          <div className="drawer-header">
+            <div className="direction" onClick={() => component.setState({ showUserDetail: false })}>
+              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+              </IconButton>
+              <label>Trang cá nhân</label>
+            </div>
+            <div className="user-reward">
+              <div className="profile">
+                <span className="user-name">{profile.fullname}</span>
+                <span className="point">
+                  <span>Điểm YOOT: {profile.mempoint}</span>
+                </span>
+              </div>
+              <Avatar aria-label="recipe" className="avatar">
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
+              </Avatar>
+            </div>
+          </div>
+          <div className="filter"></div>
+          <div style={{ overflow: "scroll", height: "100%" }}>
+            <AppBar position="static" color="default" className={"custom-tab"}>
+              <Tabs
+                value={userDetailFolowTabIndex}
+                onChange={(e, value) => component.setState({ userDetailFolowTabIndex: value })}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="fullWidth"
+                aria-label="full width tabs example"
+                className="tab-header"
+              >
+                <Tab label={"Người theo dõi " + (profile.foloweds ? ("(" + profile.foloweds.length + ")") : "")} {...a11yProps(0)} className="tab-item" />
+                <Tab label={"Đang theo dõi " + (profile.folowings ? ("(" + profile.folowings.length + ")") : "")} {...a11yProps(1)} className="tab-item" />
+              </Tabs>
+            </AppBar>
+            <SwipeableViews
+              index={userDetailFolowTabIndex}
+              onChangeIndex={(value) => component.setState({ userDetailFolowTabIndex: value })}
+              className="tab-content"
+            >
+              <TabPanel value={userDetailFolowTabIndex} index={0} className="content-box">
+                <div className="folowed-list">
+                  {
+                    profile.foloweds && profile.foloweds.length > 0 ? <ul>
+                      {
+                        profile.foloweds.map((item, index) => <li className="small-user-layout" key={index}>
+                          <Avatar aria-label="recipe" className="avatar" onClick={() => {
+                            component.props.setCurrenUserDetail(item)
+                            component.props.toggleUserPageDrawer(true)
+                          }}>
+                            <img src={item.friendavatar} style={{ width: "100%" }} />
+                          </Avatar>
+                          <span className="user-name" onClick={() => {
+                            component.props.setCurrenUserDetail(item)
+                            component.props.toggleUserPageDrawer(true)
+                          }}>{item.friendname}</span>
+                          <Button style={{ background: "#f44645", color: "#fff" }}>Theo dõi</Button>
+                        </li>)
+                      }
+                    </ul> : <span className="list-empty-message">Chưa có ai theo dõi</span>
+                  }
+                </div>
+              </TabPanel>
+              <TabPanel value={userDetailFolowTabIndex} index={1} >
+                <div className="folowing-list">
+                  {
+                    profile.folowings && profile.folowings.length > 0 ? <ul>
+                      {
+                        profile.folowings.map((item, index) => <li className="small-user-layout" key={index}>
+                          <Avatar aria-label="recipe" className="avatar" onClick={() => {
+                            component.props.setCurrenUserDetail(item)
+                            component.props.toggleUserPageDrawer(true)
+                          }}>
+                            <img src={item.friendavatar} style={{ width: "100%" }} />
+                          </Avatar>
+                          <span className="user-name" onClick={() => {
+                            component.props.setCurrenUserDetail(item)
+                            component.props.toggleUserPageDrawer(true)
+                          }}>{item.friendname}</span>
+                          <Button style={{ background: "rgba(0,0,0,0.05)" }}>Bỏ theo dõi</Button>
+                        </li>)
+                      }
+                    </ul> : <span className="list-empty-message">Chưa theo dõi bất kì ai</span>
+                  }
+                </div>
+              </TabPanel>
+            </SwipeableViews>
+            <div className="job-reward info-box">
+              <label>Công việc</label>
+              {
+                profile.userExperience[0] ? <span>Từng làm <b>{profile.userExperience[0].title}</b> tại <b>{profile.userExperience[0].companyname}</b></span> : "-/-"
+              }
+              {
+                profile.userExperience[0] ? <p>{profile.userExperience[0].description}</p> : "-/-"
+              }
+            </div>
+            <div className="job-reward info-box">
+              <label>Học vấn</label>
+              {
+                profile.userStudyGraduation[0] ? <span>Từng học <b>{profile.userStudyGraduation[0].specialized}</b> tại <b>{profile.userStudyGraduation[0].schoolname}</b></span> : ""
+              }
+              {
+                profile.userStudyGraduation[0] ? <span><b>Trình độ: </b>{profile.userStudyGraduation[0].qualificationname}</span> : ""
+              }
+              {
+                profile.userStudyGraduation[0] ? <span><b>Mã hớp: </b>{profile.userStudyGraduation[0].codeclass}</span> : ""
+              }
+              {
+                profile.userStudyGraduation[0] ? <span><b>Loại tốt nghiệp: </b>{profile.userStudyGraduation[0].graduationname}</span> : ""
+              }
+            </div>
+            <div className="job-reward info-box">
+              <label>Sống tại</label>
+              <span>{profile.address}</span>
+            </div>
+            <div className="job-reward info-box">
+              <label>Thông tin liên hệ</label>
+              <span className="email">{profile.email}</span>
+            </div>
+            <div className="job-reward info-box">
+              <label>Thông tin cơ bản</label>
+              <ul>
+                <li>
+                  <label>{profile.gendertext}</label>
+                  <span>Giới tính</span>
+                </li>
+                <li>
+                  <label>{moment(profile.birthday).format("D [tháng] M, YYYY")}</label>
+                  <span>Ngày sinh</span>
+                </li>
+              </ul>
+            </div>
+            <div className="job-reward info-box">
+              <label>Kỹ năng & sở trường</label>
+              <ul>
+                <li>
+                  <label>Kỹ năng</label>
+                  {
+                    profile.userSkill && profile.userSkill.length > 0 ? <ul className="skill-list">
+                      {
+                        profile.userSkill.map((item, index) => <li key={index}>
+                          <span>{item.skill_name}</span>
+                        </li>)
+                      }
+                    </ul> : ""
+                  }
+                </li>
+                {/* <li>
+                  <label>Sở trường</label>
+                  <span>-/-</span>
+                </li> */}
+              </ul>
+            </div>
+          </div>
+
+        </div> : ""
+      }
+    </Drawer>
+  )
+}
 
 
 function a11yProps(index) {

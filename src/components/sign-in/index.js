@@ -16,7 +16,8 @@ import {
 } from '@material-ui/core'
 import {
   Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon
+  VisibilityOff as VisibilityOffIcon,
+  Cancel as CancelIcon
 } from '@material-ui/icons'
 import SwipeableViews from 'react-swipeable-views';
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
@@ -26,7 +27,11 @@ import { setUserProfile } from '../../actions/user'
 import Loader from '../common/loader'
 import moment from 'moment'
 import { connect } from 'react-redux'
-import {NumberFormatCustom} from '../../utils/common'
+import { NumberFormatCustom } from '../../utils/common'
+import $ from 'jquery'
+
+const defaultDate = '2000-01-01'
+
 
 const logo = require('../../assets/images/yoot-full.png')
 const bgImg = require('../../assets/images/Bg-img.png')
@@ -84,7 +89,8 @@ class Index extends React.Component {
         signIn({
           comunityAccessToken: result.content.myToken,
           skillAccessToken: result.content.myTokenTraining,
-          careerGuidanceAccessToken: result.content.myTokenBuildYS
+          careerGuidanceAccessToken: result.content.myTokenBuildYS,
+          socketToken: result.content.myTokenNotifi
         });
         this.setState({
           isProccessinng: false
@@ -287,7 +293,7 @@ class Index extends React.Component {
                 <TextField
                   className="custom-input"
                   variant="outlined"
-                  placeholder="Email, số điện thoại"
+                  placeholder="Số điện thoại"
                   style={{
                     width: "100%",
                     marginBottom: "10px"
@@ -422,7 +428,7 @@ class Index extends React.Component {
                     onChange={e => this.setState({ registerEmail: e.target.value })}
                   />
 
-                  <TextField
+                  {/* <TextField
                     className="custom-input"
                     variant="outlined"
                     placeholder="Sinh nhật"
@@ -431,10 +437,23 @@ class Index extends React.Component {
                       width: "100%",
                       marginBottom: "10px"
                     }}
+                    value={registerBirthDay}
                     onChange={e => this.setState({ registerBirthDay: e.target.value })}
                     label={registerBirthDay ? null : <span className="custom-placehoder">Ngày sinh</span>}
-                  />
+                  /> */}
 
+                  <div className="date-time-input" >
+                    <input
+                      type="date"
+                      className={(registerBirthDay ? "has-value" : "")}
+                      value={registerBirthDay}
+                      // defaultValue={defaultDate}
+                      placeholder="Ngày sinh"
+                      onChange={e => this.setState({ registerBirthDay: e.target.value })}
+                      onClick={() => registerBirthDay ? null : this.setState({ registerBirthDay: defaultDate })}
+                    />
+                    <IconButton onClick={() => this.setState({ registerBirthDay: '' })}><CancelIcon /></IconButton>
+                  </div>
                   <div className="gender-select">
                     <span className="title">Giới tính</span>
                     <div className="options">

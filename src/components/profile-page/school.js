@@ -28,6 +28,7 @@ import {
 import { showNotification, objToQuery, objToArray } from '../../utils/common';
 import { connect } from 'react-redux'
 import Loader from '../common/loader'
+import CustomMenu from '../common/custom-menu'
 
 
 const school = require('../../assets/icon/Education.png')
@@ -222,19 +223,10 @@ export class Index extends React.Component {
                     <label>Mã học sinh: <span>{item.codestudent}</span></label>
                     <span>Năm học {item.fromyear} - {item.graduated == 1 ? ("Tốt nghiệp năm " + item.toyear) : "Chưa tốt nghiệp"}</span>
                 </div>
-                <IconButton onClick={(e) => this.setState({ showLocalMenu: true, anchor: e.target })}>
-                    <MoreHorizIcon />
-                </IconButton>
-                <Menu
-                    className="custom-menu"
-                    anchorEl={anchor}
-                    keepMounted
-                    open={showLocalMenu}
-                    onClose={() => this.setState({ showLocalMenu: false })}
-                >
+                <CustomMenu>
                     <MenuItem onClick={() => this.setState({ showLocalMenu: false, showUpdateForm: true }, () => this.handleSetDefault())}>Chỉnh sửa</MenuItem>
                     <MenuItem onClick={() => this.setState({ showLocalMenu: false, showDeleteSchoolConfirm: true })}>Xoá</MenuItem>
-                </Menu>
+                </CustomMenu>
 
                 <Drawer anchor="bottom" className="drawer-form" open={showUpdateForm} onClose={() => this.setState({ showUpdateForm: false })}>
                     <div className="form-header">
@@ -335,21 +327,33 @@ export class Index extends React.Component {
                                 onChange={e => this.setState({ studentID: e.target.value, isChange: true })}
                             />
                         </div>
-                        <div className="input-field">
-                            <label>Năm bắt đầu</label>
-                            <TextField
-                                className="custom-input"
-                                variant="outlined"
-                                placeholder="Năm"
-                                type="number"
-                                style={{
-                                    width: "100%",
-                                    marginBottom: "10px",
-                                }}
-                                value={startYear}
-                                onChange={e => this.setState({ startYear: e.target.value, isChange: true })}
-                            />
-                        </div>
+                        {
+                            isGraduted ? <div className='input-field'>
+                                <label>Loại tốt nghiệp</label>
+                                <CustomSelect
+                                    value={graduationSelected}
+                                    title="Loại tốt nghiệp"
+                                    placeholder="Chọn loại tốt nghiệp"
+                                    height={"160px"}
+                                    options={graduationOptions}
+                                    onSelected={value => this.setState({ graduationSelected: value, isChange: true })}
+                                    clearable={true}
+                                    style={{
+                                        marginBottom: "10px"
+                                    }}
+                                    optionStyle={{
+                                        justifyContent: "flex-start"
+                                    }}
+                                    closeButtonStyle={{
+                                        background: "#ff5a5a",
+                                        color: "#fff"
+                                    }}
+                                    actionStyle={{
+                                        display: "block"
+                                    }}
+                                />
+                            </div> : ""
+                        }
                         <div className='input-field inline'>
                             <label>Đã tốt nghiệp</label>
                             <Switch
@@ -361,10 +365,13 @@ export class Index extends React.Component {
                                 className="custom-switch"
                             />
                         </div>
-                        {
-
-                            isGraduted ? <div className="input-field">
-                                <label>Năm kết thúc</label>
+                        <div style={{
+                            display: "grid",
+                            gridTemplateColumns: isGraduted ? "repeat(2,1fr)" : "repeat(1,1fr)",
+                            gridColumnGap: "10px"
+                        }}>
+                            <div className="input-field">
+                                <label>Năm bắt đầu</label>
                                 <TextField
                                     className="custom-input"
                                     variant="outlined"
@@ -374,31 +381,29 @@ export class Index extends React.Component {
                                         width: "100%",
                                         marginBottom: "10px",
                                     }}
-                                    value={endYear}
-                                    onChange={e => this.setState({ endYear: e.target.value, isChange: true })}
+                                    value={startYear}
+                                    onChange={e => this.setState({ startYear: e.target.value, isChange: true })}
                                 />
-                            </div> : ""
-                        }
-                        {
-                            isGraduted ? <div className='input-field'>
-                                <label>Loại tốt nghiệp</label>
-                                <CustomSelect
-                                    value={graduationSelected}
-                                    title="Trình độ"
-                                    placeholder="Chọn loại tốt nghiệp"
-                                    height={"160px"}
-                                    options={graduationOptions}
-                                    onSelected={value => this.setState({ graduationSelected: value, isChange: true })}
-                                    clearable={true}
-                                    style={{
-                                        marginBottom: "10px"
-                                    }}
-                                    optionStyle={{
-                                        justifyContent: "center"
-                                    }}
-                                />
-                            </div> : ""
-                        }
+                            </div>
+                            {
+
+                                isGraduted ? <div className="input-field">
+                                    <label>Năm kết thúc</label>
+                                    <TextField
+                                        className="custom-input"
+                                        variant="outlined"
+                                        placeholder="Năm"
+                                        type="number"
+                                        style={{
+                                            width: "100%",
+                                            marginBottom: "10px",
+                                        }}
+                                        value={endYear}
+                                        onChange={e => this.setState({ endYear: e.target.value, isChange: true })}
+                                    />
+                                </div> : ""
+                            }
+                        </div>
                         <div className="privacy-select">
                             <IconButton onClick={(e) => this.setState({ showstudyPrivacyList: true, anchor: e.target })}>
                                 {
@@ -466,10 +471,8 @@ const renderDeleteSchoolConfirm = (component) => {
                 <label>Xoá thông tin học vấn.</label>
                 <p>Bạn có chắc chắn muốn xoá thông tin này không?</p>
                 <div className="mt20">
-                    <Button className="bt-cancel" onClick={() => component.setState({ showDeleteSchoolConfirm: false })}>Huỷ</Button>
-                    <Button className="bt-submit" onClick={() => component.handleDelete()}>
-                        Xoá
-                    </Button>
+                    <Button className="bt-confirm" onClick={() => component.handleDelete()}>Xoá</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showDeleteSchoolConfirm: false })}>Huỷ</Button>
                 </div>
             </div>
             {
@@ -489,8 +492,8 @@ const renderCloseForm = (component) => {
                 <label>Bạn muốn rời khỏi trang này?</label>
                 <p>Những thông tin vừa thay đổi vẫn chưa được lưu.</p>
                 <div className="mt20">
-                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false, isChange: false })}>Đồng ý rời khỏi</Button>
-                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại thay đổi</Button>
+                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false, isChange: false })}>Đồng ý</Button>
+                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại</Button>
                 </div>
             </div>
         </Drawer>
