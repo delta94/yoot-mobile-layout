@@ -95,7 +95,6 @@ class Index extends React.Component {
       currentLesstion
     } = this.state
 
-    console.log("currentLesstion", currentLesstion)
 
     let video = this.player.current
     let lestionIndex = lessions.findIndex(lession => lession.ID == currentLesstion.ID)
@@ -107,7 +106,6 @@ class Index extends React.Component {
       video.play()
       video.subscribeToStateChange((state, prevState) => {
 
-        console.log("state", state)
 
         if (lestionIndex >= 0) {
           lessions[lestionIndex].timeseen = state.currentTime > lessions[lestionIndex].timeseen ? parseInt(state.currentTime) : lessions[lestionIndex].timeseen
@@ -191,7 +189,6 @@ class Index extends React.Component {
       isPlaying,
     } = this.state
 
-    console.log("srouceDetail", srouceDetail)
 
     return (
       <div className="source-item-page" >
@@ -235,7 +232,11 @@ class Index extends React.Component {
                               this.props.toggleMediaViewerDrawer(true, {
                                 showInfo: false,
                                 activeIndex: 0,
-                                isvideo: true
+                                isvideo: true,
+                                videoCurrentTime: this.player.current.getState().player.currentTime,
+                                onCloseVideo: (time) => setTimeout(() => {
+                                  this.handleChangeCurrentTime(time - this.player.current.getState().player.currentTime)
+                                }, 300)
                               })
                             }}></div>
                           </ControlBar>
@@ -372,7 +373,6 @@ const renderDocumentDrawer = (component) => {
     profile
   } = component.props
 
-  console.log("currentDucument", currentDucument)
   return (
     <Drawer anchor="bottom" className="share-drawer poster-drawer" open={showDocumentReviewDrawer} >
       <div className="drawer-detail">

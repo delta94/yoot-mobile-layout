@@ -30,7 +30,8 @@ import {
     SET_CURRENNT_ALBUM,
     SELECT_ALBUM_TO_POST,
     SET_PROCCESS_DURATION,
-    TOGGLE_GROUP_DETAIL_DRAWER
+    TOGGLE_GROUP_DETAIL_DRAWER,
+    SET_CURRENT_NETWORK
 } from '../actions/app'
 
 const initialState = {
@@ -67,7 +68,8 @@ const initialState = {
     createAlbumSuccessCallback: null,
     updateAlbumSuccessCallback: null,
     albumSelected: null,
-    showGroupDetail: false
+    showGroupDetail: false,
+    currentNetwork: 'all'
 };
 
 export default (state = initialState, action) => {
@@ -250,6 +252,12 @@ export default (state = initialState, action) => {
         case TOGGLE_GROUP_DETAIL_DRAWER: {
             return Object.assign({}, state, {
                 showGroupDetail: action.payload,
+            });
+        }
+
+        case SET_CURRENT_NETWORK: {
+            return Object.assign({}, state, {
+                currentNetwork: action.payload,
             });
         }
 

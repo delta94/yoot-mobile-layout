@@ -5,7 +5,9 @@ import {
 } from '../actions/posted'
 import {
     getWorldNoti,
-    getSkillNoti
+    getSkillNoti,
+    setUnreadNotiCount,
+    setSkillUnreadNotiCount
 } from '../actions/noti'
 import {
     SOCKET_API,
@@ -17,6 +19,19 @@ import { hubConnection } from 'signalr-no-jquery';
 import { get } from "../api";
 
 class Realtime extends Component {
+
+    getUnreadNoti() {
+        get(SOCIAL_NET_WORK_API, "Notification/CountNotificationNoRead?typeproject=1", result => {
+            if (result && result.result == 1) {
+                this.props.setUnreadNotiCount(result.content.noUnRead)
+            }
+        })
+        get(SOCIAL_NET_WORK_API, "Notification/CountNotificationNoRead?typeproject=2", result => {
+            if (result && result.result == 1) {
+                this.props.setSkillUnreadNotiCount(result.content.noUnRead)
+            }
+        })
+    }
 
     componentDidMount = () => {
 
@@ -30,10 +45,12 @@ class Realtime extends Component {
             if (message.result == true) {
                 if (message.content.typeproject == 1) {
                     this.props.getWorldNoti()
+
                 }
                 else {
                     this.props.getSkillNoti()
                 }
+                this.getUnreadNoti()
             }
             switch (content.type) {
                 case 27: {
@@ -83,7 +100,9 @@ const mapDispatchToProps = dispatch => {
     return {
         endablePost: (postId) => dispatch(endablePost(postId)),
         getWorldNoti: () => dispatch(getWorldNoti()),
-        getSkillNoti: () => dispatch(getSkillNoti())
+        getSkillNoti: () => dispatch(getSkillNoti()),
+        setSkillUnreadNotiCount: (number) => dispatch(setSkillUnreadNotiCount(number)),
+        setUnreadNotiCount: (number) => dispatch(setUnreadNotiCount(number))
     };
 };
 export default connect(

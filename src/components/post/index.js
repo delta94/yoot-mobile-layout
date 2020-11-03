@@ -77,6 +77,8 @@ import MultiInput from '../common/multi-input'
 import CommentBox from './comment'
 import CommentImageBox from './comment-image'
 import CustomMenu from '../common/custom-menu'
+import { APP_SETTING } from "../../constants/localStorageKeys";
+import ShowMoreText from 'react-show-more-text';
 
 const maxCols = 6
 const like1 = require('../../assets/icon/like1@1x.png')
@@ -273,6 +275,10 @@ class Index extends React.Component {
       icon: reaction.code
     }
     this.props.likePosted(data, reaction.code, "myPosteds", userId)
+    if (data.mediaPlays.length == 1) {
+      let image = data.mediaPlays[0]
+      this.props.likeImage(data, image.detailimageid, reaction.code, userId)
+    }
     this.setState({ isProccesing: false })
     post(SOCIAL_NET_WORK_API, "PostNewsFeed/LikeNewsFeed" + objToQuery(param), null, (result) => {
     })
@@ -290,6 +296,10 @@ class Index extends React.Component {
     }
     this.setState({ isProccesing: false })
     this.props.dislikePosted(data, "myPosteds", userId)
+    if (data.mediaPlays.length == 1) {
+      let image = data.mediaPlays[0]
+      this.props.dislikeImage(data, image.detailimageid, userId)
+    }
     post(SOCIAL_NET_WORK_API, "PostNewsFeed/LikeNewsFeed" + objToQuery(param), null, (result) => {
     })
   }
@@ -798,6 +808,34 @@ class Index extends React.Component {
     }
   }
 
+  handleActiveVideo() {
+    let {
+      currentNetwork
+    } = this.props
+    let localSetting = window.localStorage.getItem(APP_SETTING)
+    let appSettings = JSON.parse(localSetting ? localSetting : null)
+    // if (appSettings && appSettings.isMuteInNewfeed) {
+    //   this.handleSetMuted(appSettings.isMuteInNewfeed == false ? appSettings.isMuteInNewfeed : true)
+    // }
+    if (currentNetwork == 'all') {
+      this.handlePlayVideo()
+      return
+    }
+
+    if (currentNetwork != 'none') {
+      if (appSettings && appSettings.autoPlayRole) {
+        if (currentNetwork == appSettings.autoPlayRole || appSettings.autoPlayRole == 'all') {
+          this.handlePlayVideo()
+        }
+      } else {
+        this.handlePlayVideo()
+      }
+    }
+  }
+  handleLeaveVideo() {
+    this.handlePauseVideo()
+  }
+
   render() {
     let {
       anchor,
@@ -818,7 +856,6 @@ class Index extends React.Component {
     let PrivacyOptions = objToArray(Privacies)
     let GroupPrivacyOptions = objToArray(GroupPrivacies)
 
-    console.log("data", data)
     if (data && data.mediaPlays) {
       data.mediaPlays.map(item => {
         if (!item.postid) item.postid = data.nfid
@@ -827,11 +864,11 @@ class Index extends React.Component {
     }
 
     return (
-      data && !data.isPedding ? <div>
+      data && (!data.isPedding || data.isPedding == false) ? <div>
         <ScrollTrigger
           containerRef={containerRef}
-          onEnter={() => this.setState({ visible: true }, () => this.handlePlayVideo())}
-          onExit={() => this.setState({ visible: false }, () => this.handlePauseVideo())}
+          onEnter={() => this.handleActiveVideo()}
+          onExit={() => this.handleLeaveVideo()}
         >
           <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
             {
@@ -910,7 +947,7 @@ class Index extends React.Component {
                   </span> : ""
                 }
                 {
-                  data.kindpost == 1 && data.newsFeedShare ? <span className="mesage"> đã chia sẽ một bài viết</span> : ""
+                  data.kindpost == 1 && data.newsFeedShare ? <span className="mesage"> đã chia sẻ một bài viết</span> : ""
                 }
               </span>}
               subheader={<div className="poster-subtitle">
@@ -936,9 +973,18 @@ class Index extends React.Component {
               data.nfcontent != "" ? <div
                 className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                 style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                <pre dangerouslySetInnerHTML={{
-                  __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
-                }} ></pre>
+                <ShowMoreText
+                  lines={4}
+                  more={<span> Xem thêm</span>}
+                  less={<span> Rút gọn</span>}
+                  className='content-css'
+                  anchorClass='toggle-button blued'
+                  expanded={false}
+                >
+                  <pre dangerouslySetInnerHTML={{
+                    __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
+                  }} ></pre>
+                </ShowMoreText>
               </div> : ""
             }
 
@@ -1093,9 +1139,18 @@ class Index extends React.Component {
                             data.newsFeedShare.nfcontent != "" ? <div
                               className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                               style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                              <pre dangerouslySetInnerHTML={{
-                                __html: data.newsFeedShare.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
-                              }} ></pre>
+                              <ShowMoreText
+                                lines={4}
+                                more={<span> Xem thêm</span>}
+                                less={<span> Rút gọn</span>}
+                                className='content-css'
+                                anchorClass='toggle-button blued'
+                                expanded={false}
+                              >
+                                <pre dangerouslySetInnerHTML={{
+                                  __html: data.newsFeedShare.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
+                                }} ></pre>
+                              </ShowMoreText>
                             </div> : ""
                           }
                           <CardContent className="card-content">
@@ -1215,7 +1270,7 @@ class Index extends React.Component {
                 }
               </div>
               {
-                data.numlike > 0 || data.numcomment > 0 ? <div className="react-reward">
+                data.numlike > 0 || data.numcomment > 0 || (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ? <div className="react-reward">
                   {
                     data.numlike > 0 ? <span className="like">
 
@@ -1230,9 +1285,9 @@ class Index extends React.Component {
                       </span>
                   }
                   {
-                    data.numcomment > 0 ? <span className="comment">
-                      {data.numcomment} bình luận
-                </span> : ""
+                    data.numcomment > 0 || (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ? <span className="comment">
+                      {data.numcomment > 0 ? `${data.numcomment} bình luận` : ""}  {data.mediaPlays[0] && data.mediaPlays[0].numview > 0 ? `${data.mediaPlays[0].numview} lượt xem` : ""}
+                    </span> : ""
                   }
                 </div> : ""
               }
@@ -1246,10 +1301,12 @@ class Index extends React.Component {
                 onShortPress={(reaction) => data.islike == 1 ? this.dislikePosted(reaction) : this.likePosted(reaction)}
               />
               <Button onClick={() => this.setState({ showCommentDrawer: true, currentPost: data })}><img src={daskMode ? comment1 : comment} />Bình luận</Button>
-              <Button onClick={() => this.setState({ showShareDrawer: true, groupSelected: null }, () => {
-                this.getFriends(0)
-                this.getGroup(0)
-              })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+              {
+                data.postforid != 4 ? <Button onClick={() => this.setState({ showShareDrawer: true, groupSelected: null }, () => {
+                  this.getFriends(0)
+                  this.getGroup(0)
+                })}><img src={daskMode ? share1 : share} />Chia sẻ</Button> : ""
+              }
             </CardActions>
             {
               (data.numcomment > 0 && !daskMode ? <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>
@@ -1326,7 +1383,8 @@ class Index extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.user,
-    ...state.posted
+    ...state.posted,
+    ...state.app
   }
 };
 const mapDispatchToProps = dispatch => ({
@@ -1794,9 +1852,18 @@ const renderDetailPosted = (component) => {
                 data.nfcontent != "" ? <div
                   className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                   style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                  <pre dangerouslySetInnerHTML={{
-                    __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
-                  }} ></pre>
+                  <ShowMoreText
+                    lines={4}
+                    more={<span> Xem thêm</span>}
+                    less={<span> Rút gọn</span>}
+                    className='content-css'
+                    anchorClass='toggle-button blued'
+                    expanded={false}
+                  >
+                    <pre dangerouslySetInnerHTML={{
+                      __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
+                    }} ></pre>
+                  </ShowMoreText>
                 </div> : ""
               }
 
@@ -1831,10 +1898,12 @@ const renderDetailPosted = (component) => {
                 />
 
                 <Button onClick={() => component.setState({ showCommentDrawer: true, currentPost: data })}><img src={daskMode ? comment1 : comment} />Bình luận</Button>
-                <Button onClick={() => component.setState({ showShareDrawer: true, groupSelected: null }, () => {
-                  component.getFriends(0)
-                  component.getGroup(0)
-                })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+                {
+                  data.postforid != 4 ? <Button onClick={() => component.setState({ showShareDrawer: true, groupSelected: null }, () => {
+                    component.getFriends(0)
+                    component.getGroup(0)
+                  })}><img src={daskMode ? share1 : share} />Chia sẻ</Button> : ""
+                }
               </CardActions>
 
 
@@ -1872,6 +1941,7 @@ const renderDetailPosted = (component) => {
                             })
                           }} />
                       }
+
                       {
                         media.numlike > 0 || media.numcomment > 0 ? <div className="react-reward">
                           {
@@ -1901,12 +1971,13 @@ const renderDetailPosted = (component) => {
                         onShortPress={(reaction) => media.islike == 1 ? component.dislikeImage(media) : component.likeImage(reaction, media)}
                       />
                       <Button onClick={() => component.setState({ showCommentImageDrawer: true, currentImage: media, currentPost: data })}><img src={daskMode ? comment1 : comment} />Bình luận</Button>
-                      <Button onClick={() => component.setState({ showShareDrawer: true, currentImage: media, groupSelected: null }, () => {
-                        component.getFriends(0)
-                        component.getGroup(0)
-                      })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+                      {
+                        data.postforid != 4 ? <Button onClick={() => component.setState({ showShareDrawer: true, currentImage: media, groupSelected: null }, () => {
+                          component.getFriends(0)
+                          component.getGroup(0)
+                        })}><img src={daskMode ? share1 : share} />Chia sẻ</Button> : ""
+                      }
                     </CardActions>
-
                   </Card>
                 </li>)
               }

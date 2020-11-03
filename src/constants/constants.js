@@ -114,7 +114,7 @@ export const GroupPrivacies = {
     Private: {
         value: "Private",
         label: "Nhóm riêng tư",
-        icon: require('../assets/icon/Private_Selected.png'),
+        icon: require('../assets/icon/private_group__color@2x.png'),
         description: "Chỉ tôi mới xem được",
         code: 2
     }

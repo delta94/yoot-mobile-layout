@@ -213,7 +213,7 @@ export class Index extends React.Component {
         } = this.props
         let PrivaciesOptions = objToArray(Privacies)
         return (
-            <li className="job">
+            <li className="job school">
                 <img src={school} />
                 <div>
                     <label>Trường học: <span>{item.schoolname}</span></label>

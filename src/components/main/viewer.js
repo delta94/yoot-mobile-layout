@@ -7,6 +7,9 @@ import {
     removeMediaViewed
 } from '../../actions/app'
 import {
+    updatePrivacyPosted
+} from '../../actions/posted'
+import {
     Drawer,
     IconButton,
     Button,
@@ -28,10 +31,11 @@ import { Player, ControlBar, ReplayControl, ForwardControl } from 'video-react';
 import $ from 'jquery'
 import { Privacies } from "../../constants/constants";
 import Loader from '../common/loader'
-import { post, postFormData } from "../../api";
+import { get, post, postFormData } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import MultiInput from '../common/multi-input'
 import Cropper from '../common/cropper'
+import ShowMoreText from 'react-show-more-text';
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const search = require('../../assets/icon/Find@1x.png')
@@ -80,7 +84,6 @@ class Index extends React.Component {
         if (video) {
             video.play()
             video.subscribeToStateChange((state, prevState) => {
-                console.log("state", state)
                 if (state.isActive == false) {
                     this.setState({
                         showControl: false
@@ -113,6 +116,14 @@ class Index extends React.Component {
         }
     }
 
+    handleChangeCurrentTime(seconds) {
+        let video = this.player.current
+        if (video) {
+            const { player } = video.getState();
+            video.seek(player.currentTime + seconds)
+        }
+    }
+
     handleFullScreen() {
         let {
             isFullScreen
@@ -134,6 +145,9 @@ class Index extends React.Component {
             privacySelected,
             callbackAction
         } = this.state
+        let {
+            profile
+        } = this.props
         if (currentImage && privacySelected) {
             let param = {
                 postid: currentImage.postid,
@@ -148,7 +162,9 @@ class Index extends React.Component {
                         isProccesing: false,
                         showUpdatePrivacyDrawer: false
                     })
+                    console.log("result", result)
                     this.props.updateMediaViewed({ ...currentImage, postfor: privacySelected })
+                    this.props.updatePrivacyPosted(profile.id, currentImage.postid, privacySelected)
                     if (callbackAction) callbackAction()
                 }
             })
@@ -375,7 +391,6 @@ class Index extends React.Component {
         fr.readAsDataURL(rootAlbumBackgroundToUpload);
     }
 
-
     handleAction(activeItem, key, callBack) {
         let {
             mediaToView
@@ -503,8 +518,34 @@ class Index extends React.Component {
         }
     }
 
+    handleGetPost(postId) {
+        let param = {
+            newsfeedid: postId
+        }
+        console.log("postId", postId)
+        get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetOneNewsFeed" + objToQuery(param), result => {
+            if (result && result.result == 1)
+                this.setState({
+                    currentPost: result.content.newsFeed
+                })
+        })
+    }
+
+    slideChange(current) {
+        let {
+            mediaToView
+        } = this.props
+        let active = mediaToView ? mediaToView[current ? current : 0] : null
+        this.setState({
+            activeItem: active
+        })
+        this.handleGetPost(active.postid)
+    }
+
     componentWillReceiveProps(nextProps) {
+        console.log("nextProps", nextProps)
         if (nextProps.showMediaViewerDrawer != this.props.showMediaViewerDrawer) {
+            let { mediaViewerFeature } = nextProps
             if (nextProps.showMediaViewerDrawer == true) {
                 $("body > div").addClass("blur")
                 setTimeout(() => {
@@ -513,7 +554,20 @@ class Index extends React.Component {
             } else {
                 $("body > div").removeClass("blur")
             }
+            setTimeout(() => {
+                if (mediaViewerFeature && mediaViewerFeature.videoCurrentTime) this.handleChangeCurrentTime(mediaViewerFeature.videoCurrentTime)
+            }, 200);
         }
+        if (this.props.mediaToView && this.props.mediaToView.length > 0) {
+            if (nextProps.mediaToView && nextProps.mediaToView.length > 0 && nextProps.mediaToView[0].postid != this.props.mediaToView[0].postid) {
+                this.handleGetPost(nextProps.mediaToView[0].postid)
+            }
+        } else {
+            if (nextProps.mediaToView && nextProps.mediaToView.length > 0) {
+                this.handleGetPost(nextProps.mediaToView[0].postid)
+            }
+        }
+
     }
 
 
@@ -521,14 +575,15 @@ class Index extends React.Component {
         let {
             showMediaViewerDrawer,
             mediaViewerFeature,
-            mediaToView
+            mediaToView,
         } = this.props
         let {
             isHideMediaHeadFoot,
             activeMeidaSlideIndex,
             activeItem,
             showControl,
-            isPlaying
+            isPlaying,
+            currentPost
         } = this.state
 
         const settings = {
@@ -537,9 +592,7 @@ class Index extends React.Component {
             speed: 500,
             slidesToShow: 1,
             slidesToScroll: 1,
-            afterChange: current => this.setState({
-                activeItem: mediaToView ? mediaToView[current ? current : 0] : null
-            }),
+            afterChange: current => this.slideChange(current),
             easing: "ease-in-out",
             infinite: true,
             initialSlide: mediaViewerFeature && mediaViewerFeature.activeIndex ? mediaViewerFeature && mediaViewerFeature.activeIndex : 0
@@ -549,6 +602,9 @@ class Index extends React.Component {
             activeItem = mediaToView && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0 ? mediaToView[mediaViewerFeature.activeIndex] : null
         }
 
+        console.log("activeItem", activeItem)
+        console.log("currentPost", currentPost)
+
         return (
             <div>
                 <Drawer anchor="bottom" className="custom-viewer-drawer" open={showMediaViewerDrawer} onClose={() => this.props.toggleMediaViewerDrawer(false)}>
@@ -556,7 +612,9 @@ class Index extends React.Component {
                         <div className="viewer-content">
                             {
                                 mediaViewerFeature && mediaViewerFeature.isvideo == true ? "" : <div className={"header " + (showControl == false ? "hide" : "")} >
-                                    <IconButton onClick={() => { this.props.toggleMediaViewerDrawer(false) }}><CloseIcon /></IconButton>
+                                    <IconButton onClick={() => {
+                                        this.props.toggleMediaViewerDrawer(false)
+                                    }}><CloseIcon /></IconButton>
                                     {
                                         mediaViewerFeature && mediaViewerFeature.actions ? <IconButton onClick={(e) => this.setState({ showMediaViewerMenu: true })}>
                                             <MoreVertIcon />
@@ -582,7 +640,12 @@ class Index extends React.Component {
                                                                 <ControlBar autoHide={true}>
                                                                     <div className="overlay" onClick={() => this.toggleControl()}></div>
                                                                     <div className="blank-content">
-                                                                        <IconButton onClick={() => { this.props.toggleMediaViewerDrawer(false) }}><CloseIcon /></IconButton>
+                                                                        <IconButton onClick={() => {
+                                                                            this.props.toggleMediaViewerDrawer(false)
+                                                                            if (mediaViewerFeature.onCloseVideo) {
+                                                                                mediaViewerFeature.onCloseVideo(this.player.current.getState().player.currentTime)
+                                                                            }
+                                                                        }}><CloseIcon /></IconButton>
                                                                     </div>
                                                                     <ReplayControl seconds={10} order={2.2} />
                                                                     <ForwardControl seconds={10} order={3.2} />
@@ -591,28 +654,50 @@ class Index extends React.Component {
                                                                             {
                                                                                 mediaViewerFeature && mediaViewerFeature.showInfo ? <div className={"viewer-footer " + (isHideMediaHeadFoot ? "hide" : "")}>
                                                                                     {
-                                                                                        activeItem ? <div className="footer-infor">
+                                                                                        activeItem && currentPost ? <div className="footer-infor">
                                                                                             <div className="user-info">
-                                                                                                <span>{activeItem.userpost}</span>
+                                                                                                <span>{currentPost.nameuserpost}</span>
                                                                                             </div>
-                                                                                            <div className="post-content">
-                                                                                                <pre>{activeItem.postcontent}</pre>
-                                                                                            </div>
+                                                                                            {/* <div className="post-content">
+                                                                                                {
+                                                                                                    showControl ?
+                                                                                                        <ShowMoreText
+                                                                                                            lines={4}
+                                                                                                            more={<span> Xem thêm</span>}
+                                                                                                            less={<span> Rút gọn</span>}
+                                                                                                            className='content-css'
+                                                                                                            anchorClass='toggle-button blued'
+                                                                                                            expanded={false}
+                                                                                                        >
+                                                                                                            <pre>{currentPost.nfcontent}</pre>
+                                                                                                        </ShowMoreText> : ""
+                                                                                                }
+                                                                                            </div> */}
                                                                                             <div className="post-time">
-                                                                                                <span>{fromNow(moment(activeItem.createdate), new Date)}</span>
+                                                                                                <span>{fromNow(moment(currentPost.createdate), new Date)}</span>
                                                                                             </div>
                                                                                         </div> : ""
                                                                                     }
                                                                                     <div className="footer-reward">
-                                                                                        <ul>
-                                                                                            <li>
-                                                                                                <img src={likeActive} />
-                                                                                                <span>{mediaToView ? mediaToView.likeCount : 0}</span>
-                                                                                            </li>
-                                                                                            <li>
-                                                                                                <span>{mediaToView ? mediaToView.commentCount : 0} bình luận</span>
-                                                                                            </li>
-                                                                                        </ul>
+                                                                                        {
+                                                                                            mediaToView && mediaToView.length == 1 ? <ul>
+                                                                                                <li>
+                                                                                                    <img src={likeActive} />
+                                                                                                    <span>{currentPost ? currentPost.likeCount : 0}</span>
+                                                                                                </li>
+                                                                                                <li>
+                                                                                                    <span>{currentPost ? currentPost.commentCount : 0} bình luận</span>
+                                                                                                </li>
+                                                                                            </ul> : <ul>
+                                                                                                    <li>
+                                                                                                        <img src={likeActive} />
+                                                                                                        <span>{activeItem ? activeItem.likeCount : 0}</span>
+                                                                                                    </li>
+                                                                                                    <li>
+                                                                                                        <span>{activeItem ? activeItem.commentCount : 0} bình luận</span>
+                                                                                                    </li>
+                                                                                                </ul>
+                                                                                        }
                                                                                     </div>
                                                                                     <div className="footer-action">
                                                                                         <ul>
@@ -663,33 +748,49 @@ class Index extends React.Component {
                                     {
                                         mediaViewerFeature && mediaViewerFeature.showInfo ? <div className={"viewer-footer " + (isHideMediaHeadFoot ? "hide" : "")}>
                                             {
-                                                activeItem ? <div className="footer-infor">
+                                                activeItem && currentPost ? <div className="footer-infor">
                                                     <div className="user-info">
-                                                        <span>{activeItem.userpost}</span>
+                                                        <span>{currentPost.nameuserpost}</span>
                                                     </div>
-                                                    <div className="post-content">
-                                                        <pre>{activeItem.postcontent}</pre>
-                                                    </div>
+                                                    {
+                                                        mediaToView && mediaToView.length == 1 ? < div className="post-content">
+                                                            {
+                                                                showControl ?
+                                                                    <ShowMoreText
+                                                                        lines={4}
+                                                                        more={<span> Xem thêm</span>}
+                                                                        less={<span> Rút gọn</span>}
+                                                                        className='content-css'
+                                                                        anchorClass='toggle-button blued'
+                                                                        expanded={false}
+                                                                    >
+                                                                        <pre>{currentPost.nfcontent}</pre>
+                                                                    </ShowMoreText> : ""
+                                                            }
+                                                        </div> : ""
+                                                    }
                                                     <div className="post-time">
-                                                        <span>{fromNow(moment(activeItem.createdate), new Date)}</span>
+                                                        <span>{fromNow(moment(currentPost.createdate), new Date)}</span>
                                                     </div>
                                                 </div> : ""
                                             }
                                             {
-                                                mediaToView && (mediaToView.likeCount > 0 || mediaToView.commentCount > 0) ? <div className="footer-reward">
-                                                    <ul>
-                                                        {
-                                                            mediaToView.likeCount > 0 ? <li>
-                                                                <img src={likeActive} className="mr05" />
-                                                                <span >{mediaToView.likeCount}</span>
-                                                            </li> : <li></li>
-                                                        }
-                                                        {
-                                                            mediaToView.commentCount > 0 ? <li>
-                                                                <span>{mediaToView.commentCount} bình luận</span>
-                                                            </li> : <li></li>
-                                                        }
-                                                    </ul>
+                                                activeItem ? <div className="footer-reward">
+                                                    {
+                                                        activeItem.numlike > 0 || activeItem.numcomment > 0 ? <ul>
+                                                            {
+                                                                activeItem.numlike > 0 ? <li>
+                                                                    <img src={likeActive} />
+                                                                    <span className="ml05">{activeItem ? activeItem.numlike : 0}</span>
+                                                                </li> : <li></li>
+                                                            }
+                                                            {
+                                                                activeItem.numcomment > 0 ? <li>
+                                                                    <span>{activeItem ? activeItem.numcomment : 0} bình luận</span>
+                                                                </li> : <li></li>
+                                                            }
+                                                        </ul> : ""
+                                                    }
                                                 </div> : ""
                                             }
                                             <div className="footer-action">
@@ -751,7 +852,7 @@ class Index extends React.Component {
                 {
                     renderBackgroundCropperDrawer(this)
                 }
-            </div>
+            </div >
         );
     }
 }
@@ -759,13 +860,15 @@ class Index extends React.Component {
 const mapStateToProps = state => {
     return {
         ...state.app,
+        ...state.user
     }
 };
 
 const mapDispatchToProps = dispatch => ({
     toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
     updateMediaViewed: (media) => dispatch(updateMediaViewed(media)),
-    removeMediaViewed: (media) => dispatch(removeMediaViewed(media))
+    removeMediaViewed: (media) => dispatch(removeMediaViewed(media)),
+    updatePrivacyPosted: (userId, postId, privacy) => dispatch(updatePrivacyPosted(userId, postId, privacy))
 });
 
 export default connect(
@@ -821,7 +924,6 @@ const renderMediaViewerMenu = (component) => {
         onSetToAlbumBackground
     } = actions
 
-    console.log("activeItem", activeItem)
 
     return (
         <Drawer anchor="bottom" className="media-viewer-menu" open={showMediaViewerMenu} onClose={() => component.setState({ showMediaViewerMenu: false })}>

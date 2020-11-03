@@ -583,7 +583,6 @@ class Index extends React.Component {
             currentImage
         } = this.state
 
-        console.log("albumDetail", albumDetail)
         return (
             <div>
                 <Drawer anchor="bottom" className="album-detail-drawer" open={showAlbumDetailDrawer} onClose={() => this.props.toggleAlbumDetailDrawer(false)}>
@@ -614,7 +613,7 @@ class Index extends React.Component {
                                         <Avatar aria-label="recipe" className="avatar">
                                             <div className="img" style={{ background: `url("${profile.avatar}")` }} />
                                         </Avatar>
-                                        <span>Thêm vào album này</span>
+                                        <span>Thêm vào album này...</span>
                                     </div> : ""
                                 }
                                 <div className="detail">

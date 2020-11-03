@@ -217,10 +217,10 @@ export class Index extends React.Component {
             <div className="content-box">
                 <label>
                     <img src={require('../../assets/icon/Arrow@1x.png')} style={{ width: "15px", height: "15px", margin: "0px 4px" }} />
-                    <span>Kỹ năng sở trường</span>
+                    <span className="ml07">Kỹ năng sở trường</span>
                 </label>
                 <ul>
-                    <li className="mt10 ml13">
+                    <li className="mt10">
                         <label>Kỹ năng</label>
                         {
                             data.userSkill ? <ul className="skills">
@@ -235,13 +235,13 @@ export class Index extends React.Component {
                             </ul> : ""
                         }
                     </li>
-                    <li className="mt10 ml13">
+                    <li className="mt10">
                         <label style={{ display: "inline-block", width: "100%" }}>Sở thích</label>
                         {
                             data.likes ? <span>{data.likes}</span> : ""
                         }
                     </li>
-                    <li className="mt10 ml13">
+                    <li className="mt10">
                         <label style={{ display: "inline-block", width: "100%" }}>Kỹ năng đặc biệt / tài lẻ</label>
                         {
                             data.special ? <span>{data.special}</span> : ""

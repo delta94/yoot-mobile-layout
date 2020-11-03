@@ -11,6 +11,7 @@ export const SET_UNREAD_NOTI_COUNT = "noti@SET_UNREAD_NOTI_COUNT"
 export const GET_WORLD_NOTI_SUCCESS = "noti@GET_WORLD_NOTI_SUCCESS"
 export const GET_SKILL_NOTI_SUCCESS = "noti@GET_SKILL_NOTI_SUCCESS"
 export const SET_SKILL_NOTI = "noti@SET_SKILL_NOTI"
+export const SET_SKILL_UNREAD_NOTI_COUNT = "noti@SET_SKILL_UNREAD_NOTI_COUNT"
 
 
 export const getWorldNoti = () => {
@@ -91,6 +92,15 @@ export const setUnreadNotiCount = (number) => {
     return dispatch => {
         dispatch({
             type: SET_UNREAD_NOTI_COUNT,
+            payload: number
+        })
+    }
+}
+
+export const setSkillUnreadNotiCount = (number) => {
+    return dispatch => {
+        dispatch({
+            type: SET_SKILL_UNREAD_NOTI_COUNT,
             payload: number
         })
     }

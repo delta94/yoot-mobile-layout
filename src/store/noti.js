@@ -7,7 +7,8 @@ import {
     SET_UNREAD_NOTI_COUNT,
     GET_WORLD_NOTI_SUCCESS,
     GET_SKILL_NOTI_SUCCESS,
-    SET_SKILL_NOTI
+    SET_SKILL_NOTI,
+    SET_SKILL_UNREAD_NOTI_COUNT
 } from '../actions/noti'
 
 const initialState = {
@@ -98,6 +99,12 @@ export default (state = initialState, action) => {
             woldNotiUnreadCount = action.payload
             return Object.assign({}, state, {
                 woldNotiUnreadCount: woldNotiUnreadCount
+            })
+        }
+        case SET_SKILL_UNREAD_NOTI_COUNT: {
+            skillNotiUnreadCount = action.payload
+            return Object.assign({}, state, {
+                skillNotiUnreadCount: skillNotiUnreadCount
             })
         }
         default:

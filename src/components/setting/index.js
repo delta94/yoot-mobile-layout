@@ -32,9 +32,12 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   AddCircleOutline as AddCircleOutlineIcon,
-  Add as AddIcon
+  Add as AddIcon,
+  NavigateNext as NavigateNextIcon,
+  Check as CheckIcon
 } from '@material-ui/icons'
 import { connect } from 'react-redux'
+import Switch from 'react-ios-switch';
 import {
   IconButton,
   Drawer,
@@ -65,6 +68,7 @@ import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
 import { showNotification, objToQuery, jsonFromUrlParams, formatCurrency } from "../../utils/common";
 import { signIn } from '../../auth'
 import $ from 'jquery'
+import { APP_SETTING } from "../../constants/localStorageKeys";
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/ProfileBW.png')
@@ -574,21 +578,23 @@ class Index extends React.Component {
     this.getRejectFriends(0, 0)
     this.getFriends(0)
   }
-  componentDidMount() {
 
-    let searchParam = jsonFromUrlParams(window.location.search)
-    if (searchParam && searchParam.setting == "true") {
+  componentDidMount() {
+    let localSetting = window.localStorage.getItem(APP_SETTING)
+    let appSettings = JSON.parse(localSetting ? localSetting : null)
+    if (appSettings && appSettings.autoPlayRole) {
       this.setState({
-        showUserMenu: true
+        autoPlayRole: appSettings.autoPlayRole,
       })
     }
-
+    if (appSettings && appSettings.isMuteInNewfeed) {
+      this.setState({
+        isMuteInNewfeed: appSettings.isMuteInNewfeed,
+      })
+    }
   }
+
   render() {
-    let {
-      showUserMenu,
-      croppedImageUrl
-    } = this.state
     let {
       profile
     } = this.props
@@ -607,6 +613,9 @@ class Index extends React.Component {
               }}>Lịch sử tích điểm</Button>
             </li>
             <li>
+              <Button onClick={() => this.setState({ showSettingDrawer: true })}>Cài đặt video</Button>
+            </li>
+            <li>
               <Button onClick={() => {
                 this.props.toggleChangePasswordForm(true)
               }}>Đổi mật khẩu</Button>
@@ -620,9 +629,9 @@ class Index extends React.Component {
           </ul>
         </div>
 
-        {
+        {/* {
           renderUserMenuDrawer(this)
-        }
+        } */}
         {
           renderUpdateProfileDrawer(this)
         }
@@ -640,6 +649,9 @@ class Index extends React.Component {
         }
         {
           renderConfirmDrawer(this)
+        }
+        {
+          renderSettingDrawer(this)
         }
       </div> : ""
     );
@@ -784,49 +796,6 @@ const renderFooter = (component) => {
   )
 }
 
-const renderUserMenuDrawer = (component) => {
-  let {
-    showUserMenu,
-    isLoadHistory
-  } = component.state
-  let {
-    profile
-  } = component.props
-  return (
-    <Drawer anchor="right" className="user-menu full" open={showUserMenu} onClose={() => component.setState({ showUserMenu: false })}>
-      <div className="menu-header">
-        <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showUserMenu: false })}>
-          <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-        </IconButton>
-        <label>Quản lý tài khoản</label>
-      </div>
-      <ul className="menu-list">
-        <li>
-          <Button onClick={() => component.setState({ showUpdateProfile: true })}>Cập nhật thông tin cá nhân</Button>
-        </li>
-        <li>
-          <Button onClick={() => {
-            component.props.setCurrenUserDetail(profile)
-            component.props.toggleUserHistory(true)
-            component.getHistoryPoint(0)
-          }}>Lịch sử tích điểm</Button>
-        </li>
-        <li>
-          <Button onClick={() => {
-            component.props.toggleChangePasswordForm(true)
-          }}>Đổi mật khẩu</Button>
-        </li>
-        <li>
-          <Button onClick={() => component.props.toggleBlockFriendForm(true)}>Danh sách chặn</Button>
-        </li>
-        <li className="sign-out">
-          <Button style={{ background: "#ff5a59" }} onClick={() => signOut()}>Đăng xuất tài khoản</Button>
-        </li>
-      </ul>
-
-    </Drawer>
-  )
-}
 
 const renderUpdateProfileDrawer = (component) => {
   let {
@@ -864,7 +833,6 @@ const renderUserHistoryDrawer = (component) => {
     isLoadHistory
   } = component.state
 
-  console.log("profile", profile.mempoint)
 
   return (
     <Drawer anchor="right"
@@ -1212,6 +1180,74 @@ const renderFriendsForBlockDrawer = (component) => {
   )
 }
 
+const renderSettingDrawer = (component) => {
+
+  let {
+    isMuteInNewfeed,
+    showSettingDrawer,
+    autoPlayRole,
+    isSettingChange
+  } = component.state
+  return (
+    <Drawer anchor="right" open={showSettingDrawer} >
+      <div className="drawer-detail setting-drawer">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.setState({ showSettingDrawer: false })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Cài đặt video</label>
+          </div>
+        </div>
+        <div className="filter" >
+        </div>
+        <div className="content-form" style={{ width: "100vw" }}>
+          <div>
+            <span>Tắt tiếng video trên bản tin</span>
+            <Switch
+              checked={isMuteInNewfeed}
+              handleColor="#fff"
+              offColor="#666"
+              onChange={() => component.setState({ isMuteInNewfeed: !isMuteInNewfeed, isSettingChange: true })}
+              onColor="#ff5a5a"
+              className="custom-switch"
+            />
+          </div>
+          <div>
+            <span>Tự động phát video</span>
+            <span onClick={() => component.setState({ showAutoPlaySetting: true, autoPlayOptionSelected: autoPlayRole })}>
+              {
+                autoPlayRole == 'all' ? <span>Wifi/3G/4G</span> : ""
+              }
+              {
+                autoPlayRole == 'wifi' ? <span>Chỉ Wifi</span> : ""
+              }
+              {
+                autoPlayRole == 'disable' ? <span>Không</span> : ""
+              }
+              <NavigateNextIcon />
+            </span>
+          </div>
+          {
+            isSettingChange == true ? <Button className="bt-submit" onClick={() => {
+              window.localStorage.setItem(APP_SETTING, JSON.stringify({
+                autoPlayRole: autoPlayRole,
+                isMuteInNewfeed: isMuteInNewfeed
+              }))
+              component.setState({
+                isSettingChange: false
+              })
+            }}>Lưu thay đổi</Button> : ""
+          }
+          {
+            renderAutoPlaySettingDrawer(component)
+          }
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
 const renderConfirmDrawer = (component) => {
   let {
     showConfim,
@@ -1227,6 +1263,53 @@ const renderConfirmDrawer = (component) => {
         <div className="mt20">
           <Button className="bt-confirm" onClick={() => component.setState({ showConfim: false }, () => okCallback ? okCallback() : null)}>Đồng ý</Button>
           <Button className="bt-submit" onClick={() => component.setState({ showConfim: false })}>Đóng</Button>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+
+const renderAutoPlaySettingDrawer = (component) => {
+  let {
+    showAutoPlaySetting,
+    autoPlayOptionSelected
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="auto-play-setting" open={showAutoPlaySetting} onClose={() => component.setState({ showAutoPlaySetting: false })}>
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.setState({ showAutoPlaySetting: false })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Tự động phát</label>
+          </div>
+        </div>
+        <div className="filter">
+        </div>
+        <div className="detail-content" style={{ overflow: "scroll", width: "100vw" }}>
+          <ul className="auto-option">
+            <li onClick={() => component.setState({ autoPlayOptionSelected: 'all', isSettingChange: true })}>
+              <span>Khi dùng Wifi và dữ liệu di động</span>
+              {
+                autoPlayOptionSelected == 'all' ? <CheckIcon /> : ""
+              }
+            </li>
+            <li onClick={() => component.setState({ autoPlayOptionSelected: 'wifi', isSettingChange: true })}>
+              <span>Chỉ khi có kết nối Wifi</span>
+              {
+                autoPlayOptionSelected == 'wifi' ? <CheckIcon /> : ""
+              }
+            </li>
+            <li onClick={() => component.setState({ autoPlayOptionSelected: 'disable', isSettingChange: true })}>
+              <span>Không bao giờ tự động phát video</span>
+              {
+                autoPlayOptionSelected == 'disable' ? <CheckIcon /> : ""
+              }
+            </li>
+          </ul>
+          <Button className="bt-submit" onClick={() => component.setState({ autoPlayRole: autoPlayOptionSelected, showAutoPlaySetting: false })}>Lưu thay đổi</Button>
         </div>
       </div>
     </Drawer>

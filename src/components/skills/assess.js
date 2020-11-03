@@ -99,7 +99,7 @@ class Index extends React.Component {
     get(SCHOOL_API, "Course/reviews" + objToQuery(param), result => {
       if (result && result.StatusCode == 1) {
         result.Data.map((review, reviewIndex) => {
-          this.video[reviewIndex] = Array.from({ length: review.exerciseLinkVideos.length + 1 }, (_, i) => React.createRef())
+          this.video[reviewIndex] = Array.from({ length: review.exerciseLinkVideos.length + 10 }, (_, i) => React.createRef())
         })
         this.setState({
           reviews: result.Data
@@ -109,6 +109,8 @@ class Index extends React.Component {
   }
 
   handlePlayVideo(videoRef, index) {
+
+    if (!videoRef) return
 
     this.video.map((item) => {
       item.map(i => {
@@ -120,10 +122,10 @@ class Index extends React.Component {
 
     if (video) {
       video.play()
-      this.setState({
-        playingIndex: index
-      })
     }
+    this.setState({
+      playingIndex: index
+    })
   }
 
   handlePauseVideo(videoRef) {
@@ -211,7 +213,7 @@ class Index extends React.Component {
       reviews
     } = this.state
 
-    console.log("reviews", reviews)
+
     return (
       <div className="assess-page" >
         {
@@ -247,20 +249,20 @@ class Index extends React.Component {
                       src={media}
                       playsInline={true}
                       key={index}
-                      className={"custome-video-layout" + (playingIndex == `${reviewIndex}-${index}` ? " active" : " inactive")}
+                      className={"custome-video-layout" + (playingIndex == `${reviewIndex}-${0}` ? " active" : " inactive")}
                     >
                       <ControlBar autoHide={true} >
                         <div className={"custom-bt-control-bar"}>
                           {
-                            playingIndex == `${reviewIndex}-${index}` ? <IconButton onClick={() => this.handleChangeCurrentTime(-10, this.video[reviewIndex][0])}><Replay10Icon /></IconButton> : ""
+                            playingIndex == `${reviewIndex}-${0}` ? <IconButton onClick={() => this.handleChangeCurrentTime(-10, this.video[reviewIndex][0])}><Replay10Icon /></IconButton> : ""
                           }
-                          <IconButton onClick={() => playingIndex == `${reviewIndex}-${index}` ? this.handlePauseVideo(this.video[reviewIndex][0]) : this.handlePlayVideo(this.video[reviewIndex][0], `${reviewIndex}-${index}`)}>
+                          <IconButton onClick={() => playingIndex == `${reviewIndex}-${0}` ? this.handlePauseVideo(this.video[reviewIndex][0]) : this.handlePlayVideo(this.video[reviewIndex][0], `${reviewIndex}-${0}`)}>
                             {
-                              playingIndex == `${reviewIndex}-${index}` ? <PauseIcon /> : <PlayArrowIcon />
+                              playingIndex == `${reviewIndex}-${0}` ? <PauseIcon /> : <PlayArrowIcon />
                             }
                           </IconButton>
                           {
-                            playingIndex == `${reviewIndex}-${index}` ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video[reviewIndex][0])}><Forward10Icon /></IconButton> : ""
+                            playingIndex == `${reviewIndex}-${0}` ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video[reviewIndex][0])}><Forward10Icon /></IconButton> : ""
                           }
                         </div>
                         <div className="fullscreen-overlay" onClick={() => {
@@ -289,8 +291,6 @@ class Index extends React.Component {
                   <div className="info">
                     <span className="name">{item.STUDENT}</span>
                     <span className="date">
-                      <span>{moment(item.CREATE_DATE).format("DD/MM/YYYY HH:mm")}</span>
-                      <FiberManualRecordIcon />
                       <span>{fromNow(moment(item.CREATE_DATE), moment(new Date))}</span>
                     </span>
                   </div>
@@ -458,7 +458,7 @@ const renderAddAssessDrawer = (component) => {
       <div className="drawer-detail">
         <div className="drawer-header">
           <div className="direction" onClick={() => component.setState({ showAddAssessDrawer: false })}>
-            <label>Thêm người chấm bài</label>
+            <label>Chọn người chấm bài</label>
             <IconButton style={{ padding: "8px" }} >
               <CancelIcon style={{ width: "25px", height: "25px" }} />
             </IconButton>
@@ -472,7 +472,7 @@ const renderAddAssessDrawer = (component) => {
                   <Avatar className="avatar"><img src={assess.avatar} /></Avatar>
                   <span>{assess.fullName}</span>
                 </div>
-                <Button className="bt-submit">Thêm</Button>
+                <Button className="bt-submit">Chọn</Button>
               </li>)
             }
           </ul>

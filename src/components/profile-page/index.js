@@ -39,7 +39,8 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   AddCircleOutline as AddCircleOutlineIcon,
-  Add as AddIcon
+  NavigateNext as NavigateNextIcon,
+  Check as CheckIcon
 } from '@material-ui/icons'
 import { connect } from 'react-redux'
 import {
@@ -54,6 +55,7 @@ import {
   Tab,
   Badge
 } from "@material-ui/core";
+import Switch from 'react-ios-switch';
 import moment from 'moment'
 import { signOut } from "../../auth";
 import { renderVNDays } from '../../utils/app'
@@ -77,6 +79,7 @@ import Videos from './videos'
 import Post from '../post'
 import { result } from "lodash";
 import ClickTooltip from '../common/click-tooltip'
+import { APP_SETTING } from "../../constants/localStorageKeys";
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const profileBw = require('../../assets/icon/Profile.png')
@@ -772,11 +775,16 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
+
+    let {
+      isUser
+    } = this.props.match.params
+    console.log("this.props", this.props)
     this.getFriends(0)
     this.getNumOfFriend()
     this.props.addFooterContent(renderFooter(this))
-    this.props.toggleHeader(false)
-    this.props.toggleFooter(true)
+    this.props.toggleHeader(isUser)
+    this.props.toggleFooter(!isUser)
     this.getRejectFriends(0, 0)
     let {
       profile
@@ -818,12 +826,27 @@ class Index extends React.Component {
         showUserMenu: true
       })
     }
+
+    let localSetting = window.localStorage.getItem(APP_SETTING)
+    let appSettings = JSON.parse(localSetting ? localSetting : null)
+    if (appSettings && appSettings.autoPlayRole) {
+      this.setState({
+        autoPlayRole: appSettings.autoPlayRole,
+      })
+    }
+    if (appSettings && appSettings.isMuteInNewfeed) {
+      this.setState({
+        isMuteInNewfeed: appSettings.isMuteInNewfeed,
+      })
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     if (Object.entries(this.props.profile ? this.props.profile : {}).toString() != Object.entries(nextProps.profile ? nextProps.profile : {}).toString()) {
       this.getPosted(0, nextProps.profile.id)
     }
+    if (nextProps.woldNotiUnreadCount != this.props.woldNotiUnreadCount || nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount)
+      this.props.addFooterContent(renderFooter(this))
   }
 
   render() {
@@ -847,7 +870,6 @@ class Index extends React.Component {
       myPosteds = userPosteds[profile.id]
     }
 
-    console.log("profile", profile)
     return (
       profile ? <div className="profile-page" >
         <div className="cover-img" style={{ background: "url(" + profile.background + ")" }}>
@@ -915,7 +937,7 @@ class Index extends React.Component {
             <li>
               <ClickTooltip className="item follow-count" title="Số người theo dõi" placement="top">
                 <span><img src={follower}></img></span>
-                <span>{profile.isfollowme}</span>
+                <span>{profile.numfollow}</span>
               </ClickTooltip>
             </li>
             <li>
@@ -973,7 +995,7 @@ class Index extends React.Component {
                     <div className="image" style={{ background: "url(" + item.friendavatar + ")" }}></div>
                   </div>
                   <span className="name">{item.friendname}</span>
-                  <span className="mutual-friend-count">{item.numfriendwith} bạn chung</span>
+                  {/* <span className="mutual-friend-count">{item.numfriendwith} bạn chung</span> */}
                 </div>)
               }
             </div> : ""
@@ -1068,6 +1090,12 @@ class Index extends React.Component {
         }
         {
           renderUserDetailDrawer(this)
+        }
+        {
+          renderAutoPlaySettingDrawer(this)
+        }
+        {
+          renderSettingDrawer(this)
         }
         <div style={{ height: "50px", background: "#f0f0f0", zIndex: 0 }}>
           {
@@ -1203,11 +1231,11 @@ const renderUserMenuDrawer = (component) => {
   } = component.props
   return (
     <Drawer anchor="right" className="user-menu full" open={showUserMenu} onClose={() => component.setState({ showUserMenu: false })}>
-      <div className="menu-header">
+      <div className="menu-header" style={{ justifyContent: "flex-start" }}>
         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showUserMenu: false })}>
           <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
         </IconButton>
-        <label>Quản lý tài khoản</label>
+        <label className="pl50">Quản lý tài khoản</label>
       </div>
       <ul className="menu-list">
         <li>
@@ -1219,6 +1247,9 @@ const renderUserMenuDrawer = (component) => {
             component.props.toggleUserHistory(true)
             component.getHistoryPoint(0)
           }}>Lịch sử tích điểm</Button>
+        </li>
+        <li>
+          <Button onClick={() => component.setState({ showSettingDrawer: true })}>Cài đặt video</Button>
         </li>
         <li>
           <Button onClick={() => {
@@ -1250,7 +1281,7 @@ const renderUpdateProfileDrawer = (component) => {
         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showUpdateProfile: false })}>
           <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
         </IconButton>
-        <label>Cập nhật thông tin</label>
+        <label>Cập nhật thông tin cá nhân</label>
       </div>
       <div className="content-form">
         <UserInfo data={profile} />
@@ -1273,7 +1304,6 @@ const renderUserHistoryDrawer = (component) => {
     isLoadHistory
   } = component.state
 
-  console.log("profile", profile.mempoint)
 
   return (
     <Drawer anchor="right"
@@ -1643,7 +1673,7 @@ const renderAllFriendsDrawer = (component) => {
             <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
               <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
             </IconButton>
-            <label>Tìm bạn bè</label>
+            <label>Bạn bè</label>
           </div>
         </div>
         <div className="filter">
@@ -1667,6 +1697,7 @@ const renderAllFriendsDrawer = (component) => {
               component.props.toggleSeachFriends(true)
               component.props.setCurrentFriendId(profile.id)
             }}
+
           />
         </div>
         <div style={{ overflow: "scroll", width: "100vw" }} id="all-user-list" onScroll={() => component.onAllUserScroll()}>
@@ -1684,7 +1715,9 @@ const renderAllFriendsDrawer = (component) => {
                     </Avatar>
                     <label>
                       <span className="name">{item.friendname}</span>
-                      <span className="with-friend">{item.numfriendwith} bạn chung</span>
+                      {
+                        item.numfriendwith > 0 ? <span className="with-friend">{item.numfriendwith} bạn chung</span> : ""
+                      }
                     </label>
                   </div>
                   <div className="action">
@@ -1980,7 +2013,7 @@ const renderUserDetailDrawer = (component) => {
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                 <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
               </IconButton>
-              <label>Trang cá nhân</label>
+              <label>Thông tin</label>
             </div>
             <div className="user-reward">
               <div className="profile">
@@ -2136,6 +2169,120 @@ const renderUserDetailDrawer = (component) => {
   )
 }
 
+const renderSettingDrawer = (component) => {
+
+  let {
+    isMuteInNewfeed,
+    showSettingDrawer,
+    autoPlayRole,
+    isSettingChange
+  } = component.state
+  return (
+    <Drawer anchor="right" open={showSettingDrawer} >
+      <div className="drawer-detail setting-drawer">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.setState({ showSettingDrawer: false })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Cài đặt video</label>
+          </div>
+        </div>
+        <div className="filter" >
+        </div>
+        <div className="content-form" style={{ width: "100vw" }}>
+          <div>
+            <span>Tắt tiếng video trên bản tin</span>
+            <Switch
+              checked={isMuteInNewfeed}
+              handleColor="#fff"
+              offColor="#666"
+              onChange={() => component.setState({ isMuteInNewfeed: !isMuteInNewfeed, isSettingChange: true })}
+              onColor="#ff5a5a"
+              className="custom-switch"
+            />
+          </div>
+          <div>
+            <span>Tự động phát video</span>
+            <span onClick={() => component.setState({ showAutoPlaySetting: true, autoPlayOptionSelected: autoPlayRole })}>
+              {
+                autoPlayRole == 'all' ? <span>Wifi/3G/4G</span> : ""
+              }
+              {
+                autoPlayRole == 'wifi' ? <span>Chỉ Wifi</span> : ""
+              }
+              {
+                autoPlayRole == 'disable' ? <span>Không</span> : ""
+              }
+              <NavigateNextIcon />
+            </span>
+          </div>
+          {
+            isSettingChange == true ? <Button className="bt-submit" onClick={() => {
+              window.localStorage.setItem(APP_SETTING, JSON.stringify({
+                autoPlayRole: autoPlayRole,
+                isMuteInNewfeed: isMuteInNewfeed
+              }))
+              component.setState({
+                isSettingChange: false
+              })
+            }}>Lưu thay đổi</Button> : ""
+          }
+          {
+            renderAutoPlaySettingDrawer(component)
+          }
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
+const renderAutoPlaySettingDrawer = (component) => {
+  let {
+    showAutoPlaySetting,
+    autoPlayOptionSelected
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="auto-play-setting" open={showAutoPlaySetting} onClose={() => component.setState({ showAutoPlaySetting: false })}>
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div className="direction" onClick={() => component.setState({ showAutoPlaySetting: false })}>
+            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+            </IconButton>
+            <label>Tự động phát</label>
+          </div>
+        </div>
+        <div className="filter">
+        </div>
+        <div className="detail-content" style={{ overflow: "scroll", width: "100vw" }}>
+          <ul className="auto-option">
+            <li onClick={() => component.setState({ autoPlayOptionSelected: 'all', isSettingChange: true })}>
+              <span>Khi dùng Wifi và dữ liệu di động</span>
+              {
+                autoPlayOptionSelected == 'all' ? <CheckIcon /> : ""
+              }
+            </li>
+            <li onClick={() => component.setState({ autoPlayOptionSelected: 'wifi', isSettingChange: true })}>
+              <span>Chỉ khi có kết nối Wifi</span>
+              {
+                autoPlayOptionSelected == 'wifi' ? <CheckIcon /> : ""
+              }
+            </li>
+            <li onClick={() => component.setState({ autoPlayOptionSelected: 'disable', isSettingChange: true })}>
+              <span>Không bao giờ tự động phát video</span>
+              {
+                autoPlayOptionSelected == 'disable' ? <CheckIcon /> : ""
+              }
+            </li>
+          </ul>
+          <Button className="bt-submit" onClick={() => component.setState({ autoPlayRole: autoPlayOptionSelected, showAutoPlaySetting: false })}>Lưu thay đổi</Button>
+        </div>
+      </div>
+    </Drawer>
+  )
+}
+
 
 function a11yProps(index) {
   return {
@@ -2162,279 +2309,3 @@ function TabPanel(props) {
   );
 }
 
-
-const data = {
-  coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-  avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-  fullName: "hoang hai long",
-  point: 20,
-  liked: 1231,
-  folow: 221,
-  posted: 2533,
-  birthday: new Date(),
-  gender: "Nam",
-  friends: [
-    {
-      coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-      avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-      fullName: "Nguyễn Thị Vân Anh 1",
-      point: 111,
-      liked: 111,
-      folow: 111,
-      posted: 111,
-      birthday: new Date(),
-      gender: "Nam",
-      friends: [
-        {
-          coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-          avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-          fullName: "Nguyễn Thị Vân Anh 11",
-          point: 111,
-          liked: 111,
-          folow: 111,
-          posted: 111,
-          birthday: new Date(),
-          gender: "Nam",
-          friends: [
-
-          ],
-          folowing: [
-            {
-              avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-              fullName: "Apple Ánh"
-            },
-            {
-              avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-              fullName: "Võ Gia Huy"
-            },
-            {
-              avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-              fullName: "Quynh"
-            }
-          ],
-          folowed: [
-            {
-              avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-              fullName: "Võ Gia Huy"
-            },
-            {
-              avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-              fullName: "Apple Ánh"
-            },
-            {
-              avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-              fullName: "Quynh"
-            }
-          ],
-          jobs: [
-            {
-              position: "Nhân viên Thiết kế",
-              company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-              description: "Không có mô tả",
-              start: "10/20/2019",
-              end: "10/20/2020"
-            }
-          ],
-          studies: [
-            {
-              majors: "Nhân viên Thiết kế",
-              school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-              className: "D15_MT3DH",
-              graduate: "Khá",
-              masv: "DH12283",
-              start: "1999",
-              end: "2004",
-              isFinish: true
-            }
-          ],
-          address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-          email: "btcvn07@gmail.com",
-          skills: ["Quản lý thời gian", "Lãnh đạo"],
-          hopies: "Ca hát, thể thao",
-          orderSkills: "Ca hát",
-          mutualFriendCount: 2
-
-        }
-
-      ],
-      folowing: [
-        {
-          avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-          fullName: "Apple Ánh"
-        },
-        {
-          avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-          fullName: "Võ Gia Huy"
-        },
-        {
-          avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-          fullName: "Quynh"
-        }
-      ],
-      folowed: [
-        {
-          avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-          fullName: "Võ Gia Huy"
-        },
-        {
-          avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-          fullName: "Apple Ánh"
-        },
-        {
-          avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-          fullName: "Quynh"
-        }
-      ],
-      jobs: [
-        {
-          position: "Nhân viên Thiết kế",
-          company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-          description: "Không có mô tả",
-          start: "10/20/2019",
-          end: "10/20/2020"
-        }
-      ],
-      studies: [
-        {
-          majors: "Nhân viên Thiết kế",
-          school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-          className: "D15_MT3DH",
-          graduate: "Khá",
-          masv: "DH12283",
-          start: "1999",
-          end: "2004",
-          isFinish: true
-        }
-      ],
-      address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-      email: "btcvn07@gmail.com",
-      skills: ["Quản lý thời gian", "Lãnh đạo"],
-      hopies: "Ca hát, thể thao",
-      orderSkills: "Ca hát",
-      mutualFriendCount: 2
-    },
-    {
-      coverImage: "https://ak.picdn.net/shutterstock/videos/33673936/thumb/1.jpg",
-      avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF5qxHcyf8b5jCFVBLHZhiEEuelb2rcal-mA&usqp=CAU",
-      fullName: "Nguyễn Thị Vân Anh 2",
-      point: 222,
-      liked: 222,
-      folow: 222,
-      posted: 222,
-      birthday: new Date(),
-      gender: "Nam",
-      friends: [
-
-      ],
-      folowing: [
-        {
-          avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-          fullName: "Apple Ánh"
-        },
-        {
-          avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-          fullName: "Võ Gia Huy"
-        },
-        {
-          avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-          fullName: "Quynh"
-        }
-      ],
-      folowed: [
-        {
-          avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-          fullName: "Võ Gia Huy"
-        },
-        {
-          avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-          fullName: "Apple Ánh"
-        },
-        {
-          avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-          fullName: "Quynh"
-        }
-      ],
-      jobs: [
-        {
-          position: "Nhân viên Thiết kế",
-          company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-          description: "Không có mô tả",
-          start: "10/20/2019",
-          end: "10/20/2020"
-        }
-      ],
-      studies: [
-        {
-          majors: "Nhân viên Thiết kế",
-          school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-          className: "D15_MT3DH",
-          graduate: "Khá",
-          masv: "DH12283",
-          start: "1999",
-          end: "2004",
-          isFinish: true
-        }
-      ],
-      address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-      email: "btcvn07@gmail.com",
-      skills: ["Quản lý thời gian", "Lãnh đạo"],
-      hopies: "Ca hát, thể thao",
-      orderSkills: "Ca hát",
-      mutualFriendCount: 20
-    }
-  ],
-  folowing: [
-    {
-      avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-      fullName: "Apple Ánh"
-    },
-    {
-      avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-      fullName: "Võ Gia Huy"
-    },
-    {
-      avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-      fullName: "Quynh"
-    }
-  ],
-  folowed: [
-    {
-      avatar: "https://wp-en.oberlo.com/wp-content/uploads/2019/01/Copy-of-Blog-Header-Image-880x450-5-min.jpg",
-      fullName: "Võ Gia Huy"
-    },
-    {
-      avatar: "https://znews-photo.zadn.vn/w660/Uploaded/squfcgmv/2019_09_16/4.jpg",
-      fullName: "Apple Ánh"
-    },
-    {
-      avatar: "https://girlbehindthereddoor.com/wp-content/uploads/2016/11/girl-behind-the-red-door-lomo-instant-wide-instax-fujifilm-sky-550x360.jpg",
-      fullName: "Quynh"
-    }
-  ],
-  jobs: [
-    {
-      position: "Nhân viên Thiết kế",
-      company: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-      description: "Không có mô tả",
-      start: "10/20/2019",
-      end: "10/20/2020"
-    }
-  ],
-  studies: [
-    {
-      majors: "Nhân viên Thiết kế",
-      school: "Công ty Cổ phần Công nghệ & Đào tạo YOOT",
-      className: "D15_MT3DH",
-      graduate: "Khá",
-      masv: "DH12283",
-      start: "1999",
-      end: "2004",
-      isFinish: true
-    }
-  ],
-  address: "33 Kinh Dương Vương, Bình Chánh, HCM",
-  email: "btcvn07@gmail.com",
-  skills: ["Quản lý thời gian", "Lãnh đạo"],
-  hopies: "Ca hát, thể thao",
-  orderSkills: "Ca hát"
-}

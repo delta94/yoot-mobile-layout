@@ -579,7 +579,9 @@ class Index extends React.Component {
                         <div className="image" style={{ background: "url(" + item.friendavatar + ")" }}></div>
                       </div>
                       <span className="name">{item.friendname}</span>
-                      <span className='mutual-friend-count'>{item.numfriendwith} bạn chung</span>
+                      {
+                        item.numfriendwith > 0 ? <span className='mutual-friend-count'>{item.numfriendwith} bạn chung</span> : ""
+                      }
                     </div>)
                   }
                 </div>
@@ -962,7 +964,7 @@ const renderUserDetailDrawer = (component) => {
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                 <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
               </IconButton>
-              <label>Trang cá nhân</label>
+              <label>Thông tin</label>
             </div>
             <div className="user-reward">
               <div className="profile">

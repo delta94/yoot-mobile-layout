@@ -15,12 +15,14 @@ const initialState = {
     joinedGroups: [],
     myGroups: [],
     invitedGroups: [],
-    currentGroup: null
+    currentGroup: null,
+    joinedGroupsTotal: 0
 };
 
 export default (state = initialState, action) => {
     let {
         joinedGroups,
+        joinedGroupsTotal,
         myGroups,
         invitedGroups,
         currentGroup
@@ -28,30 +30,17 @@ export default (state = initialState, action) => {
 
     switch (action.type) {
         case SET_JOINED_GROUP: {
-            if (action.payload == null) {
-                joinedGroups = []
-            } else {
-                if (joinedGroups && joinedGroups.length > 0) {
-                    joinedGroups = action.payload.concat(joinedGroups)
-                } else {
-                    joinedGroups = action.payload
-                }
-            }
+
+            joinedGroups = action.payload
+            joinedGroupsTotal = action.total
 
             return Object.assign({}, state, {
-                joinedGroups: joinedGroups
+                joinedGroups: joinedGroups,
+                joinedGroupsTotal: joinedGroupsTotal
             })
         }
         case SET_MY_GROUP: {
-            if (action.payload == null) {
-                myGroups = []
-            } else {
-                if (myGroups && myGroups.length > 0) {
-                    myGroups = action.payload.concat(myGroups)
-                } else {
-                    myGroups = action.payload
-                }
-            }
+            myGroups = action.payload
 
             return Object.assign({}, state, {
                 myGroups: myGroups

@@ -16,7 +16,8 @@ import {
     SET_ALL_POSTED,
     SET_VIDEO_POSTED,
     SET_GROUP_POSTED,
-    SET_CURRENT_GROUP_POSTED
+    SET_CURRENT_GROUP_POSTED,
+    UPDATE_PRIVACY_POSTED
 } from '../actions/posted'
 
 const initialState = {
@@ -49,7 +50,7 @@ export default (state = initialState, action) => {
                 let postIndex = userPostedsList.findIndex(item => item.nfid == action.payload.nfid)
 
                 if (postIndex >= 0) {
-                    userPostedsList[postIndex] = action.payload
+                    userPostedsList[postIndex] = { ...action.payload, comments: userPostedsList[postIndex].comments }
                 }
             }
 
@@ -58,7 +59,7 @@ export default (state = initialState, action) => {
                 let postIndex = allPosteds.findIndex(item => item.nfid == action.payload.nfid)
 
                 if (postIndex >= 0) {
-                    allPosteds[postIndex] = action.payload
+                    allPosteds[postIndex] = { ...action.payload, comments: userPostedsList[postIndex].comments }
                 }
             }
 
@@ -66,7 +67,7 @@ export default (state = initialState, action) => {
                 let postIndex = videoPosteds.findIndex(item => item.nfid == action.payload.nfid)
 
                 if (postIndex >= 0) {
-                    videoPosteds[postIndex] = action.payload
+                    videoPosteds[postIndex] = { ...action.payload, comments: userPostedsList[postIndex].comments }
                 }
             }
 
@@ -74,7 +75,7 @@ export default (state = initialState, action) => {
                 let postIndex = allGroupPosteds.findIndex(item => item.nfid == action.payload.nfid)
 
                 if (postIndex >= 0) {
-                    allGroupPosteds[postIndex] = action.payload
+                    allGroupPosteds[postIndex] = { ...action.payload, comments: userPostedsList[postIndex].comments }
                 }
             }
 
@@ -82,7 +83,7 @@ export default (state = initialState, action) => {
                 let postIndex = currentGroupPosteds.findIndex(item => item.nfid == action.payload.nfid)
 
                 if (postIndex >= 0) {
-                    currentGroupPosteds[postIndex] = action.payload
+                    currentGroupPosteds[postIndex] = { ...action.payload, comments: userPostedsList[postIndex].comments }
                 }
             }
 
@@ -99,6 +100,43 @@ export default (state = initialState, action) => {
                 currentGroupPosteds: currentGroupPosteds
             })
         }
+        case UPDATE_PRIVACY_POSTED: {
+            let userPostedsList = userPosteds[action.userId]
+            if (userPostedsList) {
+                let postIndex = userPostedsList.findIndex(item => item.nfid == action.payload)
+
+                if (postIndex >= 0) {
+                    userPostedsList[postIndex].postforid = action.privacy
+                }
+            }
+
+            if (allPosteds) {
+                let postIndex = allPosteds.findIndex(item => item.nfid == action.payload)
+
+                if (postIndex >= 0) {
+                    allPosteds[postIndex].postforid = action.privacy
+                }
+            }
+
+            if (allGroupPosteds) {
+                let postIndex = allGroupPosteds.findIndex(item => item.nfid == action.payload)
+
+                if (postIndex >= 0) {
+                    allGroupPosteds[postIndex].postforid = action.privacy
+                }
+            }
+
+
+            return Object.assign({}, state, {
+                ...state,
+                userPosteds: {
+                    ...userPosteds,
+                    [action.payload]: userPostedsList
+                },
+                allPosteds: allPosteds,
+                allGroupPosteds: allGroupPosteds,
+            })
+        }
         case LIKE_POSTED: {
 
             let userPostedsList = userPosteds[action.userId]
@@ -107,7 +145,6 @@ export default (state = initialState, action) => {
                 let postIndex = userPostedsList.findIndex(item => item.nfid == action.payload.nfid)
 
                 if (postIndex >= 0) {
-
 
                     let newIconNumbers = userPostedsList[postIndex].iconNumbers
 

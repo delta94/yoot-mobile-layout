@@ -56,7 +56,9 @@ class Index extends React.Component {
             friendsWithFriendsCurrentPage: 0,
             allUsers: [],
             allUsersCurrentPage: 0,
-            isEndOfAllUsers: false
+            isEndOfAllUsers: false,
+            friendsWithFriendCount: 0,
+            allUserCount: 0
         };
     }
 
@@ -86,6 +88,13 @@ class Index extends React.Component {
                         isEndOfFriendsWithFriends: true
                     })
                 }
+            }
+        })
+        get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + objToQuery(param), result => {
+            if (result && result.result == 1) {
+                this.setState({
+                    friendsWithFriendCount: result.content.count,
+                })
             }
         })
     }
@@ -129,7 +138,7 @@ class Index extends React.Component {
             currentpage: currentpage,
             currentdate: moment(new Date).format(CurrentDate),
             limit: 20,
-            status: "All",
+            status: "Friends",
             forFriendId: userId,
             groupid: 0,
             findstring: searchKey
@@ -148,6 +157,13 @@ class Index extends React.Component {
                         isEndOfAllUsers: true
                     })
                 }
+            }
+        })
+        get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + objToQuery(param), result => {
+            if (result && result.result == 1) {
+                this.setState({
+                    allUserCount: result.content.count,
+                })
             }
         })
     }
@@ -394,7 +410,9 @@ class Index extends React.Component {
             suggestFriends,
             isLoadMore,
             friendsWithFriends,
-            allUsers
+            allUsers,
+            friendsWithFriendCount,
+            allUserCount
         } = this.state
         let {
             userDetail,
@@ -493,6 +511,10 @@ class Index extends React.Component {
                                 </TabPanel>
                                 <TabPanel value={friendTabIndex} index={1} >
                                     <div className="friend-list" >
+                                        <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                            <span>Số lượng</span>
+                                            <span className="red">{friendsWithFriendCount}</span>
+                                        </div>
                                         <ul>
                                             {
                                                 friendsWithFriends.map((item, index) => <li key={index} className="friend-layout">
@@ -502,7 +524,9 @@ class Index extends React.Component {
                                                         </Avatar>
                                                         <label>
                                                             <span className="name">{item.friendname}</span>
-                                                            <span className="with-friend">{item.numfriendwith} bạn chung</span>
+                                                            {
+                                                                item.numfriendwith > 0 ? <span className="with-friend">{item.numfriendwith} bạn chung</span> : ""
+                                                            }
                                                         </label>
                                                     </div>
                                                     <div className="action">
@@ -521,6 +545,10 @@ class Index extends React.Component {
                                 </TabPanel>
                                 <TabPanel value={friendTabIndex} index={2} className="content-box find-friends">
                                     <div className="friend-list" >
+                                        <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                            <span>Số lượng</span>
+                                            <span className="red">{allUserCount}</span>
+                                        </div>
                                         <ul>
                                             {
                                                 allUsers.map((item, index) => <li key={index} className="friend-layout">
@@ -530,7 +558,9 @@ class Index extends React.Component {
                                                         </Avatar>
                                                         <label>
                                                             <span className="name">{item.friendname}</span>
-                                                            <span className="with-friend">{item.numfriendwith} bạn chung</span>
+                                                            {
+                                                                item.numfriendwith > 0 ? <span className="with-friend">{item.numfriendwith} bạn chung</span> : ""
+                                                            }
                                                         </label>
                                                     </div>
                                                     <div className="action">

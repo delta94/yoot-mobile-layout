@@ -84,6 +84,12 @@ class Index extends React.Component {
       }
     })
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.woldNotiUnreadCount != this.props.woldNotiUnreadCount || nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount)
+      this.props.addFooterContent(renderFooter(this))
+  }
+
   componentWillMount() {
     this.props.addHeaderContent(renderHeader(this))
     this.props.addFooterContent(renderFooter(this))

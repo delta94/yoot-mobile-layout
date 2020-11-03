@@ -393,6 +393,10 @@
                 .aply-exercise{
                     width: 50% !important;
                     margin: 20px auto;
+                    padding: 0px !important;
+                    > span{
+                        padding: 0px !important;
+                    }
                 }
             }
 
@@ -483,8 +487,18 @@
                                         width: 40%;
                                     }
                                 }
-                                .name{
-                                    font-family: Roboto-Medium;
+                                > div:last-child{
+                                    text-align: left;
+                                    padding-left: 10px;
+                                    .name{
+                                        font-family: Roboto-Medium;
+                                    }
+                                    .date{
+                                        display: inline-block;
+                                        width: 100%;
+                                        margin-top: 5px;
+                                        color: #888;
+                                    }
                                 }
                                 > span{
                                     font-family:  Roboto-Regular;
@@ -496,6 +510,25 @@
                                 font-family: 1rem;
                                 font-family:  Roboto-Regular;
                             }
+                            
+                        }
+                    }
+                    .point{
+                        padding: 10px 20px;
+                        border-radius: 7px;   
+                        color: #fff;
+                        font-family: Roboto-Medium;
+                    }
+                    .comment{
+                        background: rgba(0, 0, 0, 0.06);
+                        margin-top: 10px;
+                        border-radius: 7px;
+                        padding: 10px;
+                        margin-bottom: 20px;
+                        text-align: left;
+                        pre{
+                            font-size: 1rem;
+                            font-family: Roboto-Regular;
                         }
                     }
                     > img{
@@ -588,8 +621,8 @@
     > div:last-child{
         width: calc(100% - 20px);
         margin-left: 10px;
-        min-height: 70vh;
-        height: 70vh;
+        min-height: unset !important;
+        height: fit-content !important;
         bottom: calc(50vh - 35vh);
         border-radius: 10px;
     }

@@ -311,6 +311,15 @@ input[type="date"]:not(.has-value):before{
         white-space: nowrap;
     }
 }
+.toggle-button{
+    font-family: Roboto-Regular;
+    text-decoration: none;
+    > span{
+        >span{
+            font-size: 1.3rem;
+        }
+    }
+}
 .overlay{
     position: absolute;
     top: 0px;
@@ -324,6 +333,9 @@ input[type="date"]:not(.has-value):before{
 }
 .blued{
     color: #5abdff !important;
+}
+.bold{
+    font-family: Roboto-Medium;
 }
 input{
     height: 40px !important;

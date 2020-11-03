@@ -64,8 +64,12 @@ class Index extends React.Component {
           data.type == 17 ? renderType17(this) : ""
         }
         {
+          data.type == 18 ? renderType18(this) : ""
+        }
+        {
           data.type == 33 ? renderType33(this) : ""
         }
+
       </li> : ""
     );
   }
@@ -102,7 +106,28 @@ const renderType17 = (component) => {
             .replace('"{namecourse}"', `<b>"${data.courseName}"</b>`)
         }}>
         </pre>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+      </div>
+    </div>
+  )
+}
+
+//Đã chấm điểm
+const renderType18 = (component) => {
+  let {
+    data
+  } = component.props
+  console.log("skills/113/exercise", data)
+  return (
+    <div className="noti-content content-type-35" onClick={() => component.props.history.replace(`/skills/${data.courseid}/exercise?tabIndex=1`)}>
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace('"{namecourse}"', `<b>"${data.courseName}"</b>`)
+        }}>
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -122,7 +147,7 @@ const renderType33 = (component) => {
             .replace('"{namecourse}"', `<b>"${data.courseName}"</b>`)
         }}>
         </pre>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )

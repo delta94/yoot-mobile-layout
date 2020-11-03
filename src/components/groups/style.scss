@@ -93,6 +93,7 @@
                     margin-left: 10px;
                     span{
                         white-space: nowrap;
+                        text-transform: initial !important;
                     }
                 }
             }
@@ -105,6 +106,7 @@
             background: #ffff;
             > span{
                 font-family: Roboto-Medium;
+                text-transform: capitalize;
             }
         }
         .group-info{
@@ -124,16 +126,17 @@
                         min-width: 100px;
                         span{
                             font-family: Roboto-Medium;
-                            text-transform: capitalize;
+                            text-transform: initial;
                         }
                     }
                 }
             }
             .animation-height{
                 padding: 10px;
+                position: relative;
                 .group-reward{
                     margin-top: 10px;
-                    padding-bottom: 10px;
+                    padding-bottom: 30px;
                     ul{
                         li{
                             font-family: Roboto-Regular;
@@ -145,6 +148,21 @@
                                 color: #ff5a5a;
                             }
                             
+                        }
+                    }
+                }
+                .content-css{
+                    transition: all 0.2s ease-in-out;
+                }
+                .toggle-button{
+                    position: absolute;
+                    bottom: 15px;
+                    right: 15px;
+                    font-family: Roboto-Regular;
+                    text-decoration: none;
+                    > span{
+                        >span{
+                            font-size: 1.3rem;
                         }
                     }
                 }
@@ -199,7 +217,7 @@
                             align-items: center;
                         }
                         span{
-                            text-transform: capitalize;
+                            text-transform: initial !important;
                             font-family: Roboto-Medium;
                             white-space: nowrap;
                             font-size: 1rem;
@@ -207,6 +225,7 @@
                         img{
                             width: 20px;
                             height: 20px;
+                            margin-right: 5px;
                         }
                     }
                 }
@@ -224,7 +243,17 @@
         }
     }
 }
-
+.joined-group-count{
+    display: flex;
+    align-items: center;
+    height: 40px;
+    border-radius: 7px;
+    background: #e8e9ed8f;
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    padding: 0px 10px;
+    box-sizing: border-box;
+}
 .group-members{
     .drawer-header{
         border: none !important;
@@ -291,6 +320,7 @@
 .group-menu{
     > div:last-child{
         border-radius: 25px 25px 0px 0px;
+        height: fit-content !important;
     }
     .menu-header{
         justify-content: flex-start !important;

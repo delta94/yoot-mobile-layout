@@ -5,6 +5,7 @@ import websocket from '../store/websocketReducer'
 import comment from '../store/comment'
 import noti from '../store/noti'
 import group from '../store/group'
+import career from '../store/career'
 
 export default {
     app,
@@ -13,5 +14,6 @@ export default {
     websocket,
     comment,
     noti,
-    group
+    group,
+    career
 };

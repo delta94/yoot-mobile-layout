@@ -310,11 +310,11 @@
             li{
                 display: flex;
                 align-items: center;
-                height: 35px;
+                height: 45px;
                 background: rgba(0,0,0,0.06);
                 border-radius: 7px;
                 margin-right: 10px;
-                padding: 0px 20px 0px 5px;
+                padding: 0px 20px 0px 10px;
                 img{
                     width: 20px;
                 }
@@ -526,6 +526,7 @@
         ul.job{
             padding: 4px;
             margin-top: 10px;
+            
             img{
                 margin-top: 10px ;
             }
@@ -533,6 +534,13 @@
                 display: flex;
                 align-items: flex-start;
                 position: relative;
+                &.school{
+                    img{
+                        transform: scale(1.4);
+                        margin-left: 2px;
+                        margin-right: -2px;
+                    }
+                }
                 > img{
                     width: 20px;
                 }

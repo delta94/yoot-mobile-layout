@@ -46,7 +46,8 @@ import {
   toggleCreateGroupDrawer,
   toggleGroupInviteDrawer,
   toggleCreateAlbumDrawer,
-  setProccessDuration
+  setProccessDuration,
+  setCurrentNetwork
 } from '../../actions/app'
 import {
   setUserProfile,
@@ -54,7 +55,8 @@ import {
   getMeFolowing
 } from '../../actions/user'
 import {
-  setUnreadNotiCount
+  setUnreadNotiCount,
+  setSkillUnreadNotiCount
 } from '../../actions/noti'
 import {
   GroupPrivacies,
@@ -75,6 +77,7 @@ import Player from '../common/player'
 import LoadingBar from 'react-top-loading-bar'
 import GroupDetail from '../groups/detail'
 import MediaViewr from './viewer'
+import { APP_SETTING } from "../../constants/localStorageKeys";
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const search = require('../../assets/icon/Find@1x.png')
@@ -108,6 +111,11 @@ class Main extends React.Component {
     get(SOCIAL_NET_WORK_API, "Notification/CountNotificationNoRead?typeproject=1", result => {
       if (result && result.result == 1) {
         this.props.setUnreadNotiCount(result.content.noUnRead)
+      }
+    })
+    get(SOCIAL_NET_WORK_API, "Notification/CountNotificationNoRead?typeproject=2", result => {
+      if (result && result.result == 1) {
+        this.props.setSkillUnreadNotiCount(result.content.noUnRead)
       }
     })
   }
@@ -186,6 +194,29 @@ class Main extends React.Component {
   componentWillMount() {
     this.getProfile()
     this.getUnreadNoti()
+
+  }
+
+  componentDidMount() {
+
+    var is_opera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+    var is_Edge = navigator.userAgent.indexOf("Edge") > -1;
+    var is_chrome = !!window.chrome && !is_opera && !is_Edge;
+    var is_explorer = typeof document !== 'undefined' && !!document.documentMode && !is_Edge;
+    var is_firefox = typeof window.InstallTrigger !== 'undefined';
+    var is_safari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (!is_firefox && !is_safari && !is_explorer) {
+      setTimeout(() => {
+        var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        this.props.setCurrentNetwork(connection.type)
+        let that = this
+        connection.addEventListener('typechange', () => {
+          that.props.setCurrentNetwork(connection.type)
+        });
+      }, 1000);
+    } else {
+      this.props.setCurrentNetwork('all')
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -229,7 +260,7 @@ class Main extends React.Component {
             {headerContent}
           </div>
           {
-            profile && window.location.pathname != "/setting" ? <div className="user-reward">
+            profile && window.location.pathname != "/setting" ? <div className="user-reward" onClick={() => this.props.history.push('/profile')}>
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
@@ -308,7 +339,7 @@ const mapStateToProps = state => {
   return {
     ...state.app,
     ...state.user,
-    ...state.group
+    ...state.group,
   }
 };
 
@@ -327,7 +358,9 @@ const mapDispatchToProps = dispatch => ({
   getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage)),
   toggleCreateAlbumDrawer: (isShow) => dispatch(toggleCreateAlbumDrawer(isShow)),
   setProccessDuration: (value) => dispatch(setProccessDuration(value)),
-  setUnreadNotiCount: (number) => dispatch(setUnreadNotiCount(number))
+  setUnreadNotiCount: (number) => dispatch(setUnreadNotiCount(number)),
+  setSkillUnreadNotiCount: (number) => dispatch(setSkillUnreadNotiCount(number)),
+  setCurrentNetwork: (networkType) => dispatch(setCurrentNetwork(networkType))
 });
 
 export default connect(
@@ -605,7 +638,7 @@ const renderCreateAlbumDrawer = (component) => {
             </IconButton>
             <label>{profile ? profile.fullname : "Tạo album"}</label>
           </div>
-          <Button onClick={() => component.createAlbum()}>Tạo</Button>
+          <Button onClick={() => component.createAlbum()}>LƯU</Button>
         </div>
         <div className="filter"></div>
         <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>

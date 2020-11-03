@@ -36,6 +36,7 @@ export const TOGGLE_ALBUM_DETAIL_DRAWER = "app@TOGGLE_ALBUM_DETAIL_DRAWER"
 export const SET_CURRENNT_ALBUM = "app@SET_CURRENNT_ALBUM"
 export const SELECT_ALBUM_TO_POST = "app@SELECT_ALBUM_TO_POST"
 export const TOGGLE_GROUP_DETAIL_DRAWER = "app@TOGGLE_GROUP_DETAIL_DRAWER"
+export const SET_CURRENT_NETWORK = "app@SET_CURRENT_NETWORK"
 
 
 export const setProccessDuration = (percent) => {
@@ -323,6 +324,15 @@ export const toggleGroupDetailDrawer = (isShow) => {
         dispatch({
             type: TOGGLE_GROUP_DETAIL_DRAWER,
             payload: isShow,
+        })
+    }
+}
+
+export const setCurrentNetwork = (networkType) => {
+    return dispatch => {
+        dispatch({
+            type: SET_CURRENT_NETWORK,
+            payload: networkType,
         })
     }
 }

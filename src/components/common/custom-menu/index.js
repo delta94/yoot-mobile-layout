@@ -74,7 +74,7 @@ export default function MenuListComposition(props) {
             {({ TransitionProps, placement }) => (
               <Fade {...TransitionProps} timeout={350} >
                 <Paper>
-                  <MenuList autoFocusItem={open} onKeyDown={handleListKeyDown}>
+                  <MenuList autoFocusItem={open} onKeyDown={handleListKeyDown} onClick={handleToggle}>
                     {
                       props.children
                     }

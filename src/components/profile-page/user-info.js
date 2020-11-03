@@ -31,6 +31,7 @@ import { Loader } from '../common/loader'
 import { NumberFormatCustom } from '../../utils/common'
 import CustomMenu from '../common/custom-menu'
 import { request } from 'https';
+import { showInfo } from '../../utils/app';
 
 
 export class Index extends React.Component {
@@ -98,9 +99,7 @@ export class Index extends React.Component {
             yearOfBirthPrivacy,
             genderPrivacy
         } = this.state
-        this.setState({
-            isUpdatePreccessing: true
-        })
+
         let param = {
             phone: phone,
             email: email,
@@ -127,6 +126,18 @@ export class Index extends React.Component {
                 levelid: genderPrivacy.code
             }
         ]
+
+        if (!param.name || param.name == "") {
+            showNotification("Tên không được bỏ trống !")
+            return
+        }
+        if (!param.email || param.email == "") {
+            showNotification("Email không được bỏ trống !")
+            return
+        }
+        this.setState({
+            isUpdatePreccessing: true
+        })
         post(SOCIAL_NET_WORK_API, "User/EditProfile", param, result => {
             if (result.result == 1) {
                 this.getProfile()
@@ -441,9 +452,9 @@ const renderCloseForm = (component) => {
             <div className='jon-group-confirm'>
                 <label>Bạn muốn rời khỏi trang này?</label>
                 <p>Những thông tin vừa thay đổi vẫn chưa được lưu.</p>
-                <div className="mt20">
-                    <Button className="bt-confirm" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false })}>Đồng ý</Button>
-                    <Button className="bt-submit" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại</Button>
+                <div className="mt20" style={{ justifyContent: "center" }}>
+                    <Button className="bt-confirm mr10 pl10 pr10" onClick={() => component.setState({ showCloseConfim: false, showUpdateForm: false })}>Đồng ý rời khỏi</Button>
+                    <Button className="bt-submit pl10 pr10" onClick={() => component.setState({ showCloseConfim: false })}>Quay lại thay đổi</Button>
                 </div>
             </div>
         </Drawer>

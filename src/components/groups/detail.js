@@ -37,12 +37,14 @@ import $ from 'jquery'
 import { GroupPrivacies, Privacies } from "../../constants/constants";
 import { get, postFormData } from "../../api";
 import { CurrentDate, SOCIAL_NET_WORK_API } from "../../constants/appSettings";
-import { objToQuery, objToArray, showNotification, showConfirm } from "../../utils/common";
+import { objToQuery, objToArray, showNotification, showConfirm, srcToFile } from "../../utils/common";
 import Loader from '../common/loader'
 import moment from 'moment'
 import ContentLoader from "react-content-loader"
 import Dropzone from 'react-dropzone'
 import MultiInput from '../common/multi-input'
+import ShowMoreText from 'react-show-more-text';
+import GroupImage from '../groups/group-image'
 
 const createPost = require('../../assets/icon/createPost@1x.png')
 const NewGr = require('../../assets/icon/NewGr@1x.png')
@@ -70,7 +72,8 @@ class Index extends React.Component {
       friends: [],
       friendsCurrentPage: 0,
       isEndOfFriends: false,
-      searchKey: ""
+      searchKey: "",
+      showMoreDescription: false
     };
   }
 
@@ -80,7 +83,7 @@ class Index extends React.Component {
       policygroup: group.groupUserPolicies[0] ? group.groupUserPolicies[0].description : "",
       groupName: group.groupname,
       groupType: GroupPrivacies[group.typegroupname],
-      backgroundPosted: group.backgroundimage
+      backgroundPosted: group.backgroundimage,
     })
   }
 
@@ -132,10 +135,12 @@ class Index extends React.Component {
 
     postFormData(SOCIAL_NET_WORK_API, "GroupUser/EditGroupUser", formData, result => {
       if (result && result.result == 1) {
-        this.handleGetGroupDetail(groupDetail)
-        this.setState({
-          showUpdateGroup: false
-        })
+        setTimeout(() => {
+          this.handleGetGroupDetail(groupDetail)
+          this.setState({
+            showUpdateGroup: false
+          })
+        }, 1000);
       }
     })
   }
@@ -228,7 +233,7 @@ class Index extends React.Component {
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 30,
+      limit: 20,
       groupid: groupDetail.groupid,
       status: "Manager"
     }
@@ -255,7 +260,7 @@ class Index extends React.Component {
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 30,
+      limit: 20,
       groupid: groupDetail.groupid,
       status: "Join"
     }
@@ -507,9 +512,8 @@ class Index extends React.Component {
           } else {
             this.setState({
               showNoti: true,
-              okCallback: () => this.setState({ showNoti: false }),
               confirmTitle: "",
-              confirmMessage: result.message
+              confirmMessage: result.message,
             })
           }
         })
@@ -540,7 +544,6 @@ class Index extends React.Component {
       } else {
         this.setState({
           showNoti: true,
-          okCallback: () => this.setState({ showNoti: false }),
           confirmTitle: "",
           confirmMessage: result.message
         })
@@ -565,6 +568,7 @@ class Index extends React.Component {
       groupDetail,
       activeMenuIndex,
       contentHeight,
+      showMoreDescription
     } = this.state
     let {
       profile,
@@ -641,7 +645,7 @@ class Index extends React.Component {
                 </div>
               </div>
               <div className="group-name">
-                <span>{groupDetail.groupname}</span>
+                <span>{groupDetail.groupname.toLowerCase()}</span>
               </div>
               <div className="group-info">
                 <div className="group-menu">
@@ -658,11 +662,23 @@ class Index extends React.Component {
                 >
                   {
                     activeMenuIndex === 0 ? <div id="info-content-0">
-                      <pre >
-                        {
-                          groupDetail.description
-                        }
-                      </pre>
+                      <ShowMoreText
+                        lines={5}
+                        more={<span><span>&#8811;</span> Rút gọn</span>}
+                        less={<span><span>&#8811;</span> Xem thêm</span>}
+                        className='content-css'
+                        anchorClass='toggle-button blued'
+                        expanded={showMoreDescription}
+                        onClick={() => {
+                          this.onClickMenu(0)
+                        }}
+                      >
+                        <pre >
+                          {
+                            groupDetail.description
+                          }
+                        </pre>
+                      </ShowMoreText>
                       <div className="group-reward">
                         <ul>
                           <li><FiberManualRecordIcon /> {groupPrivacyOptions.find(item => item.code == groupDetail.typegroup).label}</li>
@@ -816,6 +832,7 @@ const renderSearchGroupDrawer = (component) => {
     managerList
   } = component.state
 
+  console.log("managerList", managerList)
 
   return (
     <Drawer anchor="bottom" className="group-members" open={showMemberDrawer} >
@@ -859,17 +876,17 @@ const renderSearchGroupDrawer = (component) => {
                       </div>
                     </div>
                     {
-                      item.friendstatus == 0 ? <Button className="bt-submit" onClick={() => component.addFriend(item.memberid)}>Kết bạn</Button> : ""
+                      item.friendstatus == 0 && groupDetail && groupDetail.isadmin == 0 ? <Button className="bt-submit" onClick={() => component.addFriend(item.memberid)}>Kết bạn</Button> : ""
                     }
                     {
-                      item.friendstatus == 1 ? <Button className="bt-cancel" onClick={() => component.addFriend(item.memberid)}>Huỷ</Button> : ""
+                      item.friendstatus == 1 && groupDetail && groupDetail.isadmin == 0 ? <Button className="bt-cancel" onClick={() => component.addFriend(item.memberid)}>Huỷ</Button> : ""
                     }
-                    <CustomMenu>
-                      {
-                        item.isadmin > 0 ? <MenuItem onClick={() => component.handleRemoveOtherAdmin(item)}>Bỏ chỉ định admin</MenuItem> : ""
-                      }
-                      <MenuItem onClick={() => component.handleRemoveUser(item)}>Huỷ người này</MenuItem>
-                    </CustomMenu>
+                    {
+                      groupDetail && groupDetail.isadmin != 0 ? <CustomMenu>
+                        <MenuItem onClick={() => component.handleRemoveOtherAdmin(item)}>Bỏ chỉ định admin</MenuItem> : ""
+                        <MenuItem onClick={() => component.handleRemoveUser(item)}>Huỷ người này</MenuItem>
+                      </CustomMenu> : ""
+                    }
                   </li>)
                 }
               </ul>
@@ -897,22 +914,30 @@ const renderSearchGroupDrawer = (component) => {
                       <div className="name">
                         <span>{item.nameuser}</span>
                         {
-                          item.isadmin == 2 ? <p className="blued">Người sáng lập</p> : <p>Quản trị viên</p>
+                          item.isadmin == 2 ? <p className="blued">Người sáng lập</p> : ""
+                        }
+                        {
+                          item.isadmin == 1 ? <p>Quản trị viên</p> : ""
+                        }
+                        {
+                          item.isadmin == 0 ? <p>Thành viên</p> : ""
                         }
                       </div>
                     </div>
                     {
-                      item.friendstatus == 0 ? <Button className="bt-submit" onClick={() => component.addFriend(item.memberid)}>Kết bạn</Button> : ""
+                      item.friendstatus == 0 && groupDetail && groupDetail.isadmin == 0 ? <Button className="bt-submit" onClick={() => component.addFriend(item.memberid)}>Kết bạn</Button> : ""
                     }
                     {
-                      item.friendstatus == 1 ? <Button className="bt-cancel" onClick={() => component.addFriend(item.memberid)}>Huỷ</Button> : ""
+                      item.friendstatus == 1 && groupDetail && groupDetail.isadmin == 0 ? <Button className="bt-cancel" onClick={() => component.addFriend(item.memberid)}>Huỷ</Button> : ""
                     }
-                    <CustomMenu>
-                      {
-                        item.isadmin == 0 && item.inviteadmin != 1 ? <MenuItem onClick={() => component.handleAddOtherAdmin(item)}>Chỉ định làm admin</MenuItem> : ""
-                      }
-                      <MenuItem onClick={() => component.handleRemoveUser(item)}>Huỷ người này</MenuItem>
-                    </CustomMenu>
+                    {
+                      groupDetail && groupDetail.isadmin != 0 ? <CustomMenu>
+                        {
+                          item.isadmin == 0 && item.inviteadmin != 1 ? <MenuItem onClick={() => component.handleAddOtherAdmin(item)}>Chỉ định làm admin</MenuItem> : ""
+                        }
+                        <MenuItem onClick={() => component.handleRemoveUser(item)}>Huỷ người này</MenuItem>
+                      </CustomMenu> : ""
+                    }
                   </li>)
                 }
               </ul>
@@ -927,7 +952,6 @@ const renderSearchGroupDrawer = (component) => {
   )
 }
 
-
 const renderAllUserDrawer = (component) => {
   let {
     showAllMemberDrawer,
@@ -935,6 +959,8 @@ const renderAllUserDrawer = (component) => {
     userList,
     userCount,
   } = component.state
+
+  console.log("userList", userList)
 
   return (
     <Drawer anchor="bottom" className="group-members" open={showAllMemberDrawer} >
@@ -963,7 +989,13 @@ const renderAllUserDrawer = (component) => {
                       <div className="name">
                         <span>{item.nameuser}</span>
                         {
-                          item.isadmin == 2 ? <p className="blued">Người sáng lập</p> : <p>Quản trị viên</p>
+                          item.isadmin == 2 ? <p className="blued">Người sáng lập</p> : ""
+                        }
+                        {
+                          item.isadmin == 1 ? <p>Quản trị viên</p> : ""
+                        }
+                        {
+                          item.isadmin == 0 ? <p>Thành viên</p> : ""
                         }
                       </div>
                     </div>
@@ -1161,11 +1193,15 @@ const renderNotiDrawer = (component) => {
   return (
     <Drawer anchor="bottom" className="confirm-drawer" open={showNoti} onClose={() => component.setState({ showNoti: false })}>
       <div className='jon-group-confirm'>
-        <label>{confirmTitle}</label>
+        {
+          confirmTitle && confirmTitle != "" ? <label>{confirmTitle}</label> : ""
+        }
         <p style={{ textAlign: "center" }}>{confirmMessage}</p>
-        <div className="mt20">
-          <Button className="bt-confirm" onClick={() => component.setState({ showNoti: false }, () => okCallback ? okCallback() : null)}>Đồng ý</Button>
-        </div>
+        {
+          okCallback ? <div className="mt20">
+            <Button className="bt-confirm" onClick={() => component.setState({ showNoti: false }, () => okCallback ? okCallback() : null)}>Đồng ý</Button>
+          </div> : ""
+        }
       </div>
     </Drawer>
   )
@@ -1238,12 +1274,14 @@ const renderUpdateGroupDrawer = (component) => {
             }
             <label>Tải lên ảnh bìa</label>
             <div className="cover-image">
-              <div className="image" style={{ background: 'url(' + (groupCoverImage ? URL.createObjectURL(groupCoverImage) : backgroundPosted) + ')' }}></div>
+              {
+                groupCoverImage || backgroundPosted ? <GroupImage groupCoverImage={groupCoverImage} backgroundPosted={backgroundPosted} /> : ""
+              }
               <Dropzone onDrop={acceptedFiles => component.setState({ groupCoverImage: acceptedFiles[0] })}>
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()} >
                     <input {...getInputProps()} accept="image/*" />
-                    <Button className={groupCoverImage || backgroundPosted ? "light" : "dask"}>Tải ảnh khác</Button>
+                    <Button className={groupCoverImage || backgroundPosted ? "light" : "dask"}>Tải lại ảnh khác</Button>
                   </div>
                 )}
               </Dropzone>

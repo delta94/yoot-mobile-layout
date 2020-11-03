@@ -35,7 +35,8 @@ import {
   FormControlLabel,
   Checkbox,
   Drawer,
-  IconButton
+  IconButton,
+  Badge
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon
@@ -265,8 +266,12 @@ class Index extends React.Component {
       topUsers,
       topGroups,
       joinGroupProccessingId,
-      groupCurrentPage
+
     } = this.state
+    let {
+      woldNotiUnreadCount,
+      skillNotiUnreadCount
+    } = this.props
 
     return (
       <div className="home-page" >
@@ -287,11 +292,20 @@ class Index extends React.Component {
                   <div>
                     <ul>
                       <li onClick={() => this.props.history.push("/community")}>
-                        <img src={community}></img>
+
+                        {
+                          woldNotiUnreadCount > 0 ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
+                            <img src={community}></img>
+                          </Badge> : <img src={community}></img>
+                        }
                         <span>Cộng đồng</span>
                       </li>
                       <li onClick={() => this.props.history.push("/skills")}>
-                        <img src={skill}></img>
+                        {
+                          skillNotiUnreadCount > 0 ? <Badge badgeContent={skillNotiUnreadCount} max={99} className={"custom-badge"} >
+                            <img src={skill}></img>
+                          </Badge> : <img src={skill}></img>
+                        }
                         <span>Kỹ năng</span>
                       </li>
                       <li onClick={() => this.props.history.push("/career-guidance")}>
@@ -467,7 +481,8 @@ class Index extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.app,
-    ...state.user
+    ...state.user,
+    ...state.noti
   }
 };
 
@@ -605,7 +620,6 @@ const renderTopRankDrawer = (component) => {
     isLoadMoreGroup
   } = component.state
 
-  console.log("topGroups", topGroups)
 
 
   return (

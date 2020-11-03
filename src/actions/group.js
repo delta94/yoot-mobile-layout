@@ -61,11 +61,12 @@ export const acceptGroup = (groupId, successCallback, errorCallback, currentGrou
 }
 
 
-export const setJoinedGroup = (groups) => {
+export const setJoinedGroup = (groups, total) => {
     return dispatch => {
         dispatch({
             type: SET_JOINED_GROUP,
-            payload: groups
+            payload: groups,
+            total: total
         })
     }
 }

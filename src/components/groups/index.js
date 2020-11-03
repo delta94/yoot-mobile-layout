@@ -55,6 +55,7 @@ import Loader from '../common/loader'
 import moment from 'moment'
 import Dropzone from 'react-dropzone'
 import MultiInput from '../common/multi-input'
+import GroupImage from './group-image'
 
 const Newfeed = require('../../assets/icon/Lesson.png')
 const Group1 = require('../../assets/icon/Group@1x.png')
@@ -72,6 +73,7 @@ const checkedIcon = require('../../assets/images/checked.png')
 
 
 let currentDate = moment(new Date).format(CurrentDate)
+
 
 
 
@@ -93,9 +95,15 @@ class Index extends React.Component {
       policygroup: "",
       groupType: null,
       groupTabIndex: 0,
+      isEndOfInvitedGroup: false,
+
+      myGroupsCurrentPage: 0,
+      isLoadMoreMyGroups: false,
       isEndOfMyGroup: false,
+
+      joinedGroupsCurrentPage: 0,
+      isLoadMoreJoinedGroups: false,
       isEndOfJoinedGroup: false,
-      isEndOfInvitedGroup: false
     };
   }
 
@@ -155,7 +163,7 @@ class Index extends React.Component {
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 30,
+      limit: 20,
       skin: "All",
       findstring: searchKey
     }
@@ -180,46 +188,63 @@ class Index extends React.Component {
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 30,
+      limit: 20,
       skin: "Join",
     }
     this.setState({
-      isLoadMoreGroup: true
+      isLoadMoreJoinedGroups: true,
     })
+    let {
+      joinedGroups
+    } = this.props
     get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + objToQuery(param), result => {
       if (result && result.result == 1) {
-        this.props.setJoinedGroup(result.content.groupUsers)
-        this.setState({
-          isLoadMoreGroup: false
-        })
+        if (joinedGroups && joinedGroups.length > 0) {
+          joinedGroups = joinedGroups.concat(result.content.groupUsers)
+        } else {
+          joinedGroups = result.content.groupUsers
+        }
+        this.props.setJoinedGroup(joinedGroups, result.content.numGroupJoin)
+
         if (result.content.groupUsers.length == 0) {
-          this.setState({ isEndOfJoinedGroup: true, isLoadMoreGroup: false })
+          this.setState({ isEndOfJoinedGroup: true, isLoadMoreJoinedGroups: false })
         }
       }
+      this.setState({
+        isLoadMoreJoinedGroups: false
+      })
     })
   }
 
   getMyGroup(currentpage) {
-
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 30,
+      limit: 20,
       skin: "Manager",
     }
+    let {
+      myGroups
+    } = this.props
     this.setState({
-      isLoadMoreGroup: true
+      isLoadMoreMyGroups: true
     })
     get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + objToQuery(param), result => {
       if (result && result.result == 1) {
-        this.props.setMyGroup(result.content.groupUsers)
-        this.setState({
-          isLoadMoreGroup: false
-        })
+        if (myGroups && myGroups.length > 0) {
+          myGroups = myGroups.concat(result.content.groupUsers)
+        } else {
+          myGroups = result.content.groupUsers
+        }
+        this.props.setMyGroup(myGroups)
+
         if (result.content.groupUsers.length == 0) {
-          this.setState({ isEndOfMyGroup: true, isLoadMoreGroup: false })
+          this.setState({ isEndOfMyGroup: true, isLoadMoreMyGroups: false })
         }
       }
+      this.setState({
+        isLoadMoreMyGroups: false
+      })
     })
   }
 
@@ -227,7 +252,7 @@ class Index extends React.Component {
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 30,
+      limit: 20,
       skin: "IsInvite",
     }
     this.setState({
@@ -286,11 +311,11 @@ class Index extends React.Component {
     })
   }
 
-  closeCreateDrawer() {
+  closeCreateDrawer(isForce) {
     let {
       isChanged
     } = this.state
-    if (isChanged == true) {
+    if (isChanged == true && !isForce) {
       this.setState({
         showConfim: true,
         okCallback: () => {
@@ -375,7 +400,9 @@ class Index extends React.Component {
     postFormData(SOCIAL_NET_WORK_API, "GroupUser/CreateGroupUser", formData, result => {
       if (result && result.result == 1) {
         this.handleGetGroupDetail(result.content.groupuser.id)
-        this.closeCreateDrawer()
+        this.closeCreateDrawer(true)
+        this.getJoinedGroup(0)
+        this.getMyGroup(0)
       }
     })
   }
@@ -390,6 +417,42 @@ class Index extends React.Component {
     if (group && group.groupid) {
       this.props.joinGroup(group.groupid)
     }
+  }
+
+  groupScroll(groupTabIndex) {
+    let element = $("#group-list")
+    let {
+      isLoadMoreJoinedGroups,
+      isEndOfJoinedGroup,
+      joinedGroupsCurrentPage,
+      isLoadMoreMyGroups,
+      isEndOfMyGroup,
+      myGroupsCurrentPage
+    } = this.state
+    if (element)
+      if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+        if (groupTabIndex == 0) {
+          if (isLoadMoreJoinedGroups == false && isEndOfJoinedGroup == false) {
+            this.setState({
+              joinedGroupsCurrentPage: joinedGroupsCurrentPage + 1,
+              isLoadMoreJoinedGroups: true
+            }, () => {
+              this.getJoinedGroup(joinedGroupsCurrentPage + 1)
+            })
+          }
+
+        } else {
+          if (isLoadMoreMyGroups == false && isEndOfMyGroup == false) {
+            this.setState({
+              myGroupsCurrentPage: myGroupsCurrentPage + 1,
+              isLoadMoreMyGroups: true
+            }, () => {
+              this.getMyGroup(myGroupsCurrentPage + 1)
+            })
+          }
+        }
+
+      }
   }
 
 
@@ -422,6 +485,11 @@ class Index extends React.Component {
         }
       }
     })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.woldNotiUnreadCount != this.props.woldNotiUnreadCount || nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount)
+      this.props.addFooterContent(renderFooter(this))
   }
 
   render() {
@@ -521,7 +589,7 @@ const mapDispatchToProps = dispatch => ({
   toggleGroupDrawer: (isShow) => dispatch(toggleGroupDrawer(isShow)),
   toggleGroupInviteDrawer: (isShow) => dispatch(toggleGroupInviteDrawer(isShow)),
   setGroupPosted: (posts) => dispatch(setGroupPosted(posts)),
-  setJoinedGroup: (groups) => dispatch(setJoinedGroup(groups)),
+  setJoinedGroup: (groups, total) => dispatch(setJoinedGroup(groups, total)),
   setMyGroup: (groups) => dispatch(setMyGroup(groups)),
   setInvitedGroup: (groups) => dispatch(setInvitedGroup(groups)),
   acceptGroup: (groupId, successCallback, errorCallback, currentGroup) => dispatch(acceptGroup(groupId, successCallback, errorCallback, currentGroup)),
@@ -694,7 +762,6 @@ const renderCreateGroupDrawer = (component) => {
 
   let {
     showCreateGroupDrawer,
-
   } = component.props
   let {
     groupCoverImage,
@@ -756,18 +823,20 @@ const renderCreateGroupDrawer = (component) => {
             }
             <label>Tải lên ảnh bìa</label>
             <div className="cover-image">
-              {
+              {/* {
                 groupCoverImage ? <div className="image" style={{ background: 'url(' + URL.createObjectURL(groupCoverImage) + ')' }}></div> : ""
+              } */}
+              {
+                groupCoverImage ? <GroupImage groupCoverImage={groupCoverImage} /> : ""
               }
               <Dropzone onDrop={acceptedFiles => component.setState({ groupCoverImage: acceptedFiles[0], isChanged: true })}>
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()} >
                     <input {...getInputProps()} accept="image/*" multiple={false} />
-                    <Button className={groupCoverImage ? "light" : "dask"}>Tải ảnh khác</Button>
+                    <Button className={groupCoverImage ? "light" : "dask"}>Tải lại ảnh khác</Button>
                   </div>
                 )}
               </Dropzone>
-
             </div>
             <label>Quy định nhóm</label>
             {
@@ -815,11 +884,14 @@ const renderGroupListDrawer = (component) => {
   let {
     showGroupDrawer,
     joinedGroups,
-    myGroups
+    myGroups,
+    joinedGroupsTotal
   } = component.props
   let {
     groupTabIndex
   } = component.state
+
+  console.log("this.props", component.props)
 
 
   return (
@@ -827,9 +899,18 @@ const renderGroupListDrawer = (component) => {
       <div className="drawer-detail">
         <div className="drawer-header">
           <div className="direction" onClick={() => {
+            setTimeout(() => {
+              component.props.setJoinedGroup([])
+              component.props.setMyGroup([])
+              component.setState({
+                isEndOfJoinedGroup: false,
+                isEndOfMyGroup: false,
+                joinedGroupsCurrentPage: 0,
+                myGroupsCurrentPage: 0,
+                groupTabIndex: 0
+              })
+            }, 200);
             component.props.toggleGroupDrawer(false)
-            component.props.setJoinedGroup(null)
-            component.props.setMyGroup(null)
           }}>
             <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
               <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
@@ -842,6 +923,9 @@ const renderGroupListDrawer = (component) => {
           </div>
         </div>
         <div className="filter">
+          <div className="joined-group-count">
+            <span>Bạn đã gia nhập <span className="red bold">{joinedGroupsTotal}</span> hội nhóm</span>
+          </div>
           <AppBar position="static" color="default" className={"custom-tab"}>
             <Tabs
               value={groupTabIndex}
@@ -853,11 +937,11 @@ const renderGroupListDrawer = (component) => {
               className="tab-header"
             >
               <Tab label="Nhóm đã tham gia" {...a11yProps(0)} className="tab-item" />
-              <Tab label="Nhóm đang quản lí" {...a11yProps(1)} className="tab-item" />
+              <Tab label="Nhóm đang quản lí" {...a11yProps(1)} className="tab-item" onClick={() => !myGroups || myGroups.length == 0 ? component.getMyGroup(0) : ""} />
             </Tabs>
           </AppBar>
         </div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} >
+        <div className="content-form" id="group-list" style={{ overflow: "scroll", width: "100vw" }} onScroll={() => component.groupScroll(groupTabIndex)} >
           <SwipeableViews
             index={groupTabIndex}
             onChangeIndex={(value) => component.setState({ groupTabIndex: value })}
@@ -866,80 +950,94 @@ const renderGroupListDrawer = (component) => {
             <TabPanel value={groupTabIndex} index={0} className="content-box">
               <div className="top-groups joined-group">
                 {
-                  joinedGroups.map((item, key) => <div
-                    className="group-item"
-                    key={key}
-                    style={{ background: "url(" + item.backgroundimage + ")" }}
-                    onClick={() => {
-                      component.props.toggleGroupDetailDrawer(true)
-                      component.props.setCurrentGroup(item)
-                    }}
-                  >
-                    <div className="group-info">
-                      <Avatar aria-label="recipe" className="avatar">
-                        <div className="img" style={{ background: `url("${item.thumbnail}")` }} />
-                      </Avatar>
-                      <span className="group-name">{item.groupname}</span>
-                    </div>
-                    <span className="posted">{item.numpost} bài đăng</span>
-                    <div className="members-list">
-                      <span className="total">Thành viên: {item.nummember}</span>
-                      {
-                        item.managers ? <div className="member-avatar">
+                  joinedGroups ? joinedGroups.map((item, key) =>
+                    <div
+                      className="group-item"
+                      key={key}
+                      style={{ background: "url(" + item.backgroundimage + ")" }}
+
+                    >
+                      <div className="overlay" onClick={() => {
+                        component.props.toggleGroupDetailDrawer(true)
+                        component.props.setCurrentGroup(item)
+                      }} />
+                      <div className="group-info">
+                        <Avatar aria-label="recipe" className="avatar">
+                          <div className="img" style={{ background: `url("${item.thumbnail}")` }} />
+                        </Avatar>
+                        <span className="group-name ellipsit">{item.groupname}</span>
+                      </div>
+                      <span className="posted">{item.numpost} bài đăng  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{GroupPrivacies[item.typegroupname].label}</span>
+                      <div className="members-list" style={{ position: "relative" }}>
+
+                        <span className="total">Thành viên: {item.nummember}</span>
+                        <div className="members-list">
                           {
-                            item.managers.map((item, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
-                              <div className="img" style={{ background: `url("${item.avatar}")` }} />
-                            </Avatar>
-                            )
+                            item.managers && item.managers.length > 0 ? <div className="member-avatar">
+                              {
+                                item.managers.map((manager, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
+                                  <div className="img" style={{ background: `url("${manager.avatar}")` }} />
+                                </Avatar>
+                                )
+                              }
+                              {
+                                item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
+                                  +{item.managers.length - 2}
+                                </Avatar> : ""
+                              }
+                            </div> : ""
                           }
-                          {
-                            item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
-                              +{item.managers.length - 2}
-                            </Avatar> : ""
-                          }
-                        </div> : ""
-                      }
-                    </div>
-                  </div>)
+
+                        </div>
+                      </div>
+                    </div>) : ""
                 }
               </div>
             </TabPanel>
             <TabPanel value={groupTabIndex} index={1} >
               <div className="top-groups joined-group">
                 {
-                  myGroups.map((item, key) => <div
-                    className="group-item"
-                    key={key}
-                    style={{ background: "url(" + item.backgroundimage + ")" }}
-                    onClick={() => {
-                      component.props.toggleGroupDetailDrawer(true)
-                      component.props.setCurrentGroup(item)
-                    }}
-                  >
-                    <div className="group-info">
-                      <Avatar aria-label="recipe" className="avatar">
-                        <div className="img" style={{ background: `url("${item.thumbnail}")` }} />
-                      </Avatar>
-                      <span className="group-name">{item.groupname}</span>
-                    </div>
-                    <span className="posted">{item.numpost} bài đăng</span>
-                    <div className="members-list">
-                      <span className="total">Thành viên: {item.nummember}</span>
-                      <div className="member-avatar">
-                        {
-                          item.managers.map((item, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
-                            <div className="img" style={{ background: `url("${item.avatar}")` }} />
-                          </Avatar>
-                          )
-                        }
-                        {
-                          item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
-                            +{item.managers.length - 2}
-                          </Avatar> : ""
-                        }
+                  myGroups ? myGroups.map((item, key) =>
+                    <div
+                      className="group-item"
+                      key={key}
+                      style={{ background: "url(" + item.backgroundimage + ")" }}
+
+                    >
+                      <div className="overlay" onClick={() => {
+                        component.props.toggleGroupDetailDrawer(true)
+                        component.props.setCurrentGroup(item)
+                      }} />
+                      <div className="group-info">
+                        <Avatar aria-label="recipe" className="avatar">
+                          <div className="img" style={{ background: `url("${item.thumbnail}")` }} />
+                        </Avatar>
+                        <span className="group-name ellipsit">{item.groupname}</span>
                       </div>
-                    </div>
-                  </div>)
+                      <span className="posted">{item.numpost} bài đăng  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{GroupPrivacies[item.typegroupname].label}</span>
+                      <div className="members-list" style={{ position: "relative" }}>
+
+                        <span className="total">Thành viên: {item.nummember}</span>
+                        <div className="members-list">
+                          {
+                            item.managers && item.managers.length > 0 ? <div className="member-avatar">
+                              {
+                                item.managers.map((manager, index) => index < 2 && <Avatar aria-label="recipe" className="avatar">
+                                  <div className="img" style={{ background: `url("${manager.avatar}")` }} />
+                                </Avatar>
+                                )
+                              }
+                              {
+                                item.managers.length > 2 ? < Avatar aria-label="recipe" className="avatar">
+                                  +{item.managers.length - 2}
+                                </Avatar> : ""
+                              }
+                            </div> : ""
+                          }
+
+                        </div>
+                      </div>
+                    </div>) : ""
                 }
               </div>
             </TabPanel>

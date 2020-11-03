@@ -75,6 +75,7 @@ import Dropzone from 'react-dropzone'
 import CustomMenu from '../common/custom-menu'
 import Loader from '../common/loader'
 import $ from 'jquery'
+import ShowMoreText from 'react-show-more-text';
 
 const maxCols = 6
 const like1 = require('../../assets/icon/like1@1x.png')
@@ -378,6 +379,16 @@ class Index extends React.Component {
             formData.append("tags", JSON.stringify(replyFor.tagIds))
         }
 
+        this.commentInput.current.setDefaultValue("")
+        this.setState({
+            imageSelected: [],
+            replyFor: null
+        })
+
+        setTimeout(() => {
+            this.commentInput.current.editor.blur()
+        }, 200);
+
         postFormData(SOCIAL_NET_WORK_API, "Comment/CreateComment", formData, result => {
             if (result && result.result == 1) {
                 if (replyFor) {
@@ -386,11 +397,6 @@ class Index extends React.Component {
                     this.props.commentSuccess(result.content.commentModel, data.nfid)
                 }
                 this.props.changeCommentCountForPost(1, data.nfid, data.iduserpost)
-                this.commentInput.current.setDefaultValue("")
-                this.setState({
-                    imageSelected: [],
-                    replyFor: null
-                })
             }
         })
     }
@@ -558,9 +564,18 @@ class Index extends React.Component {
                                 data.nfcontent != "" ? <div
                                     className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                     style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                    <pre dangerouslySetInnerHTML={{
-                                        __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
-                                    }} ></pre>
+                                    <ShowMoreText
+                                        lines={4}
+                                        more={<span> Xem thêm</span>}
+                                        less={<span> Rút gọn</span>}
+                                        className='content-css'
+                                        anchorClass='toggle-button blued'
+                                        expanded={false}
+                                    >
+                                        <pre dangerouslySetInnerHTML={{
+                                            __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
+                                        }} ></pre>
+                                    </ShowMoreText>
                                 </div> : ""
                             }
 
@@ -570,19 +585,19 @@ class Index extends React.Component {
                                         daskMode ? "" : (
                                             data.mediaPlays.length > 1
                                                 ? <GridList cols={maxCols} >
-                                                    {data.mediaPlays.map((media, index) => (
+                                                    {data.mediaPlays.slice(0, 5).map((media, index) => (
                                                         <GridListTile
                                                             className={media.typeobject == 2 ? "video" : "image"}
                                                             style={{
-                                                                height: this.handleCellHeightCal(index, data.mediaPlays.length),
+                                                                height: this.handleCellHeightCal(index, data.mediaPlays.slice(0, 5).length),
                                                             }}
                                                             key={media.name}
-                                                            cols={this.handleColumnCal(index, data.mediaPlays.length)}
+                                                            cols={this.handleColumnCal(index, data.mediaPlays.slice(0, 5).length)}
                                                         >
                                                             {
                                                                 media.typeobject == 2
                                                                     ? <div>
-                                                                        <div >
+                                                                        <div onClick={() => this.setState({ showPostedDetail: true })}>
                                                                             <Player
                                                                                 ref={index == 0 ? this.player : null}
                                                                                 poster={media.thumbnailname}
@@ -603,20 +618,21 @@ class Index extends React.Component {
                                                                                     <PlayArrowIcon />
                                                                                 </IconButton>
                                                                         }
-                                                                        <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => {
-                                                                            this.props.setMediaToViewer([media])
-                                                                            this.props.toggleMediaViewerDrawer(true, {
-                                                                                showInfo: true,
-                                                                                isvideo: true
-                                                                            })
-                                                                        }} />
-                                                                    </div> : <img src={media.name} alt={media.name} onClick={() => {
+                                                                        <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => this.setState({ showPostedDetail: true })} />
+                                                                    </div>
+                                                                    : <img src={media.name} alt={media.name} onClick={() => {
                                                                         this.props.setMediaToViewer(data.mediaPlays)
                                                                         this.props.toggleMediaViewerDrawer(true, {
+                                                                            actions: data.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
                                                                             showInfo: true,
                                                                             activeIndex: index
                                                                         })
                                                                     }} />
+                                                            }
+                                                            {
+                                                                data.mediaPlays.length > 5 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
+                                                                    <span>+{data.mediaPlays.length - 5}</span>
+                                                                </div> : ""
                                                             }
                                                         </GridListTile>
                                                     ))}
@@ -627,7 +643,15 @@ class Index extends React.Component {
                                                             {
                                                                 media.typeobject == 2
                                                                     ? <div>
-                                                                        <div >
+                                                                        <div onClick={() => {
+                                                                            this.props.setMediaToViewer([media])
+                                                                            this.props.toggleMediaViewerDrawer(true, {
+                                                                                showInfo: true,
+                                                                                activeIndex: index,
+                                                                                isvideo: true
+                                                                            })
+                                                                            this.handlePauseVideo()
+                                                                        }}>
                                                                             <Player
                                                                                 ref={this.player}
                                                                                 poster={media.thumbnailname}
@@ -683,6 +707,7 @@ class Index extends React.Component {
                                             <div>
                                                 {
                                                     data.newsFeedShare && <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
+
                                                         <CardHeader
                                                             className="card-header"
                                                             avatar={
@@ -706,8 +731,6 @@ class Index extends React.Component {
                                                                 <div>
                                                                     <img src={PrivacyOptions.find(privacy => privacy.code == data.newsFeedShare.postforid).icon1} />
                                                                     <FiberManualRecordIcon />
-                                                                    <span>{moment(data.newsFeedShare.createdate).format("DD/MM/YYYY HH:mm")}</span>
-                                                                    <FiberManualRecordIcon />
                                                                     <span>{fromNow(moment(data.newsFeedShare.createdate), moment(new Date))}</span>
                                                                 </div>
                                                                 <div>
@@ -726,9 +749,18 @@ class Index extends React.Component {
                                                             data.newsFeedShare.nfcontent != "" ? <div
                                                                 className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                                                 style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                                                <pre dangerouslySetInnerHTML={{
-                                                                    __html: data.newsFeedShare.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
-                                                                }} ></pre>
+                                                                <ShowMoreText
+                                                                    lines={4}
+                                                                    more={<span> Xem thêm</span>}
+                                                                    less={<span> Rút gọn</span>}
+                                                                    className='content-css'
+                                                                    anchorClass='toggle-button blued'
+                                                                    expanded={false}
+                                                                >
+                                                                    <pre dangerouslySetInnerHTML={{
+                                                                        __html: data.newsFeedShare.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
+                                                                    }} ></pre>
+                                                                </ShowMoreText>
                                                             </div> : ""
                                                         }
                                                         <CardContent className="card-content">
@@ -737,41 +769,47 @@ class Index extends React.Component {
                                                                     daskMode ? "" : (
                                                                         data.newsFeedShare.mediaPlays.length > 1
                                                                             ? <GridList cols={maxCols} >
-                                                                                {data.newsFeedShare.mediaPlays.map((media, index) => (
+                                                                                {data.newsFeedShare.mediaPlays.slice(0, 5).map((media, index) => (
                                                                                     <GridListTile
                                                                                         className={media.typeobject == 2 ? "video" : "image"}
                                                                                         style={{
-                                                                                            height: this.handleCellHeightCal(index, data.newsFeedShare.mediaPlays.length),
+                                                                                            height: this.handleCellHeightCal(index, data.newsFeedShare.mediaPlays.slice(0, 5).length),
                                                                                         }}
                                                                                         key={media.name}
-                                                                                        cols={this.handleColumnCal(index, data.newsFeedShare.mediaPlays.length)}
+                                                                                        cols={this.handleColumnCal(index, data.newsFeedShare.mediaPlays.slice(0, 5).length)}
                                                                                     >
                                                                                         {
                                                                                             media.typeobject == 2
                                                                                                 ? <div>
-                                                                                                    {/* <div onClick={() => this.setState({ showPostedDetail: true })}>
-                                                                                                    <Player
-                                                                                                        ref={index == 0 ? this.player : null}
-                                                                                                        poster={media.thumbnailname}
-                                                                                                        src={media.name}
-                                                                                                        videoWidth={media.width}
-                                                                                                        videoHeight={media.height}
-                                                                                                        playsInline={true}
+                                                                                                    <div onClick={() => this.setState({ showPostedDetail: true })}>
+                                                                                                        <Player
+                                                                                                            ref={index == 0 ? this.player : null}
+                                                                                                            poster={media.thumbnailname}
+                                                                                                            src={media.name}
+                                                                                                            videoWidth={media.width}
+                                                                                                            videoHeight={media.height}
+                                                                                                            playsInline={true}
 
-                                                                                                    >
-                                                                                                        <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
-                                                                                                        </ControlBar>
-                                                                                                    </Player>
+                                                                                                        >
+                                                                                                            <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
+                                                                                                            </ControlBar>
+                                                                                                        </Player>
+                                                                                                    </div>
+                                                                                                    {
+                                                                                                        index == 0 ? <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
+                                                                                                            {isMuted == true ? <img style={{ width: 24, height: 24 }} src={mute} /> : <img style={{ width: 24, height: 24 }} src={unmute} />}
+                                                                                                        </IconButton> : <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-play">
+                                                                                                                <PlayArrowIcon />
+                                                                                                            </IconButton>
+                                                                                                    }
+                                                                                                    <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => this.setState({ showPostedDetail: true })} />
                                                                                                 </div>
-                                                                                                {
-                                                                                                    index == 0 ? <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
-                                                                                                        {isMuted == true ? <img style={{width: 24, height: 24}} src ={mute}/>:<img style={{width: 24, height: 24}} src={unmute}/>}
-                                                                                                    </IconButton> : <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-play">
-                                                                                                            <PlayArrowIcon />
-                                                                                                        </IconButton>
-                                                                                                }
-                                                                                                <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => this.setState({ showPostedDetail: true })} /> */}
-                                                                                                </div> : <img src={media.name} alt={media.name} onClick={() => this.setState({ showPostedDetail: true })} />
+                                                                                                : <img src={media.name} alt={media.name} onClick={() => this.setState({ showPostedDetail: true })} />
+                                                                                        }
+                                                                                        {
+                                                                                            data.newsFeedShare.mediaPlays.length > 5 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
+                                                                                                <span>+{data.newsFeedShare.mediaPlays.length - 5}</span>
+                                                                                            </div> : ""
                                                                                         }
                                                                                     </GridListTile>
                                                                                 ))}
@@ -946,7 +984,7 @@ class Index extends React.Component {
                             suggestionClass="custom-suggestion"
                         />
                         {
-                            commentContent != '' || commentContent.length > 0 ? <IconButton onClick={() => this.handleComment()}><img src={Send} /></IconButton> : ""
+                            commentContent != '' || commentContent.length > 0 || imageSelected.length > 0 ? <IconButton onClick={() => this.handleComment()}><img src={Send} /></IconButton> : ""
                         }
                     </div>
                 </div>
@@ -1162,9 +1200,18 @@ const renderDetailPosted = (component) => {
                                 data.nfcontent != "" ? <div
                                     className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                     style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                    <pre dangerouslySetInnerHTML={{
-                                        __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
-                                    }} ></pre>
+                                    <ShowMoreText
+                                        lines={4}
+                                        more={<span> Xem thêm</span>}
+                                        less={<span> Rút gọn</span>}
+                                        className='content-css'
+                                        anchorClass='toggle-button blued'
+                                        expanded={false}
+                                    >
+                                        <pre dangerouslySetInnerHTML={{
+                                            __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
+                                        }} ></pre>
+                                    </ShowMoreText>
                                 </div> : ""
                             }
 

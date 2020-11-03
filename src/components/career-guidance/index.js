@@ -8,8 +8,12 @@ import {
   toggleStyleTestDrawer,
   toggleYourJobDrawer,
   toggleDISCDrawer,
-  toggleYourMajorsDrawer
+  toggleYourMajorsDrawer,
 } from '../../actions/app'
+import {
+  getCareerHistory,
+  getCareerTestList
+} from '../../actions/career'
 import {
   IconButton,
   Drawer,
@@ -24,6 +28,12 @@ import { connect } from 'react-redux'
 import YourJobs from "../job-list";
 import Test from './test'
 import $ from 'jquery'
+import { get } from "../../api";
+import { BUILD_YS_API, CurrentDate } from "../../constants/appSettings";
+import { objToQuery } from '../../utils/common'
+import moment from 'moment'
+import { CAREER_GUIDANCE_ACCESS_KEY, TEST_HISTORY } from "../../constants/localStorageKeys";
+import Iframe from 'react-iframe'
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const DISC = require('../../assets/icon/DISC@1x.png')
@@ -38,25 +48,40 @@ class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      linkview: null
     };
   }
-  componentWillMount() {
+
+  handleGetWebSourse() {
+    let {
+      careerHistory,
+      careerTestList
+    } = this.props
+    if (careerHistory) {
+
+    } else {
+      this.setState({
+        linkview: careerTestList.linkview + "&token=" + window.localStorage.getItem(CAREER_GUIDANCE_ACCESS_KEY) + "&output=embed"
+      })
+    }
+  }
+
+  componentDidMount() {
     this.props.addHeaderContent(renderHeader(this))
     this.props.toggleHeader(true)
     this.props.toggleFooter(false)
-  }
-  componentDidMount() {
-    let value = [5, 4, 3, 3]
-    let point1 = $("#style-table")
+    this.props.getCareerHistory()
+    this.props.getCareerTestList()
   }
   render() {
+    console.log("this.props", this.props)
     return (
       <div className="career-guidance-page" >
         <div className="career-guidance-banner" onClick={() => this.setState({ showScholarDrawer: true })}>
           <img src="https://huongnghiepsongan.com/wp-content/uploads/2020/07/marci-angeles-YCF18toz3ds-unsplash.jpg" />
         </div>
         <div className="btn-action">
-          <div className="item scholar-bt" onClick={() => this.setState({ showScholarDrawer: true })}>
+          <div className="item scholar-bt" onClick={() => this.setState({ showScholarDrawer: true }, () => this.handleGetWebSourse())}>
             <img src={scholarImg} />
               Học sinh
             </div>
@@ -88,7 +113,8 @@ class Index extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.app,
-    ...state.user
+    ...state.user,
+    ...state.career
   }
 };
 
@@ -99,7 +125,9 @@ const mapDispatchToProps = dispatch => ({
   toggleStyleTestDrawer: (isShow) => dispatch(toggleStyleTestDrawer(isShow)),
   toggleYourJobDrawer: (isShow) => dispatch(toggleYourJobDrawer(isShow)),
   toggleDISCDrawer: (isShow) => dispatch(toggleDISCDrawer(isShow)),
-  toggleYourMajorsDrawer: (isShow) => dispatch(toggleYourMajorsDrawer(isShow))
+  toggleYourMajorsDrawer: (isShow) => dispatch(toggleYourMajorsDrawer(isShow)),
+  getCareerHistory: () => dispatch(getCareerHistory()),
+  getCareerTestList: () => dispatch(getCareerTestList())
 });
 
 export default connect(
@@ -139,9 +167,9 @@ const renderScholarDrawer = (component) => {
             </div>
             <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{profile.fullName}</span>
+                <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.point}</span>
+                  <span>Điểm YOOT: {profile.mempoint}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -181,11 +209,10 @@ const renderScholarDrawer = (component) => {
   )
 }
 
-
-
 const renderStyleTestDrawer = (component) => {
   let {
-    isTestTing
+    isTestTing,
+    linkview
   } = component.state
   let {
     showStyleTestPage,
@@ -204,9 +231,9 @@ const renderStyleTestDrawer = (component) => {
             </div>
             <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{profile.fullName}</span>
+                <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.point}</span>
+                  <span>Điểm YOOT: {profile.mempoint}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -221,68 +248,77 @@ const renderStyleTestDrawer = (component) => {
               <Button onClick={() => component.props.toggleDISCDrawer(true)}><img src={DISC} /> Tìm hiểu DISC</Button>
             </div>
             {
-              isTestTing ? "" : <div className='result'>
-                <div className="title">
-                  <span>Kết quả:</span>
-                  <Button onClick={() => component.setState({ isTestTing: true })}>Trắc nghiệm lại</Button>
-                </div>
-                <div className="description">
-                  <span>- <b>Thuộc nhóm: </b> SCI</span>
-                  <span>- <b>Mô tả:</b> Cẩn thận, rụt rè, trầm lặng, tập trung, dễ bằng lòng, chú trọng chi tiết, mềm dẻo, thấu đáo, chính xác, điềm tĩnh, lô-gic, ngăn nắp và chính xác.</span>
-                  <span>- <b>Nhóm ngành nghề: </b>Chuyên gia, chăm sóc, tâm lý, tư vấn, giao tiếp 1-1, kiên nhẫn lắng nghe, trung thực và thương lượng.</span>
-                </div>
-                <table cellSpacing={"3px"}>
-                  <thead>
-                    <tr>
-                      <td></td>
-                      <td><b>1</b></td>
-                      <td><b>2</b></td>
-                      <td><b>3</b></td>
-                      <td><b>4</b></td>
-                      <td><b>5</b></td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th></th>
-                      <th className="red"><b>D</b></th>
-                      <th className="red"><b>I</b></th>
-                      <th className="red"><b>S</b></th>
-                      <th className="red"><b>C</b></th>
-                      <th></th>
-                    </tr>
-                    <tr>
-                      <td><b>MOST</b></td>
-                      <td>4</td>
-                      <td>6</td>
-                      <td>4</td>
-                      <td>7</td>
-                      <td>3</td>
-                    </tr>
-                    <tr>
-                      <td><b>LEAST</b></td>
-                      <td>6</td>
-                      <td>4</td>
-                      <td>3</td>
-                      <td>3</td>
-                      <td>8</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              linkview && linkview != "" ? <Iframe url={linkview}
+                // width="450px"
+                // height="450px"
+                id="myId"
+                className="myClassname"
+                display="initial"
+                position="relative" /> : ""
             }
+            <iframe src={linkview} />
             {
+              // isTestTing ? "" : <div className='result'>
+              //   <div className="title">
+              //     <span>Kết quả:</span>
+              //     <Button onClick={() => component.setState({ isTestTing: true })}>Trắc nghiệm lại</Button>
+              //   </div>
+              //   <div className="description">
+              //     <span>- <b>Thuộc nhóm: </b> SCI</span>
+              //     <span>- <b>Mô tả:</b> Cẩn thận, rụt rè, trầm lặng, tập trung, dễ bằng lòng, chú trọng chi tiết, mềm dẻo, thấu đáo, chính xác, điềm tĩnh, lô-gic, ngăn nắp và chính xác.</span>
+              //     <span>- <b>Nhóm ngành nghề: </b>Chuyên gia, chăm sóc, tâm lý, tư vấn, giao tiếp 1-1, kiên nhẫn lắng nghe, trung thực và thương lượng.</span>
+              //   </div>
+              //   <table cellSpacing={"3px"}>
+              //     <thead>
+              //       <tr>
+              //         <td></td>
+              //         <td><b>1</b></td>
+              //         <td><b>2</b></td>
+              //         <td><b>3</b></td>
+              //         <td><b>4</b></td>
+              //         <td><b>5</b></td>
+              //       </tr>
+              //     </thead>
+              //     <tbody>
+              //       <tr>
+              //         <th></th>
+              //         <th className="red"><b>D</b></th>
+              //         <th className="red"><b>I</b></th>
+              //         <th className="red"><b>S</b></th>
+              //         <th className="red"><b>C</b></th>
+              //         <th></th>
+              //       </tr>
+              //       <tr>
+              //         <td><b>MOST</b></td>
+              //         <td>4</td>
+              //         <td>6</td>
+              //         <td>4</td>
+              //         <td>7</td>
+              //         <td>3</td>
+              //       </tr>
+              //       <tr>
+              //         <td><b>LEAST</b></td>
+              //         <td>6</td>
+              //         <td>4</td>
+              //         <td>3</td>
+              //         <td>3</td>
+              //         <td>8</td>
+              //       </tr>
+              //     </tbody>
+              //   </table>
+              // </div>
+            }
+            {/* {
               isTestTing ? "" : <div className="chart">
                 <StyleChart />
-
               </div>
-            }
+            } */}
             {
               isTestTing ? "" : <Button className="your-job-bt" onClick={() => component.props.toggleYourJobDrawer(true)}>Công việc phù hợp</Button>
             }
-            {
+            {/* {
               isTestTing ? <Test /> : ""
-            }
+            } */}
             <div className="your-lesson">
               <label>Những bạn thuộc nhóm tính cách SCI thường học những khoá học sau đây:</label>
               <div className="skills-page" >
@@ -318,6 +354,7 @@ const renderDISCDrawer = (component) => {
     showDISCDrawer,
     profile
   } = component.props
+  console.log("profile", profile)
   return (
     <Drawer anchor="bottom" className="style-test-drawer" open={showDISCDrawer} onClose={() => component.props.toggleDISCDrawer(false)}>
       {
@@ -331,9 +368,9 @@ const renderDISCDrawer = (component) => {
             </div>
             <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{profile.fullName}</span>
+                <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.point}</span>
+                  <span>Điểm YOOT: {profile.mempoint}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -407,9 +444,9 @@ const renderYourJobDrawer = (component) => {
             </div>
             <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{profile.fullName}</span>
+                <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.point}</span>
+                  <span>Điểm YOOT: {profile.mempoint}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -450,7 +487,6 @@ const renderYourJobDrawer = (component) => {
   )
 }
 
-
 const renderYourMajorsDrawer = (component) => {
   let {
     showYourMajorsPage,
@@ -469,9 +505,9 @@ const renderYourMajorsDrawer = (component) => {
             </div>
             <div className="user-reward">
               <div className="profile">
-                <span className="user-name">{profile.fullName}</span>
+                <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.point}</span>
+                  <span>Điểm YOOT: {profile.mempoint}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">

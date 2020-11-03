@@ -9,13 +9,13 @@ import {
 import {
   setSkillNoti,
   readNoti,
-  getSkillNoti
+  getSkillNoti,
+  setSkillUnreadNotiCount
 } from '../../actions/noti'
 import { connect } from 'react-redux'
 import {
   IconButton,
-  Avatar,
-  Button
+  Badge
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon
@@ -118,13 +118,28 @@ class Index extends React.Component {
       }
     })
   }
+  getUnreadNoti() {
+    get(SOCIAL_NET_WORK_API, "Notification/CountNotificationNoRead?typeproject=2", result => {
+      if (result && result.result == 1) {
+        this.props.setSkillUnreadNotiCount(result.content.noUnRead)
+        this.props.addFooterContent(renderFooter(this))
+      }
+    })
+  }
+
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount)
+      this.props.addFooterContent(renderFooter(this))
+  }
 
   componentDidMount() {
     this.props.addHeaderContent(renderHeader(this))
-    this.props.addFooterContent(renderFooter(this.props.history))
+    this.props.addFooterContent(renderFooter(this))
     this.props.toggleHeader(true)
     this.props.toggleFooter(true)
     this.props.getSkillNoti()
+    this.getUnreadNoti()
     document.addEventListener("scroll", () => {
       let element = $("html")
       let {
@@ -149,7 +164,6 @@ class Index extends React.Component {
     let {
       skillNoties
     } = this.props
-    console.log("worldNoties", skillNoties)
     return (
       <div className="skills-noti community-page groups-page" >
         <ul>
@@ -182,7 +196,8 @@ const mapDispatchToProps = dispatch => ({
   toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
   setSkillNoti: (noties) => dispatch(setSkillNoti(noties)),
   readNoti: (notiId) => dispatch(readNoti(notiId)),
-  getSkillNoti: () => dispatch(getSkillNoti())
+  getSkillNoti: () => dispatch(getSkillNoti()),
+  setSkillUnreadNotiCount: (number) => dispatch(setSkillUnreadNotiCount(number))
 });
 
 export default connect(
@@ -200,16 +215,23 @@ const renderHeader = (component) => {
     </div>
   )
 }
-const renderFooter = (history) => {
+const renderFooter = (component) => {
+  let {
+    skillNotiUnreadCount
+  } = component.props
   return (
     <div className="app-footer">
       <ul>
-        <li onClick={() => history.push('/skills')}>
+        <li onClick={() => component.props.history.push('/skills')}>
           <img src={Newfeed}></img>
           <span >Danh sách</span>
         </li>
         <li>
-          <img src={noti}></img>
+          {
+            skillNotiUnreadCount > 0 ? <Badge badgeContent={skillNotiUnreadCount} max={99} className={"custom-badge"} >
+              <img src={noti}></img>
+            </Badge> : <img src={noti}></img>
+          }
           <span style={{ color: "#f54746" }}>Thông báo</span>
         </li>
       </ul>

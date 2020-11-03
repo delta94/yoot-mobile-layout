@@ -8,7 +8,8 @@ import {
 } from '../../actions/app'
 import {
   setWorldNoti,
-  readNoti
+  readNoti,
+  setUnreadNotiCount
 } from '../../actions/noti'
 import Noti from './noti'
 import { connect } from 'react-redux'
@@ -134,7 +135,10 @@ class Index extends React.Component {
     })
   }
 
-
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.woldNotiUnreadCount != this.props.woldNotiUnreadCount || nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount)
+      this.props.addFooterContent(renderFooter(this))
+  }
 
   componentDidMount() {
     this.props.addHeaderContent(renderHeader(this))
@@ -142,6 +146,7 @@ class Index extends React.Component {
     this.props.toggleHeader(true)
     this.props.toggleFooter(true)
     this.hanldeGetCommunityNoti(0)
+
     document.addEventListener("scroll", () => {
       let element = $("html")
       let {
@@ -166,6 +171,9 @@ class Index extends React.Component {
     let {
       worldNoties
     } = this.props
+
+    console.log("state.noti", this.props.noti)
+
     return (
       <div className="community-page groups-page" >
         <ul>
@@ -203,7 +211,8 @@ const mapDispatchToProps = dispatch => ({
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
   toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
   setWorldNoti: (noties) => dispatch(setWorldNoti(noties)),
-  readNoti: (notiId) => dispatch(readNoti(notiId))
+  readNoti: (notiId) => dispatch(readNoti(notiId)),
+  setUnreadNotiCount: (number) => dispatch(setUnreadNotiCount(number)),
 });
 
 export default connect(

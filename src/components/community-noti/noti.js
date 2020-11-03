@@ -18,6 +18,9 @@ import {
 import {
   get
 } from '../../api'
+import {
+  setUnreadNotiCount
+} from '../../actions/noti'
 import moment from 'moment'
 import { fromNow, objToQuery } from "../../utils/common";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
@@ -109,6 +112,7 @@ class Index extends React.Component {
 
 
   componentWillMount() {
+
   }
   render() {
     let {
@@ -190,7 +194,7 @@ const renderType1 = (component) => {
           <Button className="bt-submit" onClick={() => component.acceptFriend(data.idusersend)}>Chấp nhận</Button>
           <Button className="bt-cancel" onClick={() => component.props.deleteNoti(data.notificationid)}>Từ chối</Button>
         </div>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -209,7 +213,7 @@ const renderType2 = (component) => {
 
         }}>
         </pre>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -230,7 +234,7 @@ const renderType3 = (component) => {
         }}>
 
         </pre>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -251,7 +255,7 @@ const renderType4 = (component) => {
         }}>
 
         </pre>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -271,7 +275,7 @@ const renderType5 = (component) => {
         }}>
 
         </pre>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -295,7 +299,7 @@ const renderType8 = (component) => {
           <Button className="bt-submit" onClick={() => component.acceptInviteGroup(data)}>Chấp nhận</Button>
           <Button className="bt-cancel" onClick={() => component.refuseInviteGroup(data)}>Từ chối</Button>
         </div>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -319,7 +323,7 @@ const renderType9 = (component) => {
           <Button className="bt-submit" onClick={() => component.acceptUserToGroup(data)}>Chấp nhận</Button>
           <Button className="bt-cancel" onClick={() => component.refuseUserToGroup(data)}>Từ chối</Button>
         </div>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -342,7 +346,7 @@ const renderType34 = (component) => {
           <Button className="bt-submit" onClick={() => component.acceptInviteAdminGroup(data)}>Chấp nhận</Button>
           <Button className="bt-cancel" onClick={() => component.refuseInviteAdminGroup(data)}>Từ chối</Button>
         </div>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -364,7 +368,7 @@ const renderType35 = (component) => {
         }}>
 
         </pre>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )
@@ -385,7 +389,7 @@ const renderType36 = (component) => {
         }}>
 
         </pre>
-        <span className="time">{moment(data.createdate).format("DD/MM/YYYY HH:mm")} <FiberManualRecordIcon /> {fromNow(moment(data.createdate), moment(new Date))}</span>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
       </div>
     </div>
   )

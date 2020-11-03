@@ -303,6 +303,7 @@ class Index extends React.Component {
                   }}
                   value={loginPhoneNumber}
                   onChange={e => this.setState({ loginPhoneNumber: e.target.value.length < 11 ? e.target.value : loginPhoneNumber })}
+                  onKeyUp={e => e.key == 'Enter' ? $(e.target).blur() : ""}
                 />
                 <TextField
                   className="custom-input"
@@ -314,6 +315,7 @@ class Index extends React.Component {
                   value={loginPassword}
                   type={isShowLoginPass ? "text" : "password"}
                   onChange={e => this.setState({ loginPassword: e.target.value })}
+                  onKeyUp={e => e.key == 'Enter' ? $(e.target).blur() : ""}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -335,7 +337,7 @@ class Index extends React.Component {
                     />
                   </div>
                 </div>
-                <Button variant="contained" className={"bt-submit"} onClick={() => this.login()}>Đăng nhập</Button>
+                <Button variant="contained" className={"bt-submit height35"} onClick={() => this.login()}>Đăng nhập</Button>
               </div>
             </TabPanel>
             <TabPanel value={value} index={1} >
@@ -468,7 +470,7 @@ class Index extends React.Component {
                     />
                     <label>Điều khoản sử dụng</label>
                   </div>
-                  <Button variant="contained" className={"bt-submit"} onClick={() => this.register()}>Đăng ký</Button>
+                  <Button variant="contained" className={"bt-submit height35 mt20"} onClick={() => this.register()}>Đăng ký</Button>
 
                 </div>
               </div>

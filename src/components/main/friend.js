@@ -59,7 +59,10 @@ class Index extends React.Component {
             friends: [],
             searchKey: "",
             isLoadMore: false,
-            allUsers: []
+            allUsers: [],
+            queueCount: 0,
+            friendCount: 0,
+            waitingCount: 0
         };
     }
 
@@ -93,6 +96,13 @@ class Index extends React.Component {
                         isEndOfFriends: true
                     })
                 }
+            }
+        })
+        get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + objToQuery(param), result => {
+            if (result && result.result == 1) {
+                this.setState({
+                    friendCount: result.content.count,
+                })
             }
         })
     }
@@ -160,6 +170,13 @@ class Index extends React.Component {
                 }
             }
         })
+        get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + objToQuery(param), result => {
+            if (result && result.result == 1) {
+                this.setState({
+                    queueCount: result.content.count,
+                })
+            }
+        })
     }
 
     getWaiting(userId, currentpage) {
@@ -191,6 +208,14 @@ class Index extends React.Component {
                         isEndOfWaitings: true
                     })
                 }
+            }
+        })
+
+        get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + objToQuery(param), result => {
+            if (result.result == 1) {
+                this.setState({
+                    waitingCount: result.content.count,
+                })
             }
         })
     }
@@ -254,8 +279,6 @@ class Index extends React.Component {
             }
     }
 
-
-
     addFriend(friendId) {
         let {
             suggestFriends,
@@ -281,6 +304,7 @@ class Index extends React.Component {
             }
         })
     }
+
     removeSuggest(friendId) {
         let {
             suggestFriends
@@ -465,6 +489,9 @@ class Index extends React.Component {
             queues,
             waitings,
             isLoadMore,
+            queueCount,
+            friendCount,
+            waitingCount
         } = this.state
         let {
             userDetail,
@@ -564,6 +591,10 @@ class Index extends React.Component {
                                 </TabPanel>
                                 <TabPanel value={friendTabIndex} index={1} >
                                     <div className="friend-list" >
+                                        <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                            <span>Số lượng</span>
+                                            <span className="red">{queueCount}</span>
+                                        </div>
                                         {
                                             queues && queues.length > 0 ? <ul>
                                                 {
@@ -582,7 +613,7 @@ class Index extends React.Component {
                                                                 this.props.toggleUserPageDrawer(true)
                                                             }}>{item.friendname}</label>
                                                             <div className="action">
-                                                                <Button className="bt-submit" onClick={() => this.acceptFriend(item)}>Đồng ý</Button>
+                                                                <Button className="bt-submit" onClick={() => this.acceptFriend(item)}>Chấp nhận</Button>
                                                                 <Button className="bt-cancel">Từ chối</Button>
                                                             </div>
                                                         </div>
@@ -593,6 +624,10 @@ class Index extends React.Component {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value={friendTabIndex} index={2} className="content-box">
+                                    <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                        <span>Số lượng</span>
+                                        <span className="red">{waitingCount}</span>
+                                    </div>
                                     <div className="friend-list" >
                                         {
                                             waitings && waitings.length > 0 ? <ul>
@@ -617,7 +652,7 @@ class Index extends React.Component {
                                                                     confirmTitle: "",
                                                                     confirmMessage: "Bạn có chắc chắn muốn huỷ yêu cầu kết bạn này không?",
                                                                     showConfim: true
-                                                                })} >Huỷ yêu cầu</Button>
+                                                                })} >Huỷ</Button>
                                                             </div>
                                                         </div>
                                                     </li>)
@@ -629,6 +664,10 @@ class Index extends React.Component {
                                 <TabPanel value={friendTabIndex} index={3} >
                                     {
                                         friends && friends.length > 0 ? <div className="friend-list" >
+                                            <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                                <span>Số lượng</span>
+                                                <span className="red">{friendCount}</span>
+                                            </div>
                                             <ul>
                                                 {
                                                     friends.map((item, index) => <li key={index} className="friend-layout">
@@ -651,7 +690,7 @@ class Index extends React.Component {
                                                                     confirmTitle: "",
                                                                     confirmMessage: "Bạn có chắc chắn muốn xoá người này khỏi danh sách bạn bè không?",
                                                                     showConfim: true
-                                                                })}>Xoá bạn</Button>
+                                                                })}>Huỷ bạn</Button>
                                                                 {
                                                                     item.ismefollow == 1 ? <Button className="bt-cancel" onClick={() => this.setState({
                                                                         okCallback: () => this.unFolowFriend(item.friendid),

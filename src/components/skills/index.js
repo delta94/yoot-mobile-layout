@@ -7,11 +7,13 @@ import {
   toggleFooter,
 } from '../../actions/app'
 import {
-  setSkillNoti
+  setSkillNoti,
+  setSkillUnreadNotiCount
 } from '../../actions/noti'
 import { connect } from 'react-redux'
 import {
-  IconButton
+  IconButton,
+  Badge
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon
@@ -19,7 +21,7 @@ import {
 import {
   get
 } from '../../api'
-import { SCHOOL_API } from "../../constants/appSettings";
+import { SCHOOL_API, SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const Newfeed = require('../../assets/icon/Newfeed@1x.png')
@@ -42,6 +44,21 @@ class Index extends React.Component {
     })
   }
 
+  getUnreadNoti() {
+    get(SOCIAL_NET_WORK_API, "Notification/CountNotificationNoRead?typeproject=2", result => {
+
+      if (result && result.result == 1) {
+        this.props.setSkillUnreadNotiCount(result.content.noUnRead)
+        this.props.addFooterContent(renderFooter(this))
+      }
+    })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount)
+      this.props.addFooterContent(renderFooter(this))
+  }
+
   componentWillMount() {
     this.props.addHeaderContent(renderHeader(this))
     this.props.addFooterContent(renderFooter(this))
@@ -50,6 +67,7 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
+    this.getUnreadNoti()
     this.getAllSource()
   }
   render() {
@@ -57,7 +75,6 @@ class Index extends React.Component {
       allSource
     } = this.state
 
-    console.log("allSource", allSource[0] ? allSource[0].IMAGE : "")
     return (
       <div className="skills-page" >
         {
@@ -85,6 +102,7 @@ class Index extends React.Component {
 const mapStateToProps = state => {
   return {
     ...state.app,
+    ...state.noti
   }
 };
 
@@ -94,6 +112,7 @@ const mapDispatchToProps = dispatch => ({
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
   toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
   setSkillNoti: (noties) => dispatch(setSkillNoti(noties)),
+  setSkillUnreadNotiCount: (number) => dispatch(setSkillUnreadNotiCount(number))
 });
 
 export default connect(
@@ -112,6 +131,9 @@ const renderHeader = (component) => {
   )
 }
 const renderFooter = (component) => {
+  let {
+    skillNotiUnreadCount
+  } = component.props
   return (
     <div className="app-footer">
       <ul>
@@ -120,25 +142,14 @@ const renderFooter = (component) => {
           <span style={{ color: "#f54746" }}>Danh sách</span>
         </li>
         <li onClick={() => component.props.history.push('/skills-noti')}>
-          <img src={noti}></img>
+          {
+            skillNotiUnreadCount > 0 ? <Badge badgeContent={skillNotiUnreadCount} max={99} className={"custom-badge"} >
+              <img src={noti}></img>
+            </Badge> : <img src={noti}></img>
+          }
           <span >Thông báo</span>
         </li>
       </ul>
     </div>
   )
 }
-
-const sources = [
-  {
-    name: "Nghệ thuật Diễn Thuyết Truyền Cảm Hứng",
-    background: "https://andrews.edu.vn/wp-content/uploads/Prensention_mbaandrews.jpg",
-    documentsCount: 1,
-    lessonCount: 10
-  },
-  {
-    name: "Kỹ năng giao tiếp hiệu quả",
-    background: "https://www.sprc.org/sites/default/files/styles/featured_image_large/public/SPRC_EllyStout_DirCorner_Cropped_node_6.jpg?itok=aqVkwAEq",
-    documentsCount: 1,
-    lessonCount: 10
-  }
-]

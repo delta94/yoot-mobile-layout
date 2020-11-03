@@ -45,6 +45,7 @@ import { SOCIAL_NET_WORK_API, CurrentDate } from '../../constants/appSettings';
 import { showInfo } from '../../utils/app';
 import Loader from '../common/loader'
 import moment from 'moment'
+import ShowMoreText from 'react-show-more-text';
 
 const uploadImage = require('../../assets/icon/upload_image.png')
 const uploadVideo = require('../../assets/icon/upload_video.png')
@@ -79,7 +80,8 @@ export class Index extends React.Component {
             searchKey: "",
             friends: [],
             isChange: false,
-            albums: []
+            albums: [],
+            searchKey: ""
         };
         this.imageDrop = React.createRef()
     }
@@ -167,22 +169,15 @@ export class Index extends React.Component {
                 postedImage: []
             })
             acceptedFiles.map((video, index) => {
-                var fr = new FileReader;
-                fr.onload = function () {
-
-                    var dataUrl = fr.result;
-                    var videoId = "videoMain-" + index;
-                    var $videoEl = $('<video id="' + videoId + '"></video>');
-                    $("body").append($videoEl);
-                    $videoEl.attr('src', dataUrl);
-
-                    var videoTagRef = $videoEl[0];
-                    videoTagRef.addEventListener('loadedmetadata', function (e) {
-                        videoSelected = videoSelected.concat({ file: video, width: videoTagRef.videoWidth, height: videoTagRef.videoHeight, backgroundSelected: null })
-                        that.setState({ videoSelected: videoSelected, isBackgroundSelect: false, isChange: true })
-                    });
+                var videoId = "videoMain-" + index;
+                var $videoEl = $('<video id="' + videoId + '"></video>');
+                $("body").append($videoEl);
+                $videoEl.attr('src', URL.createObjectURL(video));
+                var videoTagRef = $videoEl[0];
+                videoTagRef.onloadedmetadata = function () {
+                    videoSelected = videoSelected.concat({ file: video, width: $(this)[0].clientWidth, height: $(this)[0].clientHeight })
+                    that.setState({ videoSelected: videoSelected, isBackgroundSelect: false, isChange: true, backgroundSelected: null })
                 };
-                fr.readAsDataURL(video);
             })
         }
     }
@@ -319,22 +314,28 @@ export class Index extends React.Component {
         let param = {
             currentpage: currentpage,
             currentdate: moment(new Date).format(CurrentDate),
-            limit: 30,
+            limit: 200,
             skin: "Join",
+            findstring: this.state.searchKey
         }
+        let {
+            joinedGroups
+        } = this.props
         this.setState({
             isLoadMoreGroup: true
         })
         get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + objToQuery(param), result => {
             if (result && result.result == 1) {
-                this.props.setJoinedGroup(result.content.groupUsers)
-                this.setState({
-                    isLoadMoreGroup: false
-                })
+                joinedGroups = result.content.groupUsers
+                this.props.setJoinedGroup(joinedGroups, result.content.numGroupJoin)
+
                 if (result.content.groupUsers.length == 0) {
-                    this.setState({ isEndOfJoinedGroup: true, isLoadMoreGroup: false })
+                    this.setState({ isEndOfJoinedGroup: true })
                 }
             }
+            this.setState({
+                isLoadMoreGroup: false
+            })
         })
     }
 
@@ -355,7 +356,8 @@ export class Index extends React.Component {
         } = this.state
         let {
             albumSelected,
-            profile
+            profile,
+            currentGroup
         } = this.props
         if (isPosting == true) return
         this.setState({
@@ -365,7 +367,10 @@ export class Index extends React.Component {
         let data = new FormData
 
         data.append("content", postContent)
-        data.append("postfor", privacySelected.code.toString())
+        if (currentGroup)
+            data.append("postfor", GroupPrivacies[currentGroup.typegroupname].code.toString())
+        else
+            data.append("postfor", privacySelected.code.toString())
         data.append("postshareid", '0')
         if (/^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?./gm.test(postContent)) {
             data.append("isvideo", '1')
@@ -438,9 +443,10 @@ export class Index extends React.Component {
             endPoint = "PostNewsFeed/EditNewsFeed"
         }
         postFormData(SOCIAL_NET_WORK_API, endPoint, data, result => {
-            if (result.result == 1) {
+            if (result && result.result == 1) {
                 if (nfid > 0) {
-                    this.props.updatePosted({ ...result.content.newsFeeds, isPendding: true }, profile.id)
+                    console.log("result.content.newsFeeds", result.content.newsFeeds)
+                    this.props.updatePosted({ ...result.content.newsFeeds, isPendding: false }, profile.id)
                 } else {
                     this.props.createPostSuccess({ ...result.content.newsFeeds, isPendding: true }, profile.id)
                 }
@@ -558,7 +564,6 @@ export class Index extends React.Component {
     componentDidMount() {
         this.getFriends(0)
         this.getAlbum(0, 0)
-        this.getJoinedGroup(0)
     }
 
     render() {
@@ -646,7 +651,6 @@ const renderPostDrawer = (component) => {
         currentGroup
     } = component.props
 
-    console.log("postedVideo", postedVideo)
 
     return (
         <div>
@@ -663,9 +667,19 @@ const renderPostDrawer = (component) => {
                     </div>
                     <div className="filter">
                         {
-                            isPostToGroup ? <div className="group-select-options" onClick={() => component.setState({ showGroupForPostDrawer: true })}>
+                            isPostToGroup ? <div className="group-select-options" onClick={() => component.setState({ showGroupForPostDrawer: true }, () => component.getJoinedGroup(0))}>
                                 {
-                                    currentGroup ? <span>{currentGroup.groupname}</span> : <span>Chọn nhóm</span>
+                                    currentGroup
+                                        ?
+                                        <ShowMoreText
+                                            lines={1}
+                                            more=""
+                                            less=""
+                                        >
+                                            <span>{currentGroup.groupname}</span>
+                                        </ShowMoreText>
+
+                                        : <span>Chọn nhóm</span>
                                 }
                                 <ExpandMoreIcon />
                             </div> : ""
@@ -729,19 +743,34 @@ const renderPostDrawer = (component) => {
                             value={postContent}
                         />
 
-                        <div className={"post-role " + (backgroundSelected && backgroundSelected.id != 0 ? "have-background" : "")}>
-                            {
-                                albumSelected ? <span className="bt-sumbit" >
-                                    <img src={album} />
-                                    <span>{albumSelected.albumname}</span>
-                                    <IconButton onClick={() => component.props.selectAlbumToPost(null)}><CloseIcon /></IconButton>
-                                </span> : ""
-                            }
-                            <span className="bt-sumbit" onClick={() => component.setState({ showPostPrivacySelectOption: true })}>
-                                <img src={privacySelected.icon} />
-                                <span>{privacySelected.label}</span>
-                            </span>
-                        </div>
+                        {
+                            currentGroup ? <div className={"post-role " + (backgroundSelected && backgroundSelected.id != 0 ? "have-background" : "")}>
+                                {
+                                    albumSelected ? <span className="bt-sumbit" >
+                                        <img src={album} />
+                                        <span>{albumSelected.albumname}</span>
+                                        <IconButton onClick={() => component.props.selectAlbumToPost(null)}><CloseIcon /></IconButton>
+                                    </span> : ""
+                                }
+                                <span className="bt-sumbit" >
+                                    <img src={GroupPrivacies[currentGroup.typegroupname].icon} />
+                                    <span>{GroupPrivacies[currentGroup.typegroupname].label}</span>
+                                </span>
+                            </div>
+                                : <div className={"post-role " + (backgroundSelected && backgroundSelected.id != 0 ? "have-background" : "")}>
+                                    {
+                                        albumSelected ? <span className="bt-sumbit" >
+                                            <img src={album} />
+                                            <span>{albumSelected.albumname}</span>
+                                            <IconButton onClick={() => component.props.selectAlbumToPost(null)}><CloseIcon /></IconButton>
+                                        </span> : ""
+                                    }
+                                    <span className="bt-sumbit" onClick={() => component.setState({ showPostPrivacySelectOption: true })}>
+                                        <img src={privacySelected.icon} />
+                                        <span>{privacySelected.label}</span>
+                                    </span>
+                                </div>
+                        }
                         {
                             tagedFrieds && tagedFrieds.length > 0 ? <div className="tags-selected">
                                 <ul>
@@ -842,7 +871,7 @@ const renderPostPrivacyMenuDrawer = (component) => {
                 <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showPostPrivacySelectOption: false })}>
                     <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
                 </IconButton>
-                <label>Tác vụ</label>
+                <label>Quyền riêng tư</label>
             </div>
             <ul className="option-list">
                 {
@@ -922,7 +951,7 @@ const renderTagFriendDrawer = (component) => {
                         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                             <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
                         </IconButton>
-                        <label>Gắn thẻ bạn bè</label>
+                        <label>Gắn thẻ</label>
                     </div>
                     <Button onClick={() => component.setState({ showTagFriendDrawer: false })}>Xong</Button>
                 </div>
@@ -988,6 +1017,7 @@ const renderTagFriendDrawer = (component) => {
 const renderGroupForPostDrawer = (component) => {
     let {
         showGroupForPostDrawer,
+        isLoadMoreGroup
     } = component.state
     let {
         joinedGroups
@@ -1022,16 +1052,26 @@ const renderGroupForPostDrawer = (component) => {
                                 </InputAdornment>
                             ),
                         }}
+                        onChange={e => component.setState({
+                            searchKey: e.target.value
+                        }, () => {
+                            component.getJoinedGroup(0)
+                        })}
                     />
                 </div>
                 <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
+                    {
+                        isLoadMoreGroup ? <div style={{ height: "50px" }}>
+                            <Loader type="small" style={{ background: "#fff" }} width={30} height={30}></Loader>
+                        </div> : ""
+                    }
                     <div className="my-group-list">
                         {
                             joinedGroups && joinedGroups.length > 0 ? <ul>
                                 {
                                     joinedGroups.map((group, index) => <li key={index} onClick={() => component.setState({ showGroupForPostDrawer: false }, () => component.props.setCurrentGroup(group))}>
                                         <Avatar className="avatar">
-                                            <img src={group.thumbnail} />
+                                            <div className="img" style={{ background: `url("${group.thumbnail}")` }} />
                                         </Avatar>
                                         <div className="group-info">
                                             <label>{group.groupname}</label>

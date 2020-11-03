@@ -34,10 +34,12 @@ import SwipeableViews from 'react-swipeable-views';
 import Dropzone from 'react-dropzone'
 import { get, post, postFormData } from "../../api";
 import { SCHOOL_API } from "../../constants/appSettings";
+import { RatingList } from '../../constants/constants'
 import { Player, ControlBar, BigPlayButton } from 'video-react';
-import { objToQuery, getFileSize, showNotification } from '../../utils/common'
+import { objToQuery, getFileSize, showNotification, jsonFromUrlParams, fromNow } from '../../utils/common'
 import Loader from '../common/loader'
 import $ from 'jquery'
+import moment from 'moment'
 
 const practice1 = require('../../assets/icon/practice1.png')
 const evaluate = require('../../assets/icon/evaluate.png')
@@ -185,10 +187,9 @@ class Index extends React.Component {
       })
       postFormData(SCHOOL_API, "Course/UploadVideoFolderFileIIS", formData, (result) => {
         if (result && result.StatusCode == 1) {
-          console.log("result", result)
           showNotification(
-            <span style={{ display: "block", width: "60%", fontFamily: "Roboto-Regular", fontSize: "1.1rem", margin: "0px auto 20px" }}>Chúc mừng bạn đã nộp bài thực hành thành công.</span>,
-            `Bài của bạn được gửi cho ${result.Data.memberRandom.NAME} chấm. Vui lòng vào lịch sử làm bài để theo dõi nhé.`
+            <span style={{ display: "block", width: "60%", fontSize: "1rem", margin: "0px auto 20px", fontFamily: "Roboto-Medium", color: "#444" }}>Chúc mừng bạn đã nộp bài thực hành thành công.</span>,
+            <span style={{ display: "block", width: "100%", fontSize: "1rem", margin: "0px auto 20px", fontFamily: "Roboto-Medium", color: "#444" }}>{`Bài của bạn được gửi cho ${result.Data.memberRandom.NAME} chấm.`}<br />Vui lòng vào lịch sử làm bài để theo dõi nhé.</span>
           )
           this.setState({
             inProccessing: false,
@@ -220,14 +221,13 @@ class Index extends React.Component {
     }
     get(SCHOOL_API, "Course/changeReviewer" + objToQuery(param), result => {
       if (result && result.StatusCode == 1)
-        console.log("result", result)
-      this.setState({
-        showAddAssessDrawer: false,
-        currentHomeWorkVideo: null
-      }, () => {
-        this.handleInit()
-        showNotification("", `Bạn đã mời ${result.Data.memberRandom.NAME} đánh giá lại thành công.`)
-      })
+        this.setState({
+          showAddAssessDrawer: false,
+          currentHomeWorkVideo: null
+        }, () => {
+          this.handleInit()
+          showNotification("", `Bạn đã mời ${result.Data.memberRandom.NAME} đánh giá lại thành công.`)
+        })
 
     })
   }
@@ -255,7 +255,6 @@ class Index extends React.Component {
       okCallback: () => this.setState({ showConfim: false }, () => {
         get(SCHOOL_API, "Course/deleteVideo?id=" + videoId, (result) => {
           if (result && result.StatusCode == 1) {
-            showNotification("", `Xoá bài thành công.`)
             this.handleInit()
           }
         })
@@ -274,6 +273,12 @@ class Index extends React.Component {
     this.props.toggleHeader(true)
     this.props.toggleFooter(true)
     this.handleInit()
+    let searchParam = jsonFromUrlParams(window.location.search)
+    if (searchParam.tabIndex) {
+      this.setState({
+        tabIndex: parseInt(searchParam.tabIndex)
+      })
+    }
   }
   render() {
     let {
@@ -287,7 +292,8 @@ class Index extends React.Component {
       reviewers
     } = this.state
 
-    console.log("exercises", homeworks)
+    console.log("homeworks", homeworks)
+
 
     return (
       <div className="exercise-item-page" >
@@ -313,8 +319,8 @@ class Index extends React.Component {
                         aria-label="full width tabs example"
                         className="tab-header"
                       >
-                        <Tab label="Bài tập" {...a11yProps(0)} className="tab-item" />
-                        <Tab label="Lịch sử làm bài" {...a11yProps(1)} className="tab-item" />
+                        <Tab label="Thực hành" {...a11yProps(0)} className="tab-item" />
+                        <Tab label="Lịch sử thực hành" {...a11yProps(1)} className="tab-item" />
                       </Tabs>
                     </AppBar>
                   </div>
@@ -479,11 +485,27 @@ class Index extends React.Component {
                                     <Avatar className="avatar">
                                       <div className="img" style={{ background: `url("${comment.AVATAR}")` }} />
                                     </Avatar>
-                                    <span className="name">{comment.NAMEMEM}</span>
+                                    <div>
+                                      <span className="name">{comment.NAMEMEM}</span>
+                                      {
+                                        comment.STATUS == 1 ? <span className="date">{fromNow(moment(comment.Review_time), moment(new Date))}</span> : ""
+                                      }
+                                    </div>
                                   </div>
-                                  <div className="status">Chờ đánh giá</div>
+                                  {
+                                    comment.STATUS == 1 ? <div className="point" style={{ background: RatingList[comment.STARROW - 1].color }}>
+                                      <span>{`${comment.STARROW}/10 Điểm`}</span>
+                                    </div> : <div className="status">Chờ đánh giá</div>
+                                  }
                                 </div>
-                                <IconButton className='noti-ring' onClick={() => this.handleRemindReviewer(comment)}><NotificationsActiveIcon /></IconButton>
+                                {
+                                  comment.STATUS == 1 ? <pre className="comment">
+                                    {
+                                      comment.COMMENT
+                                    }
+                                  </pre> : <IconButton className='noti-ring' onClick={() => this.handleRemindReviewer(comment)}><NotificationsActiveIcon /></IconButton>
+                                }
+
                               </div>
                               )
                             }
@@ -600,16 +622,16 @@ const renderAddAssessDrawer = (component) => {
 
   return (
     <Drawer anchor="bottom" className="add-assess-drawer" open={showAddAssessDrawer} onClose={() => component.setState({ showAddAssessDrawer: false, currentHomeWorkVideo: null })}>
-      <div className="drawer-detail">
+      <div className="drawer-detail" style={{ height: '70vh', overflowX: "hidden" }}>
         <div className="drawer-header">
           <div className="direction" onClick={() => component.setState({ showAddAssessDrawer: false, currentHomeWorkVideo: null })}>
-            <label>Thêm người chấm bài</label>
+            <label>Chọn người chấm bài</label>
             <IconButton style={{ padding: "8px" }} >
               <CancelIcon style={{ width: "25px", height: "25px" }} />
             </IconButton>
           </div>
         </div>
-        <div className="drawer-content" style={{ overflow: "scroll" }}>
+        <div className="drawer-content" style={{ overflow: "scroll", overflowX: "hidden" }}>
           {
             reviewers && reviewers.length > 0 ? <ul className="assess-list">
               {
@@ -618,7 +640,7 @@ const renderAddAssessDrawer = (component) => {
                     <Avatar className="avatar"><img src={reviewer.AVATAR} /></Avatar>
                     <span>{reviewer.NAME}</span>
                   </div>
-                  <Button className="bt-submit" onClick={() => component.handleChangeReviewer(currentHomeWorkVideo.ID, reviewer)}>Thêm</Button>
+                  <Button className="bt-submit" onClick={() => component.handleChangeReviewer(currentHomeWorkVideo.ID, reviewer)}>Chọn</Button>
                 </li>)
               }
             </ul> : <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div>

@@ -60,6 +60,7 @@ class Index extends React.Component {
             searchKey: "",
             isLoadMore: false
         };
+        this.searchInput = React.createRef()
     }
 
 
@@ -268,10 +269,10 @@ class Index extends React.Component {
                 isLoadMore
             } = this.state
             let {
-                userDetail
+                currentFriendId
             } = this.props
             if (isLoadMore == false) {
-                this.getAllUsers(userDetail.id, 0)
+                this.getAllUsers(currentFriendId, 0)
             }
         })
 
@@ -280,6 +281,9 @@ class Index extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (this.props.currentFriendId != nextProps.currentFriendId) {
             this.getAllUsers(nextProps.currentFriendId, 0)
+        }
+        if (nextProps.showSearchFriendDrawer != this.props.showSearchFriendDrawer && nextProps.showSearchFriendDrawer != false) {
+            console.log("this.searchInput", this.searchInput.current)
         }
     }
 
@@ -309,6 +313,8 @@ class Index extends React.Component {
                     </div>
                     <div className="filter">
                         <TextField
+                            inputRef={this.searchInput}
+                            autoFocus={true}
                             className="custom-input"
                             variant="outlined"
                             placeholder="Nhập tên bạn bè để tìm kiếm"
@@ -318,6 +324,7 @@ class Index extends React.Component {
                                 margin: "0px 0px 10px 10px",
                             }}
                             onChange={e => this.handleChangeSearchKey(e)}
+                            onKeyUp={e => e.key == 'Enter' ? $(e.target).blur() : ""}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -341,7 +348,9 @@ class Index extends React.Component {
                                             </Avatar>
                                             <label>
                                                 <span className="name">{item.friendname}</span>
-                                                <span className="with-friend">{item.numfriendwith} bạn chung</span>
+                                                {
+                                                    item.numfriendwith > 0 ? <span className="with-friend">{item.numfriendwith} bạn chung</span> : ""
+                                                }
                                             </label>
                                         </div>
                                         <div className="action">
