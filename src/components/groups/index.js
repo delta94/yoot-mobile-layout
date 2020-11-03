@@ -577,6 +577,7 @@ const mapStateToProps = state => {
     ...state.noti,
     ...state.group
   }
+
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -660,6 +661,7 @@ const renderSearchGroupDrawer = (component) => {
   } = component.state
 
 
+
   return (
     <Drawer anchor="bottom" className="tag-friend-drawer" open={showSearchGroupDrawer} onClose={() => component.setState({ showSearchGroupDrawer: false })}>
       <div className="drawer-detail">
@@ -692,11 +694,16 @@ const renderSearchGroupDrawer = (component) => {
             }}
           />
         </div>
+
         <div className="drawer-content" id="search-groups-box" style={{ overflow: "scroll", width: "100vw" }} onScroll={() => component.onSearchGroupScroll()}>
           <div className="my-group-list">
             <ul>
+
               {
-                groups.map((group, index) => <li key={index} onClick={() => component.setState({ showGroupForPostDrawer: false }, () => component.props.toggleGroupDetailDrawer(true))}>
+                groups.map((group, index) => <li key={index} onClick={() => component.setState({ showGroupForPostDrawer: false }, () => {
+                  component.props.setCurrentGroup(group)
+                  component.props.toggleGroupDetailDrawer(true)
+                })} >
                   <Avatar className="avatar">
                     <div className="img" style={{ background: 'url(' + group.thumbnail + ')' }} />
                   </Avatar>
@@ -724,9 +731,10 @@ const renderSearchGroupDrawer = (component) => {
           </div>
         </div>
       </div>
-    </Drawer>
+    </Drawer >
   )
 }
+
 
 const renderJoinGroupConfirm = (component) => {
   let {

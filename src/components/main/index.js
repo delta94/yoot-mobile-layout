@@ -238,7 +238,7 @@ class Main extends React.Component {
       profile,
       headerContent,
       footerContent,
-      progressDuration
+      progressDuration,
     } = this.props
 
 
@@ -734,7 +734,6 @@ const renderGroupDetailDrawer = (component) => {
     showGroupDetail,
     currentGroup
   } = component.props
-
   return (
     <Drawer anchor="bottom" className="group-detail" open={showGroupDetail}>
       {

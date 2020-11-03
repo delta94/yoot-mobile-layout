@@ -80,6 +80,7 @@ export default (state = initialState, action) => {
             return Object.assign({}, state, {
                 currentGroup: currentGroup
             })
+
         }
         case LEAVE_GROUP: {
             if (joinedGroups && joinedGroups.length > 0)
