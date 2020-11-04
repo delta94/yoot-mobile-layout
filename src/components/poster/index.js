@@ -782,7 +782,7 @@ const renderPostDrawer = (component) => {
           {/* BINH: change tag friend */}
           {tagedFrieds && tagedFrieds.length > 0 ? (
             <div className="taged-friend">
-              <b className="tag-item">Bạn</b> đã gắn thẻ&nbsp;
+              <span><img src={tag} /></span><b className="tag-item">Bạn</b> đã gắn thẻ&nbsp;
               <span>
                 {tagedFrieds.map((tag, index) => (
                   <>
