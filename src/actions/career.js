@@ -4,10 +4,11 @@ import { BUILD_YS_API, CurrentDate, SOCIAL_NET_WORK_API } from "../constants/app
 import { objToQuery } from "../utils/common"
 import moment from 'moment'
 
-export const GET_CAREER_HISTORY_SUCCESS = "user@GET_CAREER_HISTORY_SUCCESS"
-export const GET_CAREER_TEST_LIST_SUCCESS = "user@GET_CAREER_TEST_LIST_SUCCESS"
+export const GET_CAREER_HISTORY_SUCCESS = "career@GET_CAREER_HISTORY_SUCCESS"
+export const REMOVE_CAREER_HISTORY_SUCCESS = "career@REMOVE_CAREER_HISTORY_SUCCESS"
+export const GET_CAREER_TEST_LIST_SUCCESS = "career@GET_CAREER_TEST_LIST_SUCCESS"
 
-export const getCareerHistory = () => {
+export const getCareerHistory = (successCallBack) => {
     return dispatch => {
 
         let param = {
@@ -22,12 +23,26 @@ export const getCareerHistory = () => {
                     type: GET_CAREER_HISTORY_SUCCESS,
                     payload: result.content.history[0],
                 })
+                if (successCallBack) {
+                    setTimeout(() => {
+                        successCallBack()
+                    }, 300);
+                }
             }
         })
     }
 }
 
-export const getCareerTestList = () => {
+export const removeCareerHistory = () => {
+    return dispatch => {
+        dispatch({
+            type: REMOVE_CAREER_HISTORY_SUCCESS,
+        })
+    }
+}
+
+
+export const getCareerTestList = (successCallBack) => {
     return dispatch => {
 
         let param = {
@@ -38,11 +53,15 @@ export const getCareerTestList = () => {
         }
         get(BUILD_YS_API, "BundleQuestion/GetList" + objToQuery(param), result => {
             if (result && result.result == 1) {
-                console.log("result", result)
                 dispatch({
                     type: GET_CAREER_TEST_LIST_SUCCESS,
                     payload: result.content.bundleQuestions[0],
                 })
+                if (successCallBack) {
+                    setTimeout(() => {
+                        successCallBack()
+                    }, 300);
+                }
             }
         })
     }

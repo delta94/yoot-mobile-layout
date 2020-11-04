@@ -172,7 +172,6 @@ class Index extends React.Component {
       worldNoties
     } = this.props
 
-    console.log("state.noti", this.props.noti)
 
     return (
       <div className="community-page groups-page" >

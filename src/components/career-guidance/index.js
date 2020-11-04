@@ -9,10 +9,13 @@ import {
   toggleYourJobDrawer,
   toggleDISCDrawer,
   toggleYourMajorsDrawer,
+  toggleMediaViewerDrawer,
+  setMediaToViewer,
 } from '../../actions/app'
 import {
   getCareerHistory,
-  getCareerTestList
+  getCareerTestList,
+  removeCareerHistory
 } from '../../actions/career'
 import {
   IconButton,
@@ -21,7 +24,11 @@ import {
   Button
 } from '@material-ui/core'
 import {
-  ChevronLeft as ChevronLeftIcon
+  ChevronLeft as ChevronLeftIcon,
+  Pause as PauseIcon,
+  PlayArrow as PlayArrowIcon,
+  Forward10 as Forward10Icon,
+  Replay10 as Replay10Icon
 } from '@material-ui/icons'
 import StyleChart from './styleChart'
 import { connect } from 'react-redux'
@@ -32,10 +39,12 @@ import { get } from "../../api";
 import { BUILD_YS_API, CurrentDate } from "../../constants/appSettings";
 import { objToQuery } from '../../utils/common'
 import moment from 'moment'
-import { CAREER_GUIDANCE_ACCESS_KEY, TEST_HISTORY } from "../../constants/localStorageKeys";
+import { CAREER_GUIDANCE_ACCESS_KEY, SKILL_ACCESS_KEY, TEST_HISTORY } from "../../constants/localStorageKeys";
 import Iframe from 'react-iframe'
+import Intro from './intro'
 
-const coin = require('../../assets/icon/Coins_Y.png')
+
+
 const DISC = require('../../assets/icon/DISC@1x.png')
 const behavior = require('../../assets/icon/Hướng nghiệp/Pesonality@1x.png')
 const accordantjob = require('../../assets/icon/Hướng nghiệp/Job@1x.png')
@@ -44,12 +53,18 @@ const searchBtn = require('../../assets/icon/Find@1x.png')
 const scholarImg = require('../../assets/icon/HS.png')
 const studentImg = require('../../assets/icon/SV.png')
 
+
 class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      linkview: null
+      linkview: null,
+      iframeHeight: null,
+      fileIntro: null,
+      videoIntro: null,
+      videoDISCs: []
     };
+    this.video = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]
   }
 
   handleGetWebSourse() {
@@ -58,23 +73,113 @@ class Index extends React.Component {
       careerTestList
     } = this.props
     if (careerHistory) {
-
+      this.setState({
+        linkview: careerHistory.linkviewresult + "&token=" + window.localStorage.getItem(CAREER_GUIDANCE_ACCESS_KEY)
+      })
+      this.handleGetSource()
     } else {
       this.setState({
-        linkview: careerTestList.linkview + "&token=" + window.localStorage.getItem(CAREER_GUIDANCE_ACCESS_KEY) + "&output=embed"
+        linkview: careerTestList.linkview + "&token=" + window.localStorage.getItem(CAREER_GUIDANCE_ACCESS_KEY)
       })
     }
   }
+
+  handleGetDISCIntro() {
+    this.props.toggleDISCDrawer(true)
+    get(BUILD_YS_API, "Introduce/ListFileIntro", result => {
+      if (result && result.result == 1) {
+        if (result.content.fileIntros.length > 0) {
+          this.setState({
+            fileIntro: { ...result.content.fileIntros[0], name: "DISC VÀ ỨNG DỤNG TRONG HƯỚNG NGHIỆP" }
+          })
+        }
+      }
+    })
+    get(BUILD_YS_API, "Introduce/ListVideoWithSub?type=DISC", result => {
+      if (result && result.result == 1) {
+        this.setState({
+          videoDISCs: result.content.videoIntros
+        })
+      }
+    })
+    get(BUILD_YS_API, "Introduce/ListVideoWithSub?type=Intro", result => {
+      if (result && result.result == 1) {
+        this.setState({
+          videoIntro: result.content.videoIntros[0]
+        })
+      }
+    })
+  }
+
+  handleMessage(message) {
+    console.log("e", message)
+    if (!message) return
+    switch (message.action) {
+      case "heightcall": {
+        this.setState({
+          iframeHeight: message.height
+        })
+        return
+      }
+      case "heightcallresult": {
+        $("#iframe-DISC").height(message.height)
+        this.props.getCareerHistory()
+        return
+      }
+      case "backdisc": {
+        this.props.removeCareerHistory()
+        return
+      }
+      default: {
+        return
+      }
+    }
+  }
+
+  handleGetSource() {
+    let {
+      careerHistory
+    } = this.props
+    let param = {
+      ubunansid: careerHistory.id,
+      token: window.localStorage.getItem(SKILL_ACCESS_KEY)
+    }
+    get(BUILD_YS_API, "ResultDISC/GetOptionCourses" + objToQuery(param), result => {
+      if (result && result.result == 1) {
+        this.setState({
+          optionCourses: result.content.careers,
+          currentUserType: result.content.codedisc
+        })
+      }
+    })
+  }
+
+  handleClickSource(source) {
+    window.localStorage.setItem("REDIRECT", window.location.pathname)
+    setTimeout(() => {
+      this.props.history.push("/skills/" + source.ID)
+    }, 200);
+  }
+
 
   componentDidMount() {
     this.props.addHeaderContent(renderHeader(this))
     this.props.toggleHeader(true)
     this.props.toggleFooter(false)
-    this.props.getCareerHistory()
-    this.props.getCareerTestList()
+    this.props.getCareerHistory(() => {
+      this.props.getCareerTestList(() => {
+        this.handleGetWebSourse()
+      })
+    })
+
+    if (window.addEventListener) {
+      let that = this
+      window.addEventListener('message', e => {
+        that.handleMessage(JSON.parse(e.data))
+      }, false);
+    }
   }
   render() {
-    console.log("this.props", this.props)
     return (
       <div className="career-guidance-page" >
         <div className="career-guidance-banner" onClick={() => this.setState({ showScholarDrawer: true })}>
@@ -126,8 +231,11 @@ const mapDispatchToProps = dispatch => ({
   toggleYourJobDrawer: (isShow) => dispatch(toggleYourJobDrawer(isShow)),
   toggleDISCDrawer: (isShow) => dispatch(toggleDISCDrawer(isShow)),
   toggleYourMajorsDrawer: (isShow) => dispatch(toggleYourMajorsDrawer(isShow)),
-  getCareerHistory: () => dispatch(getCareerHistory()),
-  getCareerTestList: () => dispatch(getCareerTestList())
+  getCareerHistory: (successCallBack) => dispatch(getCareerHistory(successCallBack)),
+  getCareerTestList: (successCallBack) => dispatch(getCareerTestList(successCallBack)),
+  removeCareerHistory: () => dispatch(removeCareerHistory()),
+  setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
+  toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
 });
 
 export default connect(
@@ -212,12 +320,16 @@ const renderScholarDrawer = (component) => {
 const renderStyleTestDrawer = (component) => {
   let {
     isTestTing,
-    linkview
+    linkview,
+    optionCourses,
+    currentUserType
   } = component.state
   let {
     showStyleTestPage,
-    profile
+    profile,
+    careerHistory
   } = component.props
+
   return (
     <Drawer anchor="bottom" className="style-test-drawer" open={showStyleTestPage} onClose={() => component.props.toggleStyleTestDrawer(false)}>
       {
@@ -245,18 +357,18 @@ const renderStyleTestDrawer = (component) => {
           </div>
           <div style={{ overflow: "scroll" }}>
             <div className="style-reward">
-              <Button onClick={() => component.props.toggleDISCDrawer(true)}><img src={DISC} /> Tìm hiểu DISC</Button>
+              <Button onClick={() => component.handleGetDISCIntro()}><img src={DISC} /> Tìm hiểu DISC</Button>
             </div>
             {
               linkview && linkview != "" ? <Iframe url={linkview}
-                // width="450px"
-                // height="450px"
-                id="myId"
+                width="100%"
+                height={"100%"}
+                id="iframe-DISC"
                 className="myClassname"
                 display="initial"
-                position="relative" /> : ""
+                position="relative"
+              /> : ""
             }
-            <iframe src={linkview} />
             {
               // isTestTing ? "" : <div className='result'>
               //   <div className="title">
@@ -313,34 +425,33 @@ const renderStyleTestDrawer = (component) => {
                 <StyleChart />
               </div>
             } */}
-            {
-              isTestTing ? "" : <Button className="your-job-bt" onClick={() => component.props.toggleYourJobDrawer(true)}>Công việc phù hợp</Button>
-            }
             {/* {
-              isTestTing ? <Test /> : ""
+              careerHistory ? <Button className="your-job-bt" onClick={() => component.props.toggleYourJobDrawer(true)}>Công việc phù hợp</Button> : ""
             } */}
-            <div className="your-lesson">
-              <label>Những bạn thuộc nhóm tính cách SCI thường học những khoá học sau đây:</label>
-              <div className="skills-page" >
-                {
-                  <ul>
-                    {
-                      sources.map((source, index) => <li className="source-item" onClick={() => component.props.history.push("/skills/1219")}>
-                        <div style={{ background: "url(" + source.background + ")" }}>
-                          <div>
-                            <div className="reward">
-                              <span>{source.lessonCount} bài</span>
-                              <span>{source.documentsCount} tài liệu</span>
+            {
+              careerHistory ? <div className="your-lesson">
+                <label>Những bạn thuộc nhóm tính cách {currentUserType} thường học những khoá học sau đây:</label>
+                <div className="skills-page" >
+                  {
+                    optionCourses && optionCourses.length > 0 ? <ul>
+                      {
+                        optionCourses.map((source, index) => <li key={index} className="source-item" onClick={() => component.handleClickSource(source)}>
+                          <div style={{ background: "url(" + source.IMAGE + ")" }}>
+                            <div>
+                              <div className="reward">
+                                <span>{source.NUM_LESSION} bài</span>
+                                <span>{source.NUM_DOCUMENT} tài liệu</span>
+                              </div>
+                              <span className="source-name">{source.NAME}</span>
                             </div>
-                            <span className="source-name">{source.name}</span>
                           </div>
-                        </div>
-                      </li>)
-                    }
-                  </ul>
-                }
-              </div>
-            </div>
+                        </li>)
+                      }
+                    </ul> : ""
+                  }
+                </div>
+              </div> : ""
+            }
           </div>
 
         </div> : ""
@@ -352,9 +463,13 @@ const renderStyleTestDrawer = (component) => {
 const renderDISCDrawer = (component) => {
   let {
     showDISCDrawer,
-    profile
+    profile,
   } = component.props
-  console.log("profile", profile)
+  let {
+    fileIntro,
+    videoIntro,
+    videoDISCs
+  } = component.state
   return (
     <Drawer anchor="bottom" className="style-test-drawer" open={showDISCDrawer} onClose={() => component.props.toggleDISCDrawer(false)}>
       {
@@ -380,44 +495,7 @@ const renderDISCDrawer = (component) => {
           </div>
           <div className="filter"></div>
           <div className="about-DISC" style={{ overflow: "scroll", background: '#f2f3f7' }}>
-            <div className="banner" style={{ paddingBottom: "10px", background: '#fff', marginBottom: '10px' }}>
-              <img src="https://material-ui.com/static/images/cards/paella.jpg" style={{ width: "100%" }}></img>
-            </div>
-            <div className="video-item">
-              <p className="title danger">Video tổng quan về DISC - Bộ phong cách hành vi</p>
-              <video controls>
-                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
-              </video>
-              <p></p>
-            </div>
-            <div className="video-item">
-              <p className="title">Những điểm mạnh và cần cải thiện của từng nhóm:</p>
-              <video controls>
-                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
-              </video>
-              <p className="title">Người chủng D</p>
-            </div>
-            <div className="video-item">
-              <p className="title"></p>
-              <video controls>
-                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
-              </video>
-              <p className="title">Người chủng I</p>
-            </div>
-            <div className="video-item">
-              <p className="title"></p>
-              <video controls>
-                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
-              </video>
-              <p className="title">Người chủng S</p>
-            </div>
-            <div className="video-item">
-              <p className="title"></p>
-              <video controls>
-                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
-              </video>
-              <p className="title">Người chủng C</p>
-            </div>
+            <Intro fileIntro={fileIntro} videoIntro={videoIntro} videoDISCs={videoDISCs} />
           </div>
 
         </div> : ""

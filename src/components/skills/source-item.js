@@ -27,12 +27,9 @@ import {
   CheckCircleOutline as CheckCircleOutlineIcon
 } from '@material-ui/icons'
 import { StickyContainer, Sticky } from 'react-sticky';
-import ReactPlayer from 'react-player'
 import { get, post } from "../../api";
 import { SCHOOL_API } from "../../constants/appSettings";
 import { Player, ControlBar, BigPlayButton } from 'video-react';
-import $ from 'jquery'
-import { components } from "react-select";
 
 const practice = require('../../assets/icon/practice.png')
 const evaluate = require('../../assets/icon/evaluate.png')
@@ -51,6 +48,16 @@ class Index extends React.Component {
       numPages: 1,
     };
     this.player = React.createRef()
+  }
+
+  goback() {
+    let path = window.localStorage.getItem("REDIRECT")
+    if (path) {
+      this.props.history.replace(path)
+      window.localStorage.removeItem("REDIRECT")
+    } else {
+      this.props.history.push('/skills')
+    }
   }
 
   getSourceDetail(sourceId) {
@@ -333,7 +340,7 @@ export default connect(
 const renderHeader = (component) => {
   return (
     <div className="app-header">
-      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.props.history.push('/skills')}>
+      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.goback()}>
         <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
       </IconButton>
       <label>Khoá học</label>

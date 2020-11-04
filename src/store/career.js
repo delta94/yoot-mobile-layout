@@ -2,6 +2,7 @@
 
 import {
     GET_CAREER_HISTORY_SUCCESS,
+    REMOVE_CAREER_HISTORY_SUCCESS,
     GET_CAREER_TEST_LIST_SUCCESS
 } from '../actions/career'
 
@@ -21,6 +22,13 @@ export default (state = initialState, action) => {
 
             careerHistory = action.payload
 
+            return Object.assign({}, state, {
+                careerHistory: careerHistory,
+            })
+        }
+
+        case REMOVE_CAREER_HISTORY_SUCCESS: {
+            careerHistory = null
             return Object.assign({}, state, {
                 careerHistory: careerHistory,
             })

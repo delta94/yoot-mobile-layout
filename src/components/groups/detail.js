@@ -832,7 +832,6 @@ const renderSearchGroupDrawer = (component) => {
     managerList
   } = component.state
 
-  console.log("managerList", managerList)
 
   return (
     <Drawer anchor="bottom" className="group-members" open={showMemberDrawer} >
@@ -960,7 +959,6 @@ const renderAllUserDrawer = (component) => {
     userCount,
   } = component.state
 
-  console.log("userList", userList)
 
   return (
     <Drawer anchor="bottom" className="group-members" open={showAllMemberDrawer} >

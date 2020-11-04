@@ -69,6 +69,16 @@ class Index extends React.Component {
     this.video = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]
   }
 
+  goback() {
+    let path = window.localStorage.getItem("REDIRECT")
+    if (path) {
+      this.props.history.replace(path)
+      window.localStorage.removeItem("REDIRECT")
+    } else {
+      this.props.history.push('/skills')
+    }
+  }
+
   handleInit() {
     let { sourceId } = this.props.match.params
     if (!sourceId) return
@@ -291,9 +301,6 @@ class Index extends React.Component {
       homeworks,
       reviewers
     } = this.state
-
-    console.log("homeworks", homeworks)
-
 
     return (
       <div className="exercise-item-page" >
@@ -559,7 +566,7 @@ export default connect(
 const renderHeader = (component) => {
   return (
     <div className="app-header">
-      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.props.history.push('/skills')}>
+      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.goback()}>
         <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
       </IconButton>
       <label>Thực hành</label>

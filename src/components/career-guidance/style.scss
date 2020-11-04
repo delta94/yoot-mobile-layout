@@ -268,6 +268,30 @@
             }
         }
     }
+    .document{
+        padding: 10px;
+        background: #fff;
+        > label{
+            color: #d23a35;
+            font-family: Roboto-Medium;
+            display: block;
+        }
+        > div:last-child{
+            display: flex;
+            align-items: center;
+            border-radius: 7px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.14);
+            padding: 10px;
+            margin-top: 10px;
+            img{
+                width: 23px;
+                margin-right: 10px;
+            }
+            span{
+                font-family: Roboto-Regular;
+            }
+        }
+    }
 }
 
 .test-page{
@@ -404,4 +428,9 @@
         color:#ff5a5a;
         margin-right: 5px;
     }
+}
+#iframe-DISC{
+    border: none;
+    padding: 5px;
+    box-sizing: border-box;
 }

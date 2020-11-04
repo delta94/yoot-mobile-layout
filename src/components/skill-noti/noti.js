@@ -117,7 +117,6 @@ const renderType18 = (component) => {
   let {
     data
   } = component.props
-  console.log("skills/113/exercise", data)
   return (
     <div className="noti-content content-type-35" onClick={() => component.props.history.replace(`/skills/${data.courseid}/exercise?tabIndex=1`)}>
       <div className="noti-info">

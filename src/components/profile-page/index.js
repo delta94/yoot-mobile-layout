@@ -779,7 +779,6 @@ class Index extends React.Component {
     let {
       isUser
     } = this.props.match.params
-    console.log("this.props", this.props)
     this.getFriends(0)
     this.getNumOfFriend()
     this.props.addFooterContent(renderFooter(this))

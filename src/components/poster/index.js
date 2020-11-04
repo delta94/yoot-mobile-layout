@@ -445,7 +445,6 @@ export class Index extends React.Component {
         postFormData(SOCIAL_NET_WORK_API, endPoint, data, result => {
             if (result && result.result == 1) {
                 if (nfid > 0) {
-                    console.log("result.content.newsFeeds", result.content.newsFeeds)
                     this.props.updatePosted({ ...result.content.newsFeeds, isPendding: false }, profile.id)
                 } else {
                     this.props.createPostSuccess({ ...result.content.newsFeeds, isPendding: true }, profile.id)

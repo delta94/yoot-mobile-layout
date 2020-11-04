@@ -282,9 +282,8 @@ class Index extends React.Component {
         if (this.props.currentFriendId != nextProps.currentFriendId) {
             this.getAllUsers(nextProps.currentFriendId, 0)
         }
-        if (nextProps.showSearchFriendDrawer != this.props.showSearchFriendDrawer && nextProps.showSearchFriendDrawer != false) {
-            console.log("this.searchInput", this.searchInput.current)
-        }
+        // if (nextProps.showSearchFriendDrawer != this.props.showSearchFriendDrawer && nextProps.showSearchFriendDrawer != false) {
+        // }
     }
 
 

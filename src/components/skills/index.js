@@ -33,7 +33,15 @@ class Index extends React.Component {
       allSource: []
     };
   }
-
+  goback() {
+    let path = window.localStorage.getItem("REDIRECT")
+    if (path) {
+      this.props.history.replace(path)
+      window.localStorage.removeItem("REDIRECT")
+    } else {
+      this.props.history.push('/')
+    }
+  }
   getAllSource() {
     get(SCHOOL_API, "Course/getalls", result => {
       if (result && result.StatusCode == 1) {
@@ -123,7 +131,7 @@ export default connect(
 const renderHeader = (component) => {
   return (
     <div className="app-header">
-      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.props.history.push('/')}>
+      <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.goback()}>
         <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
       </IconButton>
       <label>Khoá học</label>

@@ -899,7 +899,6 @@ const renderGroupListDrawer = (component) => {
     groupTabIndex
   } = component.state
 
-  console.log("this.props", component.props)
 
 
   return (

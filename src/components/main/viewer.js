@@ -162,7 +162,6 @@ class Index extends React.Component {
                         isProccesing: false,
                         showUpdatePrivacyDrawer: false
                     })
-                    console.log("result", result)
                     this.props.updateMediaViewed({ ...currentImage, postfor: privacySelected })
                     this.props.updatePrivacyPosted(profile.id, currentImage.postid, privacySelected)
                     if (callbackAction) callbackAction()
@@ -522,7 +521,6 @@ class Index extends React.Component {
         let param = {
             newsfeedid: postId
         }
-        console.log("postId", postId)
         get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetOneNewsFeed" + objToQuery(param), result => {
             if (result && result.result == 1)
                 this.setState({
@@ -543,7 +541,6 @@ class Index extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("nextProps", nextProps)
         if (nextProps.showMediaViewerDrawer != this.props.showMediaViewerDrawer) {
             let { mediaViewerFeature } = nextProps
             if (nextProps.showMediaViewerDrawer == true) {
@@ -601,9 +598,6 @@ class Index extends React.Component {
         if (!activeItem) {
             activeItem = mediaToView && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0 ? mediaToView[mediaViewerFeature.activeIndex] : null
         }
-
-        console.log("activeItem", activeItem)
-        console.log("currentPost", currentPost)
 
         return (
             <div>
@@ -678,27 +672,25 @@ class Index extends React.Component {
                                                                                             </div>
                                                                                         </div> : ""
                                                                                     }
-                                                                                    <div className="footer-reward">
-                                                                                        {
-                                                                                            mediaToView && mediaToView.length == 1 ? <ul>
-                                                                                                <li>
-                                                                                                    <img src={likeActive} />
-                                                                                                    <span>{currentPost ? currentPost.likeCount : 0}</span>
-                                                                                                </li>
-                                                                                                <li>
-                                                                                                    <span>{currentPost ? currentPost.commentCount : 0} bình luận</span>
-                                                                                                </li>
-                                                                                            </ul> : <ul>
-                                                                                                    <li>
-                                                                                                        <img src={likeActive} />
-                                                                                                        <span>{activeItem ? activeItem.likeCount : 0}</span>
-                                                                                                    </li>
-                                                                                                    <li>
-                                                                                                        <span>{activeItem ? activeItem.commentCount : 0} bình luận</span>
-                                                                                                    </li>
-                                                                                                </ul>
-                                                                                        }
-                                                                                    </div>
+                                                                                    {
+                                                                                        activeItem ? <div className="footer-reward">
+                                                                                            {
+                                                                                                activeItem.numlike > 0 || activeItem.numcomment > 0 ? <ul>
+                                                                                                    {
+                                                                                                        activeItem.numlike > 0 ? <li>
+                                                                                                            <img src={likeActive} />
+                                                                                                            <span className="ml05">{activeItem ? activeItem.numlike : 0}</span>
+                                                                                                        </li> : <li></li>
+                                                                                                    }
+                                                                                                    {
+                                                                                                        activeItem.numcomment > 0 ? <li>
+                                                                                                            <span>{activeItem ? activeItem.numcomment : 0} bình luận</span>
+                                                                                                        </li> : <li></li>
+                                                                                                    }
+                                                                                                </ul> : ""
+                                                                                            }
+                                                                                        </div> : ""
+                                                                                    }
                                                                                     <div className="footer-action">
                                                                                         <ul>
                                                                                             <li>
