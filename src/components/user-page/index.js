@@ -122,11 +122,23 @@ class Index extends React.Component {
           );
         }
         //BINH: set auth info
+        // moment(userDetail.birthday).format("DD/MM/YYYY")
         for (let i = 0; i < authorShowInfo.length; i++) {
+          let birthday = "";
           if (authorShowInfo[i].authorizeinfoid === 1) {
             resultState.address = "";
           } else if (authorShowInfo[i].authorizeinfoid === 2) {
-            resultState.birthday = "";
+            resultState.birthday = authorShowInfo.some(
+              (item) => item.authorizeinfoid === 3
+            )
+              ? moment(resultState.birthday).format("D [tháng] M, YYYY")
+              : moment(resultState.birthday).format("D [tháng] M");
+          } else if (authorShowInfo[i].authorizeinfoid === 3) {
+            resultState.birthday = authorShowInfo.some(
+              (item) => item.authorizeinfoid === 2
+            )
+              ? moment(resultState.birthday).format("D [tháng] M, YYYY")
+              : moment(resultState.birthday).format("YYYY");
           } else if (authorShowInfo[i].authorizeinfoid === 4) {
             resultState.gendertext = "";
           } else if (authorShowInfo[i].authorizeinfoid === 5) {
@@ -724,10 +736,7 @@ class Index extends React.Component {
                     <li>
                       <img src={birthday} />
                       <span className="title">
-                        Ngày sinh{" "}
-                        <b>
-                          {moment(userDetail.birthday).format("DD/MM/YYYY")}
-                        </b>
+                        Ngày sinh <b>{userDetail.birthday}</b>
                       </span>
                     </li>
                   ) : (
@@ -1453,9 +1462,7 @@ const renderUserDetailDrawer = (component) => {
                   <span>Giới tính</span>
                 </li>
                 <li>
-                  <label>
-                    {moment(userDetail.birthday).format("D [tháng] M, YYYY")}
-                  </label>
+                  <label>{userDetail.birthday}</label>
                   <span>Ngày sinh</span>
                 </li>
               </ul>
