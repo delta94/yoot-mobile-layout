@@ -123,18 +123,17 @@ class Index extends React.Component {
         }
         console.log(authorShowInfo);
         //BINH: set auth birthday
-        if (authorShowInfo.some((item) => item.authorizeinfoid === 2)) {
-          resultState.birthday = authorShowInfo.some(
-            (item) => item.authorizeinfoid === 3
-          )
-            ? moment(resultState.birthday).format("D [tháng] M, YYYY")
-            : moment(resultState.birthday).format("YYYY");
+        if (
+          authorShowInfo.some((item) => item.authorizeinfoid === 2) &&
+          authorShowInfo.some((item) => item.authorizeinfoid === 3)
+        ) {
+          resultState.birthday = "";
+        } else if (authorShowInfo.some((item) => item.authorizeinfoid === 2)) {
+          resultState.birthday = moment(resultState.birthday).format("YYYY");
         } else if (authorShowInfo.some((item) => item.authorizeinfoid === 3)) {
-          resultState.birthday = authorShowInfo.some(
-            (item) => item.authorizeinfoid === 2
-          )
-            ? moment(resultState.birthday).format("D [tháng] M, YYYY")
-            : moment(resultState.birthday).format("D [tháng] M");
+          resultState.birthday = moment(resultState.birthday).format(
+            "D [tháng] M"
+          );
         } else {
           resultState.birthday = moment(resultState.birthday).format(
             "D [tháng] M, YYYY"
