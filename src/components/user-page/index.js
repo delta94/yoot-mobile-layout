@@ -124,7 +124,6 @@ class Index extends React.Component {
         //BINH: set auth info
         // moment(userDetail.birthday).format("DD/MM/YYYY")
         for (let i = 0; i < authorShowInfo.length; i++) {
-          let birthday = "";
           if (authorShowInfo[i].authorizeinfoid === 1) {
             resultState.address = "";
           } else if (authorShowInfo[i].authorizeinfoid === 2) {
@@ -148,6 +147,17 @@ class Index extends React.Component {
           } else if (authorShowInfo[i].authorizeinfoid === 7) {
             resultState.phone = "";
           }
+        }
+        if (
+          authorShowInfo.some(
+            (item) => item.authorizeinfoid === 2 || item.authorizeinfoid === 3
+          )
+        ) {
+          return;
+        } else {
+          resultState.birthday = moment(resultState.birthday).format(
+            "D [tháng] M, YYYY"
+          );
         }
         console.log("result", resultState);
         this.setState({
