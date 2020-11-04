@@ -1777,6 +1777,7 @@ const renderFriendActionsDrawer = (component) => {
   } = component.state
   return (
     <Drawer anchor="bottom" className="friend-actions-drawer" open={showFriendActionsDrawer} onClose={() => component.setState({ showFriendActionsDrawer: false })}>
+      <div className="title-more-action">Tác vụ</div>
       {
         currentFriend ? <div className="drawer-content">
           <ul>
@@ -1804,13 +1805,15 @@ const renderFriendActionsDrawer = (component) => {
               <span>Bạn và người này sẽ không nhìn thấy nhau.</span>
             </li>
           </ul>
-          <Button className="bt-submit" onClick={() => component.setState({
+          <div className="destroy-action">
+          <Button className="btn-destroy" onClick={() => component.setState({
             showFriendActionsDrawer: false,
             okCallback: () => component.removeFriend(currentFriend.friendid),
             confirmTitle: "",
-            confirmMessage: "Bạn có chắc chắn muốn xoá người này khỏi danh sách bạn bè không?",
+            confirmMessage: "Bạn có chắc muốn hủy kết bạn không?",
             showConfim: true
           })}>Huỷ kết bạn</Button>
+          </div>
         </div> : ''
       }
     </Drawer>

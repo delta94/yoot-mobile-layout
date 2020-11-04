@@ -1,3 +1,26 @@
+//BINH: add css cho tác vụ
+.friend-actions-drawer{
+    .title-more-action{
+        text-align: center;
+        padding: 2rem 0 0 0;
+        font-weight: bold;
+    }
+    .drawer-content{
+        .destroy-action{
+            display: flex;
+            justify-content:center;
+            .btn-destroy{
+                text-transform: initial;
+                padding: 1rem 4rem;
+                background:#f44645;
+                color: #fff;
+                border-radius: 1rem;
+            }
+        }
+        
+    }
+}
+
 .profile-page{
     min-height: 100vh;
     border-bottom: 10px solid rgba(0,0,0,0.06);
