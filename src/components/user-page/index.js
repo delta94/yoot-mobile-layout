@@ -121,23 +121,30 @@ class Index extends React.Component {
             (item) => item.levelauthorizeid !== 4 && item.levelauthorizeid !== 3
           );
         }
+
+        //BINH: set auth birthday
+        if (authorShowInfo.some((item) => item.authorizeinfoid === 2)) {
+          resultState.birthday = authorShowInfo.some(
+            (item) => item.authorizeinfoid === 3
+          )
+            ? moment(resultState.birthday).format("D [tháng] M, YYYY")
+            : moment(resultState.birthday).format("D [tháng] M");
+        } else if (authorShowInfo.some((item) => item.authorizeinfoid === 3)) {
+          resultState.birthday = authorShowInfo.some(
+            (item) => item.authorizeinfoid === 2
+          )
+            ? moment(resultState.birthday).format("D [tháng] M, YYYY")
+            : moment(resultState.birthday).format("YYYY");
+        } else {
+          resultState.birthday = moment(resultState.birthday).format(
+            "D [tháng] M, YYYY"
+          );
+        }
+
         //BINH: set auth info
-        // moment(userDetail.birthday).format("DD/MM/YYYY")
         for (let i = 0; i < authorShowInfo.length; i++) {
           if (authorShowInfo[i].authorizeinfoid === 1) {
             resultState.address = "";
-          } else if (authorShowInfo[i].authorizeinfoid === 2) {
-            resultState.birthday = authorShowInfo.some(
-              (item) => item.authorizeinfoid === 3
-            )
-              ? moment(resultState.birthday).format("D [tháng] M, YYYY")
-              : moment(resultState.birthday).format("D [tháng] M");
-          } else if (authorShowInfo[i].authorizeinfoid === 3) {
-            resultState.birthday = authorShowInfo.some(
-              (item) => item.authorizeinfoid === 2
-            )
-              ? moment(resultState.birthday).format("D [tháng] M, YYYY")
-              : moment(resultState.birthday).format("YYYY");
           } else if (authorShowInfo[i].authorizeinfoid === 4) {
             resultState.gendertext = "";
           } else if (authorShowInfo[i].authorizeinfoid === 5) {
@@ -148,21 +155,11 @@ class Index extends React.Component {
             resultState.phone = "";
           }
         }
-        if (
-          authorShowInfo.some(
-            (item) => item.authorizeinfoid === 2 || item.authorizeinfoid === 3
-          )
-        ) {
-          return;
-        } else {
-          resultState.birthday = moment(resultState.birthday).format(
-            "D [tháng] M, YYYY"
-          );
-        }
-        console.log("result", resultState);
+
         this.setState({
           userDetail: resultState,
         });
+        console.log(this.state.userDetail);
         this.getFriends(id, friendsCurrentPage);
         this.getFollowed(0, id);
         this.getFollowing(0, id);
@@ -517,7 +514,6 @@ class Index extends React.Component {
       openMediaDrawer,
       numOfFriend,
     } = this.state;
-    console.log("render", this.state);
 
     let { onClose, userPosteds } = this.props;
 
