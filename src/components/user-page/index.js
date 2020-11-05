@@ -44,6 +44,7 @@ import $ from "jquery";
 import ClickTooltip from "../common/click-tooltip";
 
 const coin = require("../../assets/icon/Coins_Y.png");
+const address = require("../../assets/icon/address@1x.png");
 const like = require("../../assets/icon/like@1x.png");
 const follower = require("../../assets/icon/Follower@1x.png");
 const birthday = require("../../assets/icon/Birthday.png");
@@ -121,7 +122,6 @@ class Index extends React.Component {
             (item) => item.levelauthorizeid !== 4 && item.levelauthorizeid !== 3
           );
         }
-        console.log(authorShowInfo);
         //BINH: set auth birthday
         if (
           authorShowInfo.some((item) => item.authorizeinfoid === 2) &&
@@ -158,7 +158,6 @@ class Index extends React.Component {
         this.setState({
           userDetail: resultState,
         });
-        console.log(this.state.userDetail);
         this.getFriends(id, friendsCurrentPage);
         this.getFollowed(0, id);
         this.getFollowing(0, id);
@@ -520,7 +519,6 @@ class Index extends React.Component {
     if (userDetail) {
       posteds = userPosteds[userDetail.id];
     }
-
     return (
       <div className="drawer-detail">
         <div className="drawer-header">
@@ -736,6 +734,16 @@ class Index extends React.Component {
                     </li>
                   ) : (
                     ""
+                  )}
+                  {/* BINH: add info address */}
+                  {userDetail && userDetail.address && (
+                    <li>
+                      <img src={address} />
+                      <span className="title">
+                        Sống tại{" "}
+                        <b>{userDetail.address}</b>
+                      </span>
+                    </li>
                   )}
                   {userDetail.birthday ? (
                     <li>
@@ -1323,7 +1331,9 @@ const renderUserDetailDrawer = (component) => {
                               style={{ width: "100%" }}
                             />
                           </Avatar>
-                          <span
+                          {/* BINH: add number friend */}
+                          <div className="friend-title">
+                            <b
                             className="user-name"
                             onClick={() => {
                               component.setState({
@@ -1333,7 +1343,10 @@ const renderUserDetailDrawer = (component) => {
                             }}
                           >
                             {item.friendname}
-                          </span>
+                          </b>
+                          <p>{item.numfriendwith} bạn chung</p>
+                          </div>
+                          
                           <Button
                             style={{ background: "#f44645", color: "#fff" }}
                           >
