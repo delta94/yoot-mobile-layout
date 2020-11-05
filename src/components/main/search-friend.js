@@ -333,7 +333,7 @@ class Index extends React.Component {
                             }}
                         />
                     </div>
-                    <div style={{ overflow: "scroll", width: "100vw" }} id="search-fiend-list" onScroll={() => this.onAllUserScroll()}>
+                    <div style={{ overflowX: "hidden", width: "100vw" }} id="search-fiend-list" onScroll={() => this.onAllUserScroll()}>
                         <div className="friend-list" >
                             <ul>
                                 {

@@ -1059,9 +1059,10 @@ class Index extends React.Component {
                   )}
                   {data.usersTag.length > 0 ? (
                     <span className="mesage">
-                      <span>
-                        cùng với{" "}
-                        <b
+                      {/* BINH: change text darkmode */}
+                      <span> 
+                        cùng với {" "}
+                        <b id="name-friend"
                           onClick={() => {
                             this.props.setCurrenUserDetail({
                               ...data.usersTag[0],
@@ -1077,7 +1078,7 @@ class Index extends React.Component {
                         <span>
                           {" "}
                           và{" "}
-                          <b
+                          <b id="name-friend"
                             onClick={() => {
                               this.props.setCurrenUserDetail({
                                 ...data.usersTag[1],
@@ -1877,7 +1878,7 @@ class Index extends React.Component {
                       className="comment"
                     >
                       {data.numcomment > 0
-                        ? `${data.numcomment} bình luận` //bình check click bình luận
+                        ? `${data.numcomment} bình luận` //BINH: check click bình luận
                         : ""}{" "}
                       {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
                         ? `${data.mediaPlays[0].numview} lượt xem`

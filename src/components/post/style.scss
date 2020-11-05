@@ -20,8 +20,13 @@
     &.dask-mode{
         border-radius: 0px !important;
         background: #222 !important;
+        
         .poster-name{
             .name{
+                color: #ccc !important;
+            }
+            // BINH: change text darkmode
+            #name-friend{
                 color: #ccc !important;
             }
         }
@@ -38,14 +43,12 @@
             color: #ccc !important;
         }
         .poster-subtitle{
+            color: #999 !important;
             >div{
                 img{
                     opacity: 0.7;
                 }
                 svg{
-                    color: #999 !important;
-                }
-                > span{
                     color: #999 !important;
                 }
             }
