@@ -301,7 +301,6 @@ class Index extends React.Component {
       homeworks,
       reviewers
     } = this.state
-
     return (
       <div className="exercise-item-page" >
         <StickyContainer className="container">
@@ -505,10 +504,11 @@ class Index extends React.Component {
                                     </div> : <div className="status">Chờ đánh giá</div>
                                   }
                                 </div>
+                                {/* BINH: add "không có bình luận" */}
                                 {
                                   comment.STATUS == 1 ? <pre className="comment">
                                     {
-                                      comment.COMMENT
+                                      comment.COMMENT? comment.COMMENT : "Không có bình luận"
                                     }
                                   </pre> : <IconButton className='noti-ring' onClick={() => this.handleRemindReviewer(comment)}><NotificationsActiveIcon /></IconButton>
                                 }
