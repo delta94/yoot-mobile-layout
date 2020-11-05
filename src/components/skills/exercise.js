@@ -187,6 +187,7 @@ class Index extends React.Component {
       fileSelected,
       exercises
     } = this.state
+    let { sourceId } = this.props.match.params
     if (fileSelected) {
       let formData = new FormData
       formData.append("video", fileSelected)
@@ -201,6 +202,7 @@ class Index extends React.Component {
             <span style={{ display: "block", width: "60%", fontSize: "1rem", margin: "0px auto 20px", fontFamily: "Roboto-Medium", color: "#444" }}>Chúc mừng bạn đã nộp bài thực hành thành công.</span>,
             <span style={{ display: "block", width: "100%", fontSize: "1rem", margin: "0px auto 20px", fontFamily: "Roboto-Medium", color: "#444" }}>{`Bài của bạn được gửi cho ${result.Data.memberRandom.NAME} chấm.`}<br />Vui lòng vào lịch sử làm bài để theo dõi nhé.</span>
           )
+          this.getHomework(sourceId)
           this.setState({
             inProccessing: false,
             fileSelected: null
@@ -301,6 +303,8 @@ class Index extends React.Component {
       homeworks,
       reviewers
     } = this.state
+    console.log('homeworks',homeworks)
+    console.log('exercises',exercises)
     return (
       <div className="exercise-item-page" >
         <StickyContainer className="container">
@@ -395,7 +399,7 @@ class Index extends React.Component {
                         </div>
                       }
                       {
-                        homeworks&& !homeworks.some(item=>item.STATUS === 1) && <Dropzone onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
+                        homeworks && !homeworks.some(item=>item.STATUS === 1) && <Dropzone onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
                           {({ getRootProps, getInputProps }) => (
                             <div {...getRootProps()} className="box-upload-file" id="upload-homework-bt">
                               <input {...getInputProps()} accept={exercises.EXERCISE_TYPE_FK == 1 ? "file/*" : "video/*"} />
@@ -420,7 +424,7 @@ class Index extends React.Component {
                         </Dropzone>
                       }
                       {
-                        homeworks&& !homeworks.some(item=>item.STATUS === 1) ? <Button className="bt-submit aply-exercise" onClick={() => this.handleSubmitHomework()}>
+                        homeworks && !homeworks.some(item=>item.STATUS === 1) ? <Button className="bt-submit aply-exercise" onClick={() => this.handleSubmitHomework()}>
                           Nộp bài
                          {
                             inProccessing == true ? <Loader type="small" /> : ""
