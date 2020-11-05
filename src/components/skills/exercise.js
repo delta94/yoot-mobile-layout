@@ -395,7 +395,7 @@ class Index extends React.Component {
                         </div>
                       }
                       {
-                        item.ISFINISH == 0 ? <Dropzone onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
+                        homeworks&& !homeworks.some(item=>item.STATUS === 1) && <Dropzone onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
                           {({ getRootProps, getInputProps }) => (
                             <div {...getRootProps()} className="box-upload-file" id="upload-homework-bt">
                               <input {...getInputProps()} accept={exercises.EXERCISE_TYPE_FK == 1 ? "file/*" : "video/*"} />
@@ -417,10 +417,10 @@ class Index extends React.Component {
                               }
                             </div>
                           )}
-                        </Dropzone> : ""
+                        </Dropzone>
                       }
                       {
-                        item.ISFINISH == 0 ? <Button className="bt-submit aply-exercise" onClick={() => this.handleSubmitHomework()}>
+                        homeworks&& !homeworks.some(item=>item.STATUS === 1) ? <Button className="bt-submit aply-exercise" onClick={() => this.handleSubmitHomework()}>
                           Nộp bài
                          {
                             inProccessing == true ? <Loader type="small" /> : ""
