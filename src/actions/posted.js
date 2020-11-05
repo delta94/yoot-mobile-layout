@@ -165,6 +165,7 @@ export const changeCommentCountForImage = (number, postId, userId, detailimageid
     }
 }
 
+
 export const endablePost = (post) => {
     return dispatch => {
         dispatch({

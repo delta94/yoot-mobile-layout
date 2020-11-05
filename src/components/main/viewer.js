@@ -7,7 +7,11 @@ import {
     removeMediaViewed
 } from '../../actions/app'
 import {
-    updatePrivacyPosted
+    updatePrivacyPosted,
+    likePosted,
+    dislikePosted,
+    likeImage,
+    dislikeImage,
 } from '../../actions/posted'
 import {
     Drawer,
@@ -36,6 +40,7 @@ import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import MultiInput from '../common/multi-input'
 import Cropper from '../common/cropper'
 import ShowMoreText from 'react-show-more-text';
+import FacebookSelector from "../common/facebook-selector";
 
 const coin = require('../../assets/icon/Coins_Y.png')
 const search = require('../../assets/icon/Find@1x.png')
@@ -59,6 +64,86 @@ class Index extends React.Component {
             },
         }
         this.player = React.createRef()
+    }
+
+    likePosted(reaction) {
+        let data = this.state.currentPost
+        if (!data) return;
+        let param = {
+            postid: data.nfid,
+            icon: reaction.code,
+        };
+        console.log("data", data)
+        this.props.likePosted(data, reaction.code, "myPosteds", data.iduserpost);
+        if (data.mediaPlays.length == 1) {
+            let image = data.mediaPlays[0];
+            this.props.likeImage(data, image.detailimageid, reaction.code, data.iduserpost);
+        }
+        this.setState({ isProccesing: false });
+        post(
+            SOCIAL_NET_WORK_API,
+            "PostNewsFeed/LikeNewsFeed" + objToQuery(param),
+            null,
+            (result) => { }
+        );
+    }
+
+    dislikePosted() {
+        let data = this.state.currentPost
+        if (!data) return;
+        let param = {
+            postid: data.nfid,
+            icon: -1,
+        };
+        this.setState({ isProccesing: false });
+        this.props.dislikePosted(data, "myPosteds", data.iduserpost);
+        if (data.mediaPlays.length == 1) {
+            let image = data.mediaPlays[0];
+            this.props.dislikeImage(data, image.detailimageid, data.iduserpost);
+        }
+        post(
+            SOCIAL_NET_WORK_API,
+            "PostNewsFeed/LikeNewsFeed" + objToQuery(param),
+            null,
+            (result) => { }
+        );
+    }
+
+    likeImage(reaction, image) {
+        let data = this.state.currentPost
+        if (!data) return;
+        let param = {
+            postid: data.nfid,
+            icon: reaction.code,
+            nameimage: image.nameimage,
+        };
+        this.props.likeImage(data, image.detailimageid, reaction.code, data.iduserpost);
+        this.setState({ isProccesing: false });
+        post(
+            SOCIAL_NET_WORK_API,
+            "PostNewsFeed/LikeNewsFeed" + objToQuery(param),
+            null,
+            (result) => { }
+        );
+    }
+
+    dislikeImage(image) {
+        let data = this.state.currentPost
+        if (!data) return;
+        let param = {
+            postid: data.nfid,
+            icon: -1,
+            nameimage: image.nameimage,
+        };
+        this.props.dislikeImage(data, image.detailimageid, data.iduserpost);
+        this.setState({ isProccesing: false });
+
+        post(
+            SOCIAL_NET_WORK_API,
+            "PostNewsFeed/LikeNewsFeed" + objToQuery(param),
+            null,
+            (result) => { }
+        );
     }
 
     toggleControl() {
@@ -580,7 +665,8 @@ class Index extends React.Component {
             activeItem,
             showControl,
             isPlaying,
-            currentPost
+            currentPost,
+            openReactions
         } = this.state
 
         const settings = {
@@ -691,28 +777,37 @@ class Index extends React.Component {
                                                                                             }
                                                                                         </div> : ""
                                                                                     }
-                                                                                    <div className="footer-action">
-                                                                                        <ul>
-                                                                                            <li>
-                                                                                                <Button>
-                                                                                                    <img src={like1} />
-                                                                                                    <span>Thích</span>
-                                                                                                </Button>
-                                                                                            </li>
-                                                                                            <li>
-                                                                                                <Button>
-                                                                                                    <img src={comment} />
-                                                                                                    <span>Bình luận</span>
-                                                                                                </Button>
-                                                                                            </li>
-                                                                                            <li>
-                                                                                                <Button>
-                                                                                                    <img src={share} />
-                                                                                                    <span>Chia sẻ</span>
-                                                                                                </Button>
-                                                                                            </li>
-                                                                                        </ul>
-                                                                                    </div>
+                                                                                    {
+                                                                                        activeItem ? <div className="footer-action">
+                                                                                            <ul>
+                                                                                                <li>
+                                                                                                    <FacebookSelector
+                                                                                                        open={openReactions}
+                                                                                                        active={activeItem.iconlike}
+                                                                                                        onClose={() => this.setState({ openReactions: false })}
+                                                                                                        onReaction={(reaction) => currentPost.mediaPlays && currentPost.mediaPlays.length == 1 ? this.likePosted(reaction) : this.likeImage(reaction, activeItem)}
+                                                                                                        onShortPress={(reaction) =>
+                                                                                                            activeItem.islike == 1
+                                                                                                                ? currentPost.mediaPlays && currentPost.mediaPlays.length == 1 ? this.dislikePosted(reaction) : this.dislikeImage(activeItem)
+                                                                                                                : currentPost.mediaPlays && currentPost.mediaPlays.length == 1 ? this.likePosted(reaction) : this.likeImage(reaction, activeItem)
+                                                                                                        }
+                                                                                                    />
+                                                                                                </li>
+                                                                                                <li>
+                                                                                                    <Button>
+                                                                                                        <img src={comment} />
+                                                                                                        <span>Bình luận</span>
+                                                                                                    </Button>
+                                                                                                </li>
+                                                                                                <li>
+                                                                                                    <Button>
+                                                                                                        <img src={share} />
+                                                                                                        <span>Chia sẻ</span>
+                                                                                                    </Button>
+                                                                                                </li>
+                                                                                            </ul>
+                                                                                        </div> : ""
+                                                                                    }
                                                                                 </div> : ""
                                                                             }
                                                                         </div>
@@ -788,10 +883,17 @@ class Index extends React.Component {
                                             <div className="footer-action">
                                                 <ul>
                                                     <li>
-                                                        <Button>
-                                                            <img src={like1} />
-                                                            <span>Thích</span>
-                                                        </Button>
+                                                        <FacebookSelector
+                                                            open={openReactions}
+                                                            active={activeItem.iconlike}
+                                                            onClose={() => this.setState({ openReactions: false })}
+                                                            onReaction={(reaction) => mediaToView.length == 1 ? this.likePosted(reaction) : this.likeImage(reaction, activeItem)}
+                                                            onShortPress={(reaction) =>
+                                                                activeItem.islike == 1
+                                                                    ? mediaToView.length == 1 ? this.dislikePosted(reaction) : this.dislikeImage(activeItem)
+                                                                    : mediaToView.length == 1 ? this.likePosted(reaction) : this.likeImage(reaction, activeItem)
+                                                            }
+                                                        />
                                                     </li>
                                                     <li>
                                                         <Button>
@@ -860,7 +962,15 @@ const mapDispatchToProps = dispatch => ({
     toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
     updateMediaViewed: (media) => dispatch(updateMediaViewed(media)),
     removeMediaViewed: (media) => dispatch(removeMediaViewed(media)),
-    updatePrivacyPosted: (userId, postId, privacy) => dispatch(updatePrivacyPosted(userId, postId, privacy))
+    updatePrivacyPosted: (userId, postId, privacy) => dispatch(updatePrivacyPosted(userId, postId, privacy)),
+    likePosted: (post, likeIcon, targetKey, userId) =>
+        dispatch(likePosted(post, likeIcon, targetKey, userId)),
+    dislikePosted: (post, targetKey, userId) =>
+        dispatch(dislikePosted(post, targetKey, userId)),
+    likeImage: (postId, imageId, iconCode, userId) =>
+        dispatch(likeImage(postId, imageId, iconCode, userId)),
+    dislikeImage: (postId, imageId, userId) =>
+        dispatch(dislikeImage(postId, imageId, userId)),
 });
 
 export default connect(

@@ -11,14 +11,12 @@
         margin:10px;
         font-family: Roboto-Medium;
         .searchBox{
-            border-radius: 7px;
             border: none;
             box-shadow: none;
             width: 95%;
             height: 35px !important;
             font-size: 12px !important;
             color: rgba(0, 0, 0, 0.54);
-            background-color: #f2f3f7;
             border: none;
             margin:auto;
             font-weight:300;
@@ -30,16 +28,23 @@
                 font-weight:300;
             }
         }
-        .btn-search{
-            position: absolute;
-            right: 3px;
-            bottom: 5px;
-            .searchBtn{
+        .search-job{
+            display: flex;
+            align-items: center;
+            border-radius: 7px;
+            background-color: #f2f3f7;
+            input{
+                background: none;
+            }
+            .btn-search{
+                position: relative;
+                .searchBtn{
                 border: none;
                 background: none;
                 img{
                     max-width:16px;
                 }
+            }
             }
         }
     }

@@ -8,28 +8,17 @@ import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
+import {
+  toggleMediaViewerDrawer,
+  setMediaToViewer,
+} from '../../actions/app'
+import { connect } from 'react-redux'
+import Video from './video'
 import './style.scss'
 
 const DISC = require('../../assets/icon/DISC@1x.png')
 
-var job_dict = [
-  {
-    'job_name': "Bác sĩ",
-    'sub_title': 'This impressive paella is a perfect party dish and a fun meal to cook together with your guests. Add 1 cup of frozen peas along with the mussels, if you like.',
-  },
-  {
-    'job_name': "Bác sĩ",
-    'sub_title': 'This impressive paella is a perfect party dish and a fun meal to cook together with your guests. Add 1 cup of frozen peas along with the mussels, if you like.',
-  },
-  {
-    'job_name': "Bác sĩ",
-    'sub_title': 'This impressive paella is a perfect party dish and a fun meal to cook together with your guests. Add 1 cup of frozen peas along with the mussels, if you like.',
-  },
-  {
-    'job_name': "Bác sĩ",
-    'sub_title': 'This impressive paella is a perfect party dish and a fun meal to cook together with your guests. Add 1 cup of frozen peas along with the mussels, if you like.',
-  },
-]
+
 const styles = theme => ({
   root: {
     marginBottom: '10px',
@@ -92,11 +81,59 @@ class Index extends React.Component {
       anchorEl: null,
       open: false
     };
-
+    this.video = []
+    // this.video = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]
     this.handleExpandClick = this.handleExpandClick.bind(this);
     this.handleClickAway = this.handleClickAway.bind(this);
     this.onClick = this.onClick.bind(this);
   }
+
+  handlePlayVideo(videoRef, index) {
+
+    this.video.map((item, i) => {
+      if (index != i)
+        this.handlePauseVideo(item)
+    })
+
+    let video = videoRef.current
+
+    if (video) {
+      video.play()
+      this.setState({
+        playingIndex: index
+      })
+      // video.subscribeToStateChange((state, prevState) => {
+      //   if (state.isActive == true)
+      //     this.setState({
+      //       playingIndex: index
+      //     })
+      //   else {
+      //     this.setState({
+      //       playingIndex: null
+      //     })
+      //   }
+      // })
+    }
+  }
+
+  handlePauseVideo(videoRef) {
+    let video = videoRef.current
+    if (video) {
+      video.pause()
+      this.setState({
+        playingIndex: null
+      })
+    }
+  }
+
+  handleChangeCurrentTime(seconds, videoRef) {
+    let video = videoRef.current
+    if (video) {
+      const { player } = video.getState();
+      video.seek(player.currentTime + seconds)
+    }
+  }
+
 
   render() {
     const classes = this.props.classes;
@@ -104,25 +141,37 @@ class Index extends React.Component {
     const iconClass = clsx(classes.expand, {
       [classes.expandOpen]: this.state.expanded
     });
+    let {
+      playingIndex
+    } = this.state
+    let {
+      suggestJobs,
+      findedJobs
+    } = this.props
+    const jobList = findedJobs && findedJobs.length > 0 ? findedJobs : suggestJobs
+
+    console.log(this.props)
+    console.log("video", this.video)
     return (
-      job_dict.map((item, index) => <Card className={classes.root} key={index}>
+      jobList.map((item, index) => <Card className={classes.root} key={index}>
         <CardHeader className={classes.CardHeaderHeader}
           action={<div className={classes.CardHeaderAction}>
             <Avatar aria-label="recipe" className={classes.avatar}><img className="drawerAvatar" src={DISC} /></Avatar>
             <Chip className={classes.chip} label="Chọn"></Chip>
           </div>
           }
-          title={<Typography className={classes.TypographyError} variant="h6" color="colorError" gutterBottom>{item.job_name}</Typography>}
+          title={<Typography className={classes.TypographyError} variant="h6" color="colorError" gutterBottom>{item.text}</Typography>}
         />
         <CardContent className={classes.CardContent}>
-          <Typography variant="subtitle1" color="textSecondary" component="p">{item.sub_title}</Typography>
+          <Typography variant="subtitle1" color="textSecondary" component="p">{item.description}</Typography>
         </CardContent>
-        <div className={classes.mediaDiv}>
-          <CardMedia
-            className={classes.media}
-            image="https://material-ui.com/static/images/cards/paella.jpg"
-          />
-        </div>
+        {
+          item.videolinks.length > 0 ? <div className={classes.mediaDiv}>
+            {
+              item.videolinks.map((video, j) => <Video videoURL={video} videoThumb={item.thumbnaillinks[j]} />)
+            }
+          </div> : ""
+        }
       </Card>)
     );
   }
@@ -147,4 +196,18 @@ class Index extends React.Component {
   onChange() { }
 }
 
-export default withStyles(styles)(Index);
+const mapStateToProps = state => {
+  return {
+    ...state.app,
+  }
+};
+
+const mapDispatchToProps = dispatch => ({
+  setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
+  toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
+});
+
+export default withStyles(styles)(connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Index));

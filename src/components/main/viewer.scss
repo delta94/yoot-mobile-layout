@@ -89,6 +89,7 @@
                 }
                 .footer-action{
                     padding: 10px 0px;
+                    position: relative;
                     > ul{
                         display: grid;
                         grid-template-columns: repeat(3,1fr);
@@ -161,6 +162,22 @@
                                 .footer-reward{
                                     padding: 10px;
                                     z-index: 10;
+                                    > ul {
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: space-between;
+                                        li{
+                                            display: flex;
+                                            align-items: center;
+                                            img{
+                                                width: 15px;
+                                            }
+                                            > span{
+                                                font-family: Roboto-Regular;
+                                                color: rgba(255,255,255,0.9);
+                                            }
+                                        }
+                                    }
                                 }
                                 .footer-action{
                                     border-top: 0.5px solid rgba(255,255,255,0.3);

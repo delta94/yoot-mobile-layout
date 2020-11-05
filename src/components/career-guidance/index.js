@@ -28,14 +28,15 @@ import {
   Pause as PauseIcon,
   PlayArrow as PlayArrowIcon,
   Forward10 as Forward10Icon,
-  Replay10 as Replay10Icon
+  Replay10 as Replay10Icon,
+  ArrowBack as ArrowBackIcon
 } from '@material-ui/icons'
 import StyleChart from './styleChart'
 import { connect } from 'react-redux'
 import YourJobs from "../job-list";
 import Test from './test'
 import $ from 'jquery'
-import { get } from "../../api";
+import { get, post } from "../../api";
 import { BUILD_YS_API, CurrentDate } from "../../constants/appSettings";
 import { objToQuery } from '../../utils/common'
 import moment from 'moment'
@@ -62,7 +63,10 @@ class Index extends React.Component {
       iframeHeight: null,
       fileIntro: null,
       videoIntro: null,
-      videoDISCs: []
+      videoDISCs: [],
+      suggestJobs: [],
+      findedJobs: [],
+      searchKey: ""
     };
     this.video = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]
   }
@@ -159,6 +163,50 @@ class Index extends React.Component {
     setTimeout(() => {
       this.props.history.push("/skills/" + source.ID)
     }, 200);
+  }
+
+  handleOpenYourJobs() {
+    this.handleGetSuggestJobs()
+    this.props.toggleYourJobDrawer(true)
+  }
+
+  handleGetSuggestJobs() {
+    let param = {
+      findtext: "",
+      isresultdisc: 1,
+      isology: 0,
+      ologyid: 0
+    }
+    post(BUILD_YS_API, "Career/GetCareers" + objToQuery(param), null, result => {
+      if (result && result.result == 1)
+        this.setState({
+          suggestJobs: result.content.careers
+        })
+    })
+  }
+
+  handleSearchJob() {
+    let {
+      searchKey
+    } = this.state
+    if (searchKey == "" || !searchKey) {
+      this.setState({
+        findedJobs: []
+      })
+      return
+    }
+    let param = {
+      findtext: searchKey,
+      isresultdisc: 0,
+      isology: 0,
+      ologyid: 0
+    }
+    post(BUILD_YS_API, "Career/GetCareers" + objToQuery(param), null, result => {
+      if (result && result.result == 1)
+        this.setState({
+          findedJobs: result.content.careers
+        })
+    })
   }
 
 
@@ -300,7 +348,7 @@ const renderScholarDrawer = (component) => {
               </div>
               <div className="_blank_">
               </div>
-              <div className="item accordant-job" onClick={() => component.props.toggleYourJobDrawer(true)}>
+              <div className="item accordant-job" onClick={() => component.handleOpenYourJobs()}>
                 <img src={accordantjob} />
                 <span>Công việc phù hợp</span>
               </div>
@@ -506,9 +554,19 @@ const renderDISCDrawer = (component) => {
 
 const renderYourJobDrawer = (component) => {
   let {
+    suggestJobs,
+    findedJobs,
+    searchKey,
+    isSearching
+  } = component.state
+  let {
     showYourJobPage,
     profile
   } = component.props
+
+  console.log("suggestJobs", suggestJobs)
+  console.log("findedJobs", findedJobs)
+
   return (
     <Drawer anchor="bottom" className="job-list-drawer" open={showYourJobPage} onClose={() => component.props.toggleYourJobDrawer(false)}>
       {
@@ -518,7 +576,7 @@ const renderYourJobDrawer = (component) => {
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                 <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
               </IconButton>
-              <label>Công việc phù hợp</label>
+              <label>Công việc</label>
             </div>
             <div className="user-reward">
               <div className="profile">
@@ -533,14 +591,23 @@ const renderYourJobDrawer = (component) => {
             </div>
           </div>
           <div className="filter">
-            <input type="text" name="search" className="searchBox" placeholder="Vui lòng chọn công việc phù hợp" />
-            <div className="btn-search">
-              <button type="submit" className="searchBtn">
-                <img src={searchBtn} />
-              </button>
+            <div className="search-job">
+              {
+                isSearching ? <div className="btn-search">
+                  <button type="submit" className="searchBtn red" onClick={() => component.setState({ searchKey: "", isSearching: false }, () => component.handleSearchJob())}>
+                    <ArrowBackIcon style={{ width: 20 }} />
+                  </button>
+                </div> : ""
+              }
+              <input type="text" name="search" value={searchKey} onChange={(e) => component.setState({ searchKey: e.target.value, isSearching: true }, () => component.handleSearchJob())} className="searchBox" placeholder="Vui lòng chọn công việc phù hợp" />
+              <div className="btn-search">
+                <button type="submit" className="searchBtn">
+                  <img src={searchBtn} />
+                </button>
+              </div>
             </div>
           </div>
-          <div style={{ overflow: "scroll", background: "#f2f3f7" }}>
+          <div style={{ overflow: "scroll", background: "#f2f3f7" }} id="your-job-list">
             <div style={{ padding: "1px 0 10px 0", background: "white", marginBottom: "10px" }}>
               <div className="jobList-Noti">
                 <div className="divContent">
@@ -553,7 +620,7 @@ const renderYourJobDrawer = (component) => {
                 </p>
               </div>
             </div>
-            <YourJobs />
+            <YourJobs suggestJobs={suggestJobs} findedJobs={findedJobs} />
           </div>
           <div className="footer-drawer">
             <Button onClick={() => component.props.toggleYourMajorsDrawer(true)}>Ngành học tương ứng</Button>
@@ -595,6 +662,7 @@ const renderYourMajorsDrawer = (component) => {
           </div>
           <div className="filter">
             <div className="searchGroup">
+
               <input type="text" name="search" className="searchBox" style={{ height: "40px !important" }} placeholder="Nhập công việc phù hợp hoặc ngành/trường mong mu..." />
               <div className="btn-search" style={{ top: "10px" }}>
                 <button type="submit" className="searchBtn">

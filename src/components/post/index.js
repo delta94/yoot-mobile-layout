@@ -301,7 +301,7 @@ class Index extends React.Component {
       SOCIAL_NET_WORK_API,
       "PostNewsFeed/LikeNewsFeed" + objToQuery(param),
       null,
-      (result) => {}
+      (result) => { }
     );
   }
 
@@ -322,7 +322,7 @@ class Index extends React.Component {
       SOCIAL_NET_WORK_API,
       "PostNewsFeed/LikeNewsFeed" + objToQuery(param),
       null,
-      (result) => {}
+      (result) => { }
     );
   }
 
@@ -340,7 +340,7 @@ class Index extends React.Component {
       SOCIAL_NET_WORK_API,
       "PostNewsFeed/LikeNewsFeed" + objToQuery(param),
       null,
-      (result) => {}
+      (result) => { }
     );
   }
 
@@ -359,7 +359,7 @@ class Index extends React.Component {
       SOCIAL_NET_WORK_API,
       "PostNewsFeed/LikeNewsFeed" + objToQuery(param),
       null,
-      (result) => {}
+      (result) => { }
     );
   }
 
@@ -928,8 +928,8 @@ class Index extends React.Component {
                 </span>
               </div>
             ) : (
-              ""
-            )}
+                ""
+              )}
             <CardHeader
               className="card-header"
               avatar={
@@ -943,58 +943,58 @@ class Index extends React.Component {
               action={
                 <CustomMenu placement="bottom-end">
                   {data.iduserpost == profile.id &&
-                  data.kindpost != 2 &&
-                  data.kindpost != 3 ? (
-                    <MenuItem
-                      onClick={() =>
-                        this.setState({ showLocalMenu: false }, () => {
-                          this.props.togglePostDrawer(true);
-                          this.props.setCurrentPosted(data);
-                        })
-                      }
-                    >
-                      Chỉnh sửa bài đăng
-                    </MenuItem>
-                  ) : (
-                    ""
-                  )}
-                  {data.iduserpost == profile.id &&
-                  (data.kindpost == 2 || data.kindpost == 3) ? (
-                    <MenuItem
-                      onClick={() =>
-                        this.setState({
-                          showLocalMenu: false,
-                          showUpdateInfoOfProfilePost: true,
-                          postContent: data.nfcontent,
-                        })
-                      }
-                    >
-                      Chỉnh sửa nội dung
-                    </MenuItem>
-                  ) : (
-                    ""
-                  )}
-                  {data.iduserpost == profile.id &&
-                  data.kindpost != 2 &&
-                  data.kindpost != 3 ? (
-                    <MenuItem
-                      onClick={() =>
-                        this.setState({ showLocalMenu: false }, () =>
-                          this.setState({
-                            showConfim: true,
-                            okCallback: () => this.handleDeletePost(),
-                            confirmTitle: "Xoá bài đăng",
-                            confirmMessage:
-                              "Bạn có thật sự muốn xoá bài đăng này?",
+                    data.kindpost != 2 &&
+                    data.kindpost != 3 ? (
+                      <MenuItem
+                        onClick={() =>
+                          this.setState({ showLocalMenu: false }, () => {
+                            this.props.togglePostDrawer(true);
+                            this.props.setCurrentPosted(data);
                           })
-                        )
-                      }
-                    >
-                      Xoá bài đăng
-                    </MenuItem>
-                  ) : (
-                    ""
-                  )}
+                        }
+                      >
+                        Chỉnh sửa bài đăng
+                      </MenuItem>
+                    ) : (
+                      ""
+                    )}
+                  {data.iduserpost == profile.id &&
+                    (data.kindpost == 2 || data.kindpost == 3) ? (
+                      <MenuItem
+                        onClick={() =>
+                          this.setState({
+                            showLocalMenu: false,
+                            showUpdateInfoOfProfilePost: true,
+                            postContent: data.nfcontent,
+                          })
+                        }
+                      >
+                        Chỉnh sửa nội dung
+                      </MenuItem>
+                    ) : (
+                      ""
+                    )}
+                  {data.iduserpost == profile.id &&
+                    data.kindpost != 2 &&
+                    data.kindpost != 3 ? (
+                      <MenuItem
+                        onClick={() =>
+                          this.setState({ showLocalMenu: false }, () =>
+                            this.setState({
+                              showConfim: true,
+                              okCallback: () => this.handleDeletePost(),
+                              confirmTitle: "Xoá bài đăng",
+                              confirmMessage:
+                                "Bạn có thật sự muốn xoá bài đăng này?",
+                            })
+                          )
+                        }
+                      >
+                        Xoá bài đăng
+                      </MenuItem>
+                    ) : (
+                      ""
+                    )}
                   <MenuItem
                     onClick={() =>
                       this.setState({ showLocalMenu: false }, () =>
@@ -1012,8 +1012,8 @@ class Index extends React.Component {
                       Báo cáo vi phạm
                     </MenuItem>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </CustomMenu>
               }
               title={
@@ -1041,26 +1041,26 @@ class Index extends React.Component {
                         .replace("{namealbum}", data.albumname)}
                     </span>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {data.kindpost == 3 ? (
                     <span className="mesage">
                       {data.titlepost.replace("{username}", " ")}
                     </span>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {data.kindpost == 2 ? (
                     <span className="mesage">
                       {data.titlepost.replace("{username}", " ")}
                     </span>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {data.usersTag.length > 0 ? (
                     <span className="mesage">
                       {/* BINH: change text darkmode */}
-                      <span> 
+                      <span>
                         cùng với {" "}
                         <b id="name-friend"
                           onClick={() => {
@@ -1091,8 +1091,8 @@ class Index extends React.Component {
                           </b>
                         </span>
                       ) : (
-                        ""
-                      )}
+                          ""
+                        )}
                       {data.usersTag.length > 2 ? (
                         <span>
                           {" "}
@@ -1106,17 +1106,17 @@ class Index extends React.Component {
                           </b>
                         </span>
                       ) : (
-                        ""
-                      )}
+                          ""
+                        )}
                     </span>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {data.kindpost == 1 && data.newsFeedShare ? (
                     <span className="mesage"> đã chia sẻ một bài viết</span>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </span>
               }
               subheader={
@@ -1131,14 +1131,14 @@ class Index extends React.Component {
                         }
                       />
                     ) : (
-                      <img
-                        src={
-                          PrivacyOptions.find(
-                            (privacy) => privacy.code == data.postforid
-                          ).icon1
-                        }
-                      />
-                    )}
+                        <img
+                          src={
+                            PrivacyOptions.find(
+                              (privacy) => privacy.code == data.postforid
+                            ).icon1
+                          }
+                        />
+                      )}
                     <FiberManualRecordIcon />
                     {fromNow(moment(data.createdate), moment(new Date()))}
                   </div>
@@ -1153,8 +1153,8 @@ class Index extends React.Component {
                       </span>
                     </div>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </div>
               }
             />
@@ -1197,8 +1197,8 @@ class Index extends React.Component {
                 </ShowMoreText>
               </div>
             ) : (
-              ""
-            )}
+                ""
+              )}
 
             <CardContent className="card-content">
               <div className="media-grid">
@@ -1252,20 +1252,20 @@ class Index extends React.Component {
                                     src={mute}
                                   />
                                 ) : (
-                                  <img
-                                    style={{ width: 24, height: 24 }}
-                                    src={unmute}
-                                  />
-                                )}
+                                    <img
+                                      style={{ width: 24, height: 24 }}
+                                      src={unmute}
+                                    />
+                                  )}
                               </IconButton>
                             ) : (
-                              <IconButton
-                                onClick={() => this.handleSetMuted(!isMuted)}
-                                className="bt-play"
-                              >
-                                <PlayArrowIcon />
-                              </IconButton>
-                            )}
+                                <IconButton
+                                  onClick={() => this.handleSetMuted(!isMuted)}
+                                  className="bt-play"
+                                >
+                                  <PlayArrowIcon />
+                                </IconButton>
+                              )}
                             <div
                               className="thumb"
                               ref={index == 0 ? this.thumbnail : null}
@@ -1278,14 +1278,14 @@ class Index extends React.Component {
                             />
                           </div>
                         ) : (
-                          <img
-                            src={media.name}
-                            alt={media.name}
-                            onClick={() =>
-                              this.setState({ showPostedDetail: true })
-                            }
-                          />
-                        )}
+                            <img
+                              src={media.name}
+                              alt={media.name}
+                              onClick={() =>
+                                this.setState({ showPostedDetail: true })
+                              }
+                            />
+                          )}
                         {data.mediaPlays.length > 5 && index == 4 ? (
                           <div
                             className="grid-overlay"
@@ -1296,103 +1296,103 @@ class Index extends React.Component {
                             <span>+{data.mediaPlays.length - 5}</span>
                           </div>
                         ) : (
-                          ""
-                        )}
+                            ""
+                          )}
                       </GridListTile>
                     ))}
                   </GridList>
                 ) : (
-                  <GridList cols={1}>
-                    {data.mediaPlays.map((media, index) => (
-                      <GridListTile
-                        className={media.typeobject == 2 ? "video" : "image"}
-                        style={{ height: "auto" }}
-                        key={media.name}
-                        cols={1}
-                      >
-                        {media.typeobject == 2 ? (
-                          <div>
-                            <div
-                              onClick={() => {
-                                this.props.setMediaToViewer([media]);
-                                this.props.toggleMediaViewerDrawer(true, {
-                                  showInfo: true,
-                                  activeIndex: index,
-                                  isvideo: true,
-                                });
-                                this.handlePauseVideo();
-                              }}
-                            >
-                              <Player
-                                ref={this.player}
-                                poster={media.thumbnailname}
-                                src={media.name}
-                                videoWidth={media.width}
-                                videoHeight={media.height}
-                                playsInline={true}
+                    <GridList cols={1}>
+                      {data.mediaPlays.map((media, index) => (
+                        <GridListTile
+                          className={media.typeobject == 2 ? "video" : "image"}
+                          style={{ height: "auto" }}
+                          key={media.name}
+                          cols={1}
+                        >
+                          {media.typeobject == 2 ? (
+                            <div>
+                              <div
+                                onClick={() => {
+                                  this.props.setMediaToViewer([media]);
+                                  this.props.toggleMediaViewerDrawer(true, {
+                                    showInfo: true,
+                                    activeIndex: index,
+                                    isvideo: true,
+                                  });
+                                  this.handlePauseVideo();
+                                }}
                               >
-                                <ControlBar
-                                  disableDefaultControls={true}
-                                  autoHide={false}
-                                  className={"video-control"}
-                                ></ControlBar>
-                              </Player>
+                                <Player
+                                  ref={this.player}
+                                  poster={media.thumbnailname}
+                                  src={media.name}
+                                  videoWidth={media.width}
+                                  videoHeight={media.height}
+                                  playsInline={true}
+                                >
+                                  <ControlBar
+                                    disableDefaultControls={true}
+                                    autoHide={false}
+                                    className={"video-control"}
+                                  ></ControlBar>
+                                </Player>
+                              </div>
+                              <IconButton
+                                onClick={() => this.handleSetMuted(!isMuted)}
+                                className="bt-mute"
+                              >
+                                {isMuted == true ? (
+                                  <img
+                                    style={{ width: 24, height: 24 }}
+                                    src={mute}
+                                  />
+                                ) : (
+                                    <img
+                                      style={{ width: 24, height: 24 }}
+                                      src={unmute}
+                                    />
+                                  )}
+                              </IconButton>
+                              <div
+                                className="thumb"
+                                ref={index == 0 ? this.thumbnail : null}
+                                style={{
+                                  background: "url(" + media.thumbnailname + ")",
+                                }}
+                                onClick={() => {
+                                  this.props.setMediaToViewer([media]);
+                                  this.props.toggleMediaViewerDrawer(true, {
+                                    showInfo: true,
+                                    activeIndex: index,
+                                    isvideo: true,
+                                  });
+                                  this.handlePauseVideo();
+                                }}
+                              />
                             </div>
-                            <IconButton
-                              onClick={() => this.handleSetMuted(!isMuted)}
-                              className="bt-mute"
-                            >
-                              {isMuted == true ? (
-                                <img
-                                  style={{ width: 24, height: 24 }}
-                                  src={mute}
-                                />
-                              ) : (
-                                <img
-                                  style={{ width: 24, height: 24 }}
-                                  src={unmute}
-                                />
-                              )}
-                            </IconButton>
-                            <div
-                              className="thumb"
-                              ref={index == 0 ? this.thumbnail : null}
-                              style={{
-                                background: "url(" + media.thumbnailname + ")",
-                              }}
-                              onClick={() => {
-                                this.props.setMediaToViewer([media]);
-                                this.props.toggleMediaViewerDrawer(true, {
-                                  showInfo: true,
-                                  activeIndex: index,
-                                  isvideo: true,
-                                });
-                                this.handlePauseVideo();
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          <img
-                            src={media.name}
-                            alt={media.name}
-                            style={{ width: "100%", height: "auto" }}
-                            onClick={() => {
-                              this.props.setMediaToViewer(data.mediaPlays);
-                              this.props.toggleMediaViewerDrawer(true, {
-                                actions:
-                                  data.iduserpost == profile.id
-                                    ? mediaRootActions(this)
-                                    : mediaGuestActions(this),
-                                showInfo: true,
-                                activeIndex: index,
-                              });
-                            }}
-                          />
-                        )}
-                      </GridListTile>
-                    ))}
-                  </GridList>
-                )}
+                          ) : (
+                              <img
+                                src={media.name}
+                                alt={media.name}
+                                style={{ width: "100%", height: "auto" }}
+                                onClick={() => {
+                                  this.props.setMediaToViewer(data.mediaPlays);
+                                  this.props.toggleMediaViewerDrawer(true, {
+                                    actions:
+                                      data.iduserpost == profile.id
+                                        ? mediaRootActions(this)
+                                        : mediaGuestActions(this),
+                                    showInfo: true,
+                                    activeIndex: index,
+                                  });
+                                }}
+                              />
+                            )}
+                        </GridListTile>
+                      ))}
+                    </GridList>
+                  )}
                 {data.newsFeedShare ? (
                   <div className="post-shared">
                     <div>
@@ -1410,8 +1410,8 @@ class Index extends React.Component {
                               </span>
                             </div>
                           ) : (
-                            ""
-                          )}
+                              ""
+                            )}
                           <CardHeader
                             className="card-header"
                             avatar={
@@ -1436,8 +1436,8 @@ class Index extends React.Component {
                                       .replace("{namealbum}", data.albumname)}
                                   </span>
                                 ) : (
-                                  ""
-                                )}
+                                    ""
+                                  )}
                                 {data.newsFeedShare.kindpost == 3 ? (
                                   <span>
                                     {data.newsFeedShare.titlepost.replace(
@@ -1446,8 +1446,8 @@ class Index extends React.Component {
                                     )}
                                   </span>
                                 ) : (
-                                  ""
-                                )}
+                                    ""
+                                  )}
                                 {data.newsFeedShare.kindpost == 2 ? (
                                   <span>
                                     {data.newsFeedShare.titlepost.replace(
@@ -1456,8 +1456,8 @@ class Index extends React.Component {
                                     )}
                                   </span>
                                 ) : (
-                                  ""
-                                )}
+                                    ""
+                                  )}
                               </span>
                             }
                             subheader={
@@ -1489,8 +1489,8 @@ class Index extends React.Component {
                                     </span>
                                   </div>
                                 ) : (
-                                  ""
-                                )}
+                                    ""
+                                  )}
                               </div>
                             }
                           />
@@ -1535,8 +1535,8 @@ class Index extends React.Component {
                               </ShowMoreText>
                             </div>
                           ) : (
-                            ""
-                          )}
+                              ""
+                            )}
                           <CardContent className="card-content">
                             <div className="media-grid">
                               {data.newsFeedShare.mediaPlays.length > 1 ? (
@@ -1612,25 +1612,25 @@ class Index extends React.Component {
                                                     src={mute}
                                                   />
                                                 ) : (
-                                                  <img
-                                                    style={{
-                                                      width: 24,
-                                                      height: 24,
-                                                    }}
-                                                    src={unmute}
-                                                  />
-                                                )}
+                                                    <img
+                                                      style={{
+                                                        width: 24,
+                                                        height: 24,
+                                                      }}
+                                                      src={unmute}
+                                                    />
+                                                  )}
                                               </IconButton>
                                             ) : (
-                                              <IconButton
-                                                onClick={() =>
-                                                  this.handleSetMuted(!isMuted)
-                                                }
-                                                className="bt-play"
-                                              >
-                                                <PlayArrowIcon />
-                                              </IconButton>
-                                            )}
+                                                <IconButton
+                                                  onClick={() =>
+                                                    this.handleSetMuted(!isMuted)
+                                                  }
+                                                  className="bt-play"
+                                                >
+                                                  <PlayArrowIcon />
+                                                </IconButton>
+                                              )}
                                             <div
                                               className="thumb"
                                               ref={
@@ -1652,245 +1652,245 @@ class Index extends React.Component {
                                             />
                                           </div>
                                         ) : (
-                                          <img
-                                            src={media.name}
-                                            alt={media.name}
-                                            onClick={() =>
-                                              this.setState({
-                                                showPostedDetail: true,
-                                              })
-                                            }
-                                          />
-                                        )}
+                                            <img
+                                              src={media.name}
+                                              alt={media.name}
+                                              onClick={() =>
+                                                this.setState({
+                                                  showPostedDetail: true,
+                                                })
+                                              }
+                                            />
+                                          )}
                                         {data.newsFeedShare.mediaPlays.length >
                                           5 && index == 4 ? (
-                                          <div
-                                            className="grid-overlay"
-                                            onClick={() =>
-                                              this.setState({
-                                                showPostedDetail: true,
-                                              })
-                                            }
-                                          >
-                                            <span>
-                                              +
+                                            <div
+                                              className="grid-overlay"
+                                              onClick={() =>
+                                                this.setState({
+                                                  showPostedDetail: true,
+                                                })
+                                              }
+                                            >
+                                              <span>
+                                                +
                                               {data.newsFeedShare.mediaPlays
-                                                .length - 5}
-                                            </span>
-                                          </div>
-                                        ) : (
-                                          ""
-                                        )}
+                                                  .length - 5}
+                                              </span>
+                                            </div>
+                                          ) : (
+                                            ""
+                                          )}
                                       </GridListTile>
                                     ))}
                                 </GridList>
                               ) : (
-                                <GridList cols={1}>
-                                  {data.newsFeedShare.mediaPlays.map(
-                                    (media, index) => (
-                                      <GridListTile
-                                        className={
-                                          media.typeobject == 2
-                                            ? "video"
-                                            : "image"
-                                        }
-                                        style={{ height: "auto" }}
-                                        key={media.name}
-                                        cols={1}
-                                      >
-                                        {media.typeobject == 2 ? (
-                                          <div>
-                                            <div
-                                              onClick={() => {
-                                                this.props.setMediaToViewer([
-                                                  media,
-                                                ]);
-                                                this.props.toggleMediaViewerDrawer(
-                                                  true,
-                                                  {
-                                                    showInfo: true,
-                                                    activeIndex: index,
-                                                    isvideo: true,
-                                                  }
-                                                );
-                                                this.handlePauseVideo();
-                                              }}
-                                            >
-                                              <Player
-                                                ref={this.player}
-                                                poster={media.thumbnailname}
-                                                src={media.name}
-                                                videoWidth={media.width}
-                                                videoHeight={media.height}
-                                                playsInline={true}
+                                  <GridList cols={1}>
+                                    {data.newsFeedShare.mediaPlays.map(
+                                      (media, index) => (
+                                        <GridListTile
+                                          className={
+                                            media.typeobject == 2
+                                              ? "video"
+                                              : "image"
+                                          }
+                                          style={{ height: "auto" }}
+                                          key={media.name}
+                                          cols={1}
+                                        >
+                                          {media.typeobject == 2 ? (
+                                            <div>
+                                              <div
+                                                onClick={() => {
+                                                  this.props.setMediaToViewer([
+                                                    media,
+                                                  ]);
+                                                  this.props.toggleMediaViewerDrawer(
+                                                    true,
+                                                    {
+                                                      showInfo: true,
+                                                      activeIndex: index,
+                                                      isvideo: true,
+                                                    }
+                                                  );
+                                                  this.handlePauseVideo();
+                                                }}
                                               >
-                                                <ControlBar
-                                                  disableDefaultControls={true}
-                                                  autoHide={false}
-                                                  className={"video-control"}
-                                                ></ControlBar>
-                                              </Player>
-                                            </div>
-                                            <IconButton
-                                              onClick={() =>
-                                                this.handleSetMuted(!isMuted)
-                                              }
-                                              className="bt-mute"
-                                            >
-                                              {isMuted == true ? (
-                                                <img
-                                                  style={{
-                                                    width: 24,
-                                                    height: 24,
-                                                  }}
-                                                  src={mute}
-                                                />
-                                              ) : (
-                                                <img
-                                                  style={{
-                                                    width: 24,
-                                                    height: 24,
-                                                  }}
-                                                  src={unmute}
-                                                />
-                                              )}
-                                            </IconButton>
-                                            <div
-                                              className="thumb"
-                                              ref={
-                                                index == 0
-                                                  ? this.thumbnail
-                                                  : null
-                                              }
-                                              style={{
-                                                background:
-                                                  "url(" +
-                                                  media.thumbnailname +
-                                                  ")",
-                                              }}
-                                              onClick={() => {
-                                                this.props.setMediaToViewer([
-                                                  media,
-                                                ]);
-                                                this.props.toggleMediaViewerDrawer(
-                                                  true,
-                                                  {
-                                                    showInfo: true,
-                                                    activeIndex: index,
-                                                    isvideo: true,
-                                                  }
-                                                );
-                                                this.handlePauseVideo();
-                                              }}
-                                            />
-                                          </div>
-                                        ) : (
-                                          <img
-                                            src={media.name}
-                                            alt={media.name}
-                                            style={{
-                                              width: "100%",
-                                              height: "auto",
-                                            }}
-                                            onClick={() => {
-                                              this.props.setMediaToViewer(
-                                                data.newsFeedShare.mediaPlays
-                                              );
-                                              this.props.toggleMediaViewerDrawer(
-                                                true,
-                                                {
-                                                  actions:
-                                                    data.newsFeedShare
-                                                      .iduserpost == profile.id
-                                                      ? mediaRootActions(this)
-                                                      : mediaGuestActions(this),
-                                                  showInfo: true,
-                                                  activeIndex: index,
+                                                <Player
+                                                  ref={this.player}
+                                                  poster={media.thumbnailname}
+                                                  src={media.name}
+                                                  videoWidth={media.width}
+                                                  videoHeight={media.height}
+                                                  playsInline={true}
+                                                >
+                                                  <ControlBar
+                                                    disableDefaultControls={true}
+                                                    autoHide={false}
+                                                    className={"video-control"}
+                                                  ></ControlBar>
+                                                </Player>
+                                              </div>
+                                              <IconButton
+                                                onClick={() =>
+                                                  this.handleSetMuted(!isMuted)
                                                 }
-                                              );
-                                            }}
-                                          />
-                                        )}
-                                      </GridListTile>
-                                    )
-                                  )}
-                                </GridList>
-                              )}
+                                                className="bt-mute"
+                                              >
+                                                {isMuted == true ? (
+                                                  <img
+                                                    style={{
+                                                      width: 24,
+                                                      height: 24,
+                                                    }}
+                                                    src={mute}
+                                                  />
+                                                ) : (
+                                                    <img
+                                                      style={{
+                                                        width: 24,
+                                                        height: 24,
+                                                      }}
+                                                      src={unmute}
+                                                    />
+                                                  )}
+                                              </IconButton>
+                                              <div
+                                                className="thumb"
+                                                ref={
+                                                  index == 0
+                                                    ? this.thumbnail
+                                                    : null
+                                                }
+                                                style={{
+                                                  background:
+                                                    "url(" +
+                                                    media.thumbnailname +
+                                                    ")",
+                                                }}
+                                                onClick={() => {
+                                                  this.props.setMediaToViewer([
+                                                    media,
+                                                  ]);
+                                                  this.props.toggleMediaViewerDrawer(
+                                                    true,
+                                                    {
+                                                      showInfo: true,
+                                                      activeIndex: index,
+                                                      isvideo: true,
+                                                    }
+                                                  );
+                                                  this.handlePauseVideo();
+                                                }}
+                                              />
+                                            </div>
+                                          ) : (
+                                              <img
+                                                src={media.name}
+                                                alt={media.name}
+                                                style={{
+                                                  width: "100%",
+                                                  height: "auto",
+                                                }}
+                                                onClick={() => {
+                                                  this.props.setMediaToViewer(
+                                                    data.newsFeedShare.mediaPlays
+                                                  );
+                                                  this.props.toggleMediaViewerDrawer(
+                                                    true,
+                                                    {
+                                                      actions:
+                                                        data.newsFeedShare
+                                                          .iduserpost == profile.id
+                                                          ? mediaRootActions(this)
+                                                          : mediaGuestActions(this),
+                                                      showInfo: true,
+                                                      activeIndex: index,
+                                                    }
+                                                  );
+                                                }}
+                                              />
+                                            )}
+                                        </GridListTile>
+                                      )
+                                    )}
+                                  </GridList>
+                                )}
                             </div>
                             {data.newsFeedShare.numlike > 0 ||
-                            data.newsFeedShare.numcomment > 0 ? (
-                              <div className="react-reward">
-                                <span>
-                                  {data.newsFeedShare.numlike +
-                                    data.newsFeedShare.numcomment}{" "}
+                              data.newsFeedShare.numcomment > 0 ? (
+                                <div className="react-reward">
+                                  <span>
+                                    {data.newsFeedShare.numlike +
+                                      data.newsFeedShare.numcomment}{" "}
                                   lượt xem
                                 </span>
-                              </div>
-                            ) : (
-                              ""
-                            )}
+                                </div>
+                              ) : (
+                                ""
+                              )}
                           </CardContent>
                         </Card>
                       )}
                     </div>
                   </div>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </div>
               {data.numlike > 0 ||
-              data.numcomment > 0 ||
-              (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ? (
-                <div className="react-reward">
-                  {data.numlike > 0 ? (
-                    <span className="like">
-                      {data.iconNumbers
-                        .filter((item) => item.icon != data.iconlike)
-                        .map(
-                          (item, index) =>
-                            item.icon > 0 &&
-                            item.num > 0 && (
-                              <img
-                                key={index}
-                                src={ReactSelectorIcon[item.icon].icon}
-                              ></img>
-                            )
-                        )}
-                      {data.islike == 1 ? (
-                        <img src={ReactSelectorIcon[data.iconlike].icon}></img>
+                data.numcomment > 0 ||
+                (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ? (
+                  <div className="react-reward">
+                    {data.numlike > 0 ? (
+                      <span className="like">
+                        {data.iconNumbers
+                          .filter((item) => item.icon != data.iconlike)
+                          .map(
+                            (item, index) =>
+                              item.icon > 0 &&
+                              item.num > 0 && (
+                                <img
+                                  key={index}
+                                  src={ReactSelectorIcon[item.icon].icon}
+                                ></img>
+                              )
+                          )}
+                        {data.islike == 1 ? (
+                          <img src={ReactSelectorIcon[data.iconlike].icon}></img>
+                        ) : (
+                            ""
+                          )}
+                        <span>{data.numlike}</span>
+                      </span>
+                    ) : (
+                        <span className="like"></span>
+                      )}
+                    {data.numcomment > 0 ||
+                      (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ? (
+                        <span
+                          onClick={() =>
+                            this.setState({
+                              showCommentDrawer: true,
+                              currentPost: data,
+                            })
+                          }
+                          className="comment"
+                        >
+                          {data.numcomment > 0
+                            ? `${data.numcomment} bình luận` //bình check click bình luận
+                            : ""}{" "}
+                          {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
+                            ? `${data.mediaPlays[0].numview} lượt xem`
+                            : ""}
+                        </span>
                       ) : (
                         ""
                       )}
-                      <span>{data.numlike}</span>
-                    </span>
-                  ) : (
-                    <span className="like"></span>
-                  )}
-                  {data.numcomment > 0 ||
-                  (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ? (
-                    <span
-                      onClick={() =>
-                        this.setState({
-                          showCommentDrawer: true,
-                          currentPost: data,
-                        })
-                      }
-                      className="comment"
-                    >
-                      {data.numcomment > 0
-                        ? `${data.numcomment} bình luận` //BINH: check click bình luận
-                        : ""}{" "}
-                      {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
-                        ? `${data.mediaPlays[0].numview} lượt xem`
-                        : ""}
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              ) : (
-                ""
-              )}
+                  </div>
+                ) : (
+                  ""
+                )}
             </CardContent>
             <CardActions disableSpacing className="post-actions">
               <FacebookSelector
@@ -1928,8 +1928,8 @@ class Index extends React.Component {
                   Chia sẻ
                 </Button>
               ) : (
-                ""
-              )}
+                  ""
+                )}
             </CardActions>
             {data.numcomment > 0 && !daskMode ? (
               <Collapse
@@ -1968,14 +1968,14 @@ class Index extends React.Component {
                         </div>
                       </li>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                   </ul>
                 </CardContent>
               </Collapse>
             ) : (
-              ""
-            )}
+                ""
+              )}
             {renderCommentDrawer(this)}
             {renderShareDrawer(this)}
             {renderSharePrivacyMenuDrawer(this)}
@@ -1994,8 +1994,8 @@ class Index extends React.Component {
         </ScrollTrigger>
       </div>
     ) : (
-      ""
-    );
+        ""
+      );
   }
 }
 
@@ -2185,8 +2185,8 @@ const renderShareDrawer = (component) => {
               Đăng
             </Button>
           ) : (
-            ""
-          )}
+              ""
+            )}
         </div>
         <div className="filter"></div>
         <div className="drawer-content" style={{ overflow: "scroll" }}>
@@ -2232,8 +2232,8 @@ const renderShareDrawer = (component) => {
               <label>{groupSelected.groupname}</label>
             </div>
           ) : (
-            ""
-          )}
+              ""
+            )}
           {tagedFrieds && tagedFrieds.length > 0 ? (
             <div className="tags-selected">
               <ul>
@@ -2245,8 +2245,8 @@ const renderShareDrawer = (component) => {
               </ul>
             </div>
           ) : (
-            ""
-          )}
+              ""
+            )}
           <div className="share-to-time-line">
             <div>
               <div className="icon">
@@ -2282,8 +2282,8 @@ const renderShareDrawer = (component) => {
               <Loader type="small" width={30} height={30} />
             </div>
           ) : (
-            ""
-          )}
+              ""
+            )}
           <div className="group-list">
             {groupForShare && groupForShare.length > 0 ? (
               <ul>
@@ -2316,8 +2316,8 @@ const renderShareDrawer = (component) => {
                 ))}
               </ul>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       </div>
@@ -2429,8 +2429,8 @@ const renderGroupForShareDrawer = (component) => {
                 ))}
               </ul>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       </div>
@@ -2558,8 +2558,8 @@ const renderUpdatePrivacyImageDrawer = (component) => {
       {isProccesing == true ? (
         <Loader type="dask-mode" isFullScreen={true} />
       ) : (
-        ""
-      )}
+          ""
+        )}
     </Drawer>
   );
 };
@@ -2616,8 +2616,8 @@ const renderDetailPosted = (component) => {
                   </span>
                 </div>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               <CardHeader
                 className="card-header"
                 avatar={
@@ -2650,8 +2650,8 @@ const renderDetailPosted = (component) => {
                         Xoá bài đăng
                       </MenuItem>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                     <MenuItem
                       onClick={() =>
                         component.setState({ showLocalMenu: false }, () =>
@@ -2670,8 +2670,8 @@ const renderDetailPosted = (component) => {
                         Ẩn bài đăng
                       </MenuItem>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                     {data.iduserpost != profile.id ? (
                       <MenuItem
                         onClick={() =>
@@ -2683,8 +2683,8 @@ const renderDetailPosted = (component) => {
                         Báo cáo vi phạm
                       </MenuItem>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                   </CustomMenu>
                 }
                 title={
@@ -2697,18 +2697,18 @@ const renderDetailPosted = (component) => {
                           .replace("{namealbum}", data.albumname)}
                       </span>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                     {data.kindpost == 3 ? (
                       <span>{data.titlepost.replace("{username}", " ")}</span>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                     {data.kindpost == 2 ? (
                       <span>{data.titlepost.replace("{username}", " ")}</span>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                   </span>
                 }
                 subheader={
@@ -2735,8 +2735,8 @@ const renderDetailPosted = (component) => {
                         </span>
                       </div>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                   </div>
                 }
               />
@@ -2779,8 +2779,8 @@ const renderDetailPosted = (component) => {
                   </ShowMoreText>
                 </div>
               ) : (
-                ""
-              )}
+                  ""
+                )}
 
               <CardContent className="card-content">
                 {data.numlike > 0 || data.numcomment > 0 ? (
@@ -2804,24 +2804,24 @@ const renderDetailPosted = (component) => {
                             src={ReactSelectorIcon[data.iconlike].icon}
                           ></img>
                         ) : (
-                          ""
-                        )}
+                            ""
+                          )}
                         <span>{data.numlike}</span>
                       </span>
                     ) : (
-                      <span className="like"></span>
-                    )}
+                        <span className="like"></span>
+                      )}
                     {data.numcomment > 0 ? (
                       <span className="comment">
                         {data.numcomment} bình luận{" "}
                       </span>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                   </div>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </CardContent>
               <CardActions disableSpacing className="post-actions">
                 <FacebookSelector
@@ -2863,8 +2863,8 @@ const renderDetailPosted = (component) => {
                     Chia sẻ
                   </Button>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </CardActions>
             </Card>
           )}
@@ -2884,6 +2884,7 @@ const renderDetailPosted = (component) => {
                               component.props.toggleMediaViewerDrawer(true, {
                                 showInfo: true,
                                 isvideo: true,
+                                activeIndex: 0
                               });
                             }}
                           >
@@ -2897,22 +2898,22 @@ const renderDetailPosted = (component) => {
                           </div>
                         </div>
                       ) : (
-                        <img
-                          src={media.name}
-                          className="image"
-                          onClick={() => {
-                            component.props.setMediaToViewer(data.mediaPlays);
-                            component.props.toggleMediaViewerDrawer(true, {
-                              actions:
-                                data.iduserpost == profile.id
-                                  ? mediaRootActions(component)
-                                  : mediaGuestActions(component),
-                              showInfo: true,
-                              activeIndex: index,
-                            });
-                          }}
-                        />
-                      )}
+                          <img
+                            src={media.name}
+                            className="image"
+                            onClick={() => {
+                              component.props.setMediaToViewer(data.mediaPlays);
+                              component.props.toggleMediaViewerDrawer(true, {
+                                actions:
+                                  data.iduserpost == profile.id
+                                    ? mediaRootActions(component)
+                                    : mediaGuestActions(component),
+                                showInfo: true,
+                                activeIndex: index,
+                              });
+                            }}
+                          />
+                        )}
 
                       {media.numlike > 0 || media.numcomment > 0 ? (
                         <div className="react-reward">
@@ -2935,24 +2936,24 @@ const renderDetailPosted = (component) => {
                                   src={ReactSelectorIcon[media.iconlike].icon}
                                 ></img>
                               ) : (
-                                ""
-                              )}
+                                  ""
+                                )}
                               <span>{media.numlike}</span>
                             </span>
                           ) : (
-                            <span className="like"></span>
-                          )}
+                              <span className="like"></span>
+                            )}
                           {media.numcomment > 0 ? (
                             <span className="comment">
                               {media.numcomment} bình luận
                             </span>
                           ) : (
-                            ""
-                          )}
+                              ""
+                            )}
                         </div>
                       ) : (
-                        ""
-                      )}
+                          ""
+                        )}
                     </CardContent>
                     <CardActions disableSpacing className="post-actions">
                       <FacebookSelector
@@ -3002,8 +3003,8 @@ const renderDetailPosted = (component) => {
                           Chia sẻ
                         </Button>
                       ) : (
-                        ""
-                      )}
+                          ""
+                        )}
                     </CardActions>
                   </Card>
                 </li>
@@ -3087,12 +3088,12 @@ const renderTagsFriendDrawer = (component) => {
                   ))}
                 </ul>
               ) : (
-                ""
-              )}
+                  ""
+                )}
             </div>
           ) : (
-            ""
-          )}
+              ""
+            )}
         </div>
       </div>
     </Drawer>
@@ -3493,15 +3494,15 @@ const renderReportSuccessAlert = (component) => {
             {reasonSelected.issuename}
           </Button>
         ) : (
-          ""
-        )}
+            ""
+          )}
         {orderReasonText.length > 0 ? (
           <Button className="bt-submit" disabled>
             {orderReasonText}
           </Button>
         ) : (
-          ""
-        )}
+            ""
+          )}
         <ul>
           <li></li>
           <li></li>
@@ -3576,8 +3577,8 @@ const renderTagFriendForShareDrawer = (component) => {
                 ))}
               </ul>
             ) : (
-              <span>Gắn thẻ bạn bè tại đây</span>
-            )}
+                <span>Gắn thẻ bạn bè tại đây</span>
+              )}
             {tagedFrieds.length > 0 ? (
               <IconButton
                 onClick={() => component.setState({ tagedFrieds: [] })}
@@ -3585,8 +3586,8 @@ const renderTagFriendForShareDrawer = (component) => {
                 <CloseIcon />
               </IconButton>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
         <div
@@ -3627,8 +3628,8 @@ const renderTagFriendForShareDrawer = (component) => {
               </ul>
             </div>
           ) : (
-            ""
-          )}
+              ""
+            )}
         </div>
       </div>
     </Drawer>

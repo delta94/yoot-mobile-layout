@@ -960,18 +960,39 @@ export default (state = initialState, action) => {
                 }
             }
 
-            if (userPostedsList) {
-                let postIndex = userPostedsList.findIndex(item => item.nfid == action.postId)
+            if (videoPosteds) {
+                let postIndex = videoPosteds.findIndex(item => item.nfid == action.postId)
 
                 if (postIndex >= 0) {
-                    let imageList = userPostedsList[postIndex].mediaPlays
+                    let imageList = videoPosteds[postIndex].mediaPlays
                     let imageIndex = imageList.findIndex(item => item.detailimageid == action.detailimageid)
                     if (imageIndex >= 0) {
                         imageList[imageIndex].numcomment = imageList[imageIndex].numcomment + action.payload
                     }
-                    userPostedsList[postIndex].mediaPlays = imageList
+                    videoPosteds[postIndex].mediaPlays = imageList
                 }
             }
+
+            // if (videoPosteds) {
+            //     let postIndex = videoPosteds.findIndex(item => item.nfid == action.postId)
+
+            //     if (postIndex >= 0) {
+            //         videoPosteds[postIndex].numcomment = videoPosteds[postIndex].numcomment + action.payload
+            //     }
+            // }
+
+            // if (userPostedsList) {
+            //     let postIndex = userPostedsList.findIndex(item => item.nfid == action.postId)
+
+            //     if (postIndex >= 0) {
+            //         let imageList = userPostedsList[postIndex].mediaPlays
+            //         let imageIndex = imageList.findIndex(item => item.detailimageid == action.detailimageid)
+            //         if (imageIndex >= 0) {
+            //             imageList[imageIndex].numcomment = imageList[imageIndex].numcomment + action.payload
+            //         }
+            //         userPostedsList[postIndex].mediaPlays = imageList
+            //     }
+            // }
 
             return Object.assign({}, state, {
                 ...state,
