@@ -11,12 +11,10 @@ export default function TriggersTooltips(props) {
 
     const handleTooltipClose = () => {
         setOpen(false);
-        $('body').css("overflow", "unset")
     };
 
     const handleTooltipOpen = () => {
         setOpen(true);
-        $('body').css("overflow", "hidden")
     };
 
     return (
