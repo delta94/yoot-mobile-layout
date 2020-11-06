@@ -43,6 +43,7 @@ import moment from 'moment'
 import { CAREER_GUIDANCE_ACCESS_KEY, SKILL_ACCESS_KEY, TEST_HISTORY } from "../../constants/localStorageKeys";
 import Iframe from 'react-iframe'
 import Intro from './intro'
+import Video from '../job-list/video'
 
 
 
@@ -66,7 +67,8 @@ class Index extends React.Component {
       videoDISCs: [],
       suggestJobs: [],
       findedJobs: [],
-      searchKey: ""
+      selectedJobs: [],
+      searchKey: "",
     };
     this.video = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]
   }
@@ -116,8 +118,8 @@ class Index extends React.Component {
   }
 
   handleMessage(message) {
-    console.log("e", message)
-    if (!message) return
+    // console.log("e", message)
+    if (!message || !message.action) return
     switch (message.action) {
       case "heightcall": {
         this.setState({
@@ -132,6 +134,11 @@ class Index extends React.Component {
       }
       case "backdisc": {
         this.props.removeCareerHistory()
+        window.localStorage.removeItem("JOB-SELECTED")
+        return
+      }
+      case "viewcareer": {
+        this.handleOpenYourJobs()
         return
       }
       default: {
@@ -178,10 +185,26 @@ class Index extends React.Component {
       ologyid: 0
     }
     post(BUILD_YS_API, "Career/GetCareers" + objToQuery(param), null, result => {
-      if (result && result.result == 1)
-        this.setState({
-          suggestJobs: result.content.careers
+      if (result && result.result == 1) {
+        let careers = result.content.careers
+        let jobSelectedParam = window.localStorage.getItem("JOB-SELECTED")
+        let jobSelected = []
+        if (jobSelectedParam && jobSelectedParam.length > 0) {
+          jobSelected = JSON.parse(jobSelectedParam)
+        }
+
+        careers.map(item => {
+          if (jobSelected.find(e => e.id == item.id)) {
+            item.selected = true
+          }
+          else item.selected = false
         })
+        let list = careers.filter(item => item.selected == true).concat(careers.filter(item => item.selected == false))
+        this.setState({
+          suggestJobs: list,
+          jobSelected: jobSelected
+        })
+      }
     })
   }
 
@@ -202,10 +225,63 @@ class Index extends React.Component {
       ologyid: 0
     }
     post(BUILD_YS_API, "Career/GetCareers" + objToQuery(param), null, result => {
-      if (result && result.result == 1)
+      if (result && result.result == 1) {
+        let careers = result.content.careers
+        let jobSelectedParam = window.localStorage.getItem("JOB-SELECTED")
+        let jobSelected = []
+        if (jobSelectedParam && jobSelectedParam.length > 0) {
+          jobSelected = JSON.parse(jobSelectedParam)
+        }
+        if (jobSelected.length > 0) {
+          careers.map(item => {
+            if (jobSelected.find(e => e.id == item.id)) {
+              item.selected = true
+            }
+            else item.selected = false
+          })
+        }
+        let list = careers.filter(item => item.selected == true).concat(careers.filter(item => item.selected == false))
+
         this.setState({
-          findedJobs: result.content.careers
+          findedJobs: list,
+          jobSelected: jobSelected
         })
+      }
+    })
+  }
+
+  onJobClick(job) {
+    let {
+      jobSelected,
+      suggestJobs,
+      findedJobs,
+    } = this.state
+    let jobIndex = jobSelected.findIndex(item => item.id == job.id)
+    if (jobIndex >= 0) {
+      jobSelected = jobSelected.filter(item => item.id != job.id)
+    } else {
+      jobSelected.push(job)
+    }
+    suggestJobs.map(item => {
+      if (jobSelected.find(e => e.id == item.id))
+        item.selected = true
+      else
+        item.selected = false
+    })
+
+    findedJobs.map(item => {
+      if (jobSelected.find(e => e.id == item.id))
+        item.selected = true
+      else
+        item.selected = false
+    })
+
+    this.setState({
+      jobSelected: jobSelected,
+      suggestJobs: suggestJobs,
+      findedJobs: findedJobs
+    }, () => {
+      window.localStorage.setItem("JOB-SELECTED", JSON.stringify(jobSelected))
     })
   }
 
@@ -223,7 +299,9 @@ class Index extends React.Component {
     if (window.addEventListener) {
       let that = this
       window.addEventListener('message', e => {
-        that.handleMessage(JSON.parse(e.data))
+        console.log("message", e.data)
+        if (typeof e.data == "string")
+          that.handleMessage(JSON.parse(e.data))
       }, false);
     }
   }
@@ -557,7 +635,8 @@ const renderYourJobDrawer = (component) => {
     suggestJobs,
     findedJobs,
     searchKey,
-    isSearching
+    isSearching,
+    jobSelected
   } = component.state
   let {
     showYourJobPage,
@@ -568,11 +647,19 @@ const renderYourJobDrawer = (component) => {
   console.log("findedJobs", findedJobs)
 
   return (
-    <Drawer anchor="bottom" className="job-list-drawer" open={showYourJobPage} onClose={() => component.props.toggleYourJobDrawer(false)}>
+    <Drawer anchor="bottom" className="job-list-drawer" open={showYourJobPage} >
       {
         profile ? <div className="drawer-detail">
           <div className="drawer-header">
-            <div className="direction" onClick={() => component.props.toggleYourJobDrawer(false)}>
+            <div className="direction" onClick={() => {
+              component.setState({
+                suggestJobs: [],
+                findedJobs: [],
+                jobSelected: []
+              })
+              component.props.toggleYourJobDrawer(false)
+            }
+            }>
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                 <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
               </IconButton>
@@ -620,7 +707,18 @@ const renderYourJobDrawer = (component) => {
                 </p>
               </div>
             </div>
-            <YourJobs suggestJobs={suggestJobs} findedJobs={findedJobs} />
+            <YourJobs
+              searchKey={searchKey}
+              suggestJobs={suggestJobs}
+              findedJobs={findedJobs}
+              jobSelected={jobSelected}
+              onJobClick={(job) => component.onJobClick(job)}
+            />
+            {/* {
+              jobList.map((item, index) => item.videolinks.length > 0
+                ? item.videolinks.map((video, j) => <Video videoURL={video} videoThumb={item.thumbnaillinks[j]} />)
+                : <span>image</span>)
+            } */}
           </div>
           <div className="footer-drawer">
             <Button onClick={() => component.props.toggleYourMajorsDrawer(true)}>Ngành học tương ứng</Button>
@@ -700,18 +798,3 @@ const renderYourMajorsDrawer = (component) => {
     </Drawer>
   )
 }
-
-const sources = [
-  {
-    name: "Nghệ thuật Diễn Thuyết Truyền Cảm Hứng",
-    background: "https://andrews.edu.vn/wp-content/uploads/Prensention_mbaandrews.jpg",
-    documentsCount: 1,
-    lessonCount: 10
-  },
-  {
-    name: "Kỹ năng giao tiếp hiệu quả",
-    background: "https://www.sprc.org/sites/default/files/styles/featured_image_large/public/SPRC_EllyStout_DirCorner_Cropped_node_6.jpg?itok=aqVkwAEq",
-    documentsCount: 1,
-    lessonCount: 10
-  }
-]

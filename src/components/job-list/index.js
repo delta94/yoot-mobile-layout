@@ -15,18 +15,23 @@ import {
 import { connect } from 'react-redux'
 import Video from './video'
 import './style.scss'
+import { Button } from "@material-ui/core";
 
 const DISC = require('../../assets/icon/DISC@1x.png')
+const bannervideo = require('../../assets/images/bannervideo.png')
 
 
 const styles = theme => ({
   root: {
     marginBottom: '10px',
     boxShadow: 'none',
+    borderRadius: '0px',
   },
   mediaDiv: {
-    padding: '10px',
-    borderBottom: '1px solid',
+    padding: '0px',
+  },
+  defaultImage: {
+    width: "100%"
   },
   media: {
     height: 0,
@@ -58,6 +63,15 @@ const styles = theme => ({
     borderRadius: '8px',
     fontSize: '10px',
   },
+  chipActive: {
+    margin: '10px',
+    padding: "0 25px",
+    background: '#ff5a5a',
+    height: '25px',
+    color: '#fff',
+    borderRadius: '8px',
+    fontSize: '10px',
+  },
   TypographyError: {
     color: 'rgb(245, 71, 70)',
   },
@@ -66,10 +80,10 @@ const styles = theme => ({
   },
   CardContent: {
     paddingTop: '5px !important',
-    borderBottom: '1px solid',
   },
   CardHeaderAction: {
     display: 'flex',
+    alignItems: "center"
   }
 });
 
@@ -142,22 +156,21 @@ class Index extends React.Component {
       [classes.expandOpen]: this.state.expanded
     });
     let {
-      playingIndex
-    } = this.state
-    let {
       suggestJobs,
-      findedJobs
+      findedJobs,
+      searchKey,
+      jobSelected
     } = this.props
-    const jobList = findedJobs && findedJobs.length > 0 ? findedJobs : suggestJobs
+    if (!jobSelected) jobSelected = []
 
-    console.log(this.props)
-    console.log("video", this.video)
+    const jobList = searchKey && searchKey.length > 0 ? findedJobs : jobSelected.concat(suggestJobs.filter(item => item.selected == false))
+
     return (
       jobList.map((item, index) => <Card className={classes.root} key={index}>
         <CardHeader className={classes.CardHeaderHeader}
           action={<div className={classes.CardHeaderAction}>
             <Avatar aria-label="recipe" className={classes.avatar}><img className="drawerAvatar" src={DISC} /></Avatar>
-            <Chip className={classes.chip} label="Chọn"></Chip>
+            <Button className={"ml10 height30 " + (item.selected ? "bt-submit" : "bt-cancel")} onClick={() => this.props.onJobClick(item)}>{item.selected ? "Bỏ chọn" : "Chọn"}</Button>
           </div>
           }
           title={<Typography className={classes.TypographyError} variant="h6" color="colorError" gutterBottom>{item.text}</Typography>}
@@ -170,7 +183,7 @@ class Index extends React.Component {
             {
               item.videolinks.map((video, j) => <Video videoURL={video} videoThumb={item.thumbnaillinks[j]} />)
             }
-          </div> : ""
+          </div> : <img src={bannervideo} className={classes.defaultImage} />
         }
       </Card>)
     );

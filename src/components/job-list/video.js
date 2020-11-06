@@ -69,45 +69,45 @@ class Index extends React.Component {
       videoURL,
       videoThumb
     } = this.props
-    console.log("this.props", this.props)
     return (
       <ScrollTrigger
-        containerRef={document.getElementById("your-job-list")[0]}
+        containerRef={document.getElementById("your-job-list")}
         onExit={() => this.handlePauseVideo(this.video)}
-        onEnter={() => this.handlePlayVideo(this.video)}
       >
-        <Player
-          ref={this.video}
-          src={videoURL}
-          playsInline={true}
-          poster={videoThumb}
-          className={"custome-video-layout" + (playing ? " active" : " inactive")}
-        >
-          <ControlBar autoHide={true} >
-            <div className={"custom-bt-control-bar"}>
-              {
-                playing ? <IconButton onClick={() => this.handleChangeCurrentTime(-10, this.video)}><Replay10Icon /></IconButton> : ""
-              }
-              <IconButton onClick={() => playing ? this.handlePauseVideo(this.video) : this.handlePlayVideo(this.video)}>
+        <div style={{ padding: "20vh 0px", margin: "-20vh 0px" }}>
+          <Player
+            ref={this.video}
+            src={videoURL}
+            playsInline={true}
+            poster={videoThumb}
+            className={"custome-video-layout" + (playing ? " active" : " inactive")}
+          >
+            <ControlBar autoHide={true} >
+              <div className={"custom-bt-control-bar"}>
                 {
-                  playing ? <PauseIcon /> : <PlayArrowIcon />
+                  playing ? <IconButton onClick={() => this.handleChangeCurrentTime(-10, this.video)}><Replay10Icon /></IconButton> : ""
                 }
-              </IconButton>
-              {
-                playing ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video)}><Forward10Icon /></IconButton> : ""
-              }
-            </div>
-            <div className="fullscreen-overlay" onClick={() => {
-              this.handlePauseVideo(this.video)
-              this.props.setMediaToViewer([{ name: videoURL }])
-              this.props.toggleMediaViewerDrawer(true, {
-                showInfo: false,
-                activeIndex: 0,
-                isvideo: true
-              })
-            }}></div>
-          </ControlBar>
-        </Player>
+                <IconButton onClick={() => playing ? this.handlePauseVideo(this.video) : this.handlePlayVideo(this.video)}>
+                  {
+                    playing ? <PauseIcon /> : <PlayArrowIcon />
+                  }
+                </IconButton>
+                {
+                  playing ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video)}><Forward10Icon /></IconButton> : ""
+                }
+              </div>
+              <div className="fullscreen-overlay" onClick={() => {
+                this.handlePauseVideo(this.video)
+                this.props.setMediaToViewer([{ name: videoURL }])
+                this.props.toggleMediaViewerDrawer(true, {
+                  showInfo: false,
+                  activeIndex: 0,
+                  isvideo: true
+                })
+              }}></div>
+            </ControlBar>
+          </Player>
+        </div>
       </ScrollTrigger>
     );
   }
