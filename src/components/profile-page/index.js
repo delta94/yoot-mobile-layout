@@ -868,7 +868,6 @@ class Index extends React.Component {
     if (profile && userPosteds) {
       myPosteds = userPosteds[profile.id]
     }
-
     return (
       profile ? <div className="profile-page" >
         <div className="cover-img" style={{ background: "url(" + profile.background + ")" }}>
@@ -2041,7 +2040,7 @@ const renderUserDetailDrawer = (component) => {
                 aria-label="full width tabs example"
                 className="tab-header"
               >
-                <Tab label={"Người theo dõi " + (profile.foloweds ? ("(" + profile.foloweds.length + ")") : "")} {...a11yProps(0)} className="tab-item" />
+                <Tab label={"Người theo dõi" + (profile.foloweds ? ("(" + profile.foloweds.length + ")") : "")} {...a11yProps(0)} className="tab-item" />
                 <Tab label={"Đang theo dõi " + (profile.folowings ? ("(" + profile.folowings.length + ")") : "")} {...a11yProps(1)} className="tab-item" />
               </Tabs>
             </AppBar>
@@ -2089,7 +2088,7 @@ const renderUserDetailDrawer = (component) => {
                             component.props.setCurrenUserDetail(item)
                             component.props.toggleUserPageDrawer(true)
                           }}>{item.friendname}</span>
-                          <Button style={{ background: "rgba(0,0,0,0.05)" }}>Bỏ theo dõi</Button>
+                          <Button style={{ background: "rgba(0,0,0,0.05)" }}>Đang theo dõi</Button>
                         </li>)
                       }
                     </ul> : <span className="list-empty-message">Chưa theo dõi bất kì ai</span>
