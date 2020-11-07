@@ -320,6 +320,25 @@ input[type="date"]:not(.has-value):before{
         }
     }
 }
+.custom-confirm-alert{
+    background: #fff;
+    padding: 10px;
+    text-align: center;
+    h1{
+        margin: 0px;
+        font-family: Roboto-Medium;
+        font-size: 1.2rem;
+        margin: 10px 0px;
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+    }
+    button{
+        color: #5abdff;
+        font-family: Roboto-Medium;
+        font-size: 1.2rem;
+    }
+}
 .overlay{
     position: absolute;
     top: 0px;

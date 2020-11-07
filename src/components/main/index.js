@@ -66,7 +66,7 @@ import SwipeableViews from 'react-swipeable-views';
 import moment from 'moment'
 import Slider from "react-slick";
 
-import { objToArray, showNotification, fromNow } from "../../utils/common";
+import { objToArray, showNotification, fromNow, formatCurrency } from "../../utils/common";
 import { get, post } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import Friends from './friend'
@@ -264,7 +264,7 @@ class Main extends React.Component {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.mempoint}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">

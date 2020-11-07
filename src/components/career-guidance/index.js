@@ -11,25 +11,28 @@ import {
   toggleYourMajorsDrawer,
   toggleMediaViewerDrawer,
   setMediaToViewer,
+  toggleUserInfoFormDrawer
 } from '../../actions/app'
 import {
   getCareerHistory,
   getCareerTestList,
-  removeCareerHistory
+  removeCareerHistory,
 } from '../../actions/career'
 import {
   IconButton,
   Drawer,
   Avatar,
-  Button
+  Button,
+  AppBar,
+  Tabs,
+  Tab,
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon,
-  Pause as PauseIcon,
-  PlayArrow as PlayArrowIcon,
-  Forward10 as Forward10Icon,
-  Replay10 as Replay10Icon,
-  ArrowBack as ArrowBackIcon
+  Close as CloseIcon,
+  ArrowBack as ArrowBackIcon,
+  Cancel as CancelIcon,
+  Favorite as FavoriteIcon
 } from '@material-ui/icons'
 import StyleChart from './styleChart'
 import { connect } from 'react-redux'
@@ -38,12 +41,13 @@ import Test from './test'
 import $ from 'jquery'
 import { get, post } from "../../api";
 import { BUILD_YS_API, CurrentDate } from "../../constants/appSettings";
-import { objToQuery } from '../../utils/common'
+import { formatCurrency, objToQuery, showConfirm } from '../../utils/common'
 import moment from 'moment'
 import { CAREER_GUIDANCE_ACCESS_KEY, SKILL_ACCESS_KEY, TEST_HISTORY } from "../../constants/localStorageKeys";
 import Iframe from 'react-iframe'
 import Intro from './intro'
-import Video from '../job-list/video'
+import ShowMoreText from "react-show-more-text";
+import SwipeableViews from 'react-swipeable-views';
 
 
 
@@ -69,6 +73,18 @@ class Index extends React.Component {
       findedJobs: [],
       selectedJobs: [],
       searchKey: "",
+      userName: "",
+      email: "",
+      phone: "",
+      searchOptions: [],
+      searchOptionsSeleted: [],
+      careerList: [],
+      tabValue: 0,
+      favorateList: [],
+      favorateSchools: [],
+      favorateSchoolIds: [],
+      favorateOlogyIds: [],
+      favorateCareerIds: []
     };
     this.video = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]
   }
@@ -285,16 +301,262 @@ class Index extends React.Component {
     })
   }
 
+  hanldeGetInfo() {
+    get(BUILD_YS_API, "FormReg/GetInfoForm", result => {
+      if (result && result.result == 1) {
+        let profile = result.content.formReg
+        this.setState({
+          userName: profile.name,
+          email: profile.email,
+          phone: profile.phone,
+          noedit: profile.noedit
+        })
+        window.localStorage.setItem("FORM_REG", JSON.stringify(profile))
+      }
+      console.log("result", result)
+    })
+  }
+
+  handleUpdateInfo() {
+    let {
+      userName,
+      email,
+      phone
+    } = this.state
+    if (!userName || userName == "") {
+      showConfirm("Vui lòng nhập họ và tên!", "", () => {
+        $("#user-name").focus()
+      }, null, <span>OK</span>, "", "user-info-form-confirm")
+      return
+    }
+    if (!email || email == "") {
+      showConfirm("Vui lòng nhập email!", "", () => {
+        $("#user-email").focus()
+      }, null, <span>OK</span>, "", "user-info-form-confirm")
+      return
+    }
+    if (!phone || phone == "") {
+      showConfirm("Vui lòng nhập số điện thoại!", "", () => {
+        $("#user-phone").focus()
+      }, null, <span>OK</span>, "", "user-info-form-confirm")
+      return
+    }
+    var mailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (!email.match(mailformat)) {
+      showConfirm("Định dạng email không hợp lệ!", "", () => {
+        $("#user-email").focus()
+      }, null, <span>OK</span>, "", "user-info-form-confirm")
+      return
+    }
+    let param = {
+      "name": userName,
+      "email": email,
+      "phone": phone,
+    }
+    post(BUILD_YS_API, "FormReg/UpdateForm", param, (result) => {
+      this.props.toggleUserInfoFormDrawer(false)
+      this.hanldeGetInfo()
+    })
+  }
+
+  onSearchOptionClick(item) {
+    let {
+      searchOptionsSeleted
+    } = this.state
+    searchOptionsSeleted.push(item)
+    this.setState({
+      searchOptionsSeleted: searchOptionsSeleted,
+      searchOptions: [],
+      searchKey: ""
+    })
+  }
+
+  handleRemoveSearchOptions(index) {
+    let {
+      searchOptionsSeleted
+    } = this.state
+    searchOptionsSeleted.splice(index, 1)
+    this.setState({
+      searchOptionsSeleted
+    })
+  }
+
+  handleGetSearchOptions() {
+    post(BUILD_YS_API, "Finder/GetTagView?findtext=" + this.state.searchKey, null, result => {
+      console.log("result", result)
+      if (result && result.result == 1)
+        this.setState({
+          searchOptions: result.content.finders
+        })
+    })
+  }
+
+  handleGetCareers() {
+    let {
+      searchOptionsSeleted
+    } = this.state
+    let param = {
+      careerids: null,
+      finderModels: searchOptionsSeleted
+    }
+    if (param.finderModels.length == 0) {
+      let JOB_SELECTED = window.localStorage.getItem("JOB-SELECTED")
+      let careerids = []
+      if (JOB_SELECTED) {
+        let array = JSON.parse(JOB_SELECTED)
+        if (array && array.length > 0) {
+          array.map(item => careerids.push(item.id))
+        }
+      }
+      param.careerids = careerids
+    }
+    post(BUILD_YS_API, "Ology/GetListMany", param, result => {
+      console.log("result", result)
+      if (result && result.result == 1)
+        this.setState({
+          careerList: result.content.careers
+        })
+    })
+  }
+
+  handleGetFavorateList() {
+    get(BUILD_YS_API, "Ology/GetListFavorite", result => {
+      if (result && result.result == 1) {
+        var favorateList = result.content.careers
+        this.setState({
+          favorateList: favorateList,
+        })
+        this.handleSetFavorateIds(result.content.careers)
+      }
+    })
+  }
+  handleGetFavorateSchools() {
+    get(BUILD_YS_API, "Ology/GetListFavorite", result => {
+      if (result && result.result == 1) {
+        var favorateSchools = result.content.careers
+        this.setState({
+          favorateSchools: favorateSchools
+        })
+        this.handleSetFavorateIds(result.content.careers)
+      }
+    })
+  }
+
+  handleSetFavorateIds(favorateList) {
+    let favorateSchoolIds = []
+    let favorateOlogyIds = []
+    let favorateCareerIds = []
+    favorateList.map(career => {
+      if (career.ologies.length > 0) {
+        career.ologies.map(ology => {
+          if (ology.schools.length > 0) {
+            ology.schools.map(school => {
+              favorateSchoolIds.push(school.id)
+              favorateOlogyIds.push(ology.id)
+              favorateCareerIds.push(career.id)
+            })
+          }
+        })
+      }
+    })
+    this.setState({
+      favorateSchoolIds: favorateSchoolIds,
+      favorateOlogyIds: favorateOlogyIds,
+      favorateCareerIds: favorateCareerIds
+    })
+  }
+
+  submitReg(school) {
+    let {
+      noedit
+    } = this.state
+    if (noedit == 0) {
+      this.setState({
+        showSubmitRegNotiDrawer: true,
+        currentSchool: school
+      })
+    }
+    else {
+      this.props.showUserInfoForm()
+    }
+  }
+
+  handleFavoriteSchool(career, ology, school) {
+    let param = {
+      schoolid: school.id,
+      careerid: career.id,
+      ologyid: ology.id
+    }
+    post(BUILD_YS_API, "School/FavoriteSchool", param, result => {
+      if (result && result.result == 1) {
+        let {
+          favorateList
+        } = this.state
+        favorateList.push({
+          id: career.id,
+          ologies: [{
+            id: ology.id,
+            schools: [{
+              id: school.id
+            }]
+          }]
+        })
+        this.handleSetFavorateIds(favorateList)
+        this.setState({
+          favorateList: favorateList
+        })
+      }
+    })
+  }
+
+  handleUnFavoriteSchool(career, ology, school) {
+    let param = {
+      schoolid: school.id,
+      careerid: career.id,
+      ologyid: ology.id
+    }
+    post(BUILD_YS_API, "School/UnFavoriteSchool", param, result => {
+      if (result && result.result == 1) {
+        let {
+          favorateList
+        } = this.state
+        for (var i = 0; i < favorateList.length; i++) {
+          if (favorateList[i].id == career.id) {
+            let ologies = favorateList[i].ologies
+
+            for (var j = 0; j < ologies.length; j++) {
+              if (ologies[j].id == ology.id) {
+                ologies[j].schools = ologies[j].schools.filter(item => item.id != school.id)
+              }
+            }
+          }
+        }
+        this.handleSetFavorateIds(favorateList)
+        this.setState({
+          favorateList: favorateList
+        })
+      }
+    })
+  }
+
+  showSchoolWebsite(school) {
+    this.setState({
+      currentSchool: school,
+      showSchoolWebsiteDrawer: true
+    })
+  }
 
   componentDidMount() {
     this.props.addHeaderContent(renderHeader(this))
     this.props.toggleHeader(true)
     this.props.toggleFooter(false)
+    this.handleGetFavorateList()
     this.props.getCareerHistory(() => {
       this.props.getCareerTestList(() => {
         this.handleGetWebSourse()
       })
     })
+    this.hanldeGetInfo()
 
     if (window.addEventListener) {
       let that = this
@@ -305,6 +567,7 @@ class Index extends React.Component {
       }, false);
     }
   }
+
   render() {
     return (
       <div className="career-guidance-page" >
@@ -335,7 +598,23 @@ class Index extends React.Component {
           {
             renderYourMajorsDrawer(this)
           }
+          {
+            renderUserInfoFormDrawer(this)
+          }
+          {
+            renderSubmitRegNotiDrawer(this)
+          }
+          {
+            renderSchoolNewFeedDrawer(this)
+          }
+          {
+            renderSchoolWebsiteDrawer(this)
+          }
+          {
+            renderFavorateSchoolDrawer(this)
+          }
         </div>
+        <Button className="bt-submit" onClick={() => this.props.toggleUserInfoFormDrawer(true)}>Cập nhật thông tin</Button>
       </div>
     );
   }
@@ -362,6 +641,7 @@ const mapDispatchToProps = dispatch => ({
   removeCareerHistory: () => dispatch(removeCareerHistory()),
   setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
   toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
+  toggleUserInfoFormDrawer: (isShow) => dispatch(toggleUserInfoFormDrawer(isShow))
 });
 
 export default connect(
@@ -403,7 +683,7 @@ const renderScholarDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.mempoint}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -430,7 +710,11 @@ const renderScholarDrawer = (component) => {
                 <img src={accordantjob} />
                 <span>Công việc phù hợp</span>
               </div>
-              <div className="item related-major" onClick={() => component.props.toggleYourMajorsDrawer(true)}>
+              <div className="item related-major" onClick={() => {
+                component.handleGetCareers()
+                component.props.toggleYourMajorsDrawer(true)
+              }
+              }>
                 <img src={relatedmajor} />
                 <span>Ngành học tương ứng</span>
               </div>
@@ -471,7 +755,7 @@ const renderStyleTestDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.mempoint}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -611,7 +895,7 @@ const renderDISCDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.mempoint}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -643,9 +927,6 @@ const renderYourJobDrawer = (component) => {
     profile
   } = component.props
 
-  console.log("suggestJobs", suggestJobs)
-  console.log("findedJobs", findedJobs)
-
   return (
     <Drawer anchor="bottom" className="job-list-drawer" open={showYourJobPage} >
       {
@@ -655,7 +936,9 @@ const renderYourJobDrawer = (component) => {
               component.setState({
                 suggestJobs: [],
                 findedJobs: [],
-                jobSelected: []
+                jobSelected: [],
+                searchKey: "",
+                isSearching: false
               })
               component.props.toggleYourJobDrawer(false)
             }
@@ -669,7 +952,7 @@ const renderYourJobDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.mempoint}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -733,14 +1016,33 @@ const renderYourJobDrawer = (component) => {
 const renderYourMajorsDrawer = (component) => {
   let {
     showYourMajorsPage,
-    profile
+    profile,
   } = component.props
+  let {
+    isSearching,
+    searchKey,
+    searchOptions,
+    searchOptionsSeleted,
+    careerList,
+    tabValue,
+    favorateSchoolIds,
+    favorateOlogyIds,
+    favorateCareerIds
+  } = component.state
+  // console.log("favorateSchoolIds", favorateSchoolIds.includes(157))
   return (
     <Drawer anchor="bottom" className="job-list-drawer" open={showYourMajorsPage} onClose={() => component.props.toggleYourMajorsDrawer(false)}>
       {
         profile ? <div className="drawer-detail">
           <div className="drawer-header">
-            <div className="direction" onClick={() => component.props.toggleYourMajorsDrawer(false)}>
+            <div className="direction" onClick={() => {
+              component.setState({
+                searchKey: "",
+                isSearching: false,
+                searchOptions: []
+              })
+              component.props.toggleYourMajorsDrawer(false)
+            }}>
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                 <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
               </IconButton>
@@ -750,7 +1052,7 @@ const renderYourMajorsDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.mempoint}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -759,42 +1061,377 @@ const renderYourMajorsDrawer = (component) => {
             </div>
           </div>
           <div className="filter">
-            <div className="searchGroup">
-
-              <input type="text" name="search" className="searchBox" style={{ height: "40px !important" }} placeholder="Nhập công việc phù hợp hoặc ngành/trường mong mu..." />
-              <div className="btn-search" style={{ top: "10px" }}>
-                <button type="submit" className="searchBtn">
+            <div className="search-job">
+              {
+                isSearching ? <div className="btn-search">
+                  <button type="submit" className="searchBtn red" onClick={() => component.setState({ searchKey: "", isSearching: false, searchOptionsSeleted: [] }, () => component.handleSearchJob())}>
+                    <ArrowBackIcon style={{ width: 20 }} />
+                  </button>
+                </div> : ""
+              }
+              <div className="search-param">
+                {
+                  searchOptionsSeleted && searchOptionsSeleted.length > 0 && searchOptionsSeleted.map((item, index) => <div key={index} className="options-item">
+                    <ShowMoreText
+                      lines={1}
+                      width={70}
+                      more=""
+                      less=""
+                    >
+                      <span>{item.title}</span>
+                    </ShowMoreText>
+                    <CancelIcon onClick={() => component.handleRemoveSearchOptions(index)} />
+                  </div>)
+                }
+                <input type="text" style={{ width: searchOptionsSeleted.length % 2 == 0 ? "100%" : "auto" }} className="search-job" name="search" value={searchKey} onChange={(e) => component.setState({ searchKey: e.target.value, isSearching: true }, () => component.handleGetSearchOptions())} className="searchBox" placeholder="Nhập công việc phù hợp hoặc ngành/trường học..." />
+              </div>
+              <div className="btn-search">
+                <button type="submit" className="searchBtn" onClick={() => component.handleGetCareers()}>
                   <img src={searchBtn} />
                 </button>
               </div>
+              {
+                searchKey && searchKey.length > 0 && searchOptions && searchOptions.length > 0 ? <div className="search-result">
+                  <ul>
+                    {
+                      searchOptions.map((item, index) => <li key={index} onClick={() => component.onSearchOptionClick(item)}>
+                        <span>{item.title}</span>
+                        {
+                          item.type == 1 ? <p>Công việc</p> : ""
+                        }
+                        {
+                          item.type == 2 ? <p>Ngành học</p> : ""
+                        }
+                        {
+                          item.type == 3 ? <p>Trường</p> : ""
+                        }
+                      </li>)
+                    }
+                    <li></li>
+                  </ul>
+                </div> : ""
+              }
             </div>
-            <div className="favoriteSchool">
+            <div className="favoriteSchool" onClick={() => component.setState({ showFavorateSchoolDrawer: true }, () => component.handleGetFavorateSchools())}>
               <i class="fas fa-heart"></i> Trường đang quan tâm
             </div>
-          </div>
-          <div style={{ background: "#f2f3f7" }}>
-            <div className="filter" style={{ background: "white", width: "100%", margin: "10px auto", padding: "1px" }}>
-              <div className="major-noti jobList-Noti" style={{ padding: "0px 10px", width: "90%" }}>
-                <div className="divContent">
-                  <i class="fas fa-play"></i>
-                  <p className="content">Trang ngành học được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những ngành học mà bạn muốn tìm hiểu nhé.</p>
-                </div>
-              </div>
-              <div className="panel" style={{ borderBottom: "1px solid #f2f3f7", width: "95%", margin: "0 auto 10px" }}>
-                <ul style={{ padding: "10px 0", display: "inline-flex" }}>
-                  <li className="active" style={{ color: "#ff5a5a", display: "inline-block", borderBottom: "2px solid #ff5a5a", paddingBottom: "10px" }}>
-                    Bác sỹ
-                  </li>
-                </ul>
+            <div className="major-noti jobList-Noti" style={{ padding: "0px 10px", width: "90%" }}>
+              <div className="divContent">
+                <i class="fas fa-play"></i>
+                <p className="content">Trang ngành học được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những ngành học mà bạn muốn tìm hiểu nhé.</p>
               </div>
             </div>
+            <div style={{ width: "100%", overflowX: "auto", overflowY: "hidden" }}>
+              <Tabs
+                value={tabValue}
+                onChange={(e, value) => component.setState({ tabValue: value })}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="fullWidth"
+                aria-label="full width tabs example"
+                className="tab-header"
+              >
+                {
+                  careerList.map((item, index) => <Tab key={index} label={item.text} {...a11yProps(index)} className="tab-item" />)
+                }
+              </Tabs>
+            </div>
           </div>
-          <div style={{ overflow: "scroll", background: "#f2f3f7" }}>
+          <div style={{ overflow: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
+            {
+              careerList && careerList.length > 0 ? <div className="panel" style={{ borderBottom: "1px solid #f2f3f7", width: "95%", margin: "0 auto 10px" }}>
 
+                <SwipeableViews
+                  index={tabValue}
+                  onChangeIndex={(value) => component.setState({ tabValue: value })}
+                  className="tab-content"
+                >
+                  {
+                    careerList.map((item, index) => <TabPanel key={index} value={tabValue} index={index} className="content-box">
+                      <div>
+                        {
+                          item.ologies.map((ology, i) => ology.schools.map((school, j) => <div key={j} className="shool-item">
+                            <div className="school-logo" onClick={() => component.showSchoolWebsite(school)}>
+                              <img src={school.logolink}></img>
+                            </div>
+                            <div className="shool-info">
+                              <div className="info-mation">
+                                <div onClick={() => component.showSchoolWebsite(school)}>
+                                  <label>Ngành học: {ology.text}</label>
+                                  <label>Trường: {school.name}</label>
+                                  <span>Địa chỉ: {school.address}</span>
+                                  <p>{school.website}</p>
+                                </div>
+                                {
+                                  favorateSchoolIds.includes(school.id) && favorateOlogyIds.includes(ology.id) && favorateCareerIds.includes(item.id)
+                                    ? <IconButton onClick={() => component.handleUnFavoriteSchool(item, ology, school)}><FavoriteIcon style={{ color: "#ff5a5a" }} /></IconButton>
+                                    : <IconButton onClick={() => component.handleFavoriteSchool(item, ology, school)}><FavoriteIcon style={{ color: "#b1b2b8" }} /></IconButton>
+                                }
+                              </div>
+                              <div className="actions">
+                                <Button className="bt-submit" onClick={() => component.submitReg(school)}>Cần tư vấn</Button>
+                                <Button className="bt-cancel" onClick={() => component.setState({
+                                  currentSchool: school,
+                                  showSchoolNewFeedDrawer: true
+                                })}>Bảng tin</Button>
+                              </div>
+                            </div>
+                          </div>))
+                        }
+                      </div>
+                    </TabPanel>)
+                  }
+                </SwipeableViews>
+              </div> : ""
+            }
           </div>
 
         </div> : ""
       }
     </Drawer>
   )
+}
+
+const renderUserInfoFormDrawer = (component) => {
+  let {
+    showUserInfoForm,
+  } = component.props
+  let {
+    userName,
+    email,
+    phone
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="user-info-form" open={showUserInfoForm} onClose={() => component.props.toggleUserInfoFormDrawer(false)}>
+      {
+        <div className="user-form-content">
+          <IconButton className="bt-close-modal" onClick={() => component.props.toggleUserInfoFormDrawer(false)}><CloseIcon /></IconButton>
+          <p className="blued">Vui lòng cập nhật thông tin cá nhân chính xác, để nhân viên tư vấn của trường sẽ liên lạc với bạn !</p>
+          <div className="form-detail">
+            <div className="field">
+              <label>Họ và tên:</label>
+              <input placeholder="Họ và tên" id="user-name" value={userName} onChange={(e) => component.setState({ userName: e.target.value })}></input>
+            </div>
+            <div className="field">
+              <label>Email:</label>
+              <input placeholder="Email" id="user-email" value={email} onChange={(e) => component.setState({ email: e.target.value })}></input>
+            </div>
+            <div className="field">
+              <label>Số điện thoại:</label>
+              <input placeholder="Số điện thoại" id="user-phone" value={phone} onChange={(e) => component.setState({ phone: e.target.value })}></input>
+            </div>
+          </div>
+          <Button className="bt-submit mt20 mb10" onClick={() => component.handleUpdateInfo()}>Cập nhật</Button>
+        </div>
+      }
+    </Drawer>
+  )
+}
+
+const renderSubmitRegNotiDrawer = (component) => {
+  let {
+    phone,
+    showSubmitRegNotiDrawer,
+    currentSchool
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="user-info-form" open={showSubmitRegNotiDrawer} onClose={() => component.setState({ showSubmitRegNotiDrawer: false })}>
+      {
+        <div className="user-form-content">
+          <IconButton className="bt-close-modal" onClick={() => component.setState({ showSubmitRegNotiDrawer: false })}><CloseIcon /></IconButton>
+          <p>Đăng ký thành công</p>
+          <div className="form-detail">
+            <div className="field break-spaces mb15" >
+              <label>Yêu cầu tư vấn của Bạn đã được chuyểnn đến bộ phận tuyển sinh của trường {currentSchool ? currentSchool.name : ""}.</label>
+            </div>
+            <div className="field break-spaces mb15" >
+              <label>Chuyên viên tư vấn sẽ liên hệ cho Bạn trong thời gian sớm nhất qua số điện thoại <span className="blued">{phone}</span></label>
+            </div>
+            <div className="field break-spaces mb15" >
+              <label>Vui lòng kiểm tra số điện thoại và cập nhật lại cho đúng ở mục Thông tin liên lạc nhé.</label>
+            </div>
+          </div>
+        </div>
+      }
+    </Drawer>
+  )
+}
+
+const renderSchoolNewFeedDrawer = (component) => {
+  let {
+    currentSchool,
+    showSchoolNewFeedDrawer
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="job-list-drawer" open={showSchoolNewFeedDrawer} onClose={() => component.setState({ showSchoolNewFeedDrawer: false })}>
+      {
+        currentSchool ? <div className="drawer-detail">
+          <div className="drawer-header border-none">
+            <div className="direction" onClick={() => {
+              component.setState({
+                currentSchool: null,
+                showSchoolNewFeedDrawer: false
+              })
+            }}>
+              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+              </IconButton>
+              <label>{currentSchool.name}</label>
+            </div>
+          </div>
+          <div className="filter p00">
+
+          </div>
+          <div style={{ overflow: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
+            <img src={currentSchool.demoviewlink} style={{ width: '100%' }} />
+          </div>
+
+        </div> : ""
+      }
+    </Drawer>
+  )
+}
+
+const renderSchoolWebsiteDrawer = (component) => {
+  let {
+    currentSchool,
+    showSchoolWebsiteDrawer
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="job-list-drawer" open={showSchoolWebsiteDrawer} onClose={() => component.setState({ showSchoolWebsiteDrawer: false })}>
+      {
+        currentSchool ? <div className="drawer-detail">
+          <div className="drawer-header border-none">
+            <div className="direction" onClick={() => {
+              component.setState({
+                currentSchool: null,
+                showSchoolWebsiteDrawer: false
+              })
+            }}>
+              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+              </IconButton>
+              <label>{currentSchool.website}</label>
+            </div>
+          </div>
+          <div className="filter p00">
+          </div>
+          <div style={{ overflow: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
+            <Iframe url={currentSchool.website}
+              width="100%"
+              height={"100%"}
+              display="initial"
+              position="relative"
+              id="school-website-iframe"
+            />
+          </div>
+
+        </div> : ""
+      }
+    </Drawer>
+  )
+}
+
+const renderFavorateSchoolDrawer = (component) => {
+  let {
+    profile
+  } = component.props
+  let {
+    showFavorateSchoolDrawer,
+    favorateSchools,
+    favorateSchoolIds,
+    favorateOlogyIds,
+    favorateCareerIds
+  } = component.state
+  return (
+    <Drawer anchor="bottom" className="job-list-drawer" open={showFavorateSchoolDrawer} onClose={() => component.setState({ showFavorateSchoolDrawer: false })}>
+      {
+        profile ? <div className="drawer-detail">
+          <div className="drawer-header border-none">
+            <div className="direction" onClick={() => {
+              component.setState({
+                showFavorateSchoolDrawer: false
+              })
+            }}>
+              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+              </IconButton>
+              <label>Trường quann tâm</label>
+            </div>
+            <div className="user-reward">
+              <div className="profile">
+                <span className="user-name">{profile.fullname}</span>
+                <span className="point">
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
+                </span>
+              </div>
+              <Avatar aria-label="recipe" className="avatar">
+                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
+              </Avatar>
+            </div>
+          </div>
+          <div className="filter p00">
+          </div>
+          <div style={{ overflow: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
+            {
+              favorateSchools.map((item, index) => item.ologies.map((ology, i) => ology.schools.map((school, j) => <div key={j} className="shool-item">
+                <div className="school-logo" onClick={() => component.showSchoolWebsite(school)}>
+                  <img src={school.logolink}></img>
+                </div>
+                <div className="shool-info">
+                  <div className="info-mation">
+                    <div onClick={() => component.showSchoolWebsite(school)}>
+                      <label>Ngành học: {ology.text}</label>
+                      <label>Trường: {school.name}</label>
+                      <span>Địa chỉ: {school.address}</span>
+                      <p>{school.website}</p>
+                    </div>
+                    {
+                      favorateSchoolIds.includes(school.id) && favorateOlogyIds.includes(ology.id) && favorateCareerIds.includes(item.id)
+                        ? <IconButton onClick={() => component.handleUnFavoriteSchool(item, ology, school)}><FavoriteIcon style={{ color: "#ff5a5a" }} /></IconButton>
+                        : <IconButton onClick={() => component.handleFavoriteSchool(item, ology, school)}><FavoriteIcon style={{ color: "#b1b2b8" }} /></IconButton>
+                    }
+                  </div>
+                  <div className="actions">
+                    <Button className="bt-submit" onClick={() => component.submitReg(school)}>Cần tư vấn</Button>
+                    <Button className="bt-cancel" onClick={() => component.setState({
+                      currentSchool: school,
+                      showSchoolNewFeedDrawer: true
+                    })}>Bảng tin</Button>
+                  </div>
+                </div>
+              </div>)))
+            }
+          </div>
+
+        </div> : ""
+      }
+    </Drawer>
+  )
+}
+
+
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
+  };
+}
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <div>{children}</div>
+      )}
+    </div>
+  );
 }

@@ -22,6 +22,7 @@ import {
   get
 } from '../../api'
 import { SCHOOL_API, SOCIAL_NET_WORK_API } from "../../constants/appSettings";
+import { formatCurrency } from "../../utils/common";
 
 const noti = require('../../assets/icon/NotiBw@1x.png')
 const Newfeed = require('../../assets/icon/Newfeed@1x.png')

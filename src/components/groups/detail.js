@@ -37,7 +37,7 @@ import $ from 'jquery'
 import { GroupPrivacies, Privacies } from "../../constants/constants";
 import { get, postFormData } from "../../api";
 import { CurrentDate, SOCIAL_NET_WORK_API } from "../../constants/appSettings";
-import { objToQuery, objToArray, showNotification, showConfirm, srcToFile } from "../../utils/common";
+import { objToQuery, objToArray, showNotification, showConfirm, srcToFile, formatCurrency } from "../../utils/common";
 import Loader from '../common/loader'
 import moment from 'moment'
 import ContentLoader from "react-content-loader"
@@ -596,7 +596,7 @@ class Index extends React.Component {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.mempoint}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
 
               </div>
