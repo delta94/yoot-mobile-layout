@@ -935,6 +935,7 @@ class Index extends React.Component {
       });
     }
 
+
     return data && (!data.isPedding || data.isPedding == false) ? (
       <div>
         <ScrollTrigger
@@ -1211,6 +1212,7 @@ class Index extends React.Component {
                   <pre
                     dangerouslySetInnerHTML={{
                       __html: data.nfcontent
+                        .replace(/\n/g, ` <br />`)
                         .replace(
                           /@(\S+)/g,
                           `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`
@@ -1429,7 +1431,7 @@ class Index extends React.Component {
                             "post-item " + (daskMode ? "dask-mode" : "")
                           }
                         >
-                          {data.newsFeedShare.kindpost == 4 ? (
+                          {/* {data.newsFeedShare.kindpost == 4 ? (
                             <div className="album-name">
                               <span>
                                 Album{" "}
@@ -1438,7 +1440,7 @@ class Index extends React.Component {
                             </div>
                           ) : (
                               ""
-                            )}
+                            )} */}
                           <CardHeader
                             className="card-header"
                             avatar={
@@ -1467,11 +1469,12 @@ class Index extends React.Component {
                                   {data.newsFeedShare.nameuserpost}
                                 </span>
                                 {data.newsFeedShare.kindpost == 4 ? (
-                                  <span>
-                                    {data.newsFeedShare.titlepost
-                                      .replace("{usernamesend}", " ")
-                                      .replace("{namealbum}", data.albumname)}
-                                  </span>
+                                  // <span>
+                                  //   {data.newsFeedShare.titlepost
+                                  //     .replace("{usernamesend}", " ")
+                                  //     .replace("{namealbum}", data.albumname)}
+                                  // </span>
+                                  ""
                                 ) : (
                                     ""
                                   )}
@@ -1564,6 +1567,7 @@ class Index extends React.Component {
                                 <pre
                                   dangerouslySetInnerHTML={{
                                     __html: data.newsFeedShare.nfcontent
+                                      .replace(/\n/g, ` <br />`)
                                       .replace(
                                         /@(\S+)/g,
                                         `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`
@@ -2810,6 +2814,7 @@ const renderDetailPosted = (component) => {
                     <pre
                       dangerouslySetInnerHTML={{
                         __html: data.nfcontent
+                          .replace(/\n/g, ` <br />`)
                           .replace(
                             /@(\S+)/g,
                             `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`
