@@ -30,6 +30,7 @@ import { StickyContainer, Sticky } from 'react-sticky';
 import { get, post } from "../../api";
 import { SCHOOL_API } from "../../constants/appSettings";
 import { Player, ControlBar, BigPlayButton } from 'video-react';
+import { formatCurrency } from "../../utils/common";
 
 const practice = require('../../assets/icon/practice.png')
 const evaluate = require('../../assets/icon/evaluate.png')
@@ -395,7 +396,7 @@ const renderDocumentDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.mempoint}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">

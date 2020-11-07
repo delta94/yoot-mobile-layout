@@ -31,7 +31,8 @@ import {
     SELECT_ALBUM_TO_POST,
     SET_PROCCESS_DURATION,
     TOGGLE_GROUP_DETAIL_DRAWER,
-    SET_CURRENT_NETWORK
+    SET_CURRENT_NETWORK,
+    TOGGLE_USER_INFO_FORM_DRAWER
 } from '../actions/app'
 
 const initialState = {
@@ -69,7 +70,8 @@ const initialState = {
     updateAlbumSuccessCallback: null,
     albumSelected: null,
     showGroupDetail: false,
-    currentNetwork: 'all'
+    currentNetwork: 'all',
+    showUserInfoForm: false
 };
 
 export default (state = initialState, action) => {
@@ -258,6 +260,11 @@ export default (state = initialState, action) => {
         case SET_CURRENT_NETWORK: {
             return Object.assign({}, state, {
                 currentNetwork: action.payload,
+            });
+        }
+        case TOGGLE_USER_INFO_FORM_DRAWER: {
+            return Object.assign({}, state, {
+                showUserInfoForm: action.payload,
             });
         }
 

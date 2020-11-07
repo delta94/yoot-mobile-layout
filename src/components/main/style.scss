@@ -209,6 +209,10 @@
     }
 }
 
+#school-website-iframe{
+  border: none;
+}
+
 .drawer-detail{
   display: grid;
   grid-template-rows: min-content min-content auto;
@@ -231,6 +235,9 @@
     padding: 0px 10px 0px 0px;
     box-sizing: border-box;
     // overflow-x: hidden;
+    &.border-none{
+      border: none !important;
+    }
     .direction{
       display: flex;
       align-items: center;

@@ -7,6 +7,9 @@ import { showInfo } from './app';
 import {
   FiberManualRecord as FiberManualRecordIcon
 } from '@material-ui/icons'
+import {
+  Button
+} from '@material-ui/core'
 
 export const jsonFromUrlParams = search => {
   if (!search) return {};
@@ -112,12 +115,20 @@ export const showNotification = (title, message, onOK) => {
   });
 };
 
-export const showConfirm = (title, message, onOK, onCancel, okButton, cancelButton) => {
+export const showConfirm = (title, message, onOK, onCancel, okButton, cancelButton, className) => {
   confirmAlert({
     title: title,
     message: message,
-    buttons: [
-    ],
+    customUI: ({ onClose }) => <div className={"custom-confirm-alert " + className}>
+      <h1>{title}</h1>
+      <p>{message}</p>
+      <div>
+        <Button onClick={() => {
+          onOK()
+          onClose()
+        }}>{okButton}</Button>
+      </div>
+    </div>,
   });
 };
 

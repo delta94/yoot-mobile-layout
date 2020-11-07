@@ -940,7 +940,7 @@ const renderUserHistoryDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {formatCurrency(profile.mempoint, 0)}</span>
+                  <span>Điểm YOOT: {formatCurrency(new Intl.NumberFormat('de-DE').format(profile.mempoint), 0)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">

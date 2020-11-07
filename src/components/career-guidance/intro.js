@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core'
 import { PDFReader } from 'reactjs-pdf-reader';
 import { connect } from 'react-redux'
+import { formatCurrency } from "../../utils/common";
 
 const banner2 = require('../../assets/images/banner2.png')
 const pdf_download = require('../../assets/icon/pdf-download.png')
@@ -84,7 +85,6 @@ class Index extends React.Component {
             videoIntro,
             videoDISCs
         } = this.props
-
 
         return (
             <div className="intro-page">
@@ -229,7 +229,7 @@ const renderDocumentDrawer = (component) => {
                             <div className="profile">
                                 <span className="user-name">{profile.fullname}</span>
                                 <span className="point">
-                                    <span>Điểm YOOT: {profile.mempoint}</span>
+                                    <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                                 </span>
                             </div>
                             <Avatar aria-label="recipe" className="avatar">

@@ -917,7 +917,7 @@ class Index extends React.Component {
         <div className="user-info">
           <span className="user-name">{profile.fullname}</span>
           <span className="point">
-            <span>Điểm YOOT: {profile.mempoint}</span>
+            <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
           </span>
           <IconButton style={{ background: "rgba(0,0,0,0.07)" }} onClick={() => this.setState({ showUserMenu: true })}>
             <MoreHorizIcon />
@@ -1322,7 +1322,7 @@ const renderUserHistoryDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {formatCurrency(profile.mempoint, 0)}</span>
+                  <span>Điểm YOOT: {formatCurrency(new Intl.NumberFormat('de-DE').format(profile.mempoint), 0)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -1805,13 +1805,13 @@ const renderFriendActionsDrawer = (component) => {
             </li>
           </ul>
           <div className="destroy-action">
-          <Button className="btn-destroy" onClick={() => component.setState({
-            showFriendActionsDrawer: false,
-            okCallback: () => component.removeFriend(currentFriend.friendid),
-            confirmTitle: "",
-            confirmMessage: "Bạn có chắc muốn hủy kết bạn không?",
-            showConfim: true
-          })}>Huỷ kết bạn</Button>
+            <Button className="btn-destroy" onClick={() => component.setState({
+              showFriendActionsDrawer: false,
+              okCallback: () => component.removeFriend(currentFriend.friendid),
+              confirmTitle: "",
+              confirmMessage: "Bạn có chắc muốn hủy kết bạn không?",
+              showConfim: true
+            })}>Huỷ kết bạn</Button>
           </div>
         </div> : ''
       }
@@ -2020,7 +2020,7 @@ const renderUserDetailDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {profile.mempoint}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
