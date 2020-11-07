@@ -303,8 +303,8 @@ class Index extends React.Component {
       homeworks,
       reviewers
     } = this.state
-    console.log('homeworks',homeworks)
-    console.log('exercises',exercises)
+    console.log('homeworks', homeworks)
+    console.log('exercises', exercises)
     return (
       <div className="exercise-item-page" >
         <StickyContainer className="container">
@@ -399,7 +399,7 @@ class Index extends React.Component {
                         </div>
                       }
                       {
-                        homeworks && !homeworks.some(item=>item.STATUS === 1) && <Dropzone onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
+                        homeworks && !homeworks.some(item => item.STATUS === 1) && <Dropzone onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
                           {({ getRootProps, getInputProps }) => (
                             <div {...getRootProps()} className="box-upload-file" id="upload-homework-bt">
                               <input {...getInputProps()} accept={exercises.EXERCISE_TYPE_FK == 1 ? "file/*" : "video/*"} />
@@ -424,7 +424,7 @@ class Index extends React.Component {
                         </Dropzone>
                       }
                       {
-                        homeworks && !homeworks.some(item=>item.STATUS === 1) ? <Button className="bt-submit aply-exercise" onClick={() => this.handleSubmitHomework()}>
+                        homeworks && !homeworks.some(item => item.STATUS === 1) ? <Button className="bt-submit aply-exercise" onClick={() => this.handleSubmitHomework()}>
                           Nộp bài
                          {
                             inProccessing == true ? <Loader type="small" /> : ""
@@ -512,7 +512,7 @@ class Index extends React.Component {
                                 {
                                   comment.STATUS == 1 ? <pre className="comment">
                                     {
-                                      comment.COMMENT? comment.COMMENT : "Không có bình luận"
+                                      comment.COMMENT ? comment.COMMENT : "Không có bình luận"
                                     }
                                   </pre> : <IconButton className='noti-ring' onClick={() => this.handleRemindReviewer(comment)}><NotificationsActiveIcon /></IconButton>
                                 }
@@ -522,7 +522,7 @@ class Index extends React.Component {
                             }
 
                           </div>
-                          <Button onClick={() => this.setState({ tabIndex: 0 })}>Làm lại bài tập</Button>
+                          <Button onClick={() => this.setState({ tabIndex: 0 })}>Thực hành lại</Button>
                         </li>
                       </ul>
                     </div>)

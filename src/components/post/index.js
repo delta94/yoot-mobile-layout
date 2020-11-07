@@ -922,6 +922,7 @@ class Index extends React.Component {
       isPlaying,
     } = this.state;
 
+
     let { profile, daskMode, data, containerRef } = this.props;
 
     let PrivacyOptions = objToArray(Privacies);
@@ -1452,7 +1453,17 @@ class Index extends React.Component {
                             }
                             title={
                               <span className="poster-name">
-                                <span className="name">
+                                <span className="name" onClick={() => {
+                                  if (data.newsFeedShare.iduserpost == profile.id) {
+                                    this.props.history.push("/profile");
+                                  } else {
+                                    this.props.setCurrenUserDetail({
+                                      ...data,
+                                      friendid: data.newsFeedShare.iduserpost,
+                                    });
+                                    this.props.toggleUserPageDrawer(true);
+                                  }
+                                }}>
                                   {data.newsFeedShare.nameuserpost}
                                 </span>
                                 {data.newsFeedShare.kindpost == 4 ? (
