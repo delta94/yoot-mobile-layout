@@ -65,6 +65,13 @@ import {
   deletePostSuccess,
   createPostSuccess,
 } from "../../actions/posted";
+
+import {
+  setCurrentGroup,
+} from '../../actions/group'
+import {
+  toggleGroupDetailDrawer
+} from '../../actions/app'
 import {
   confirmSubmit,
   fromNow,
@@ -91,6 +98,7 @@ import CommentImageBox from "./comment-image";
 import CustomMenu from "../common/custom-menu";
 import { APP_SETTING } from "../../constants/localStorageKeys";
 import ShowMoreText from "react-show-more-text";
+
 
 const maxCols = 6;
 const like1 = require("../../assets/icon/like1@1x.png");
@@ -891,6 +899,18 @@ class Index extends React.Component {
     this.handlePauseVideo();
   }
 
+  handleGetGroupDetail(groupid) {
+    if (!groupid) return
+    get(SOCIAL_NET_WORK_API, "GroupUser/GetOneGroupUser?groupid=" + groupid, result => {
+      if (result && result.result == 1) {
+        this.props.setCurrentGroup(result.content.groupUser)
+      }
+    })
+  }
+
+
+
+
   render() {
     let {
       anchor,
@@ -901,6 +921,7 @@ class Index extends React.Component {
       isFullScreen,
       isPlaying,
     } = this.state;
+
     let { profile, daskMode, data, containerRef } = this.props;
 
     let PrivacyOptions = objToArray(Privacies);
@@ -1149,7 +1170,12 @@ class Index extends React.Component {
                         style={{ width: "6px", height: "6px" }}
                       />
                       <span>
-                        <u>{data.groupnamepost}</u>
+                        <u onClick={() => this.setState({ showGroupForPostDrawer: false }, () => {
+                          // this.props.setCurrentGroup({ groupid: data.groupidpost })
+                          this.handleGetGroupDetail(data.groupidpost)
+                          this.props.toggleGroupDetailDrawer(true)
+
+                        })}>{data.groupnamepost}</u>
                       </span>
                     </div>
                   ) : (
@@ -1485,7 +1511,12 @@ class Index extends React.Component {
                                       style={{ width: "6px", height: "6px" }}
                                     />
                                     <span>
-                                      <u>{data.newsFeedShare.groupnamepost}</u>
+                                      <u onClick={() => this.setState({ showGroupForPostDrawer: false }, () => {
+                                        // this.props.setCurrentGroup({ groupid: data.groupidpost })
+                                        this.handleGetGroupDetail(data.newsFeedShare.groupidpost)
+                                        this.props.toggleGroupDetailDrawer(true)
+
+                                      })}>{data.newsFeedShare.groupnamepost}</u>
                                     </span>
                                   </div>
                                 ) : (
@@ -2029,6 +2060,8 @@ const mapDispatchToProps = (dispatch) => ({
   setProccessDuration: (percent) => dispatch(setProccessDuration(percent)),
   createPostSuccess: (post, userId) =>
     dispatch(createPostSuccess(post, userId)),
+  toggleGroupDetailDrawer: (isShow) => dispatch(toggleGroupDetailDrawer(isShow)),
+  setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

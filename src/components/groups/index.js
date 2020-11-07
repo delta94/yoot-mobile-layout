@@ -661,7 +661,6 @@ const renderSearchGroupDrawer = (component) => {
   } = component.state
 
 
-
   return (
     <Drawer anchor="bottom" className="tag-friend-drawer" open={showSearchGroupDrawer} onClose={() => component.setState({ showSearchGroupDrawer: false })}>
       <div className="drawer-detail">
