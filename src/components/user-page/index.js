@@ -11,7 +11,7 @@ import {
   toggleMediaViewerDrawer,
   toggleUserPageDrawer,
 } from "../../actions/app";
-import { setCurrenUserDetail } from "../../actions/user";
+import { setCurrenUserDetail, updateChangeFolowed, updateChangeFolowing } from "../../actions/user";
 import { setUserPosted } from "../../actions/posted";
 import {
   PhotoCamera as PhotoCameraIcon,
@@ -31,7 +31,7 @@ import {
 } from "@material-ui/core";
 import moment from "moment";
 import SwipeableViews from "react-swipeable-views";
-import { get } from "../../api";
+import { get, post } from "../../api";
 import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
 import ContentLoader from "react-content-loader";
 import Loader from "../common/loader";
@@ -82,6 +82,8 @@ class Index extends React.Component {
       numOfFollowing: 0,
       numOfFriend: 0,
     };
+    this.getFollowed = this.getFollowed.bind(this);
+    this.getFollowing = this.getFollowing.bind(this);
   }
   getProfile(id) {
     let { friendsCurrentPage } = this.state;
@@ -95,7 +97,6 @@ class Index extends React.Component {
         let userExperienceAuth = [];
 
         if (statusfriend && statusfriend === 10) {
-          //BINH: friend auth
           authorShowInfo =
             authorizeUsers &&
             authorizeUsers.filter((item) => item.levelid === 4);
@@ -109,7 +110,6 @@ class Index extends React.Component {
             (item) => item.levelauthorizeid !== 4
           );
         } else {
-          //BINH: not friend auth
           authorShowInfo =
             authorizeUsers &&
             authorizeUsers.filter(
@@ -122,7 +122,6 @@ class Index extends React.Component {
             (item) => item.levelauthorizeid !== 4 && item.levelauthorizeid !== 3
           );
         }
-        //BINH: set auth birthday
         if (
           authorShowInfo.some((item) => item.authorizeinfoid === 2) &&
           authorShowInfo.some((item) => item.authorizeinfoid === 3)
@@ -140,7 +139,6 @@ class Index extends React.Component {
           );
         }
 
-        //BINH: set auth info
         for (let i = 0; i < authorShowInfo.length; i++) {
           if (authorShowInfo[i].authorizeinfoid === 1) {
             resultState.address = "";
@@ -217,6 +215,7 @@ class Index extends React.Component {
       groupid: 0,
     };
     let queryParam = objToQuery(param);
+    this.setState({ pageFollowed: currentPage });
     get(
       SOCIAL_NET_WORK_API,
       "Friends/GetListFriends" + queryParam,
@@ -242,6 +241,7 @@ class Index extends React.Component {
       groupid: 0,
     };
     let queryParam = objToQuery(param);
+    this.setState({ pageFollowing: currentPage });
     get(
       SOCIAL_NET_WORK_API,
       "Friends/GetListFriends" + queryParam,
@@ -447,9 +447,20 @@ class Index extends React.Component {
       "Friends/UnFollowFriends" + objToQuery(param),
       (result) => {
         if (result && result.result == 1) {
-          this.getProfile(friendid);
+          get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
+            if (result && result.result == 1) {
+              this.props.updateChangeFolowed()
+              this.props.updateChangeFolowing()
+            }
+          })
           this.setState({
             showUserMenu: false,
+            followeds: this.state.followeds.map((item) =>
+              item.friendid === friendid ? { ...item, ismefollow: 0 } : item
+            ),
+            followings: this.state.followings.map((item) =>
+              item.friendid === friendid ? { ...item, ismefollow: 0 } : item
+            ),
           });
         }
       }
@@ -466,15 +477,25 @@ class Index extends React.Component {
       "Friends/FollowFriends" + objToQuery(param),
       (result) => {
         if (result && result.result == 1) {
-          this.getProfile(friendid);
+          get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
+            if (result && result.result == 1) {
+              this.props.updateChangeFolowed()
+              this.props.updateChangeFolowing() 
+            }
+          })
           this.setState({
             showUserMenu: false,
+            followeds: this.state.followeds.map((item) =>
+              item.friendid === friendid ? { ...item, ismefollow: 1 } : item
+            ),
+            followings: this.state.followings.map((item) =>
+              item.friendid === friendid ? { ...item, ismefollow: 1 } : item
+            ),
           });
         }
       }
     );
   }
-
   getNumOfFriend(friendid) {
     let param = {
       currentdate: moment(new Date()).format(CurrentDate),
@@ -502,7 +523,6 @@ class Index extends React.Component {
       this.getNumOfFriend(userDetail.friendid);
     }
   }
-
   render() {
     let {
       openVideoDrawer,
@@ -740,8 +760,7 @@ class Index extends React.Component {
                     <li>
                       <img src={address} />
                       <span className="title">
-                        Sống tại{" "}
-                        <b>{userDetail.address}</b>
+                        Sống tại <b>{userDetail.address}</b>
                       </span>
                     </li>
                   )}
@@ -897,6 +916,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
+  updateChangeFolowed: () => dispatch(updateChangeFolowed()),
+  updateChangeFolowing: () => dispatch(updateChangeFolowing()),
   setCurrenUserDetail: (user) => dispatch(setCurrenUserDetail(user)),
   toggleUserDetail: (isShow) => dispatch(toggleUserDetail(isShow)),
   toggleUserHistory: (isShow) => dispatch(toggleUserHistory(isShow)),
@@ -1230,7 +1251,23 @@ const renderUserDetailDrawer = (component) => {
     userDetailFolowTabIndex,
     numOfFollowed,
     numOfFollowing,
+    pageFollowed,
+    pageFollowing,
   } = component.state;
+  const handleScroll = (e) => {
+    const bottom =
+      e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 2;
+    if (bottom) {
+      if (userDetailFolowTabIndex === 0 && numOfFollowed > followeds.length) {
+        component.getFollowed(pageFollowed + 1, userDetail.id);
+      } else if (
+        userDetailFolowTabIndex === 1 &&
+        numOfFollowing > followings.length
+      ) {
+        component.getFollowing(pageFollowing + 1, userDetail.id);
+      }
+    }
+  };
   return (
     <Drawer
       anchor="bottom"
@@ -1311,7 +1348,7 @@ const renderUserDetailDrawer = (component) => {
                   <span>Số lượng</span>
                   <span className="red">{numOfFollowed}</span>
                 </div>
-                <div className="folowed-list">
+                <div className="folowed-list" onScroll={handleScroll}>
                   {followeds && followeds.length > 0 ? (
                     <ul>
                       {followeds.map((item, index) => (
@@ -1346,12 +1383,25 @@ const renderUserDetailDrawer = (component) => {
                             </b>
                             <p>{item.numfriendwith} bạn chung</p>
                           </div>
-
-                          <Button
-                            style={{ background: "#f44645", color: "#fff" }}
-                          >
-                            Theo dõi
-                          </Button>
+                          {item.ismefollow === 0 ? (
+                            <Button
+                              onClick={() =>
+                                component.folowFriend(item.friendid)
+                              }
+                              style={{ background: "#f44645", color: "#fff" }}
+                            >
+                              Theo dõi
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() =>
+                                component.unFolowFriend(item.friendid)
+                              }
+                              style={{ background: "rgba(0,0,0,0.05)" }}
+                            >
+                              Đang Theo dõi
+                            </Button>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -1367,7 +1417,7 @@ const renderUserDetailDrawer = (component) => {
                   <span>Số lượng</span>
                   <span className="red">{numOfFollowing}</span>
                 </div>
-                <div className="folowing-list">
+                <div className="folowing-list" onScroll={handleScroll}>
                   {followings && followings.length > 0 ? (
                     <ul>
                       {followings.map((item, index) => (
@@ -1398,9 +1448,25 @@ const renderUserDetailDrawer = (component) => {
                           >
                             {item.friendname}
                           </span>
-                          <Button style={{ background: "rgba(0,0,0,0.05)" }}>
-                            Bỏ theo dõi
-                          </Button>
+                          {item.ismefollow === 0 ? (
+                            <Button
+                              onClick={() =>
+                                component.folowFriend(item.friendid)
+                              }
+                              style={{ background: "#f44645", color: "#fff" }}
+                            >
+                              Theo dõi
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() =>
+                                component.unFolowFriend(item.friendid)
+                              }
+                              style={{ background: "rgba(0,0,0,0.05)" }}
+                            >
+                              Đang Theo dõi
+                            </Button>
+                          )}
                         </li>
                       ))}
                     </ul>

@@ -7,6 +7,20 @@ export const SET_USER_DETAIL = "user@SET_USER_DETAIL"
 export const SET_USER_PROFILE = "user@SET_USER_PROFILE"
 export const GET_FOLOWED_ME = "user@GET_FOLOWED_ME"
 export const GET_ME_FOLOWING = "user@GET_ME_FOLOWING"
+export const UN_FOLLOW_FRIEND = "user@UN_FOLLOW_FRIEND"
+export const FOLLOW_FRIEND = "user@FOLLOW_FRIEND"
+export const UPDATE_CHANGE_FOLLOWED = "user@UPDATE_CHANGE_FOLLOWED"
+export const UPDATE_CHANGE_FOLLOWING = "user@UPDATE_CHANGE_FOLLOWING"
+
+export const unFollowFriend = (friendId) => ({
+    type: UN_FOLLOW_FRIEND,
+    payload: friendId,
+})
+
+export const followFriend = (friendId) => ({
+    type: FOLLOW_FRIEND,
+    payload: friendId,
+})
 
 export const setUserProfile = (user) => {
     return dispatch => {
@@ -79,6 +93,51 @@ export const getMeFolowing = (currentpage) => {
             if (result.result == 1) {
                 dispatch({
                     type: GET_ME_FOLOWING,
+                    payload: result.content.userInvites
+                })
+            }
+        })
+
+    }
+}
+
+export const updateChangeFolowed = () => {
+    return dispatch => {
+        let param = {
+            currentpage: 0,
+            currentdate: moment(new Date).format(CurrentDate),
+            limit: 20,
+            status: "Followed",
+            forFriendId: 0,
+            groupid: 0
+        }
+        let queryParam = objToQuery(param)
+        get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + queryParam, result => {
+            if (result.result == 1) {
+                dispatch({
+                    type: UPDATE_CHANGE_FOLLOWED,
+                    payload: result.content.userInvites
+                })
+            }
+        })
+
+    }
+}
+export const updateChangeFolowing = () => {
+    return dispatch => {
+        let param = {
+            currentpage: 0,
+            currentdate: moment(new Date).format(CurrentDate),
+            limit: 20,
+            status: "Following",
+            forFriendId: 0,
+            groupid: 0
+        }
+        let queryParam = objToQuery(param)
+        get(SOCIAL_NET_WORK_API, "Friends/GetListFriends" + queryParam, result => {
+            if (result.result == 1) {
+                dispatch({
+                    type: UPDATE_CHANGE_FOLLOWING,
                     payload: result.content.userInvites
                 })
             }
