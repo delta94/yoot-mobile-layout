@@ -32,7 +32,9 @@ import {
     SET_PROCCESS_DURATION,
     TOGGLE_GROUP_DETAIL_DRAWER,
     SET_CURRENT_NETWORK,
-    TOGGLE_USER_INFO_FORM_DRAWER
+    TOGGLE_USER_INFO_FORM_DRAWER,
+    TOGGLE_COMMENT_DRAWER,
+    TOGGLE_COMMENT_IMAGE_DRAWER
 } from '../actions/app'
 
 const initialState = {
@@ -71,7 +73,11 @@ const initialState = {
     albumSelected: null,
     showGroupDetail: false,
     currentNetwork: 'all',
-    showUserInfoForm: false
+    showUserInfoForm: false,
+    showCommentDrawer: false,
+    currentPostForComment: null,
+    currentImageForComment: null,
+    showCommentImageDrawer: false
 };
 
 export default (state = initialState, action) => {
@@ -265,6 +271,19 @@ export default (state = initialState, action) => {
         case TOGGLE_USER_INFO_FORM_DRAWER: {
             return Object.assign({}, state, {
                 showUserInfoForm: action.payload,
+            });
+        }
+        case TOGGLE_COMMENT_DRAWER: {
+            return Object.assign({}, state, {
+                showCommentDrawer: action.payload,
+                currentPostForComment: action.currentPostForComment
+            });
+        }
+        case TOGGLE_COMMENT_IMAGE_DRAWER: {
+            return Object.assign({}, state, {
+                showCommentImageDrawer: action.payload,
+                currentPostForComment: action.currentPostForComment,
+                currentImageForComment: action.currentImageForComment
             });
         }
 

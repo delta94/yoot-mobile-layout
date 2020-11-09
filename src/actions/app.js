@@ -38,7 +38,8 @@ export const SELECT_ALBUM_TO_POST = "app@SELECT_ALBUM_TO_POST"
 export const TOGGLE_GROUP_DETAIL_DRAWER = "app@TOGGLE_GROUP_DETAIL_DRAWER"
 export const SET_CURRENT_NETWORK = "app@SET_CURRENT_NETWORK"
 export const TOGGLE_USER_INFO_FORM_DRAWER = "app@TOGGLE_USER_INFO_FORM_DRAWER"
-
+export const TOGGLE_COMMENT_DRAWER = "app@TOGGLE_COMMENT_DRAWER"
+export const TOGGLE_COMMENT_IMAGE_DRAWER = "app@TOGGLE_COMMENT_IMAGE_DRAWER"
 
 export const setProccessDuration = (percent) => {
     return dispatch => {
@@ -347,7 +348,26 @@ export const toggleUserInfoFormDrawer = (isShow) => {
     }
 }
 
+export const toggleCommentDrawer = (isShow, currentPostForComment) => {
+    return dispatch => {
+        dispatch({
+            type: TOGGLE_COMMENT_DRAWER,
+            payload: isShow,
+            currentPostForComment: currentPostForComment
+        })
+    }
+}
 
+export const toggleCommentImageDrawer = (isShow, currentImageForComment, currentPostForComment) => {
+    return dispatch => {
+        dispatch({
+            type: TOGGLE_COMMENT_IMAGE_DRAWER,
+            payload: isShow,
+            currentPostForComment: currentPostForComment,
+            currentImageForComment: currentImageForComment
+        })
+    }
+}
 
 
 

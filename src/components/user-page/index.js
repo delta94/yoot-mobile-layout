@@ -480,7 +480,7 @@ class Index extends React.Component {
           get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
             if (result && result.result == 1) {
               this.props.updateChangeFolowed()
-              this.props.updateChangeFolowing() 
+              this.props.updateChangeFolowing()
             }
           })
           this.setState({
@@ -1393,15 +1393,15 @@ const renderUserDetailDrawer = (component) => {
                               Theo dõi
                             </Button>
                           ) : (
-                            <Button
-                              onClick={() =>
-                                component.unFolowFriend(item.friendid)
-                              }
-                              style={{ background: "rgba(0,0,0,0.05)" }}
-                            >
-                              Đang Theo dõi
-                            </Button>
-                          )}
+                              <Button
+                                onClick={() =>
+                                  component.unFolowFriend(item.friendid)
+                                }
+                                style={{ background: "rgba(0,0,0,0.05)" }}
+                              >
+                                Đang Theo dõi
+                              </Button>
+                            )}
                         </li>
                       ))}
                     </ul>
@@ -1458,15 +1458,15 @@ const renderUserDetailDrawer = (component) => {
                               Theo dõi
                             </Button>
                           ) : (
-                            <Button
-                              onClick={() =>
-                                component.unFolowFriend(item.friendid)
-                              }
-                              style={{ background: "rgba(0,0,0,0.05)" }}
-                            >
-                              Đang Theo dõi
-                            </Button>
-                          )}
+                              <Button
+                                onClick={() =>
+                                  component.unFolowFriend(item.friendid)
+                                }
+                                style={{ background: "rgba(0,0,0,0.05)" }}
+                              >
+                                Đang Theo dõi
+                              </Button>
+                            )}
                         </li>
                       ))}
                     </ul>

@@ -37,6 +37,7 @@ import {
   Replay10 as Replay10Icon,
   Close as CloseIcon,
   Done as DoneIcon,
+  AssignmentReturn,
 } from "@material-ui/icons";
 import moment from "moment";
 import {
@@ -53,6 +54,8 @@ import {
   toggleUserDetail,
   toggleUserPageDrawer,
   setProccessDuration,
+  toggleCommentDrawer,
+  toggleCommentImageDrawer
 } from "../../actions/app";
 import { setCurrenUserDetail } from "../../actions/user";
 import {
@@ -119,57 +122,7 @@ const search = require("../../assets/icon/Find@1x.png");
 const mute = require("../../assets/icon/mute.png");
 const unmute = require("../../assets/icon/unmute.png");
 
-const photos = [
-  {
-    url: "https://source.unsplash.com/2ShvY8Lf6l0/1600x1200",
-  },
-  {
-    url: "https://source.unsplash.com/Dm-qxdynoEc/1600x1600",
-  },
-  {
-    url: "https://source.unsplash.com/qDkso9nvCg0/1200x1600",
-  },
-  {
-    url: "https://source.unsplash.com/iecJiKe_RNg/1200x1600",
-  },
-  {
-    url: "https://source.unsplash.com/epcsn8Ed8kY/1200x1600",
-  },
-];
 
-const videos = [
-  {
-    url:
-      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-  },
-];
-
-const comments = [
-  {
-    user: {
-      fullName: "Hoang Hai Long",
-      avatar:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRDik_Tc8kiAcd80dH3S7I4sDJK76cbjidtyQ&usqp=CAU",
-    },
-    comment: "abc def ghi jkl",
-  },
-  {
-    user: {
-      fullName: "Hoang Hai Long",
-      avatar:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRDik_Tc8kiAcd80dH3S7I4sDJK76cbjidtyQ&usqp=CAU",
-    },
-    comment: "abc def ghi jkl",
-  },
-  {
-    user: {
-      fullName: "Hoang Hai Long",
-      avatar:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRDik_Tc8kiAcd80dH3S7I4sDJK76cbjidtyQ&usqp=CAU",
-    },
-    comment: "abc def ghi jkl",
-  },
-];
 
 class Index extends React.Component {
   constructor(props) {
@@ -294,6 +247,10 @@ class Index extends React.Component {
 
   likePosted(reaction) {
     let { data, userId } = this.props;
+    let {
+      sharedPost
+    } = this.state
+    if (sharedPost) data = sharedPost
     if (!data) return;
     let param = {
       postid: data.nfid,
@@ -315,6 +272,10 @@ class Index extends React.Component {
 
   dislikePosted() {
     let { data, userId } = this.props;
+    let {
+      sharedPost
+    } = this.state
+    if (sharedPost) data = sharedPost
     if (!data) return;
     let param = {
       postid: data.nfid,
@@ -336,6 +297,10 @@ class Index extends React.Component {
 
   likeImage(reaction, image) {
     let { data, userId } = this.props;
+    let {
+      sharedPost
+    } = this.state
+    if (sharedPost) data = sharedPost
     if (!data) return;
     let param = {
       postid: data.nfid,
@@ -354,6 +319,10 @@ class Index extends React.Component {
 
   dislikeImage(image) {
     let { data, userId } = this.props;
+    let {
+      sharedPost
+    } = this.state
+    if (sharedPost) data = sharedPost
     if (!data) return;
     let param = {
       postid: data.nfid,
@@ -614,6 +583,7 @@ class Index extends React.Component {
       );
     }
   }
+
   handleReportGroup() {
     let {
       reasonSelected,
@@ -933,6 +903,16 @@ class Index extends React.Component {
         if (!item.postid) item.postid = data.nfid;
         if (!item.postfor) item.postfor = data.postforid;
       });
+    }
+
+    if (data.iconlike == -1) data.iconlike = 0
+    if (data.postforid == 1) data.postforid = 2
+
+
+    if (data.newsFeedShare) {
+      data.newsFeedShare.mediaPlays.map(item => {
+        item.postid = data.newsFeedShare.nfid
+      })
     }
 
 
@@ -1345,6 +1325,7 @@ class Index extends React.Component {
                                 onClick={() => {
                                   this.props.setMediaToViewer([media]);
                                   this.props.toggleMediaViewerDrawer(true, {
+                                    actions: mediaGuestActions(this),
                                     showInfo: true,
                                     activeIndex: index,
                                     isvideo: true,
@@ -1392,6 +1373,7 @@ class Index extends React.Component {
                                 onClick={() => {
                                   this.props.setMediaToViewer([media]);
                                   this.props.toggleMediaViewerDrawer(true, {
+                                    actions: mediaGuestActions(this),
                                     showInfo: true,
                                     activeIndex: index,
                                     isvideo: true,
@@ -1503,15 +1485,21 @@ class Index extends React.Component {
                             subheader={
                               <div className="poster-subtitle">
                                 <div>
-                                  <img
-                                    src={
-                                      PrivacyOptions.find(
-                                        (privacy) =>
-                                          privacy.code ==
-                                          data.newsFeedShare.postforid
-                                      ).icon1
-                                    }
-                                  />
+                                  {
+                                    PrivacyOptions.find(
+                                      (privacy) =>
+                                        privacy.code ==
+                                        data.newsFeedShare.postforid
+                                    ) ? <img
+                                        src={
+                                          PrivacyOptions.find(
+                                            (privacy) =>
+                                              privacy.code ==
+                                              data.newsFeedShare.postforid
+                                          ).icon1
+                                        }
+                                      /> : ""
+                                  }
                                   <FiberManualRecordIcon />
                                   {fromNow(
                                     moment(data.newsFeedShare.createdate),
@@ -1620,6 +1608,7 @@ class Index extends React.Component {
                                               onClick={() =>
                                                 this.setState({
                                                   showPostedDetail: true,
+                                                  sharedPost: data.newsFeedShare
                                                 })
                                               }
                                             >
@@ -1693,6 +1682,7 @@ class Index extends React.Component {
                                               onClick={() =>
                                                 this.setState({
                                                   showPostedDetail: true,
+                                                  sharedPost: data.newsFeedShare
                                                 })
                                               }
                                             />
@@ -1704,6 +1694,7 @@ class Index extends React.Component {
                                               onClick={() =>
                                                 this.setState({
                                                   showPostedDetail: true,
+                                                  sharedPost: data.newsFeedShare
                                                 })
                                               }
                                             />
@@ -1715,6 +1706,7 @@ class Index extends React.Component {
                                               onClick={() =>
                                                 this.setState({
                                                   showPostedDetail: true,
+                                                  sharedPost: data.newsFeedShare
                                                 })
                                               }
                                             >
@@ -1754,6 +1746,7 @@ class Index extends React.Component {
                                                   this.props.toggleMediaViewerDrawer(
                                                     true,
                                                     {
+                                                      actions: mediaGuestActions(this),
                                                       showInfo: true,
                                                       activeIndex: index,
                                                       isvideo: true,
@@ -1821,6 +1814,7 @@ class Index extends React.Component {
                                                   this.props.toggleMediaViewerDrawer(
                                                     true,
                                                     {
+                                                      actions: mediaGuestActions(this),
                                                       showInfo: true,
                                                       activeIndex: index,
                                                       isvideo: true,
@@ -1863,18 +1857,16 @@ class Index extends React.Component {
                                   </GridList>
                                 )}
                             </div>
-                            {data.newsFeedShare.numlike > 0 ||
-                              data.newsFeedShare.numcomment > 0 ? (
+                            {
+                              // data.newsFeedShare.numlike > 0 ||
+                              //   data.newsFeedShare.numcomment > 0 ||
+                              data.newsFeedShare.nummedia > 0 && data.newsFeedShare.mediaPlays[0].numview > 0 ? (
                                 <div className="react-reward">
-                                  <span>
-                                    {data.newsFeedShare.numlike +
-                                      data.newsFeedShare.numcomment}{" "}
-                                  lượt xem
-                                </span>
+                                  <span>{data.newsFeedShare.mediaPlays[0].numview}{" "}lượt xem</span>
                                 </div>
                               ) : (
-                                ""
-                              )}
+                                  ""
+                                )}
                           </CardContent>
                         </Card>
                       )}
@@ -1886,7 +1878,9 @@ class Index extends React.Component {
               </div>
               {data.numlike > 0 ||
                 data.numcomment > 0 ||
-                (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ? (
+                (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ||
+                data.numshare > 0
+                ? (
                   <div className="react-reward">
                     {data.numlike > 0 ? (
                       <span className="like">
@@ -1902,7 +1896,7 @@ class Index extends React.Component {
                                 ></img>
                               )
                           )}
-                        {data.islike == 1 ? (
+                        {data.islike == 1 && data.iconlike > 0 ? (
                           <img src={ReactSelectorIcon[data.iconlike].icon}></img>
                         ) : (
                             ""
@@ -1912,27 +1906,33 @@ class Index extends React.Component {
                     ) : (
                         <span className="like"></span>
                       )}
-                    {data.numcomment > 0 ||
-                      (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ? (
-                        <span
-                          onClick={() =>
-                            this.setState({
-                              showCommentDrawer: true,
-                              currentPost: data,
-                            })
-                          }
-                          className="comment"
-                        >
-                          {data.numcomment > 0
-                            ? `${data.numcomment} bình luận` //bình check click bình luận
-                            : ""}{" "}
-                          {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
-                            ? `${data.mediaPlays[0].numview} lượt xem`
-                            : ""}
-                        </span>
-                      ) : (
-                        ""
-                      )}
+                    {
+                      data.numcomment > 0 ||
+                        (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ||
+                        data.numshare > 0 ? (
+                          <span
+                            onClick={() =>
+                              // this.setState({
+                              //   showCommentDrawer: true,
+                              //   currentPost: data,
+                              // })
+                              this.props.toggleCommentDrawer(true, data)
+                            }
+                            className="comment"
+                          >
+                            {data.numcomment > 0
+                              ? `${data.numcomment} bình luận ` //bình check click bình luận
+                              : ""}
+                            {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
+                              ? `${data.mediaPlays[0].numview} lượt xem `
+                              : ""}
+                            {
+                              data.numshare > 0 ? `${data.numshare} chia sẻ ` : ""
+                            }
+                          </span>
+                        ) : (
+                          ""
+                        )}
                   </div>
                 ) : (
                   ""
@@ -1952,7 +1952,8 @@ class Index extends React.Component {
               />
               <Button
                 onClick={() =>
-                  this.setState({ showCommentDrawer: true, currentPost: data })
+                  // this.setState({ showCommentDrawer: true, currentPost: data })
+                  this.props.toggleCommentDrawer(true, data)
                 }
               >
                 <img src={daskMode ? comment1 : comment} />
@@ -1988,10 +1989,11 @@ class Index extends React.Component {
                   <ul
                     className="comment-list"
                     onClick={() =>
-                      this.setState({
-                        showCommentDrawer: true,
-                        currentPost: data,
-                      })
+                      // this.setState({
+                      //   showCommentDrawer: true,
+                      //   currentPost: data,
+                      // })
+                      this.props.toggleCommentDrawer(true, data)
                     }
                   >
                     {data.comments.map((comment, index) => (
@@ -2038,7 +2040,7 @@ class Index extends React.Component {
             {renderReportGroupDrawer(this)}
           </Card>
         </ScrollTrigger>
-      </div>
+      </div >
     ) : (
         ""
       );
@@ -2077,6 +2079,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(createPostSuccess(post, userId)),
   toggleGroupDetailDrawer: (isShow) => dispatch(toggleGroupDetailDrawer(isShow)),
   setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
+  toggleCommentDrawer: (isShow, currentPostForComment) => dispatch(toggleCommentDrawer(isShow, currentPostForComment)),
+  toggleCommentImageDrawer: (isShow, currentImageForComment, currentPostForComment) => dispatch(toggleCommentImageDrawer(isShow, currentImageForComment, currentPostForComment))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);
@@ -2104,13 +2108,18 @@ const mediaRootActions = (component) => ({
   onSetToAlbumBackground: (value) => null,
 });
 
-// const mediaGuestActions = (component) => ({
-//   // onSaveImage: (value) => component.downloadImage(value.name),
-//   // onSetToAvatar: (value) => null,
-//   // onSetToBackground: (value) => null,
-//   // onSetToAlbumBackground: (value) => null
-// })
-const mediaGuestActions = (component) => null;
+const mediaGuestActions = (component) => ({
+  onSharePost: () => {
+    component.setState(
+      { showShareDrawer: true, groupSelected: null },
+      () => {
+        component.getFriends(0);
+        component.getGroup(0);
+      }
+    )
+  },
+})
+// const mediaGuestActions = (component) => null;
 
 const renderConfirmDrawer = (component) => {
   let {
@@ -2153,44 +2162,88 @@ const renderConfirmDrawer = (component) => {
 };
 
 const renderCommentDrawer = (component) => {
-  let { showCommentDrawer, currentPost } = component.state;
-  let { userId } = component.props;
-  return (
-    <Drawer
-      anchor="bottom"
-      className="comment-drawer"
-      open={showCommentDrawer}
-      onClose={() => component.setState({ showCommentDrawer: false })}
-    >
-      <CommentBox
-        data={currentPost}
-        userId={currentPost ? currentPost.iduserpost : 0}
-        onClose={() => component.setState({ showCommentDrawer: false })}
-      />
-    </Drawer>
-  );
+  let { showCommentDrawer, currentPostForComment, data } = component.props;
+
+  if (currentPostForComment && data && currentPostForComment.nfid == data.nfid)
+    return (
+      <Drawer
+        anchor="bottom"
+        className="comment-drawer"
+        open={showCommentDrawer}
+        onClose={() => component.props.toggleCommentDrawer(false, null)}
+      >
+        {
+          currentPostForComment ? <CommentBox
+            data={currentPostForComment}
+            userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
+            onClose={() => component.props.toggleCommentDrawer(false, null)}
+          /> : ""
+        }
+      </Drawer>
+    )
+  else {
+    if (currentPostForComment && data && data.newsFeedShare && currentPostForComment.nfid == data.newsFeedShare.nfid)
+      return (
+        <Drawer
+          anchor="bottom"
+          className="comment-drawer"
+          open={showCommentDrawer}
+          onClose={() => component.props.toggleCommentDrawer(false, null)}
+        >
+          {
+            currentPostForComment ? <CommentBox
+              data={currentPostForComment}
+              userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
+              onClose={() => component.props.toggleCommentDrawer(false, null)}
+            /> : ""
+          }
+        </Drawer>
+      );
+  }
+  return null
 };
 
 const renderCommentImageDrawer = (component) => {
-  let { showCommentImageDrawer, currentImage, currentPost } = component.state;
-  let { userId, data } = component.props;
-  return (
-    <Drawer
-      anchor="bottom"
-      className="comment-drawer"
-      open={showCommentImageDrawer}
-      onClose={() => component.setState({ showCommentImageDrawer: false })}
-    >
-      <CommentImageBox
-        data={currentPost}
-        image={currentImage}
-        userId={currentImage ? currentImage.iduserpost : 0}
-        onClose={() => component.setState({ showCommentImageDrawer: false })}
-        onLikeImage={(reaction) => component.likeImage(reaction, currentImage)}
-        onDislikeImage={() => component.dislikeImage(currentImage)}
-      />
-    </Drawer>
-  );
+  let { showCommentImageDrawer, currentPostForComment, currentImageForComment, data } = component.props;
+  if (currentPostForComment && data && currentPostForComment.nfid == data.nfid)
+    return (
+      <Drawer
+        anchor="bottom"
+        className="comment-drawer"
+        open={showCommentImageDrawer}
+        onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
+      >
+        <CommentImageBox
+          data={currentPostForComment}
+          image={currentImageForComment}
+          userId={currentImageForComment ? currentImageForComment.iduserpost : 0}
+          onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
+          onLikeImage={(reaction) => component.likeImage(reaction, currentImageForComment)}
+          onDislikeImage={() => component.dislikeImage(currentImageForComment)}
+        />
+      </Drawer>
+    )
+  else {
+    if (currentPostForComment && data && data.newsFeedShare && currentPostForComment.nfid == data.newsFeedShare.nfid)
+      return (
+        <Drawer
+          anchor="bottom"
+          className="comment-drawer"
+          open={showCommentImageDrawer}
+          onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
+        >
+          <CommentImageBox
+            data={currentPostForComment}
+            image={currentImageForComment}
+            userId={currentImageForComment ? currentImageForComment.iduserpost : 0}
+            onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
+            onLikeImage={(reaction) => component.likeImage(reaction, currentImageForComment)}
+            onDislikeImage={() => component.dislikeImage(currentImageForComment)}
+          />
+        </Drawer>
+      )
+  }
+  return null
 };
 
 const renderShareDrawer = (component) => {
@@ -2613,7 +2666,7 @@ const renderUpdatePrivacyImageDrawer = (component) => {
 };
 
 const renderDetailPosted = (component) => {
-  let { showPostedDetail, sharePost } = component.state;
+  let { showPostedDetail, sharedPost } = component.state;
   let {
     data,
     profile,
@@ -2623,7 +2676,7 @@ const renderDetailPosted = (component) => {
     showLocalMenu,
   } = component.props;
 
-  if (sharePost) data = sharePost;
+  if (sharedPost) data = sharedPost;
 
   let PrivacyOptions = objToArray(Privacies);
 
@@ -2638,7 +2691,7 @@ const renderDetailPosted = (component) => {
           <div
             className="direction"
             onClick={() =>
-              component.setState({ showPostedDetail: false, sharePost: null })
+              component.setState({ showPostedDetail: false, sharedPost: null })
             }
           >
             <IconButton
@@ -2848,7 +2901,7 @@ const renderDetailPosted = (component) => {
                                 ></img>
                               )
                           )}
-                        {data.islike == 1 ? (
+                        {data.islike == 1 && data.iconlike > 0 ? (
                           <img
                             src={ReactSelectorIcon[data.iconlike].icon}
                           ></img>
@@ -2886,11 +2939,10 @@ const renderDetailPosted = (component) => {
                 />
 
                 <Button
-                  onClick={() =>
-                    component.setState({
-                      showCommentDrawer: true,
-                      currentPost: data,
-                    })
+                  onClick={() => {
+                    component.props.toggleCommentDrawer(true, data)
+                    console.log("data", data)
+                  }
                   }
                 >
                   <img src={daskMode ? comment1 : comment} />
@@ -2931,6 +2983,7 @@ const renderDetailPosted = (component) => {
                             onClick={() => {
                               component.props.setMediaToViewer([media]);
                               component.props.toggleMediaViewerDrawer(true, {
+                                actions: mediaGuestActions(component),
                                 showInfo: true,
                                 isvideo: true,
                                 activeIndex: 0
@@ -2980,7 +3033,7 @@ const renderDetailPosted = (component) => {
                                       ></img>
                                     )
                                 )}
-                              {media.islike == 1 ? (
+                              {media.islike == 1 && media.iconlike > 0 ? (
                                 <img
                                   src={ReactSelectorIcon[media.iconlike].icon}
                                 ></img>
@@ -3022,11 +3075,12 @@ const renderDetailPosted = (component) => {
                       />
                       <Button
                         onClick={() =>
-                          component.setState({
-                            showCommentImageDrawer: true,
-                            currentImage: media,
-                            currentPost: data,
-                          })
+                          // component.setState({
+                          //   showCommentImageDrawer: true,
+                          //   currentImage: media,
+                          //   currentPost: data,
+                          // })
+                          component.props.toggleCommentImageDrawer(true, media, data)
                         }
                       >
                         <img src={daskMode ? comment1 : comment} />

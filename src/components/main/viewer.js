@@ -4,7 +4,9 @@ import { connect } from 'react-redux'
 import {
     toggleMediaViewerDrawer,
     updateMediaViewed,
-    removeMediaViewed
+    removeMediaViewed,
+    toggleCommentDrawer,
+    toggleCommentImageDrawer
 } from '../../actions/app'
 import {
     updatePrivacyPosted,
@@ -74,7 +76,17 @@ class Index extends React.Component {
             icon: reaction.code,
         };
         console.log("data", data)
-        this.props.likePosted(data, reaction.code, "myPosteds", data.iduserpost);
+        this.props.likePosted(data, reaction.code, "", data.iduserpost);
+        if (data.usersTag.length > 0) {
+            data.usersTag.map(item => {
+                this.props.likePosted(data, reaction.code, "myPosteds", item.id)
+                if (data.mediaPlays.length == 1) {
+                    let image = data.mediaPlays[0];
+                    this.props.likeImage(data, image.detailimageid, reaction.code, item.id);
+                }
+            })
+
+        }
         if (data.mediaPlays.length == 1) {
             let image = data.mediaPlays[0];
             this.props.likeImage(data, image.detailimageid, reaction.code, data.iduserpost);
@@ -97,6 +109,18 @@ class Index extends React.Component {
         };
         this.setState({ isProccesing: false });
         this.props.dislikePosted(data, "myPosteds", data.iduserpost);
+
+        if (data.usersTag.length > 0) {
+            data.usersTag.map(item => {
+                this.props.dislikePosted(data, "myPosteds", item.id);
+                if (data.mediaPlays.length == 1) {
+                    let image = data.mediaPlays[0];
+                    this.props.dislikeImage(data, image.detailimageid, item.id);
+                }
+            })
+
+        }
+
         if (data.mediaPlays.length == 1) {
             let image = data.mediaPlays[0];
             this.props.dislikeImage(data, image.detailimageid, data.iduserpost);
@@ -658,7 +682,18 @@ class Index extends React.Component {
             showMediaViewerDrawer,
             mediaViewerFeature,
             mediaToView,
+
         } = this.props
+
+        let actions = {}
+        if (mediaViewerFeature && mediaViewerFeature.actions) {
+            actions = mediaViewerFeature.actions
+        }
+
+        let {
+            onSharePost
+        } = actions
+
         let {
             isHideMediaHeadFoot,
             activeMeidaSlideIndex,
@@ -684,6 +719,9 @@ class Index extends React.Component {
         if (!activeItem) {
             activeItem = mediaToView && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0 ? mediaToView[mediaViewerFeature.activeIndex] : null
         }
+
+        console.log("this.state", this.state)
+        console.log("this.props", this.props)
 
         return (
             <div>
@@ -778,7 +816,7 @@ class Index extends React.Component {
                                                                                         </div> : ""
                                                                                     }
                                                                                     {
-                                                                                        activeItem ? <div className="footer-action">
+                                                                                        activeItem && currentPost ? <div className="footer-action">
                                                                                             <ul>
                                                                                                 <li>
                                                                                                     <FacebookSelector
@@ -794,13 +832,20 @@ class Index extends React.Component {
                                                                                                     />
                                                                                                 </li>
                                                                                                 <li>
-                                                                                                    <Button>
+                                                                                                    <Button onClick={() => {
+                                                                                                        this.handlePauseVideo()
+                                                                                                        this.props.toggleCommentDrawer(true, currentPost)
+                                                                                                    }}>
                                                                                                         <img src={comment} />
                                                                                                         <span>Bình luận</span>
                                                                                                     </Button>
                                                                                                 </li>
                                                                                                 <li>
-                                                                                                    <Button>
+                                                                                                    <Button onClick={() => {
+                                                                                                        if (onSharePost)
+                                                                                                            onSharePost()
+                                                                                                        this.handlePauseVideo()
+                                                                                                    }}>
                                                                                                         <img src={share} />
                                                                                                         <span>Chia sẻ</span>
                                                                                                     </Button>
@@ -896,13 +941,13 @@ class Index extends React.Component {
                                                         />
                                                     </li>
                                                     <li>
-                                                        <Button>
+                                                        <Button onClick={() => this.props.toggleCommentImageDrawer(true, activeItem, currentPost)}>
                                                             <img src={comment} />
                                                             <span>Bình luận</span>
                                                         </Button>
                                                     </li>
                                                     <li>
-                                                        <Button>
+                                                        <Button onClick={() => onSharePost ? onSharePost() : null}>
                                                             <img src={share} />
                                                             <span>Chia sẻ</span>
                                                         </Button>
@@ -971,6 +1016,8 @@ const mapDispatchToProps = dispatch => ({
         dispatch(likeImage(postId, imageId, iconCode, userId)),
     dislikeImage: (postId, imageId, userId) =>
         dispatch(dislikeImage(postId, imageId, userId)),
+    toggleCommentDrawer: (isShow, currentPostForComment) => dispatch(toggleCommentDrawer(isShow, currentPostForComment)),
+    toggleCommentImageDrawer: (isShow, currentImageForComment, currentPostForComment) => dispatch(toggleCommentImageDrawer(isShow, currentImageForComment, currentPostForComment))
 });
 
 export default connect(

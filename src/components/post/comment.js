@@ -448,6 +448,8 @@ class Index extends React.Component {
         if (data && postComments && postComments[data.nfid])
             comments = postComments[data.nfid]
 
+        if (data.postforid == 1) data.postforid = 2
+
         return (
             <div className="drawer-detail comment-post">
                 <div className="drawer-header">
@@ -890,7 +892,7 @@ class Index extends React.Component {
                                                     data.iconNumbers.filter(item => item.icon != data.iconlike).map((item, index) => item.icon > 0 && item.num > 0 && <img key={index} src={ReactSelectorIcon[item.icon].icon}></img>)
                                                 }
                                                 {
-                                                    data.islike == 1 ? <img src={ReactSelectorIcon[data.iconlike].icon}></img> : ""
+                                                    data.islike == 1 && data.iconlike > 0 ? <img src={ReactSelectorIcon[data.iconlike].icon}></img> : ""
                                                 }
                                                 <span>{data.numlike}</span>
                                             </span> : <span className="like">
@@ -1224,7 +1226,7 @@ const renderDetailPosted = (component) => {
                                                     data.iconNumbers.filter(item => item.icon != data.iconlike).map((item, index) => item.icon > 0 && item.num > 0 && <img key={index} src={ReactSelectorIcon[item.icon].icon}></img>)
                                                 }
                                                 {
-                                                    data.islike == 1 ? <img src={ReactSelectorIcon[data.iconlike].icon}></img> : ""
+                                                    data.islike == 1 && data.iconlike > 0 ? <img src={ReactSelectorIcon[data.iconlike].icon}></img> : ""
                                                 }
                                                 <span>{data.numlike}</span>
                                             </span> : <span className="like">

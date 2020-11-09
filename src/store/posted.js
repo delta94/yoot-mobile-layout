@@ -1,4 +1,5 @@
 import { de } from 'date-fns/locale';
+import { debuglog } from 'util';
 import {
     SET_ME_POSTEDS,
     UPDATE_POSTED,
@@ -139,11 +140,10 @@ export default (state = initialState, action) => {
         }
         case LIKE_POSTED: {
 
-            let userPostedsList = userPosteds[action.userId]
+            let userPostedsList = userPosteds[action.userId.toString()]
 
             if (userPostedsList) {
                 let postIndex = userPostedsList.findIndex(item => item.nfid == action.payload.nfid)
-
                 if (postIndex >= 0) {
 
                     let newIconNumbers = userPostedsList[postIndex].iconNumbers
@@ -166,6 +166,30 @@ export default (state = initialState, action) => {
                         userPostedsList[postIndex].islike = 1
                     }
 
+                }
+
+                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+
+                if (sharedPostIndex > 0) {
+                    let newIconNumbers = userPostedsList[sharedPostIndex].newsFeedShare.iconNumbers
+
+                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == userPostedsList[sharedPostIndex].newsFeedShare.iconlike)
+                    if (likedIconIndex >= 0)
+                        newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
+                    if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
+
+                    let iconIndex = newIconNumbers.findIndex(item => item.icon == action.iconCode)
+                    if (iconIndex >= 0) {
+                        newIconNumbers[iconIndex].num = newIconNumbers[iconIndex].num + 1
+                    } else {
+                        newIconNumbers.push({ icon: action.iconCode, num: 1 })
+                    }
+                    userPostedsList[sharedPostIndex].newsFeedShare.iconNumbers = newIconNumbers
+                    userPostedsList[sharedPostIndex].newsFeedShare.iconlike = action.iconCode
+                    if (userPostedsList[sharedPostIndex].newsFeedShare.islike == 0) {
+                        userPostedsList[sharedPostIndex].newsFeedShare.numlike = userPostedsList[sharedPostIndex].newsFeedShare.numlike + 1
+                        userPostedsList[sharedPostIndex].newsFeedShare.islike = 1
+                    }
                 }
             }
 
@@ -196,6 +220,31 @@ export default (state = initialState, action) => {
                         allPosteds[postIndex].islike = 1
                     }
 
+                }
+
+
+                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+
+                if (sharedPostIndex > 0) {
+                    let newIconNumbers = allPosteds[sharedPostIndex].newsFeedShare.iconNumbers
+
+                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == allPosteds[sharedPostIndex].newsFeedShare.iconlike)
+                    if (likedIconIndex >= 0)
+                        newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
+                    if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
+
+                    let iconIndex = newIconNumbers.findIndex(item => item.icon == action.iconCode)
+                    if (iconIndex >= 0) {
+                        newIconNumbers[iconIndex].num = newIconNumbers[iconIndex].num + 1
+                    } else {
+                        newIconNumbers.push({ icon: action.iconCode, num: 1 })
+                    }
+                    allPosteds[sharedPostIndex].newsFeedShare.iconNumbers = newIconNumbers
+                    allPosteds[sharedPostIndex].newsFeedShare.iconlike = action.iconCode
+                    if (allPosteds[sharedPostIndex].newsFeedShare.islike == 0) {
+                        allPosteds[sharedPostIndex].newsFeedShare.numlike = allPosteds[sharedPostIndex].newsFeedShare.numlike + 1
+                        allPosteds[sharedPostIndex].newsFeedShare.islike = 1
+                    }
                 }
             }
 
@@ -324,6 +373,27 @@ export default (state = initialState, action) => {
                     }
 
                 }
+
+                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+                if (sharedPostIndex >= 0) {
+
+                    let newIconNumbers = userPostedsList[sharedPostIndex].newsFeedShare.iconNumbers
+
+                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == userPostedsList[sharedPostIndex].newsFeedShare.iconlike)
+
+                    if (likedIconIndex >= 0) {
+                        newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
+                        if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
+                    }
+
+                    userPostedsList[sharedPostIndex].newsFeedShare.iconNumbers = newIconNumbers
+                    userPostedsList[sharedPostIndex].newsFeedShare.iconlike = 0
+                    if (userPostedsList[sharedPostIndex].newsFeedShare.islike == 1) {
+                        userPostedsList[sharedPostIndex].newsFeedShare.numlike = userPostedsList[sharedPostIndex].newsFeedShare.numlike - 1
+                        userPostedsList[sharedPostIndex].newsFeedShare.islike = 0
+                    }
+
+                }
             }
 
             if (allPosteds) {
@@ -345,6 +415,28 @@ export default (state = initialState, action) => {
                     if (allPosteds[postIndex].islike == 1) {
                         allPosteds[postIndex].numlike = allPosteds[postIndex].numlike - 1
                         allPosteds[postIndex].islike = 0
+                    }
+
+                }
+
+                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+
+                if (sharedPostIndex >= 0) {
+
+                    let newIconNumbers = allPosteds[sharedPostIndex].newsFeedShare.iconNumbers
+
+                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == allPosteds[sharedPostIndex].newsFeedShare.iconlike)
+
+                    if (likedIconIndex >= 0) {
+                        newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
+                        if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
+                    }
+
+                    allPosteds[sharedPostIndex].newsFeedShare.iconNumbers = newIconNumbers
+                    allPosteds[sharedPostIndex].newsFeedShare.iconlike = 0
+                    if (allPosteds[sharedPostIndex].newsFeedShare.islike == 1) {
+                        allPosteds[sharedPostIndex].newsFeedShare.numlike = allPosteds[sharedPostIndex].newsFeedShare.numlike - 1
+                        allPosteds[sharedPostIndex].newsFeedShare.islike = 0
                     }
 
                 }
@@ -472,6 +564,40 @@ export default (state = initialState, action) => {
                     }
                     userPostedsList[postIndex].mediaPlays = mediaList
                 }
+
+                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+
+                if (sharedPostIndex >= 0) {
+
+                    let mediaList = userPostedsList[sharedPostIndex].newsFeedShare.mediaPlays
+
+                    let mediaIndex = mediaList.findIndex(item => item.detailimageid == action.imageId)
+
+                    if (mediaIndex >= 0) {
+                        let newIconNumbers = mediaList[mediaIndex].iconNumbers
+                        let likedIconIndex = newIconNumbers.findIndex(item => item.icon == mediaList[mediaIndex].iconlike)
+                        if (likedIconIndex >= 0)
+                            newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
+                        if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
+
+                        let iconIndex = newIconNumbers.findIndex(item => item.icon == action.iconCode)
+
+                        if (iconIndex >= 0) {
+                            newIconNumbers[iconIndex].num = newIconNumbers[iconIndex].num + 1
+                        } else {
+                            newIconNumbers.push({ icon: action.iconCode, num: 1 })
+                        }
+
+                        mediaList[mediaIndex].iconNumbers = newIconNumbers
+                        mediaList[mediaIndex].iconlike = action.iconCode
+                    }
+
+                    if (mediaList[mediaIndex].islike == 0) {
+                        mediaList[mediaIndex].numlike = mediaList[mediaIndex].numlike + 1
+                        mediaList[mediaIndex].islike = 1
+                    }
+                    userPostedsList[sharedPostIndex].newsFeedShare.mediaPlays = mediaList
+                }
             }
 
             if (allPosteds) {
@@ -507,6 +633,40 @@ export default (state = initialState, action) => {
                         mediaList[mediaIndex].islike = 1
                     }
                     allPosteds[postIndex].mediaPlays = mediaList
+                }
+
+                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+
+                if (sharedPostIndex >= 0) {
+
+                    let mediaList = allPosteds[sharedPostIndex].newsFeedShare.mediaPlays
+
+                    let mediaIndex = mediaList.findIndex(item => item.detailimageid == action.imageId)
+
+                    if (mediaIndex >= 0) {
+                        let newIconNumbers = mediaList[mediaIndex].iconNumbers
+                        let likedIconIndex = newIconNumbers.findIndex(item => item.icon == mediaList[mediaIndex].iconlike)
+                        if (likedIconIndex >= 0)
+                            newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
+                        if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
+
+                        let iconIndex = newIconNumbers.findIndex(item => item.icon == action.iconCode)
+
+                        if (iconIndex >= 0) {
+                            newIconNumbers[iconIndex].num = newIconNumbers[iconIndex].num + 1
+                        } else {
+                            newIconNumbers.push({ icon: action.iconCode, num: 1 })
+                        }
+
+                        mediaList[mediaIndex].iconNumbers = newIconNumbers
+                        mediaList[mediaIndex].iconlike = action.iconCode
+                    }
+
+                    if (mediaList[mediaIndex].islike == 0) {
+                        mediaList[mediaIndex].numlike = mediaList[mediaIndex].numlike + 1
+                        mediaList[mediaIndex].islike = 1
+                    }
+                    allPosteds[sharedPostIndex].newsFeedShare.mediaPlays = mediaList
                 }
             }
 
@@ -661,6 +821,32 @@ export default (state = initialState, action) => {
                     }
                     userPostedsList[postIndex].mediaPlays = mediaList
                 }
+
+                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+
+                if (sharedPostIndex >= 0) {
+
+                    let mediaList = userPostedsList[sharedPostIndex].newsFeedShare.mediaPlays
+
+                    let mediaIndex = mediaList.findIndex(item => item.detailimageid == action.imageId)
+
+                    if (mediaIndex >= 0) {
+                        let newIconNumbers = mediaList[mediaIndex].iconNumbers
+                        let likedIconIndex = newIconNumbers.findIndex(item => item.icon == userPostedsList[sharedPostIndex].newsFeedShare.iconlike)
+                        if (likedIconIndex >= 0)
+                            newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
+                        if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
+
+                        mediaList[mediaIndex].iconNumbers = newIconNumbers
+                        mediaList[mediaIndex].iconlike = 0
+                    }
+
+                    if (mediaList[mediaIndex].islike == 1) {
+                        mediaList[mediaIndex].numlike = mediaList[mediaIndex].numlike - 1
+                        mediaList[mediaIndex].islike = 0
+                    }
+                    userPostedsList[sharedPostIndex].newsFeedShare.mediaPlays = mediaList
+                }
             }
 
             if (allPosteds) {
@@ -683,11 +869,37 @@ export default (state = initialState, action) => {
                         mediaList[mediaIndex].iconlike = 0
                     }
 
-                    if (mediaList[mediaIndex].islike == 1) {
+                    if (mediaList[mediaIndex] && mediaList[mediaIndex].islike == 1) {
                         mediaList[mediaIndex].numlike = mediaList[mediaIndex].numlike - 1
                         mediaList[mediaIndex].islike = 0
                     }
                     allPosteds[postIndex].mediaPlays = mediaList
+                }
+
+                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+
+                if (sharedPostIndex >= 0) {
+
+                    let mediaList = allPosteds[sharedPostIndex].newsFeedShare.mediaPlays
+
+                    let mediaIndex = mediaList.findIndex(item => item.detailimageid == action.imageId)
+
+                    if (mediaIndex >= 0) {
+                        let newIconNumbers = mediaList[mediaIndex].iconNumbers
+                        let likedIconIndex = newIconNumbers.findIndex(item => item.icon == allPosteds[sharedPostIndex].newsFeedShare.iconlike)
+                        if (likedIconIndex >= 0)
+                            newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
+                        if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
+
+                        mediaList[mediaIndex].iconNumbers = newIconNumbers
+                        mediaList[mediaIndex].iconlike = 0
+                    }
+
+                    if (mediaList[mediaIndex].islike == 1) {
+                        mediaList[mediaIndex].numlike = mediaList[mediaIndex].numlike - 1
+                        mediaList[mediaIndex].islike = 0
+                    }
+                    allPosteds[sharedPostIndex].newsFeedShare.mediaPlays = mediaList
                 }
             }
 

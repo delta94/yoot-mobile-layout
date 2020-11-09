@@ -61,7 +61,7 @@ export class FacebookSelector extends React.Component {
                     onPress={this.onPress}
                 >
                     {
-                        active ? <Button style={{ color: ReactSelectorIcon[active].color }}><img src={ReactSelectorIcon[active].icon} />{type == "MiniButton" ? "" : ReactSelectorIcon[active].disciption}</Button>
+                        active && active > 0 ? <Button style={{ color: ReactSelectorIcon[active].color }}><img src={ReactSelectorIcon[active].icon} />{type == "MiniButton" ? "" : ReactSelectorIcon[active].disciption}</Button>
                             : <Button><img src={like1} />{type == "MiniButton" ? "" : "Thích"}</Button>
                     }
                 </LongPress>
