@@ -2299,6 +2299,27 @@ const renderShareDrawer = (component) => {
               <span>Gắn thẻ</span>
             </li>
           </ul>
+          {tagedFrieds && tagedFrieds.length > 0 && (
+            <div className="taged-friend">
+              <span>
+                <img src={tag} />
+              </span>
+              <b className="tag-item">Bạn</b> đã gắn thẻ&nbsp;
+              <span>
+                <b className="tag-item">
+                  <span>{tagedFrieds[0].friendname}</span>
+                </b>
+                {tagedFrieds.length >=2 && (
+                  <>
+                    <span> và </span>{" "}
+                    <b className="tag-item">
+                      <span>{tagedFrieds.length - 1} người khác</span>
+                    </b>
+                  </>
+                )}
+              </span>
+            </div>
+          )}
           <MultiInput
             style={{
               minHeight: "280px",
@@ -2335,7 +2356,7 @@ const renderShareDrawer = (component) => {
           ) : (
               ""
             )}
-          {tagedFrieds && tagedFrieds.length > 0 ? (
+          {tagedFrieds && tagedFrieds.length > 0 && (
             <div className="tags-selected">
               <ul>
                 {tagedFrieds.map((tag, index) => (
@@ -2345,9 +2366,7 @@ const renderShareDrawer = (component) => {
                 ))}
               </ul>
             </div>
-          ) : (
-              ""
-            )}
+          )}
           <div className="share-to-time-line">
             <div>
               <div className="icon">

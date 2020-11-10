@@ -780,22 +780,26 @@ const renderPostDrawer = (component) => {
             </ul>
           </div>
           {/* BINH: change tag friend */}
-          {tagedFrieds && tagedFrieds.length > 0 ? (
+          {tagedFrieds && tagedFrieds.length > 0 && (
             <div className="taged-friend">
-              <span><img src={tag} /></span><b className="tag-item">Bạn</b> đã gắn thẻ&nbsp;
               <span>
-                {tagedFrieds.map((tag, index) => (
+                <img src={tag} />
+              </span>
+              <b className="tag-item">Bạn</b> đã gắn thẻ&nbsp;
+              <span>
+                <b className="tag-item">
+                  <span>{tagedFrieds[0].friendname}</span>
+                </b>
+                {tagedFrieds.length >=2 && (
                   <>
-                    <b key={index} className="tag-item">
-                      <span>{tag.friendname}</span>
+                    <span> và </span>{" "}
+                    <b className="tag-item">
+                      <span>{tagedFrieds.length - 1} người khác</span>
                     </b>
-                    {index < tagedFrieds.length - 1 && <span> và </span>}
                   </>
-                ))}
+                )}
               </span>
             </div>
-          ) : (
-            ""
           )}
           <div
             className="drawer-content"
