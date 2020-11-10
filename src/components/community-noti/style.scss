@@ -19,6 +19,7 @@
         }
     }
     .noti-content{
+        position: relative;
         .message{
             font-size: 1rem !important;
             font-family: Roboto-Regular;
@@ -28,9 +29,14 @@
                 color: #222;
             }
         }
+        
         .actions{
             display: flex;
             align-items: center;
+            position: relative;
+            z-index: 10;
+            width: fit-content;
+            height: 38px;
             > button{
                 width: fit-content !important;
                 margin: 3px 10px 5px 0px;
@@ -47,6 +53,14 @@
                 height: 7px;
                 margin: 0px 5px;
             }
+        }
+        .overlay{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            z-index: 1;
         }
     }
 }

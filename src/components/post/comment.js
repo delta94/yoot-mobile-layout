@@ -407,6 +407,7 @@ class Index extends React.Component {
             data
         } = this.props
         if (onClose) onClose()
+        if (!data) return
         this.props.setComment([], data.nfid)
     }
 
@@ -448,7 +449,7 @@ class Index extends React.Component {
         if (data && postComments && postComments[data.nfid])
             comments = postComments[data.nfid]
 
-        if (data.postforid == 1) data.postforid = 2
+        if (data && data.postforid == 1) data.postforid = 2
 
         return (
             <div className="drawer-detail comment-post">

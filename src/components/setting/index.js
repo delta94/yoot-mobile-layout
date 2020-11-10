@@ -257,9 +257,9 @@ class Index extends React.Component {
           );
           formData.append(
             "image_1_" +
-              backgroundToUpload.width +
-              "_" +
-              backgroundToUpload.height,
+            backgroundToUpload.width +
+            "_" +
+            backgroundToUpload.height,
             backgroundFileToUpload
           );
         } else {
@@ -758,8 +758,8 @@ class Index extends React.Component {
         {renderSettingDrawer(this)}
       </div>
     ) : (
-      ""
-    );
+        ""
+      );
   }
 }
 
@@ -842,8 +842,8 @@ const renderFooter = (component) => {
               <img src={NotiBw}></img>
             </Badge>
           ) : (
-            <img src={NotiBw}></img>
-          )}
+              <img src={NotiBw}></img>
+            )}
           <span>Thông báo</span>
         </li>
         <li
@@ -855,27 +855,27 @@ const renderFooter = (component) => {
       </ul>
     </div>
   ) : (
-    <div className="app-footer">
-      <ul>
-        <li onClick={() => component.props.history.replace("/")}>
-          <img src={home}></img>
-          <span>Trang chủ</span>
-        </li>
-        {/* <li onClick={() => component.props.history.replace('/yoot-noti')}>
+      <div className="app-footer">
+        <ul>
+          <li onClick={() => component.props.history.replace("/")}>
+            <img src={home}></img>
+            <span>Trang chủ</span>
+          </li>
+          {/* <li onClick={() => component.props.history.replace('/yoot-noti')}>
             <img src={noti}></img>
             <span >Thông báo</span>
           </li> */}
-        <li onClick={() => component.props.history.replace("/profile")}>
-          <img src={profileBw}></img>
-          <span>Cá nhân</span>
-        </li>
-        <li>
-          <img src={settingBw}></img>
-          <span style={{ color: "#f54746" }}>Cài đặt</span>
-        </li>
-      </ul>
-    </div>
-  );
+          <li onClick={() => component.props.history.replace("/profile")}>
+            <img src={profileBw}></img>
+            <span>Cá nhân</span>
+          </li>
+          <li>
+            <img src={settingBw}></img>
+            <span style={{ color: "#f54746" }}>Cài đặt</span>
+          </li>
+        </ul>
+      </div>
+    );
 };
 
 const renderUpdateProfileDrawer = (component) => {
@@ -940,7 +940,7 @@ const renderUserHistoryDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {formatCurrency(new Intl.NumberFormat('de-DE').format(profile.mempoint), 0)}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">
@@ -985,8 +985,8 @@ const renderUserHistoryDrawer = (component) => {
                                         {groupMemberPoint.title}
                                       </span>
                                     ) : (
-                                      ""
-                                    )}
+                                        ""
+                                      )}
                                     {groupMemberPoint.actionGroupPoints &&
                                       groupMemberPoint.actionGroupPoints
                                         .length > 0 &&
@@ -998,8 +998,8 @@ const renderUserHistoryDrawer = (component) => {
                                                 {actionGroupPoint.title}
                                               </span>
                                             ) : (
-                                              ""
-                                            )}
+                                                ""
+                                              )}
                                             {actionGroupPoint.memberPoints &&
                                               actionGroupPoint.memberPoints
                                                 .length > 0 &&
@@ -1041,17 +1041,17 @@ const renderUserHistoryDrawer = (component) => {
                     <Loader type="small" />
                   </div>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </ul>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       ) : (
-        ""
-      )}
+          ""
+        )}
     </Drawer>
   );
 };
@@ -1124,8 +1124,8 @@ const renderChangePasswordDrawer = (component) => {
                       {isShowOldPass ? (
                         <VisibilityIcon style={{ color: "#ff5a5a" }} />
                       ) : (
-                        <VisibilityOffIcon />
-                      )}
+                          <VisibilityOffIcon />
+                        )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -1155,8 +1155,8 @@ const renderChangePasswordDrawer = (component) => {
                       {isShowNewPass ? (
                         <VisibilityIcon style={{ color: "#ff5a5a" }} />
                       ) : (
-                        <VisibilityOffIcon />
-                      )}
+                          <VisibilityOffIcon />
+                        )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -1188,8 +1188,8 @@ const renderChangePasswordDrawer = (component) => {
                       {isShowConfirmPass ? (
                         <VisibilityIcon style={{ color: "#ff5a5a" }} />
                       ) : (
-                        <VisibilityOffIcon />
-                      )}
+                          <VisibilityOffIcon />
+                        )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -1308,8 +1308,8 @@ const renderBlockFriendDrawer = (component) => {
                 ))}
               </ul>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       </div>
@@ -1426,8 +1426,8 @@ const renderFriendsForBlockDrawer = (component) => {
                 ))}
               </ul>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       </div>
@@ -1457,7 +1457,7 @@ const renderSettingDrawer = (component) => {
                   showSettingDrawer: false,
                   isSettingChange: false,
                   isMuteInNewfeed: isMuteInNewfeed_clone,
-                  autoPlayRole:autoPlayRole_clone
+                  autoPlayRole: autoPlayRole_clone
                 });
               } else {
                 component.setState({
@@ -1486,7 +1486,7 @@ const renderSettingDrawer = (component) => {
               handleColor="#fff"
               offColor="#666"
               onChange={() => {
-                component.setState({isMuteInNewfeed_clone:isMuteInNewfeed})
+                component.setState({ isMuteInNewfeed_clone: isMuteInNewfeed })
                 component.setState({
                   isMuteInNewfeed: !isMuteInNewfeed,
                   isSettingChange: true,
@@ -1499,12 +1499,13 @@ const renderSettingDrawer = (component) => {
           <div>
             <span>Tự động phát video</span>
             <span
-              onClick={() =>{
-                component.setState({autoPlayRole_clone:autoPlayRole})
+              onClick={() => {
+                component.setState({ autoPlayRole_clone: autoPlayRole })
                 component.setState({
                   showAutoPlaySetting: true,
                   autoPlayOptionSelected: autoPlayRole,
-                })}
+                })
+              }
               }
             >
               {autoPlayRole === "all" && <span>Wifi/3G/4G</span>}
@@ -1651,7 +1652,7 @@ const renderAutoPlaySettingDrawer = (component) => {
           {isSettingChange && (
             <Button
               className="bt-submit"
-              onClick={() =>{
+              onClick={() => {
                 component.setState({
                   autoPlayRole: autoPlayOptionSelected,
                   showAutoPlaySetting: false,

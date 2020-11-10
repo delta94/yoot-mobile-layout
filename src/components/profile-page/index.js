@@ -1521,6 +1521,8 @@ const renderUserHistoryDrawer = (component) => {
   let { showUserHistory, userDetail, profile } = component.props;
   let { historyPoints, isLoadHistory } = component.state;
 
+  console.log("profile", profile)
+
   return (
     <Drawer
       anchor="right"
@@ -1548,7 +1550,7 @@ const renderUserHistoryDrawer = (component) => {
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
-                  <span>Điểm YOOT: {formatCurrency(new Intl.NumberFormat('de-DE').format(profile.mempoint), 0)}</span>
+                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
                 </span>
               </div>
               <Avatar aria-label="recipe" className="avatar">

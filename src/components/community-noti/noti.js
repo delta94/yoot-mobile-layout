@@ -119,8 +119,10 @@ class Index extends React.Component {
       data,
       onNotiClick
     } = this.props
+
+    console.log(data.type, "-", data)
     return (
-      data ? <li className={"noti-item" + (data.userstatus == 0 ? " unread" : "")} onClick={() => onNotiClick(data)}>
+      data ? <li className={"noti-item" + (data.userstatus == 0 ? " unread" : "")} >
         <Avatar className="avatar">
           <div className="img" style={{ background: "url(" + data.avatarthumbusersend + ")" }} />
         </Avatar>
@@ -140,10 +142,49 @@ class Index extends React.Component {
           data.type == 5 ? renderType5(this) : ""
         }
         {
+          data.type == 6 ? renderType6(this) : ""
+        }
+        {
+          data.type == 7 ? renderType7(this) : ""
+        }
+        {
           data.type == 8 ? renderType8(this) : ""
         }
         {
           data.type == 9 ? renderType9(this) : ""
+        }
+        {
+          data.type == 10 ? renderType10(this) : ""
+        }
+        {
+          data.type == 11 ? renderType11(this) : ""
+        }
+        {
+          data.type == 14 ? renderType14(this) : ""
+        }
+        {
+          data.type == 15 ? renderType15(this) : ""
+        }
+        {
+          data.type == 16 ? renderType16(this) : ""
+        }
+        {
+          data.type == 19 ? renderType19(this) : ""
+        }
+        {
+          data.type == 24 ? renderType24(this) : ""
+        }
+        {
+          data.type == 25 ? renderType25(this) : ""
+        }
+        {
+          data.type == 26 ? renderType26(this) : ""
+        }
+        {
+          data.type == 31 ? renderType31(this) : ""
+        }
+        {
+          data.type == 32 ? renderType32(this) : ""
         }
         {
           data.type == 34 ? renderType34(this) : ""
@@ -179,7 +220,8 @@ export default connect(
 //Lời mời kết bạn
 const renderType1 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35">
@@ -195,6 +237,7 @@ const renderType1 = (component) => {
           <Button className="bt-cancel" onClick={() => component.props.deleteNoti(data.notificationid)}>Từ chối</Button>
         </div>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )
@@ -202,7 +245,8 @@ const renderType1 = (component) => {
 //Trả lời lời mời kết bạn
 const renderType2 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35" onClick={() => component.openUserPage(data)}>
@@ -214,6 +258,7 @@ const renderType2 = (component) => {
         }}>
         </pre>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )
@@ -221,7 +266,8 @@ const renderType2 = (component) => {
 //Bình luận bài đăng
 const renderType3 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35">
@@ -235,6 +281,7 @@ const renderType3 = (component) => {
 
         </pre>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )
@@ -242,7 +289,8 @@ const renderType3 = (component) => {
 //Trả lời bình luận
 const renderType4 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35">
@@ -256,6 +304,7 @@ const renderType4 = (component) => {
 
         </pre>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )
@@ -263,7 +312,8 @@ const renderType4 = (component) => {
 //Thích bài đăng
 const renderType5 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35">
@@ -271,11 +321,59 @@ const renderType5 = (component) => {
         <pre className="message" dangerouslySetInnerHTML={{
           __html: data.content
             .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace(data.contentpost != "" ? '{contentpost}' : ': "{contentpost}"', `<b>${data.contentpost.length > 60 ? (data.contentpost.slice(0, 60) + "...") : data.contentpost}</b>`)
 
         }}>
 
         </pre>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Thích bình luận
+const renderType6 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace(data.contentcomment != "" ? '{contentcomment}' : '"{contentcomment}"', `<b>${data.contentcomment}</b>`)
+
+        }}>
+
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Chia sẻ bài viết
+const renderType7 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace(data.contentpost != "" ? '{contentpost}' : '"{contentpost}"', `<b>${data.contentpost}</b>`)
+
+        }}>
+
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )
@@ -283,7 +381,8 @@ const renderType5 = (component) => {
 //Lời mời vào nhóm
 const renderType8 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35">
@@ -300,6 +399,7 @@ const renderType8 = (component) => {
           <Button className="bt-cancel" onClick={() => component.refuseInviteGroup(data)}>Từ chối</Button>
         </div>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )
@@ -307,7 +407,8 @@ const renderType8 = (component) => {
 //Lời xin vào nhóm
 const renderType9 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35">
@@ -324,6 +425,248 @@ const renderType9 = (component) => {
           <Button className="bt-cancel" onClick={() => component.refuseUserToGroup(data)}>Từ chối</Button>
         </div>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Cấp nhận lời xin vào nhóm
+const renderType10 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{groupname}', `<b>${data.namegroup}</b>`)
+
+        }}>
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Từ chối lời xin vào nhóm
+const renderType11 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace('{groupname}', `<b>${data.namegroup}</b>`)
+        }}>
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Theo dõi bạn bè
+const renderType14 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+        }}>
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Thay đổi avatar
+const renderType15 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+
+        }}>
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Thay đổi ảnh bìa
+const renderType16 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+
+        }}>
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Đăng ảnh vào album
+const renderType19 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace('"{namealbum}"', `<b>"${data.albumname}"</b>`)
+        }}>
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Nhắc trong bài viết
+const renderType24 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace(data.contentpost != "" ? '{contentpost}' : '"{contentpost}"', `<b>${data.contentpost}</b>`)
+
+        }}>
+
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Nhắc trong bình luận
+const renderType25 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace(data.contentcomment != "" ? '{contentcomment}' : '"{contentcomment}"', `<b>${data.contentcomment}</b>`)
+
+        }}>
+
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Nhắc trong trả lời bình luận
+const renderType26 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace(data.contentcomment != "" ? '{contentcomment}' : '"{contentcomment}"', `<b>${data.contentcomment}</b>`)
+
+        }}>
+
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Gắn thẻ cho bài đăng
+const renderType31 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace(data.contentpost != "" ? '{contentpost}' : '"{contentpost}"', `${data.contentpost}`)
+
+        }}>
+
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
+      </div>
+    </div>
+  )
+}
+//Bạn bè bình luận cùng
+const renderType32 = (component) => {
+  let {
+    data,
+    onNotiClick
+  } = component.props
+  return (
+    <div className="noti-content content-type-35">
+      <div className="noti-info">
+        <pre className="message" dangerouslySetInnerHTML={{
+          __html: data.content
+            .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace('{usernamefrom}', `<b>${data.usernamefrom}</b>`)
+            .replace(data.contentcomment != "" ? '{contentcomment}' : '"{contentcomment}"', `<b>${data.contentcomment}</b>`)
+
+        }}>
+
+        </pre>
+        <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )
@@ -331,7 +674,8 @@ const renderType9 = (component) => {
 //Xác nhận làm quản lý
 const renderType34 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35" >
@@ -347,6 +691,7 @@ const renderType34 = (component) => {
           <Button className="bt-cancel" onClick={() => component.refuseInviteAdminGroup(data)}>Từ chối</Button>
         </div>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )
@@ -354,7 +699,8 @@ const renderType34 = (component) => {
 //Đăng bài vào nhóm
 const renderType35 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35">
@@ -369,6 +715,7 @@ const renderType35 = (component) => {
 
         </pre>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )
@@ -376,7 +723,8 @@ const renderType35 = (component) => {
 //Nhận thông báo xác nhận quản lý
 const renderType36 = (component) => {
   let {
-    data
+    data,
+    onNotiClick
   } = component.props
   return (
     <div className="noti-content content-type-35">
@@ -387,9 +735,9 @@ const renderType36 = (component) => {
             .replace('{groupname}', `<b>${data.namegroup.trim()}</b>`)
 
         }}>
-
         </pre>
         <span className="time">{fromNow(moment(data.createdate), moment(new Date))}</span>
+        < div className="overlay" onClick={() => onNotiClick(data)}></div>
       </div>
     </div>
   )

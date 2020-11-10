@@ -5,12 +5,16 @@ import {
   addFooterContent,
   toggleHeader,
   toggleFooter,
+  toggleGroupDetailDrawer,
 } from '../../actions/app'
 import {
   setWorldNoti,
   readNoti,
   setUnreadNotiCount
 } from '../../actions/noti'
+import {
+  setCurrentGroup
+} from '../../actions/group'
 import Noti from './noti'
 import { connect } from 'react-redux'
 import {
@@ -28,7 +32,7 @@ import moment from 'moment'
 import { get } from "../../api";
 import $ from 'jquery'
 import CommentBox from '../post/comment'
-import { result } from "lodash";
+import { showInfo } from "../../utils/app";
 
 const Newfeed = require('../../assets/icon/Lesson.png')
 const Group1 = require('../../assets/icon/Group1@1x.png')
@@ -50,7 +54,8 @@ class Index extends React.Component {
       isLoadMore: false,
       notiCurrentPage: 0,
       showCommentDrawer: false,
-      currentPost: null
+      currentPost: null,
+      showConfim: false
     };
   }
 
@@ -83,14 +88,13 @@ class Index extends React.Component {
   }
 
   onNotiClick(noti) {
-    switch (noti.type) {
-      case 5: {
-        get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetOneNewsFeed?newsfeedid=" + noti.postid, result => {
-          if (result && result.result == 1) {
+    let type = noti.type
+    if (type == 19 || type == 5 || type == 6 || type == 7 || type == 15 || type == 16 || type == 19 || type == 24 || type == 25 || type == 26 || type == 31 || type == 32 || type == 35) {
+      get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetOneNewsFeed?newsfeedid=" + noti.postid, result => {
+        if (result) {
+          if (result.result == 1) {
             this.setState({
-              currentPost: result.content.newsFeed
-            })
-            this.setState({
+              currentPost: result.content.newsFeed,
               showCommentDrawer: true
             })
           }
@@ -98,35 +102,21 @@ class Index extends React.Component {
             this.setState({
               okCallback: () => this.setState({ showConfim: false }),
               confirmTitle: "",
-              confirmMessage: result.content.message,
-              showConfim: true
-            })
-          }
-        })
-        this.setState({
-          showCommentDrawer: true
-        })
-      }
-      case 35: {
-        get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetOneNewsFeed?newsfeedid=" + noti.postid, result => {
-          if (result && result.result == 1) {
-            this.setState({
-              currentPost: result.content.newsFeed
-            })
-            this.setState({
-              showCommentDrawer: true
-            })
-          } else {
-            this.setState({
-              okCallback: () => this.setState({ showConfim: false }),
-              confirmTitle: "",
               confirmMessage: result.message,
               showConfim: true
             })
           }
-        })
 
-      }
+        }
+      })
+    }
+    if (type == 9 || type == 10 || type == 11 || type == 34) {
+      get(SOCIAL_NET_WORK_API, "GroupUser/GetOneGroupUser?groupid=" + noti.groupid, result => {
+        if (result && result.result == 1) {
+          this.props.toggleGroupDetailDrawer(true)
+          this.props.setCurrentGroup(result.content.groupUser)
+        }
+      })
     }
     get(SOCIAL_NET_WORK_API, "Notification/UpdateViewNotification?notificationid=" + noti.notificationid, result => {
       if (result && result.result == 1) {
@@ -171,8 +161,6 @@ class Index extends React.Component {
     let {
       worldNoties
     } = this.props
-
-
     return (
       <div className="community-page groups-page" >
         <ul>
@@ -212,6 +200,8 @@ const mapDispatchToProps = dispatch => ({
   setWorldNoti: (noties) => dispatch(setWorldNoti(noties)),
   readNoti: (notiId) => dispatch(readNoti(notiId)),
   setUnreadNotiCount: (number) => dispatch(setUnreadNotiCount(number)),
+  toggleGroupDetailDrawer: (isShow) => dispatch(toggleGroupDetailDrawer(isShow)),
+  setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
 });
 
 export default connect(
@@ -285,6 +275,7 @@ const renderConfirmDrawer = (component) => {
     confirmTitle,
     confirmMessage
   } = component.state
+  console.log("rennder")
   return (
     <Drawer anchor="bottom" className="confirm-drawer" open={showConfim} onClose={() => component.setState({ showConfim: false })}>
       <div className='jon-group-confirm'>
