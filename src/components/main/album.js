@@ -604,9 +604,10 @@ class Index extends React.Component {
                                 <div className="album-background">
                                     <div style={{ background: "url(" + albumDetail.background + ")" }}></div>
                                 </div>
-                                <div className="name">
+                                <div className="title-album">
                                     <label>{albumDetail.albumname}</label>
-                                    <span>{albumDetail.albumfortext}</span>
+                                    <p className="desc-album">{albumDetail.albumdescription}</p>
+                                    <p>{albumDetail.albumfortext}</p>
                                 </div>
                                 {
                                     albumDetail.userid == profile.id ? <div className="add-to-album" onClick={() => this.postImage(albumDetail)}>

@@ -1,3 +1,18 @@
+.title-album{
+  padding:1rem;
+  text-align: center;
+  label{
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  .desc-album{
+    text-align: left;
+  }
+  p{
+    color: #888; 
+  }
+  
+}
 #root{
   background: #fff;
   width: 100%;
