@@ -1507,13 +1507,13 @@ const renderSettingDrawer = (component) => {
                 })}
               }
             >
-              {autoPlayRole == "all" ? <span>Wifi/3G/4G</span> : ""}
-              {autoPlayRole == "wifi" ? <span>Chỉ Wifi</span> : ""}
-              {autoPlayRole == "disable" ? <span>Không</span> : ""}
+              {autoPlayRole === "all" && <span>Wifi/3G/4G</span>}
+              {autoPlayRole === "wifi" && <span>Chỉ Wifi</span>}
+              {autoPlayRole === "disable" && <span>Không</span>}
               <NavigateNextIcon />
             </span>
           </div>
-          {isSettingChange ? (
+          {isSettingChange && (
             <Button
               className="bt-submit"
               onClick={() => {
@@ -1531,8 +1531,6 @@ const renderSettingDrawer = (component) => {
             >
               Lưu thay đổi
             </Button>
-          ) : (
-            ""
           )}
           {renderAutoPlaySettingDrawer(component)}
         </div>
@@ -1625,7 +1623,7 @@ const renderAutoPlaySettingDrawer = (component) => {
               }
             >
               <span>Khi dùng Wifi và dữ liệu di động</span>
-              {autoPlayOptionSelected == "all" ? <CheckIcon /> : ""}
+              {autoPlayOptionSelected === "all" ? <CheckIcon /> : ""}
             </li>
             <li
               onClick={() =>
@@ -1636,7 +1634,7 @@ const renderAutoPlaySettingDrawer = (component) => {
               }
             >
               <span>Chỉ khi có kết nối Wifi</span>
-              {autoPlayOptionSelected == "wifi" ? <CheckIcon /> : ""}
+              {autoPlayOptionSelected === "wifi" ? <CheckIcon /> : ""}
             </li>
             <li
               onClick={() =>
@@ -1647,17 +1645,27 @@ const renderAutoPlaySettingDrawer = (component) => {
               }
             >
               <span>Không bao giờ tự động phát video</span>
-              {autoPlayOptionSelected == "disable" ? <CheckIcon /> : ""}
+              {autoPlayOptionSelected === "disable" ? <CheckIcon /> : ""}
             </li>
           </ul>
           {isSettingChange && (
             <Button
               className="bt-submit"
-              onClick={() =>
+              onClick={() =>{
                 component.setState({
                   autoPlayRole: autoPlayOptionSelected,
                   showAutoPlaySetting: false,
+                  isSettingChange: false
                 })
+                const settings = JSON.parse(localStorage.getItem(APP_SETTING))
+                localStorage.setItem(
+                  APP_SETTING,
+                  JSON.stringify({
+                    ...settings,
+                    autoPlayRole: autoPlayOptionSelected,
+                  })
+                );
+              }
               }
             >
               Lưu thay đổi
