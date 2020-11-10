@@ -484,9 +484,9 @@ class Index extends React.Component {
           );
           formData.append(
             "avatarcut_1_" +
-              backgroundToUpload.width +
-              "_" +
-              backgroundToUpload.height,
+            backgroundToUpload.width +
+            "_" +
+            backgroundToUpload.height,
             backgroundFileToUpload
           );
         } else {
@@ -1104,20 +1104,20 @@ class Index extends React.Component {
                 </span>
               </li>
             ) : (
-              ""
-            )}
+                ""
+              )}
             {profile.userStudyGraduation &&
-            profile.userStudyGraduation.length > 0 ? (
-              <li>
-                <img src={education} />
-                <span className="title">
-                  Từng học <b>{profile.userStudyGraduation[0].specialized}</b>{" "}
+              profile.userStudyGraduation.length > 0 ? (
+                <li>
+                  <img src={education} />
+                  <span className="title">
+                    Từng học <b>{profile.userStudyGraduation[0].specialized}</b>{" "}
                   tại <b>{profile.userStudyGraduation[0].schoolname}</b>
-                </span>
-              </li>
-            ) : (
-              ""
-            )}
+                  </span>
+                </li>
+              ) : (
+                ""
+              )}
             {profile.birthday ? (
               <li>
                 <img src={birthday} />
@@ -1127,8 +1127,8 @@ class Index extends React.Component {
                 </span>
               </li>
             ) : (
-              ""
-            )}
+                ""
+              )}
             {profile.gendertext ? (
               <li>
                 <img src={sex} />
@@ -1137,8 +1137,8 @@ class Index extends React.Component {
                 </span>
               </li>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </ul>
           <span
             className="view-detail-link"
@@ -1182,8 +1182,8 @@ class Index extends React.Component {
               ))}
             </div>
           ) : (
-            ""
-          )}
+              ""
+            )}
           <div
             className="search-friend"
             onClick={() => {
@@ -1236,18 +1236,18 @@ class Index extends React.Component {
                   {post.isPendding ? (
                     ""
                   ) : (
-                    <Post
-                      data={post}
-                      history={this.props.history}
-                      userId={profile.id}
-                    />
-                  )}
+                      <Post
+                        data={post}
+                        history={this.props.history}
+                        userId={profile.id}
+                      />
+                    )}
                 </li>
               ))}
             </ul>
           ) : (
-            ""
-          )}
+              ""
+            )}
         </div>
 
         {renderUserMenuDrawer(this)}
@@ -1286,13 +1286,13 @@ class Index extends React.Component {
               height={30}
             />
           ) : (
-            ""
-          )}
+              ""
+            )}
         </div>
       </div>
     ) : (
-      ""
-    );
+        ""
+      );
   }
 }
 
@@ -1307,8 +1307,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  unFollowFriend: (friendId)=> dispatch(unFollowFriend(friendId)),
-  followFriend:(friendId) => dispatch(followFriend(friendId)),
+  unFollowFriend: (friendId) => dispatch(unFollowFriend(friendId)),
+  followFriend: (friendId) => dispatch(followFriend(friendId)),
   addHeaderContent: (headerContent) =>
     dispatch(addHeaderContent(headerContent)),
   addFooterContent: (footerContent) =>
@@ -1379,8 +1379,8 @@ const renderFooter = (component) => {
               <img src={NotiBw}></img>
             </Badge>
           ) : (
-            <img src={NotiBw}></img>
-          )}
+              <img src={NotiBw}></img>
+            )}
           <span>Thông báo</span>
         </li>
         <li
@@ -1392,27 +1392,27 @@ const renderFooter = (component) => {
       </ul>
     </div>
   ) : (
-    <div className="app-footer">
-      <ul>
-        <li onClick={() => component.props.history.replace("/")}>
-          <img src={home}></img>
-          <span>Trang chủ</span>
-        </li>
-        {/* <li onClick={() => component.props.history.replace('/yoot-noti')}>
+      <div className="app-footer">
+        <ul>
+          <li onClick={() => component.props.history.replace("/")}>
+            <img src={home}></img>
+            <span>Trang chủ</span>
+          </li>
+          {/* <li onClick={() => component.props.history.replace('/yoot-noti')}>
             <img src={noti}></img>
             <span >Thông báo</span>
           </li> */}
-        <li>
-          <img src={profileBw}></img>
-          <span style={{ color: "#f54746" }}>Cá nhân</span>
-        </li>
-        <li onClick={() => component.props.history.replace("/setting")}>
-          <img src={settingBw}></img>
-          <span>Cài đặt</span>
-        </li>
-      </ul>
-    </div>
-  );
+          <li>
+            <img src={profileBw}></img>
+            <span style={{ color: "#f54746" }}>Cá nhân</span>
+          </li>
+          <li onClick={() => component.props.history.replace("/setting")}>
+            <img src={settingBw}></img>
+            <span>Cài đặt</span>
+          </li>
+        </ul>
+      </div>
+    );
 };
 
 const renderUserMenuDrawer = (component) => {
@@ -1593,8 +1593,8 @@ const renderUserHistoryDrawer = (component) => {
                                         {groupMemberPoint.title}
                                       </span>
                                     ) : (
-                                      ""
-                                    )}
+                                        ""
+                                      )}
                                     {groupMemberPoint.actionGroupPoints &&
                                       groupMemberPoint.actionGroupPoints
                                         .length > 0 &&
@@ -1606,8 +1606,8 @@ const renderUserHistoryDrawer = (component) => {
                                                 {actionGroupPoint.title}
                                               </span>
                                             ) : (
-                                              ""
-                                            )}
+                                                ""
+                                              )}
                                             {actionGroupPoint.memberPoints &&
                                               actionGroupPoint.memberPoints
                                                 .length > 0 &&
@@ -1649,17 +1649,17 @@ const renderUserHistoryDrawer = (component) => {
                     <Loader type="small" />
                   </div>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </ul>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       ) : (
-        ""
-      )}
+          ""
+        )}
     </Drawer>
   );
 };
@@ -1732,8 +1732,8 @@ const renderChangePasswordDrawer = (component) => {
                       {isShowOldPass ? (
                         <VisibilityIcon style={{ color: "#ff5a5a" }} />
                       ) : (
-                        <VisibilityOffIcon />
-                      )}
+                          <VisibilityOffIcon />
+                        )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -1763,8 +1763,8 @@ const renderChangePasswordDrawer = (component) => {
                       {isShowNewPass ? (
                         <VisibilityIcon style={{ color: "#ff5a5a" }} />
                       ) : (
-                        <VisibilityOffIcon />
-                      )}
+                          <VisibilityOffIcon />
+                        )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -1796,8 +1796,8 @@ const renderChangePasswordDrawer = (component) => {
                       {isShowConfirmPass ? (
                         <VisibilityIcon style={{ color: "#ff5a5a" }} />
                       ) : (
-                        <VisibilityOffIcon />
-                      )}
+                          <VisibilityOffIcon />
+                        )}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -1916,8 +1916,8 @@ const renderBlockFriendDrawer = (component) => {
                 ))}
               </ul>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       </div>
@@ -2034,8 +2034,8 @@ const renderFriendsForBlockDrawer = (component) => {
                 ))}
               </ul>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       </div>
@@ -2119,8 +2119,8 @@ const renderAllFriendsDrawer = (component) => {
                           {item.numfriendwith} bạn chung
                         </span>
                       ) : (
-                        ""
-                      )}
+                          ""
+                        )}
                     </label>
                   </div>
                   <div className="action">
@@ -2132,8 +2132,8 @@ const renderAllFriendsDrawer = (component) => {
                         Kết bạn
                       </Button>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                     {item.status == 1 ? (
                       <Button
                         className="bt-cancel"
@@ -2151,8 +2151,8 @@ const renderAllFriendsDrawer = (component) => {
                         Huỷ
                       </Button>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                     {item.status == 10 ? (
                       <IconButton
                         onClick={() =>
@@ -2165,8 +2165,8 @@ const renderAllFriendsDrawer = (component) => {
                         <MoreHorizIcon />
                       </IconButton>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                   </div>
                 </li>
               ))}
@@ -2251,11 +2251,11 @@ const renderFriendActionsDrawer = (component) => {
                 </span>
               </li>
             ) : (
-              <li onClick={() => component.folowFriend(currentFriend.friendid)}>
-                <label>Theo dõi ( {currentFriend.friendname} )</label>
-                <span>Nhìn thấy các hoạt động của nhau.</span>
-              </li>
-            )}
+                <li onClick={() => component.folowFriend(currentFriend.friendid)}>
+                  <label>Theo dõi ( {currentFriend.friendname} )</label>
+                  <span>Nhìn thấy các hoạt động của nhau.</span>
+                </li>
+              )}
             <li
               onClick={() =>
                 component.setState({
@@ -2291,8 +2291,8 @@ const renderFriendActionsDrawer = (component) => {
           </div>
         </div>
       ) : (
-        ""
-      )}
+          ""
+        )}
     </Drawer>
   );
 };
@@ -2321,9 +2321,9 @@ const renderUpdateAvatarReviewDrawer = (component) => {
               isReviewMode == false
                 ? component.setState({ openUploadAvatarReview: false })
                 : component.setState({
-                    openCropperDrawer: true,
-                    isReviewMode: false,
-                  })
+                  openCropperDrawer: true,
+                  isReviewMode: false,
+                })
             }
           >
             <IconButton
@@ -2439,8 +2439,8 @@ const renderCropperDrawer = (component) => {
           </div>
         </div>
       ) : (
-        ""
-      )}
+          ""
+        )}
       {isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""}
     </Drawer>
   );
@@ -2470,9 +2470,9 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
               isReviewMode == false
                 ? component.setState({ openUploadBackgroundReview: false })
                 : component.setState({
-                    openBackgroundCropperDrawer: true,
-                    isReviewMode: false,
-                  })
+                  openBackgroundCropperDrawer: true,
+                  isReviewMode: false,
+                })
             }
           >
             <IconButton
@@ -2594,8 +2594,8 @@ const renderBackgroundCropperDrawer = (component) => {
           </div>
         </div>
       ) : (
-        ""
-      )}
+          ""
+        )}
       {isProccessing ? <Loader type="dask-mode" isFullScreen={true} /> : ""}
     </Drawer>
   );
@@ -2604,7 +2604,7 @@ const renderBackgroundCropperDrawer = (component) => {
 const renderUserDetailDrawer = (component) => {
   let { userDetailFolowTabIndex, showUserDetail } = component.state;
   let { profile } = component.props;
-  
+
   return (
     <Drawer
       anchor="bottom"
@@ -2659,20 +2659,14 @@ const renderUserDetailDrawer = (component) => {
               >
                 <Tab
                   label={
-                    "Người theo dõi " +
-                    (profile.foloweds
-                      ? "(" + profile.foloweds.length + ")"
-                      : "")
+                    "Người theo dõi"
                   }
                   {...a11yProps(0)}
                   className="tab-item"
                 />
                 <Tab
                   label={
-                    "Đang theo dõi " +
-                    (profile.folowings
-                      ? "(" + profile.folowings.length + ")"
-                      : "")
+                    "Đang theo dõi"
                   }
                   {...a11yProps(1)}
                   className="tab-item"
@@ -2692,6 +2686,10 @@ const renderUserDetailDrawer = (component) => {
                 className="content-box"
               >
                 <div className="folowed-list">
+                  <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                    <span>Số lượng</span>
+                    <span className="red">{profile.foloweds ? profile.foloweds.length : 0}</span>
+                  </div>
                   {profile.foloweds && profile.foloweds.length > 0 ? (
                     <ul>
                       {profile.foloweds.map((item, index) => (
@@ -2728,27 +2726,31 @@ const renderUserDetailDrawer = (component) => {
                               Theo dõi
                             </Button>
                           ) : (
-                            <Button
-                              onClick={() =>
-                                component.unFolowFriend(item.friendid)
-                              }
-                              style={{ background: "rgba(0,0,0,0.05)" }}
-                            >
-                              Đang Theo dõi
-                            </Button>
-                          )}
+                              <Button
+                                onClick={() =>
+                                  component.unFolowFriend(item.friendid)
+                                }
+                                style={{ background: "rgba(0,0,0,0.05)" }}
+                              >
+                                Đang Theo dõi
+                              </Button>
+                            )}
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <span className="list-empty-message">
-                      Chưa có ai theo dõi
-                    </span>
-                  )}
+                      <span className="list-empty-message">
+                        Chưa có ai theo dõi
+                      </span>
+                    )}
                 </div>
               </TabPanel>
               <TabPanel value={userDetailFolowTabIndex} index={1}>
                 <div className="folowing-list">
+                  <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                    <span>Số lượng</span>
+                    <span className="red">{profile.folowings ? profile.folowings.length : 0}</span>
+                  </div>
                   {profile.folowings && profile.folowings.length > 0 ? (
                     <ul>
                       {profile.folowings.map((item, index) => (
@@ -2785,23 +2787,23 @@ const renderUserDetailDrawer = (component) => {
                               Theo dõi
                             </Button>
                           ) : (
-                            <Button
-                              onClick={() =>
-                                component.unFolowFriend(item.friendid)
-                              }
-                              style={{ background: "rgba(0,0,0,0.05)" }}
-                            >
-                              Đang Theo dõi
-                            </Button>
-                          )}
+                              <Button
+                                onClick={() =>
+                                  component.unFolowFriend(item.friendid)
+                                }
+                                style={{ background: "rgba(0,0,0,0.05)" }}
+                              >
+                                Đang Theo dõi
+                              </Button>
+                            )}
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <span className="list-empty-message">
-                      Chưa theo dõi bất kì ai
-                    </span>
-                  )}
+                      <span className="list-empty-message">
+                        Chưa theo dõi bất kì ai
+                      </span>
+                    )}
                 </div>
               </TabPanel>
             </SwipeableViews>
@@ -2813,13 +2815,13 @@ const renderUserDetailDrawer = (component) => {
                   <b>{profile.userExperience[0].companyname}</b>
                 </span>
               ) : (
-                "-/-"
-              )}
+                  "-/-"
+                )}
               {profile.userExperience[0] ? (
                 <p>{profile.userExperience[0].description}</p>
               ) : (
-                "-/-"
-              )}
+                  "-/-"
+                )}
             </div>
             <div className="job-reward info-box">
               <label>Học vấn</label>
@@ -2829,32 +2831,32 @@ const renderUserDetailDrawer = (component) => {
                   tại <b>{profile.userStudyGraduation[0].schoolname}</b>
                 </span>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               {profile.userStudyGraduation[0] ? (
                 <span>
                   <b>Trình độ: </b>
                   {profile.userStudyGraduation[0].qualificationname}
                 </span>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               {profile.userStudyGraduation[0] ? (
                 <span>
                   <b>Mã hớp: </b>
                   {profile.userStudyGraduation[0].codeclass}
                 </span>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               {profile.userStudyGraduation[0] ? (
                 <span>
                   <b>Loại tốt nghiệp: </b>
                   {profile.userStudyGraduation[0].graduationname}
                 </span>
               ) : (
-                ""
-              )}
+                  ""
+                )}
             </div>
             <div className="job-reward info-box">
               <label>Sống tại</label>
@@ -2893,8 +2895,8 @@ const renderUserDetailDrawer = (component) => {
                       ))}
                     </ul>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </li>
                 {/* <li>
                   <label>Sở trường</label>
@@ -2905,8 +2907,8 @@ const renderUserDetailDrawer = (component) => {
           </div>
         </div>
       ) : (
-        ""
-      )}
+          ""
+        )}
     </Drawer>
   );
 };
@@ -2989,8 +2991,8 @@ const renderSettingDrawer = (component) => {
               Lưu thay đổi
             </Button>
           ) : (
-            ""
-          )}
+              ""
+            )}
           {renderAutoPlaySettingDrawer(component)}
         </div>
       </div>

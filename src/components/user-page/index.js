@@ -1344,11 +1344,11 @@ const renderUserDetailDrawer = (component) => {
                 index={0}
                 className="content-box"
               >
-                <div className="friend-count">
-                  <span>Số lượng</span>
-                  <span className="red">{numOfFollowed}</span>
-                </div>
                 <div className="folowed-list" onScroll={handleScroll}>
+                  <div className="friend-count">
+                    <span>Số lượng</span>
+                    <span className="red">{numOfFollowed}</span>
+                  </div>
                   {followeds && followeds.length > 0 ? (
                     <ul>
                       {followeds.map((item, index) => (
@@ -1413,11 +1413,11 @@ const renderUserDetailDrawer = (component) => {
                 </div>
               </TabPanel>
               <TabPanel value={userDetailFolowTabIndex} index={1}>
-                <div className="friend-count">
-                  <span>Số lượng</span>
-                  <span className="red">{numOfFollowing}</span>
-                </div>
                 <div className="folowing-list" onScroll={handleScroll}>
+                  <div className="friend-count">
+                    <span>Số lượng</span>
+                    <span className="red">{numOfFollowing}</span>
+                  </div>
                   {followings && followings.length > 0 ? (
                     <ul>
                       {followings.map((item, index) => (
