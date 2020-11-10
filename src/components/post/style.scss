@@ -20,7 +20,11 @@
     &.dask-mode{
         border-radius: 0px !important;
         background: #222 !important;
-        
+        .album-name {
+            color: #ccc !important;
+            border-bottom: 1px solid #ccc;
+        }
+
         .poster-name{
             .name{
                 color: #ccc !important;
@@ -78,6 +82,7 @@
         }
         .card-content{
             .react-reward{
+                border-bottom: 1px solid #555;
                 span{
                     color: #ccc;
                 }

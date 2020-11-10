@@ -916,7 +916,7 @@ class Index extends React.Component {
     }
 
 
-    return data && (!data.isPedding || data.isPedding == false) ? (
+    return data && (!data.isPedding || data.isPedding === false) ? (
       <div>
         <ScrollTrigger
           containerRef={containerRef}
@@ -924,10 +924,10 @@ class Index extends React.Component {
           onExit={() => this.handleLeaveVideo()}
         >
           <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
-            {data.kindpost == 4 ? (
+            {data.kindpost === 4 ? (
               <div className="album-name">
                 <span>
-                  Album <span>{data.albumname}</span>
+                  Album <b>{data.albumname}</b>
                 </span>
               </div>
             ) : (
@@ -945,9 +945,9 @@ class Index extends React.Component {
               }
               action={
                 <CustomMenu placement="bottom-end">
-                  {data.iduserpost == profile.id &&
-                    data.kindpost != 2 &&
-                    data.kindpost != 3 ? (
+                  {data.iduserpost === profile.id &&
+                    data.kindpost !== 2 &&
+                    data.kindpost !== 3 ? (
                       <MenuItem
                         onClick={() =>
                           this.setState({ showLocalMenu: false }, () => {
@@ -1896,11 +1896,9 @@ class Index extends React.Component {
                                 ></img>
                               )
                           )}
-                        {data.islike == 1 && data.iconlike > 0 ? (
+                        {data.islike == 1 && data.iconlike > 0 && (
                           <img src={ReactSelectorIcon[data.iconlike].icon}></img>
-                        ) : (
-                            ""
-                          )}
+                        )}
                         <span>{data.numlike}</span>
                       </span>
                     ) : (
@@ -1909,7 +1907,7 @@ class Index extends React.Component {
                     {
                       data.numcomment > 0 ||
                         (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ||
-                        data.numshare > 0 ? (
+                        data.numshare > 0 && (
                           <span
                             onClick={() =>
                               // this.setState({
@@ -1921,7 +1919,7 @@ class Index extends React.Component {
                             className="comment"
                           >
                             {data.numcomment > 0
-                              ? `${data.numcomment} bình luận ` //bình check click bình luận
+                              ? `${data.numcomment} bình luận ` //BINH: check click bình luận
                               : ""}
                             {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
                               ? `${data.mediaPlays[0].numview} lượt xem `
@@ -1930,8 +1928,6 @@ class Index extends React.Component {
                               data.numshare > 0 ? `${data.numshare} chia sẻ ` : ""
                             }
                           </span>
-                        ) : (
-                          ""
                         )}
                   </div>
                 ) : (
@@ -1957,7 +1953,7 @@ class Index extends React.Component {
                 }
               >
                 <img src={daskMode ? comment1 : comment} />
-                Bình luận
+                Bình luận 
               </Button>
               {data.postforid != 4 ? (
                 <Button
