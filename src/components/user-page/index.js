@@ -1437,7 +1437,8 @@ const renderUserDetailDrawer = (component) => {
                               style={{ width: "100%" }}
                             />
                           </Avatar>
-                          <span
+                          <div className="friend-title">
+                          <b
                             className="user-name"
                             onClick={() => {
                               component.setState({
@@ -1447,7 +1448,10 @@ const renderUserDetailDrawer = (component) => {
                             }}
                           >
                             {item.friendname}
-                          </span>
+                          </b>
+                          <p>{item.numfriendwith} bạn chung</p>
+                          </div>
+                          
                           {item.ismefollow === 0 ? (
                             <Button
                               onClick={() =>
