@@ -461,10 +461,10 @@ class Index extends React.Component {
       confirmMessage: "Bạn có muốn mời người này ra khỏi nhóm hay không?",
       okCallback: () => {
         get(SOCIAL_NET_WORK_API, "GroupUser/BandMemberGroupUser" + objToQuery(param), result => {
-          if (result && result.result == 1) {
+          if (result && result.result === 1) {
             this.setState({
-              userList: userList.filter(item => item.memberid != user.memberid),
-              managerList: userList.filter(item => item.memberid != user.memberid)
+              userList: userList.filter(item => item.memberid !== user.memberid),
+              managerList: managerList.filter(item => item.memberid !== user.memberid)
             })
           }
           else {
@@ -831,7 +831,7 @@ const renderSearchGroupDrawer = (component) => {
     managerCount,
     managerList
   } = component.state
-
+  console.log(component.state)
 
   return (
     <Drawer anchor="bottom" className="group-members" open={showMemberDrawer} >
