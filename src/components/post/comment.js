@@ -76,6 +76,7 @@ import CustomMenu from '../common/custom-menu'
 import Loader from '../common/loader'
 import $ from 'jquery'
 import ShowMoreText from 'react-show-more-text';
+import PostContent from './post-content'
 
 const maxCols = 6
 const like1 = require('../../assets/icon/like1@1x.png')
@@ -567,18 +568,7 @@ class Index extends React.Component {
                                 data.nfcontent != "" ? <div
                                     className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                     style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                    <ShowMoreText
-                                        lines={4}
-                                        more={<span> Xem thêm</span>}
-                                        less={<span> Rút gọn</span>}
-                                        className='content-css'
-                                        anchorClass='toggle-button blued'
-                                        expanded={false}
-                                    >
-                                        <pre dangerouslySetInnerHTML={{
-                                            __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
-                                        }} ></pre>
-                                    </ShowMoreText>
+                                    <PostContent content={data.nfcontent} />
                                 </div> : ""
                             }
 
@@ -752,18 +742,7 @@ class Index extends React.Component {
                                                             data.newsFeedShare.nfcontent != "" ? <div
                                                                 className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                                                 style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                                                <ShowMoreText
-                                                                    lines={4}
-                                                                    more={<span> Xem thêm</span>}
-                                                                    less={<span> Rút gọn</span>}
-                                                                    className='content-css'
-                                                                    anchorClass='toggle-button blued'
-                                                                    expanded={false}
-                                                                >
-                                                                    <pre dangerouslySetInnerHTML={{
-                                                                        __html: data.newsFeedShare.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
-                                                                    }} ></pre>
-                                                                </ShowMoreText>
+                                                                <PostContent content={data.newsFeedShare.nfcontent} />
                                                             </div> : ""
                                                         }
                                                         <CardContent className="card-content">
@@ -1203,18 +1182,7 @@ const renderDetailPosted = (component) => {
                                 data.nfcontent != "" ? <div
                                     className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                     style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                    <ShowMoreText
-                                        lines={4}
-                                        more={<span> Xem thêm</span>}
-                                        less={<span> Rút gọn</span>}
-                                        className='content-css'
-                                        anchorClass='toggle-button blued'
-                                        expanded={false}
-                                    >
-                                        <pre dangerouslySetInnerHTML={{
-                                            __html: data.nfcontent.replace(/@(\S+)/g, `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`).replace(/#(\S+)/g, `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`)
-                                        }} ></pre>
-                                    </ShowMoreText>
+                                    <PostContent content={data.nfcontent} />
                                 </div> : ""
                             }
 

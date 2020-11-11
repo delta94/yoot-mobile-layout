@@ -158,6 +158,17 @@
     }
     .post-content{
         padding: 0px 15px 15px;
+        .post-content-mes{
+            font-family: Roboto-Regular;
+            font-size: 1rem;
+            line-height: 1.4rem;
+            > span{
+                font-family: Roboto-Regular;
+                color: #777;
+                font-weight: bold;;
+            }
+
+        }
         &.have-background{
             display: flex;
             align-items: center;

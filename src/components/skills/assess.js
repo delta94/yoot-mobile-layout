@@ -311,7 +311,7 @@ class Index extends React.Component {
                   <span>{item.NAME}</span>
                 </div>
                 <div className="video">
-                  {/* <Player
+                  <Player
                     ref={this.video[reviewIndex][1]}
                     poster={item.IMAGE}
                     src={item.LINK_VIDEO}
@@ -332,41 +332,6 @@ class Index extends React.Component {
                           playingIndex == `${reviewIndex}-${1}` ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video[reviewIndex][1])}><Forward10Icon /></IconButton> : ""
                         }
                       </div>
-
-                      <div className="fullscreen-overlay" onClick={() => {
-                        this.handlePauseVideo(this.video[reviewIndex][1])
-                        this.props.setMediaToViewer([{ name: item.LINK_VIDEO }])
-                        this.props.toggleMediaViewerDrawer(true, {
-                          showInfo: false,
-                          activeIndex: 0,
-                          isvideo: true
-                        })
-                      }}></div>
-                    </ControlBar>
-                  </Player> */}
-
-                  <Player
-                    ref={this.video[reviewIndex][1]}
-                    src={item.LINK_VIDEO}
-                    playsInline={true}
-                    poster={item.IMAGE}
-                    className={"custome-video-layout" + (playingIndex == 0 ? " active" : " inactive")}
-                  >
-                    <ControlBar autoHide={true} >
-                      <div className={"custom-bt-control-bar"}>
-                        {
-                          playingIndex == `${reviewIndex}-${1}` ? <IconButton onClick={() => this.handleChangeCurrentTime(-10, this.video[reviewIndex][1])}><Replay10Icon /></IconButton> : ""
-                        }
-                        <IconButton onClick={() => playingIndex == `${reviewIndex}-${1}` ? this.handlePauseVideo(this.video[reviewIndex][1]) : this.handlePlayVideo(this.video[reviewIndex][1], `${reviewIndex}-${1}`)}>
-                          {
-                            playingIndex == `${reviewIndex}-${1}` ? <PauseIcon /> : <PlayArrowIcon />
-                          }
-                        </IconButton>
-                        {
-                          playingIndex == `${reviewIndex}-${1}` ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video[reviewIndex][1])}><Forward10Icon /></IconButton> : ""
-                        }
-                      </div>
-
                       <div className="fullscreen-overlay" onClick={() => {
                         this.handlePauseVideo(this.video[reviewIndex][1])
                         this.props.setMediaToViewer([{ name: item.LINK_VIDEO }])

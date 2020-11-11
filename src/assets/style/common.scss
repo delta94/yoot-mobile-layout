@@ -743,7 +743,7 @@ div{
         &.accept-role{
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: flex-end !important;
         }
         button{
             margin-right: 20px;

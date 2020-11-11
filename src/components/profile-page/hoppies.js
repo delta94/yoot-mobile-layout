@@ -223,7 +223,7 @@ export class Index extends React.Component {
                     <li className="mt10">
                         <label>Kỹ năng</label>
                         {
-                            data.userSkill ? <ul className="skills">
+                            data.userSkill && data.userSkill.length > 0 ? <ul className="skills">
                                 {
                                     data.userSkill.map((item, index) => <li key={index} className="skill"><span>
                                         {

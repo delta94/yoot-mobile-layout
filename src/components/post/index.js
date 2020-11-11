@@ -101,6 +101,7 @@ import CommentImageBox from "./comment-image";
 import CustomMenu from "../common/custom-menu";
 import { APP_SETTING } from "../../constants/localStorageKeys";
 import ShowMoreText from "react-show-more-text";
+import PostContent from './post-content'
 
 
 const maxCols = 6;
@@ -1181,29 +1182,7 @@ class Index extends React.Component {
                     ")",
                 }}
               >
-                <ShowMoreText
-                  lines={4}
-                  more={<span> Xem thêm</span>}
-                  less={<span> Rút gọn</span>}
-                  className="content-css"
-                  anchorClass="toggle-button blued"
-                  expanded={false}
-                >
-                  <pre
-                    dangerouslySetInnerHTML={{
-                      __html: data.nfcontent
-                        .replace(/\n/g, ` <br />`)
-                        .replace(
-                          /@(\S+)/g,
-                          `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`
-                        )
-                        .replace(
-                          /#(\S+)/g,
-                          `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`
-                        ),
-                    }}
-                  ></pre>
-                </ShowMoreText>
+                <PostContent content={data.nfcontent} />
               </div>
             ) : (
                 ""
@@ -1544,29 +1523,7 @@ class Index extends React.Component {
                                   ")",
                               }}
                             >
-                              <ShowMoreText
-                                lines={4}
-                                more={<span> Xem thêm</span>}
-                                less={<span> Rút gọn</span>}
-                                className="content-css"
-                                anchorClass="toggle-button blued"
-                                expanded={false}
-                              >
-                                <pre
-                                  dangerouslySetInnerHTML={{
-                                    __html: data.newsFeedShare.nfcontent
-                                      .replace(/\n/g, ` <br />`)
-                                      .replace(
-                                        /@(\S+)/g,
-                                        `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`
-                                      )
-                                      .replace(
-                                        /#(\S+)/g,
-                                        `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`
-                                      ),
-                                  }}
-                                ></pre>
-                              </ShowMoreText>
+                              <PostContent content={data.newsFeedShare.nfcontent} />
                             </div>
                           ) : (
                               ""
@@ -1906,29 +1863,29 @@ class Index extends React.Component {
                       )}
                     {
                       data.numcomment > 0 ||
-                        (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ||
-                        data.numshare > 0 && (
-                          <span
-                            onClick={() =>
-                              // this.setState({
-                              //   showCommentDrawer: true,
-                              //   currentPost: data,
-                              // })
-                              this.props.toggleCommentDrawer(true, data)
-                            }
-                            className="comment"
-                          >
-                            {data.numcomment > 0
-                              ? `${data.numcomment} bình luận ` //BINH: check click bình luận
-                              : ""}
-                            {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
-                              ? `${data.mediaPlays[0].numview} lượt xem `
-                              : ""}
-                            {
-                              data.numshare > 0 ? `${data.numshare} chia sẻ ` : ""
-                            }
-                          </span>
-                        )}
+                      (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ||
+                      data.numshare > 0 && (
+                        <span
+                          onClick={() =>
+                            // this.setState({
+                            //   showCommentDrawer: true,
+                            //   currentPost: data,
+                            // })
+                            this.props.toggleCommentDrawer(true, data)
+                          }
+                          className="comment"
+                        >
+                          {data.numcomment > 0
+                            ? `${data.numcomment} bình luận ` //BINH: check click bình luận
+                            : ""}
+                          {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
+                            ? `${data.mediaPlays[0].numview} lượt xem `
+                            : ""}
+                          {
+                            data.numshare > 0 ? `${data.numshare} chia sẻ ` : ""
+                          }
+                        </span>
+                      )}
                   </div>
                 ) : (
                   ""
@@ -1953,7 +1910,7 @@ class Index extends React.Component {
                 }
               >
                 <img src={daskMode ? comment1 : comment} />
-                Bình luận 
+                Bình luận
               </Button>
               {data.postforid != 4 ? (
                 <Button
@@ -2305,7 +2262,7 @@ const renderShareDrawer = (component) => {
                 <b className="tag-item">
                   <span>{tagedFrieds[0].friendname}</span>
                 </b>
-                {tagedFrieds.length >=2 && (
+                {tagedFrieds.length >= 2 && (
                   <>
                     <span> và </span>{" "}
                     <b className="tag-item">
@@ -2871,29 +2828,7 @@ const renderDetailPosted = (component) => {
                       ")",
                   }}
                 >
-                  <ShowMoreText
-                    lines={4}
-                    more={<span> Xem thêm</span>}
-                    less={<span> Rút gọn</span>}
-                    className="content-css"
-                    anchorClass="toggle-button blued"
-                    expanded={false}
-                  >
-                    <pre
-                      dangerouslySetInnerHTML={{
-                        __html: data.nfcontent
-                          .replace(/\n/g, ` <br />`)
-                          .replace(
-                            /@(\S+)/g,
-                            `<span class="draftJsMentionPlugin__mention__29BEd no-bg">@$1</span>`
-                          )
-                          .replace(
-                            /#(\S+)/g,
-                            `<span class="draftJsHashtagPlugin__hashtag__1wMVC">#$1</span>`
-                          ),
-                      }}
-                    ></pre>
-                  </ShowMoreText>
+                  <PostContent content={data.nfcontent} />
                 </div>
               ) : (
                   ""

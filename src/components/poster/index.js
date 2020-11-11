@@ -375,11 +375,16 @@ export class Index extends React.Component {
     let data = new FormData();
 
     data.append("content", postContent);
-    if (currentGroup)
+    if (currentGroup) {
       data.append(
         "postfor",
         GroupPrivacies[currentGroup.typegroupname].code.toString()
       );
+      data.append(
+        "groupid",
+        currentGroup.groupid.toString()
+      );
+    }
     else data.append("postfor", privacySelected.code.toString());
     data.append("postshareid", "0");
     if (
@@ -433,11 +438,11 @@ export class Index extends React.Component {
       imageSelected.map((image, index) => {
         data.append(
           "image_" +
-            (index + currentIndex) +
-            "_" +
-            image.width +
-            "_" +
-            image.height,
+          (index + currentIndex) +
+          "_" +
+          image.width +
+          "_" +
+          image.height,
           image.file
         );
       });
@@ -452,11 +457,11 @@ export class Index extends React.Component {
       videoSelected.map((video, index) => {
         data.append(
           "video_" +
-            (index + currentIndex) +
-            "_" +
-            video.width +
-            "_" +
-            video.height,
+          (index + currentIndex) +
+          "_" +
+          video.width +
+          "_" +
+          video.height,
           video.file
         );
       });
@@ -708,13 +713,13 @@ const renderPostDrawer = (component) => {
                     <span>{currentGroup.groupname}</span>
                   </ShowMoreText>
                 ) : (
-                  <span>Chọn nhóm</span>
-                )}
+                    <span>Chọn nhóm</span>
+                  )}
                 <ExpandMoreIcon />
               </div>
             ) : (
-              ""
-            )}
+                ""
+              )}
             <ul>
               <li>
                 <Dropzone
@@ -790,7 +795,7 @@ const renderPostDrawer = (component) => {
                 <b className="tag-item">
                   <span>{tagedFrieds[0].friendname}</span>
                 </b>
-                {tagedFrieds.length >=2 && (
+                {tagedFrieds.length >= 2 && (
                   <>
                     <span> và </span>{" "}
                     <b className="tag-item">
@@ -849,8 +854,8 @@ const renderPostDrawer = (component) => {
                     </IconButton>
                   </span>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
                 <span className="bt-sumbit">
                   <img src={GroupPrivacies[currentGroup.typegroupname].icon} />
                   <span>
@@ -859,135 +864,135 @@ const renderPostDrawer = (component) => {
                 </span>
               </div>
             ) : (
-              <div
-                className={
-                  "post-role " +
-                  (backgroundSelected && backgroundSelected.id != 0
-                    ? "have-background"
-                    : "")
-                }
-              >
-                {albumSelected ? (
-                  <span className="bt-sumbit">
-                    <img src={album} />
-                    <span>{albumSelected.albumname}</span>
-                    <IconButton
-                      onClick={() => component.props.selectAlbumToPost(null)}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </span>
-                ) : (
-                  ""
-                )}
-                <span
-                  className="bt-sumbit"
-                  onClick={() =>
-                    component.setState({ showPostPrivacySelectOption: true })
+                <div
+                  className={
+                    "post-role " +
+                    (backgroundSelected && backgroundSelected.id != 0
+                      ? "have-background"
+                      : "")
                   }
                 >
-                  <img src={privacySelected.icon} />
-                  <span>{privacySelected.label}</span>
-                </span>
-              </div>
-            )}
+                  {albumSelected ? (
+                    <span className="bt-sumbit">
+                      <img src={album} />
+                      <span>{albumSelected.albumname}</span>
+                      <IconButton
+                        onClick={() => component.props.selectAlbumToPost(null)}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </span>
+                  ) : (
+                      ""
+                    )}
+                  <span
+                    className="bt-sumbit"
+                    onClick={() =>
+                      component.setState({ showPostPrivacySelectOption: true })
+                    }
+                  >
+                    <img src={privacySelected.icon} />
+                    <span>{privacySelected.label}</span>
+                  </span>
+                </div>
+              )}
 
             <div className="media-selected">
               {(postedImage && postedImage.length > 0) ||
-              (imageSelected && imageSelected.length > 0) ? (
-                <div className="image-list media-list">
-                  {postedImage &&
-                    postedImage.map((image, index) => (
-                      <div key={index}>
-                        <div
-                          style={{ background: "url(" + image.name + ")" }}
-                        ></div>
-                        <IconButton
-                          onClick={() =>
-                            component.handleDeletePostedImage(image)
-                          }
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </div>
-                    ))}
-                  {imageSelected &&
-                    imageSelected.map((image, index) => (
-                      <div key={index}>
-                        <div
-                          style={{
-                            background:
-                              "url(" + URL.createObjectURL(image.file) + ")",
-                          }}
-                        ></div>
-                        <IconButton
-                          onClick={() => component.handleDeleteImage(image)}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </div>
-                    ))}
-                </div>
-              ) : (
-                ""
-              )}
+                (imageSelected && imageSelected.length > 0) ? (
+                  <div className="image-list media-list">
+                    {postedImage &&
+                      postedImage.map((image, index) => (
+                        <div key={index}>
+                          <div
+                            style={{ background: "url(" + image.name + ")" }}
+                          ></div>
+                          <IconButton
+                            onClick={() =>
+                              component.handleDeletePostedImage(image)
+                            }
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </div>
+                      ))}
+                    {imageSelected &&
+                      imageSelected.map((image, index) => (
+                        <div key={index}>
+                          <div
+                            style={{
+                              background:
+                                "url(" + URL.createObjectURL(image.file) + ")",
+                            }}
+                          ></div>
+                          <IconButton
+                            onClick={() => component.handleDeleteImage(image)}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  ""
+                )}
               {(postedVideo && postedVideo.length > 0) ||
-              (videoSelected && videoSelected.length > 0) ? (
-                <div className="video-list media-list">
-                  {postedVideo &&
-                    postedVideo.map((video, index) => (
-                      <div key={index}>
-                        <div className="overlay">
-                          <PlayCircleOutlineIcon />
+                (videoSelected && videoSelected.length > 0) ? (
+                  <div className="video-list media-list">
+                    {postedVideo &&
+                      postedVideo.map((video, index) => (
+                        <div key={index}>
+                          <div className="overlay">
+                            <PlayCircleOutlineIcon />
+                          </div>
+                          <div className="video-content">
+                            <video
+                              style={{
+                                width:
+                                  video.width > video.height ? "auto" : "100%",
+                                height:
+                                  video.height > video.width ? "auto" : "100%",
+                              }}
+                              src={video.name}
+                            />
+                          </div>
+                          <IconButton
+                            onClick={() =>
+                              component.handleDeletePostedVideo(video)
+                            }
+                          >
+                            <CloseIcon />
+                          </IconButton>
                         </div>
-                        <div className="video-content">
-                          <video
-                            style={{
-                              width:
-                                video.width > video.height ? "auto" : "100%",
-                              height:
-                                video.height > video.width ? "auto" : "100%",
-                            }}
-                            src={video.name}
-                          />
+                      ))}
+                    {videoSelected &&
+                      videoSelected.map((video, index) => (
+                        <div key={index}>
+                          <div className="overlay">
+                            <PlayCircleOutlineIcon />
+                          </div>
+                          <div className="video-content">
+                            <video
+                              style={{
+                                width:
+                                  video.width > video.height ? "auto" : "100%",
+                                height:
+                                  video.height > video.width ? "auto" : "100%",
+                              }}
+                              src={URL.createObjectURL(video.file)}
+                            />
+                          </div>
+                          <IconButton
+                            onClick={() => component.handleDeleteVideo(video)}
+                          >
+                            <CloseIcon />
+                          </IconButton>
                         </div>
-                        <IconButton
-                          onClick={() =>
-                            component.handleDeletePostedVideo(video)
-                          }
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </div>
-                    ))}
-                  {videoSelected &&
-                    videoSelected.map((video, index) => (
-                      <div key={index}>
-                        <div className="overlay">
-                          <PlayCircleOutlineIcon />
-                        </div>
-                        <div className="video-content">
-                          <video
-                            style={{
-                              width:
-                                video.width > video.height ? "auto" : "100%",
-                              height:
-                                video.height > video.width ? "auto" : "100%",
-                            }}
-                            src={URL.createObjectURL(video.file)}
-                          />
-                        </div>
-                        <IconButton
-                          onClick={() => component.handleDeleteVideo(video)}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </div>
-                    ))}
-                </div>
-              ) : (
-                ""
-              )}
+                      ))}
+                  </div>
+                ) : (
+                  ""
+                )}
             </div>
 
             {isBackgroundSelect ? (
@@ -1008,7 +1013,7 @@ const renderPostDrawer = (component) => {
                           className={
                             "radio " +
                             (backgroundSelected &&
-                            backgroundSelected.id == index
+                              backgroundSelected.id == index
                               ? "active"
                               : "")
                           }
@@ -1019,8 +1024,8 @@ const renderPostDrawer = (component) => {
                 </ul>
               </div>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       </Drawer>
@@ -1213,8 +1218,8 @@ const renderTagFriendDrawer = (component) => {
                 ))}
               </ul>
             ) : (
-              <span>Gắn thẻ bạn bè tại đây</span>
-            )}
+                <span>Gắn thẻ bạn bè tại đây</span>
+              )}
             {tagedFrieds.length > 0 ? (
               <IconButton
                 onClick={() => component.setState({ tagedFrieds: [] })}
@@ -1222,8 +1227,8 @@ const renderTagFriendDrawer = (component) => {
                 <CloseIcon />
               </IconButton>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
         <div
@@ -1264,8 +1269,8 @@ const renderTagFriendDrawer = (component) => {
               </ul>
             </div>
           ) : (
-            ""
-          )}
+              ""
+            )}
         </div>
       </div>
     </Drawer>
@@ -1344,8 +1349,8 @@ const renderGroupForPostDrawer = (component) => {
               ></Loader>
             </div>
           ) : (
-            ""
-          )}
+              ""
+            )}
           <div className="my-group-list">
             {joinedGroups && joinedGroups.length > 0 ? (
               <ul>
@@ -1385,8 +1390,8 @@ const renderGroupForPostDrawer = (component) => {
                 ))}
               </ul>
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       </div>

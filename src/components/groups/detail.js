@@ -673,11 +673,12 @@ class Index extends React.Component {
                           this.onClickMenu(0)
                         }}
                       >
-                        <pre >
-                          {
-                            groupDetail.description
-                          }
-                        </pre>
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: groupDetail.description
+                              .replace(/\n/g, ` <br />`)
+                          }}
+                        ></div>
                       </ShowMoreText>
                       <div className="group-reward">
                         <ul>
