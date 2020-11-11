@@ -879,7 +879,14 @@ class Index extends React.Component {
     })
   }
 
-
+  handlePostAuth(postforid,foloweds){
+    if (postforid === 4){
+      return false
+    }
+    else if (postforid === 3 && foloweds.some(item=>item.status !== 10)){
+      return false
+    } else return true
+  }
 
 
   render() {
@@ -892,7 +899,7 @@ class Index extends React.Component {
       isFullScreen,
       isPlaying,
     } = this.state;
-    let { profile, daskMode, data, containerRef } = this.props;
+    let { profile, daskMode, data, containerRef,foloweds } = this.props;
 
     let PrivacyOptions = objToArray(Privacies);
     let GroupPrivacyOptions = objToArray(GroupPrivacies);
@@ -913,7 +920,6 @@ class Index extends React.Component {
         item.postid = data.newsFeedShare.nfid
       })
     }
-
 
     return data && (!data.isPedding || data.isPedding === false) ? (
       <div>
@@ -1061,7 +1067,6 @@ class Index extends React.Component {
                     )}
                   {data.usersTag.length > 0 ? (
                     <span className="mesage">
-                      {/* BINH: change text darkmode */}
                       <span>
                         cùng với {" "}
                         <b id="name-friend"
@@ -1407,7 +1412,8 @@ class Index extends React.Component {
                           ) : (
                               ""
                             )} */}
-                          <CardHeader
+                          {foloweds && this.handlePostAuth(data.newsFeedShare.postforid,foloweds) 
+                          ? <CardHeader
                             className="card-header"
                             avatar={
                               <Avatar aria-label="recipe" className="avatar">
@@ -1490,7 +1496,7 @@ class Index extends React.Component {
                                     moment(new Date())
                                   )}
                                 </div>
-                                {data.newsFeedShare.groupidpost > 0 ? (
+                                {data.newsFeedShare.groupidpost > 0 && (
                                   <div>
                                     <img src={Group} />
                                     <FiberManualRecordIcon
@@ -1505,12 +1511,17 @@ class Index extends React.Component {
                                       })}>{data.newsFeedShare.groupnamepost}</u>
                                     </span>
                                   </div>
-                                ) : (
-                                    ""
-                                  )}
+                                )}
                               </div>
                             }
                           />
+                          : <CardHeader 
+                            className="card-header-auth"
+                            avatar={<div className="avatar-auth">x</div>}
+                            title={<b>Nội dung này đã được chủ sở hữu bài đăng thay đổi quyền được xem hoặc đã xóa nội dung.</b>}
+                          />
+                           }
+                                        
                           {data.newsFeedShare.nfcontent != "" ? (
                             <div
                               className={
@@ -1533,7 +1544,7 @@ class Index extends React.Component {
                           ) : (
                               ""
                             )}
-                          <CardContent className="card-content">
+                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid,foloweds)) && <CardContent className="card-content">
                             <div className="media-grid">
                               {data.newsFeedShare.mediaPlays.length > 1 ? (
                                 <GridList cols={maxCols}>
@@ -1841,7 +1852,7 @@ class Index extends React.Component {
                                   ""
                                 )}
                           </CardContent>
-                        </Card>
+                          }</Card>
                       )}
                     </div>
                   </div>
@@ -3556,20 +3567,16 @@ const renderReportSuccessAlert = (component) => {
           <img src={report} />
         </div>
         <span>Bạn đã báo cáo bài đăng này có dấu hiệu</span>
-        {reasonSelected ? (
+        {reasonSelected && (
           <Button className="bt-submit" disabled>
             {reasonSelected.issuename}
           </Button>
-        ) : (
-            ""
-          )}
-        {orderReasonText.length > 0 ? (
+        )}
+        {orderReasonText.length > 0 && (
           <Button className="bt-submit" disabled>
             {orderReasonText}
           </Button>
-        ) : (
-            ""
-          )}
+        )}
         <ul>
           <li></li>
           <li></li>
