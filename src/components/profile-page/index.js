@@ -919,16 +919,22 @@ class Index extends React.Component {
       });
     }
 
-    let localSetting = window.localStorage.getItem(APP_SETTING);
-    let appSettings = JSON.parse(localSetting ? localSetting : null);
+    if (localStorage.getItem(APP_SETTING) === null) {
+      localStorage.setItem(
+        APP_SETTING,
+        JSON.stringify({
+          autoPlayRole: "all",
+          isMuteInNewfeed: false,
+        })
+      );
+    }
+    let localSetting = localStorage.getItem(APP_SETTING);
+
+    let appSettings = JSON.parse(localSetting);
     if (appSettings && appSettings.autoPlayRole) {
       this.setState({
         autoPlayRole: appSettings.autoPlayRole,
-      });
-    }
-    if (appSettings && appSettings.isMuteInNewfeed) {
-      this.setState({
-        isMuteInNewfeed: appSettings.isMuteInNewfeed,
+        isMuteInNewfeed: appSettings.isMuteInNewfeed
       });
     }
   }
@@ -2926,17 +2932,34 @@ const renderUserDetailDrawer = (component) => {
 const renderSettingDrawer = (component) => {
   let {
     isMuteInNewfeed,
+    isMuteInNewfeed_clone,
     showSettingDrawer,
     autoPlayRole,
+    autoPlayRole_clone,
     isSettingChange,
   } = component.state;
+  // BINH: change setting when click back button
   return (
     <Drawer anchor="right" open={showSettingDrawer}>
       <div className="drawer-detail setting-drawer">
         <div className="drawer-header">
           <div
             className="direction"
-            onClick={() => component.setState({ showSettingDrawer: false })}
+            onClick={() => {
+              if (isSettingChange) {
+                component.setState({
+                  showSettingDrawer: false,
+                  isSettingChange: false,
+                  isMuteInNewfeed: isMuteInNewfeed_clone,
+                  autoPlayRole: autoPlayRole_clone
+                });
+              } else {
+                component.setState({
+                  showSettingDrawer: false,
+                  isSettingChange: false,
+                });
+              }
+            }}
           >
             <IconButton
               style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }}
@@ -2956,12 +2979,13 @@ const renderSettingDrawer = (component) => {
               checked={isMuteInNewfeed}
               handleColor="#fff"
               offColor="#666"
-              onChange={() =>
+              onChange={() => {
+                component.setState({ isMuteInNewfeed_clone: isMuteInNewfeed })
                 component.setState({
                   isMuteInNewfeed: !isMuteInNewfeed,
                   isSettingChange: true,
-                })
-              }
+                });
+              }}
               onColor="#ff5a5a"
               className="custom-switch"
             />
@@ -2969,24 +2993,26 @@ const renderSettingDrawer = (component) => {
           <div>
             <span>Tự động phát video</span>
             <span
-              onClick={() =>
+              onClick={() => {
+                component.setState({ autoPlayRole_clone: autoPlayRole })
                 component.setState({
                   showAutoPlaySetting: true,
                   autoPlayOptionSelected: autoPlayRole,
                 })
               }
+              }
             >
-              {autoPlayRole == "all" ? <span>Wifi/3G/4G</span> : ""}
-              {autoPlayRole == "wifi" ? <span>Chỉ Wifi</span> : ""}
-              {autoPlayRole == "disable" ? <span>Không</span> : ""}
+              {autoPlayRole === "all" && <span>Wifi/3G/4G</span>}
+              {autoPlayRole === "wifi" && <span>Chỉ Wifi</span>}
+              {autoPlayRole === "disable" && <span>Không</span>}
               <NavigateNextIcon />
             </span>
           </div>
-          {isSettingChange == true ? (
+          {isSettingChange && (
             <Button
               className="bt-submit"
               onClick={() => {
-                window.localStorage.setItem(
+                localStorage.setItem(
                   APP_SETTING,
                   JSON.stringify({
                     autoPlayRole: autoPlayRole,
@@ -3000,9 +3026,7 @@ const renderSettingDrawer = (component) => {
             >
               Lưu thay đổi
             </Button>
-          ) : (
-              ""
-            )}
+          )}
           {renderAutoPlaySettingDrawer(component)}
         </div>
       </div>
@@ -3011,7 +3035,11 @@ const renderSettingDrawer = (component) => {
 };
 
 const renderAutoPlaySettingDrawer = (component) => {
-  let { showAutoPlaySetting, autoPlayOptionSelected } = component.state;
+  let {
+    showAutoPlaySetting,
+    autoPlayOptionSelected,
+    isSettingChange,
+  } = component.state;
   return (
     <Drawer
       anchor="bottom"
@@ -3050,7 +3078,7 @@ const renderAutoPlaySettingDrawer = (component) => {
               }
             >
               <span>Khi dùng Wifi và dữ liệu di động</span>
-              {autoPlayOptionSelected == "all" ? <CheckIcon /> : ""}
+              {autoPlayOptionSelected === "all" ? <CheckIcon /> : ""}
             </li>
             <li
               onClick={() =>
@@ -3061,7 +3089,7 @@ const renderAutoPlaySettingDrawer = (component) => {
               }
             >
               <span>Chỉ khi có kết nối Wifi</span>
-              {autoPlayOptionSelected == "wifi" ? <CheckIcon /> : ""}
+              {autoPlayOptionSelected === "wifi" ? <CheckIcon /> : ""}
             </li>
             <li
               onClick={() =>
@@ -3072,20 +3100,32 @@ const renderAutoPlaySettingDrawer = (component) => {
               }
             >
               <span>Không bao giờ tự động phát video</span>
-              {autoPlayOptionSelected == "disable" ? <CheckIcon /> : ""}
+              {autoPlayOptionSelected === "disable" ? <CheckIcon /> : ""}
             </li>
           </ul>
-          <Button
-            className="bt-submit"
-            onClick={() =>
-              component.setState({
-                autoPlayRole: autoPlayOptionSelected,
-                showAutoPlaySetting: false,
-              })
-            }
-          >
-            Lưu thay đổi
-          </Button>
+          {isSettingChange && (
+            <Button
+              className="bt-submit"
+              onClick={() => {
+                component.setState({
+                  autoPlayRole: autoPlayOptionSelected,
+                  showAutoPlaySetting: false,
+                  isSettingChange: false
+                })
+                const settings = JSON.parse(localStorage.getItem(APP_SETTING))
+                localStorage.setItem(
+                  APP_SETTING,
+                  JSON.stringify({
+                    ...settings,
+                    autoPlayRole: autoPlayOptionSelected,
+                  })
+                );
+              }
+              }
+            >
+              Lưu thay đổi
+            </Button>
+          )}
         </div>
       </div>
     </Drawer>
