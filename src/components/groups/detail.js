@@ -585,6 +585,7 @@ class Index extends React.Component {
           <div className="direction" onClick={() => {
             this.props.toggleGroupDetailDrawer(false)
             this.props.setCurrentGroup(null)
+            this.props.setCurrentGroupPosted(null)
           }}>
             <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
               <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />

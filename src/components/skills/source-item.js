@@ -213,7 +213,7 @@ class Index extends React.Component {
                     </div>
                     <div className="proccess">
                       <LinearProgress value={(srouceDetail.numfinish * 100) / srouceDetail.numtotal} className="proccess-bar" variant="determinate" />
-                      <span>+ {srouceDetail.finishpoint} <img src={Coins_Y} /></span>
+                      <span>+ {(srouceDetail.totalpoint / srouceDetail.numtotal) * srouceDetail.numfinish} <img src={Coins_Y} /></span>
                     </div>
                     {
                       currentLesstion ? <div className="video">

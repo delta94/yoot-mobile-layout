@@ -594,8 +594,8 @@ class Index extends React.Component {
               <EmptyPost />
             </ul>
           ) : (
-            ""
-          )}
+              ""
+            )}
           {allGroupPosteds && allGroupPosteds.length > 0 ? (
             <ul className="post-list">
               {allGroupPosteds.map((post, index) => (
@@ -609,8 +609,8 @@ class Index extends React.Component {
               ))}
             </ul>
           ) : (
-            ""
-          )}
+              ""
+            )}
           <div style={{ height: "50px", background: "#f2f3f7", zIndex: 0 }}>
             {isLoadMore ? (
               <Loader
@@ -620,8 +620,8 @@ class Index extends React.Component {
                 height={30}
               />
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </StickyContainer>
         {renderSearchGroupDrawer(this)}
@@ -720,8 +720,8 @@ const renderFooter = (component) => {
               <img src={NotiBw}></img>
             </Badge>
           ) : (
-            <img src={NotiBw}></img>
-          )}
+              <img src={NotiBw}></img>
+            )}
           <span>Thông báo</span>
         </li>
         <li
@@ -851,10 +851,10 @@ const renderSearchGroupDrawer = (component) => {
                       Tham gia
                     </Button>
                   ) : (
-                    group.status === 1 && (
-                      <Button className="bt-cancel">Đã gửi</Button>
-                    )
-                  )}
+                      group.status === 1 && (
+                        <Button className="bt-cancel">Đã gửi</Button>
+                      )
+                    )}
                 </li>
               ))}
             </ul>
@@ -868,8 +868,8 @@ const renderSearchGroupDrawer = (component) => {
                 height={30}
               />
             ) : (
-              ""
-            )}
+                ""
+              )}
           </div>
         </div>
       </div>
@@ -938,10 +938,10 @@ const renderJoinGroupConfirm = (component) => {
               Tham gia nhóm
             </Button>
           ) : (
-            <Button className="bt-submit" style={{ opacity: 0.5 }} disabled>
-              Tham gia nhóm
-            </Button>
-          )}
+              <Button className="bt-submit" style={{ opacity: 0.5 }} disabled>
+                Tham gia nhóm
+              </Button>
+            )}
         </div>
       </div>
     </Drawer>
@@ -1030,8 +1030,8 @@ const renderCreateGroupDrawer = (component) => {
                 suggestionClass="custom-suggestion"
               />
             ) : (
-              ""
-            )}
+                ""
+              )}
             <label>Tải lên ảnh bìa</label>
             <div className="cover-image">
               {/* {
@@ -1040,8 +1040,8 @@ const renderCreateGroupDrawer = (component) => {
               {groupCoverImage ? (
                 <GroupImage groupCoverImage={groupCoverImage} />
               ) : (
-                ""
-              )}
+                  ""
+                )}
               <Dropzone
                 onDrop={(acceptedFiles) =>
                   component.setState({
@@ -1087,8 +1087,8 @@ const renderCreateGroupDrawer = (component) => {
                 suggestionClass="custom-suggestion"
               />
             ) : (
-              ""
-            )}
+                ""
+              )}
             <label>Quyền riêng tư</label>
             <ClickAwayListener
               onClickAway={() =>
@@ -1130,8 +1130,8 @@ const renderCreateGroupDrawer = (component) => {
                     </span>
                   </div>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </div>
             </ClickAwayListener>
           </div>
@@ -1242,80 +1242,80 @@ const renderGroupListDrawer = (component) => {
               <div className="top-groups joined-group">
                 {joinedGroups
                   ? joinedGroups.map((item, key) => (
+                    <div
+                      className="group-item"
+                      key={key}
+                      style={{
+                        background: "url(" + item.backgroundimage + ")",
+                      }}
+                    >
                       <div
-                        className="group-item"
-                        key={key}
-                        style={{
-                          background: "url(" + item.backgroundimage + ")",
+                        className="overlay"
+                        onClick={() => {
+                          component.props.toggleGroupDetailDrawer(true);
+                          component.props.setCurrentGroup(item);
                         }}
-                      >
-                        <div
-                          className="overlay"
-                          onClick={() => {
-                            component.props.toggleGroupDetailDrawer(true);
-                            component.props.setCurrentGroup(item);
-                          }}
-                        />
-                        <div className="group-info">
-                          <Avatar aria-label="recipe" className="avatar">
-                            <div
-                              className="img"
-                              style={{ background: `url("${item.thumbnail}")` }}
-                            />
-                          </Avatar>
-                          <span className="group-name ellipsit">
-                            {item.groupname}
-                          </span>
-                        </div>
-                        <span className="posted">
-                          {item.numpost} bài đăng
+                      />
+                      <div className="group-info">
+                        <Avatar aria-label="recipe" className="avatar">
+                          <div
+                            className="img"
+                            style={{ background: `url("${item.thumbnail}")` }}
+                          />
+                        </Avatar>
+                        <span className="group-name ellipsit">
+                          {item.groupname}
+                        </span>
+                      </div>
+                      <span className="posted">
+                        {item.numpost} bài đăng
                           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                           {GroupPrivacies[item.typegroupname].label}
+                      </span>
+                      <div
+                        className="members-list"
+                        style={{ position: "relative" }}
+                      >
+                        <span className="total">
+                          Thành viên: {item.nummember}
                         </span>
-                        <div
-                          className="members-list"
-                          style={{ position: "relative" }}
-                        >
-                          <span className="total">
-                            Thành viên: {item.nummember}
-                          </span>
-                          <div className="members-list">
-                            {item.managers && item.managers.length > 0 ? (
-                              <div className="member-avatar">
-                                {item.managers.map(
-                                  (manager, index) =>
-                                    index < 2 && (
-                                      <Avatar
-                                        aria-label="recipe"
-                                        className="avatar"
-                                      >
-                                        <div
-                                          className="img"
-                                          style={{
-                                            background: `url("${manager.avatar}")`,
-                                          }}
-                                        />
-                                      </Avatar>
-                                    )
-                                )}
-                                {item.managers.length > 2 ? (
-                                  <Avatar
-                                    aria-label="recipe"
-                                    className="avatar"
-                                  >
-                                    +{item.managers.length - 2}
-                                  </Avatar>
-                                ) : (
+                        <div className="members-list">
+                          {item.managers && item.managers.length > 0 ? (
+                            <div className="member-avatar">
+                              {item.managers.map(
+                                (manager, index) =>
+                                  index < 2 && (
+                                    <Avatar
+                                      aria-label="recipe"
+                                      className="avatar"
+                                    >
+                                      <div
+                                        className="img"
+                                        style={{
+                                          background: `url("${manager.avatar}")`,
+                                        }}
+                                      />
+                                    </Avatar>
+                                  )
+                              )}
+                              {item.managers.length > 2 ? (
+                                <Avatar
+                                  aria-label="recipe"
+                                  className="avatar"
+                                >
+                                  +{item.managers.length - 2}
+                                </Avatar>
+                              ) : (
                                   ""
                                 )}
-                              </div>
-                            ) : (
+                            </div>
+                          ) : (
                               ""
                             )}
-                          </div>
                         </div>
                       </div>
-                    ))
+                    </div>
+                  ))
                   : ""}
               </div>
             </TabPanel>
@@ -1323,80 +1323,80 @@ const renderGroupListDrawer = (component) => {
               <div className="top-groups joined-group">
                 {myGroups
                   ? myGroups.map((item, key) => (
+                    <div
+                      className="group-item"
+                      key={key}
+                      style={{
+                        background: "url(" + item.backgroundimage + ")",
+                      }}
+                    >
                       <div
-                        className="group-item"
-                        key={key}
-                        style={{
-                          background: "url(" + item.backgroundimage + ")",
+                        className="overlay"
+                        onClick={() => {
+                          component.props.toggleGroupDetailDrawer(true);
+                          component.props.setCurrentGroup(item);
                         }}
-                      >
-                        <div
-                          className="overlay"
-                          onClick={() => {
-                            component.props.toggleGroupDetailDrawer(true);
-                            component.props.setCurrentGroup(item);
-                          }}
-                        />
-                        <div className="group-info">
-                          <Avatar aria-label="recipe" className="avatar">
-                            <div
-                              className="img"
-                              style={{ background: `url("${item.thumbnail}")` }}
-                            />
-                          </Avatar>
-                          <span className="group-name ellipsit">
-                            {item.groupname}
-                          </span>
-                        </div>
-                        <span className="posted">
-                          {item.numpost} bài đăng
+                      />
+                      <div className="group-info">
+                        <Avatar aria-label="recipe" className="avatar">
+                          <div
+                            className="img"
+                            style={{ background: `url("${item.thumbnail}")` }}
+                          />
+                        </Avatar>
+                        <span className="group-name ellipsit">
+                          {item.groupname}
+                        </span>
+                      </div>
+                      <span className="posted">
+                        {item.numpost} bài đăng
                           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                           {GroupPrivacies[item.typegroupname].label}
+                      </span>
+                      <div
+                        className="members-list"
+                        style={{ position: "relative" }}
+                      >
+                        <span className="total">
+                          Thành viên: {item.nummember}
                         </span>
-                        <div
-                          className="members-list"
-                          style={{ position: "relative" }}
-                        >
-                          <span className="total">
-                            Thành viên: {item.nummember}
-                          </span>
-                          <div className="members-list">
-                            {item.managers && item.managers.length > 0 ? (
-                              <div className="member-avatar">
-                                {item.managers.map(
-                                  (manager, index) =>
-                                    index < 2 && (
-                                      <Avatar
-                                        aria-label="recipe"
-                                        className="avatar"
-                                      >
-                                        <div
-                                          className="img"
-                                          style={{
-                                            background: `url("${manager.avatar}")`,
-                                          }}
-                                        />
-                                      </Avatar>
-                                    )
-                                )}
-                                {item.managers.length > 2 ? (
-                                  <Avatar
-                                    aria-label="recipe"
-                                    className="avatar"
-                                  >
-                                    +{item.managers.length - 2}
-                                  </Avatar>
-                                ) : (
+                        <div className="members-list">
+                          {item.managers && item.managers.length > 0 ? (
+                            <div className="member-avatar">
+                              {item.managers.map(
+                                (manager, index) =>
+                                  index < 2 && (
+                                    <Avatar
+                                      aria-label="recipe"
+                                      className="avatar"
+                                    >
+                                      <div
+                                        className="img"
+                                        style={{
+                                          background: `url("${manager.avatar}")`,
+                                        }}
+                                      />
+                                    </Avatar>
+                                  )
+                              )}
+                              {item.managers.length > 2 ? (
+                                <Avatar
+                                  aria-label="recipe"
+                                  className="avatar"
+                                >
+                                  +{item.managers.length - 2}
+                                </Avatar>
+                              ) : (
                                   ""
                                 )}
-                              </div>
-                            ) : (
+                            </div>
+                          ) : (
                               ""
                             )}
-                          </div>
                         </div>
                       </div>
-                    ))
+                    </div>
+                  ))
                   : ""}
               </div>
             </TabPanel>
@@ -1415,13 +1415,19 @@ const renderGroupInviteDrawer = (component) => {
       anchor="bottom"
       className="group-invite"
       open={showGroupInviteDrawer}
-      onClose={() => component.props.toggleGroupInviteDrawer(false)}
+      onClose={() => {
+        component.props.toggleGroupInviteDrawer(false)
+        component.props.setInvitedGroup(null);
+      }}
     >
       <div className="drawer-detail">
         <div className="drawer-header">
           <div
             className="direction"
-            onClick={() => component.props.toggleGroupInviteDrawer(false)}
+            onClick={() => {
+              component.props.toggleGroupInviteDrawer(false)
+              component.props.setInvitedGroup(null);
+            }}
           >
             <IconButton
               style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }}

@@ -1208,8 +1208,10 @@ class Index extends React.Component {
                         {media.typeobject == 2 ? (
                           <div>
                             <div
-                              onClick={() =>
+                              onClick={() => {
                                 this.setState({ showPostedDetail: true })
+                                this.handlePauseVideo()
+                              }
                               }
                             >
                               <Player
@@ -1258,8 +1260,10 @@ class Index extends React.Component {
                               style={{
                                 background: "url(" + media.thumbnailname + ")",
                               }}
-                              onClick={() =>
+                              onClick={() => {
                                 this.setState({ showPostedDetail: true })
+                                this.handlePauseVideo()
+                              }
                               }
                             />
                           </div>
@@ -1275,8 +1279,11 @@ class Index extends React.Component {
                         {data.mediaPlays.length > 5 && index == 4 ? (
                           <div
                             className="grid-overlay"
-                            onClick={() =>
+                            onClick={() => {
                               this.setState({ showPostedDetail: true })
+                              this.handlePauseVideo()
+                            }
+
                             }
                           >
                             <span>+{data.mediaPlays.length - 5}</span>
@@ -1560,11 +1567,13 @@ class Index extends React.Component {
                                         {media.typeobject == 2 ? (
                                           <div>
                                             <div
-                                              onClick={() =>
+                                              onClick={() => {
                                                 this.setState({
                                                   showPostedDetail: true,
                                                   sharedPost: data.newsFeedShare
                                                 })
+                                                this.handlePauseVideo()
+                                              }
                                               }
                                             >
                                               <Player
@@ -1634,11 +1643,14 @@ class Index extends React.Component {
                                                   media.thumbnailname +
                                                   ")",
                                               }}
-                                              onClick={() =>
+                                              onClick={() => {
                                                 this.setState({
                                                   showPostedDetail: true,
                                                   sharedPost: data.newsFeedShare
                                                 })
+                                                this.handlePauseVideo()
+                                              }
+
                                               }
                                             />
                                           </div>
@@ -1646,11 +1658,14 @@ class Index extends React.Component {
                                             <img
                                               src={media.name}
                                               alt={media.name}
-                                              onClick={() =>
+                                              onClick={() => {
                                                 this.setState({
                                                   showPostedDetail: true,
                                                   sharedPost: data.newsFeedShare
                                                 })
+                                                this.handlePauseVideo()
+                                              }
+
                                               }
                                             />
                                           )}
@@ -1658,11 +1673,14 @@ class Index extends React.Component {
                                           5 && index == 4 ? (
                                             <div
                                               className="grid-overlay"
-                                              onClick={() =>
+                                              onClick={() => {
                                                 this.setState({
                                                   showPostedDetail: true,
                                                   sharedPost: data.newsFeedShare
                                                 })
+                                                this.handlePauseVideo()
+                                              }
+
                                               }
                                             >
                                               <span>

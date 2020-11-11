@@ -1283,11 +1283,16 @@ export default (state = initialState, action) => {
         }
         case SET_CURRENT_GROUP_POSTED: {
             let newList = currentGroupPosteds
-            if (newList && newList.length > 0) {
-                newList = newList.concat(action.payload)
+            if (action.payload == null) {
+                newList = []
             } else {
-                newList = action.payload
+                if (newList && newList.length > 0) {
+                    newList = newList.concat(action.payload)
+                } else {
+                    newList = action.payload
+                }
             }
+
             return Object.assign({}, state, {
                 currentGroupPosteds: newList
             })
