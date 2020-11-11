@@ -892,8 +892,6 @@ class Index extends React.Component {
       isFullScreen,
       isPlaying,
     } = this.state;
-
-
     let { profile, daskMode, data, containerRef } = this.props;
 
     let PrivacyOptions = objToArray(Privacies);
@@ -1912,7 +1910,7 @@ class Index extends React.Component {
                 <img src={daskMode ? comment1 : comment} />
                 Bình luận
               </Button>
-              {data.postforid != 4 ? (
+              {(data.postforid !== 4 && data.typegroup !==2) && (
                 <Button
                   onClick={() =>
                     this.setState(
@@ -1927,9 +1925,7 @@ class Index extends React.Component {
                   <img src={daskMode ? share1 : share} />
                   Chia sẻ
                 </Button>
-              ) : (
-                  ""
-                )}
+              )}
             </CardActions>
             {data.numcomment > 0 && !daskMode ? (
               <Collapse
