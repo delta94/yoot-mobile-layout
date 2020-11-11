@@ -2334,17 +2334,6 @@ const renderShareDrawer = (component) => {
           ) : (
               ""
             )}
-          {tagedFrieds && tagedFrieds.length > 0 && (
-            <div className="tags-selected">
-              <ul>
-                {tagedFrieds.map((tag, index) => (
-                  <li key={index} className="tag-item">
-                    <span>{tag.friendname}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
           <div className="share-to-time-line">
             <div>
               <div className="icon">

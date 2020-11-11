@@ -42,7 +42,8 @@ import { get, post, postFormData } from "../../api";
 import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
 import $ from 'jquery'
 import { saveAs } from 'file-saver';
-import Post from '../post'
+import Post from '../post';
+import PostContent from '../post/post-content'
 
 
 class Index extends React.Component {
@@ -606,7 +607,7 @@ class Index extends React.Component {
                                 </div>
                                 <div className="title-album">
                                     <label>{albumDetail.albumname}</label>
-                                    <p className="desc-album">{albumDetail.albumdescription}</p>
+                                    <PostContent content={albumDetail.albumdescription} />
                                     <p>{albumDetail.albumfortext}</p>
                                 </div>
                                 {

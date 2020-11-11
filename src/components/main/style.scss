@@ -1,7 +1,9 @@
 .title-album{
   padding:1rem;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
   label{
+    text-align: center;
     font-size: 1.1rem;
     font-weight: bold;
   }
@@ -9,6 +11,7 @@
     text-align: left;
   }
   p{
+    text-align: center;
     color: #888; 
   }
   
