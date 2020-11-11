@@ -37,7 +37,7 @@
             background-color: #f2f3f7;
             position: relative;
             .search-param{
-                display: inline-block;
+                display: block;
                 width: 100%;
                 padding: 5px;
                 .options-item{
@@ -55,6 +55,13 @@
                         width: 15px;
                         margin-left: 15px;
                         color: rgba(0,0,0,0.4);
+                    }
+                }
+                input{
+                    background: none;
+                    &.search-job{
+                        width: auto;
+                        min-width: 130px;
                     }
                 }
             }
@@ -83,14 +90,7 @@
                     }
                 }
             }
-            input{
-                background: none;
-                display: inline-block !important;
-                &.search-job{
-                    display: inline-block;
-                    width: auto;
-                }
-            }
+            
             .btn-search{
                 position: relative;
                 .searchBtn{

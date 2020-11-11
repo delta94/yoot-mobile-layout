@@ -1069,7 +1069,7 @@ const renderYourMajorsDrawer = (component) => {
                   </button>
                 </div> : ""
               }
-              <div className="search-param">
+              <div className="search-param" style={{ display: searchOptionsSeleted.length < 2 ? "flex" : "block" }}>
                 {
                   searchOptionsSeleted && searchOptionsSeleted.length > 0 && searchOptionsSeleted.map((item, index) => <div key={index} className="options-item">
                     <ShowMoreText
@@ -1083,7 +1083,7 @@ const renderYourMajorsDrawer = (component) => {
                     <CancelIcon onClick={() => component.handleRemoveSearchOptions(index)} />
                   </div>)
                 }
-                <input type="text" style={{ width: searchOptionsSeleted.length % 2 == 0 ? "100%" : "auto" }} className="search-job" name="search" value={searchKey} onChange={(e) => component.setState({ searchKey: e.target.value, isSearching: true }, () => component.handleGetSearchOptions())} className="searchBox" placeholder="Nhập công việc phù hợp hoặc ngành/trường học..." />
+                <input type="text" className="search-job" name="search" value={searchKey} onChange={(e) => component.setState({ searchKey: e.target.value, isSearching: true }, () => component.handleGetSearchOptions())} className="searchBox" placeholder="Nhập công việc phù hợp hoặc ngành/trường học..." />
               </div>
               <div className="btn-search">
                 <button type="submit" className="searchBtn" onClick={() => component.handleGetCareers()}>
@@ -1356,7 +1356,7 @@ const renderFavorateSchoolDrawer = (component) => {
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                 <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
               </IconButton>
-              <label>Trường quann tâm</label>
+              <label>Trường quan tâm</label>
             </div>
             <div className="user-reward">
               <div className="profile">
