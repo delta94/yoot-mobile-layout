@@ -879,8 +879,14 @@ class Index extends React.Component {
     })
   }
 
-  handlePostAuth(postforid, foloweds) {
-    if (postforid === 4) {
+  handlePostAuth(postforid, foloweds,statuspost) {
+    if(statuspost === 3){
+      return false
+    }
+    else if (postforid === 4) {
+      return false
+    }
+    else if (postforid === 3 && foloweds.length <=0){
       return false
     }
     else if (postforid === 3 && foloweds.some(item => item.status !== 10)) {
@@ -1413,7 +1419,7 @@ class Index extends React.Component {
                           ) : (
                               ""
                             )} */}
-                          {foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds)
+                          {foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds,data.newsFeedShare.statuspost)
                             ? <CardHeader
                               className="card-header"
                               avatar={
@@ -1523,7 +1529,7 @@ class Index extends React.Component {
                             />
                           }
 
-                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds)) && data.newsFeedShare.nfcontent !== "" && (
+                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds,data.newsFeedShare.statuspost)) && data.newsFeedShare.nfcontent !== "" && (
                             <div
                               className={
                                 "post-content" +
@@ -1543,7 +1549,7 @@ class Index extends React.Component {
                               <PostContent content={data.newsFeedShare} />
                             </div>
                           )}
-                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds)) && <CardContent className="card-content">
+                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds,data.newsFeedShare.statuspost)) && <CardContent className="card-content">
                             <div className="media-grid">
                               {data.newsFeedShare.mediaPlays.length > 1 ? (
                                 <GridList cols={maxCols}>
