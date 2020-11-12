@@ -501,7 +501,7 @@ class Index extends React.Component {
                                             }}>{data.usersTag[1].fullname}</b></span> : ""
                                         }
                                         {
-                                            data.usersTag.length > 2 ? <span> và <b onClick={() => this.setState({ showTagsFriendDrawer: true })}>{data.usersTag.length} người khác</b></span> : ""
+                                            data.usersTag.length > 2 ? <span> và <b onClick={() => this.setState({ showTagsFriendDrawer: true })}>{data.usersTag.length - 1} người khác</b></span> : ""
                                         }
                                     </span> : ""
                                 }

@@ -88,12 +88,12 @@ class Index extends React.Component {
     } = this.props
     if (!profile) return
     let param = {
-      "ID": 0,
       "LESSON_FK": LESSON_FK,
       "TIME_SEEN_VIDEO": TIME_SEEN_VIDEO,
       "STUDENT_FK": profile.id,
       "isfinish": isfinish == true ? 1 : 0
     }
+    console.log("param", param)
     post(SCHOOL_API, "Course/timeStudyLesson", param)
   }
 
@@ -105,16 +105,12 @@ class Index extends React.Component {
 
 
     let video = this.player.current
-    let lestionIndex = lessions.findIndex(lession => lession.ID == currentLesstion.ID)
-
-    this.handleChangeCurrentTime(lessions[lestionIndex].timeseen)
+    let lestionIndex = lessions.findIndex(lession => currentLesstion && lession.ID == currentLesstion.ID)
 
     if (video) {
       this.handleSetMuted(true)
       video.play()
       video.subscribeToStateChange((state, prevState) => {
-
-
         if (lestionIndex >= 0) {
           lessions[lestionIndex].timeseen = state.currentTime > lessions[lestionIndex].timeseen ? parseInt(state.currentTime) : lessions[lestionIndex].timeseen
         }
@@ -213,7 +209,7 @@ class Index extends React.Component {
                     </div>
                     <div className="proccess">
                       <LinearProgress value={(srouceDetail.numfinish * 100) / srouceDetail.numtotal} className="proccess-bar" variant="determinate" />
-                      <span>+ {(srouceDetail.totalpoint / srouceDetail.numtotal) * srouceDetail.numfinish} <img src={Coins_Y} /></span>
+                      <span>+ {srouceDetail.finishpoint} <img src={Coins_Y} /></span>
                     </div>
                     {
                       currentLesstion ? <div className="video">
@@ -286,13 +282,22 @@ class Index extends React.Component {
               lessions && lessions.length > 0 ? <ul className="lesson">
                 {
                   lessions.map((lession, index) => <li
-                    className={lession.ID == currentLesstion.ID ? "active" : ""}
+                    className={currentLesstion && lession.ID == currentLesstion.ID ? "active" : ""}
                     key={index}
                     onClick={() => this.setState({
-                      currentLesstion: lession
-                    }, () => setTimeout(() => {
-                      this.handlePlayVideo()
-                    }, 300))}
+                      currentLesstion: null
+                    }, () => {
+                      this.setStudyTime(currentLesstion.ID, currentLesstion.timeseen, false)
+                      this.setState({
+                        currentLesstion: lession
+                      }, () => {
+                        this.handleChangeCurrentTime(-1000000)
+                        setTimeout(() => {
+                          this.handleChangeCurrentTime(lession.timeseen)
+                          this.handlePlayVideo()
+                        }, 500);
+                      })
+                    })}
                   >
                     <div className="name">
                       <PlayCircleFilledIcon />

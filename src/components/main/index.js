@@ -71,7 +71,6 @@ import { get, post } from "../../api";
 import { SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import Friends from './friend'
 import SearchFriends from './search-friend'
-import SearchPost from './search-post'
 import Loader from '../common/loader'
 import Realtime from '../realtime'
 import Player from '../common/player'
@@ -307,7 +306,6 @@ class Main extends React.Component {
         }
         <Friends />
         <SearchFriends />
-        <SearchPost history={this.props.history} />
         <MediaViewr />
         {/* {
           renderMediaViewer(this)

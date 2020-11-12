@@ -879,11 +879,11 @@ class Index extends React.Component {
     })
   }
 
-  handlePostAuth(postforid,foloweds){
-    if (postforid === 4){
+  handlePostAuth(postforid, foloweds) {
+    if (postforid === 4) {
       return false
     }
-    else if (postforid === 3 && foloweds.some(item=>item.status !== 10)){
+    else if (postforid === 3 && foloweds.some(item => item.status !== 10)) {
       return false
     } else return true
   }
@@ -899,7 +899,7 @@ class Index extends React.Component {
       isFullScreen,
       isPlaying,
     } = this.state;
-    let { profile, daskMode, data, containerRef,foloweds } = this.props;
+    let { profile, daskMode, data, containerRef, foloweds } = this.props;
 
     let PrivacyOptions = objToArray(Privacies);
     let GroupPrivacyOptions = objToArray(GroupPrivacies);
@@ -1109,7 +1109,7 @@ class Index extends React.Component {
                               this.setState({ showTagsFriendDrawer: true })
                             }
                           >
-                            {data.usersTag.length} người khác
+                            {data.usersTag.length - 1} người khác
                           </b>
                         </span>
                       ) : (
@@ -1412,116 +1412,116 @@ class Index extends React.Component {
                           ) : (
                               ""
                             )} */}
-                          {foloweds && this.handlePostAuth(data.newsFeedShare.postforid,foloweds) 
-                          ? <CardHeader
-                            className="card-header"
-                            avatar={
-                              <Avatar aria-label="recipe" className="avatar">
-                                <div
-                                  className="img"
-                                  style={{
-                                    background: `url("${data.newsFeedShare.avataruserpost}")`,
-                                  }}
-                                />
-                              </Avatar>
-                            }
-                            title={
-                              <span className="poster-name">
-                                <span className="name" onClick={() => {
-                                  if (data.newsFeedShare.iduserpost == profile.id) {
-                                    this.props.history.push("/profile");
-                                  } else {
-                                    this.props.setCurrenUserDetail({
-                                      ...data,
-                                      friendid: data.newsFeedShare.iduserpost,
-                                    });
-                                    this.props.toggleUserPageDrawer(true);
-                                  }
-                                }}>
-                                  {data.newsFeedShare.nameuserpost}
+                          {foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds)
+                            ? <CardHeader
+                              className="card-header"
+                              avatar={
+                                <Avatar aria-label="recipe" className="avatar">
+                                  <div
+                                    className="img"
+                                    style={{
+                                      background: `url("${data.newsFeedShare.avataruserpost}")`,
+                                    }}
+                                  />
+                                </Avatar>
+                              }
+                              title={
+                                <span className="poster-name">
+                                  <span className="name" onClick={() => {
+                                    if (data.newsFeedShare.iduserpost == profile.id) {
+                                      this.props.history.push("/profile");
+                                    } else {
+                                      this.props.setCurrenUserDetail({
+                                        ...data,
+                                        friendid: data.newsFeedShare.iduserpost,
+                                      });
+                                      this.props.toggleUserPageDrawer(true);
+                                    }
+                                  }}>
+                                    {data.newsFeedShare.nameuserpost}
+                                  </span>
+                                  {data.newsFeedShare.kindpost == 4 ? (
+                                    // <span>
+                                    //   {data.newsFeedShare.titlepost
+                                    //     .replace("{usernamesend}", " ")
+                                    //     .replace("{namealbum}", data.albumname)}
+                                    // </span>
+                                    ""
+                                  ) : (
+                                      ""
+                                    )}
+                                  {data.newsFeedShare.kindpost == 3 ? (
+                                    <span>
+                                      {data.newsFeedShare.titlepost.replace(
+                                        "{username}",
+                                        " "
+                                      )}
+                                    </span>
+                                  ) : (
+                                      ""
+                                    )}
+                                  {data.newsFeedShare.kindpost == 2 ? (
+                                    <span>
+                                      {data.newsFeedShare.titlepost.replace(
+                                        "{username}",
+                                        " "
+                                      )}
+                                    </span>
+                                  ) : (
+                                      ""
+                                    )}
                                 </span>
-                                {data.newsFeedShare.kindpost == 4 ? (
-                                  // <span>
-                                  //   {data.newsFeedShare.titlepost
-                                  //     .replace("{usernamesend}", " ")
-                                  //     .replace("{namealbum}", data.albumname)}
-                                  // </span>
-                                  ""
-                                ) : (
-                                    ""
-                                  )}
-                                {data.newsFeedShare.kindpost == 3 ? (
-                                  <span>
-                                    {data.newsFeedShare.titlepost.replace(
-                                      "{username}",
-                                      " "
+                              }
+                              subheader={
+                                <div className="poster-subtitle">
+                                  <div>
+                                    {
+                                      PrivacyOptions.find(
+                                        (privacy) =>
+                                          privacy.code ==
+                                          data.newsFeedShare.postforid
+                                      ) ? <img
+                                          src={
+                                            PrivacyOptions.find(
+                                              (privacy) =>
+                                                privacy.code ==
+                                                data.newsFeedShare.postforid
+                                            ).icon1
+                                          }
+                                        /> : ""
+                                    }
+                                    <FiberManualRecordIcon />
+                                    {fromNow(
+                                      moment(data.newsFeedShare.createdate),
+                                      moment(new Date())
                                     )}
-                                  </span>
-                                ) : (
-                                    ""
-                                  )}
-                                {data.newsFeedShare.kindpost == 2 ? (
-                                  <span>
-                                    {data.newsFeedShare.titlepost.replace(
-                                      "{username}",
-                                      " "
-                                    )}
-                                  </span>
-                                ) : (
-                                    ""
-                                  )}
-                              </span>
-                            }
-                            subheader={
-                              <div className="poster-subtitle">
-                                <div>
-                                  {
-                                    PrivacyOptions.find(
-                                      (privacy) =>
-                                        privacy.code ==
-                                        data.newsFeedShare.postforid
-                                    ) ? <img
-                                        src={
-                                          PrivacyOptions.find(
-                                            (privacy) =>
-                                              privacy.code ==
-                                              data.newsFeedShare.postforid
-                                          ).icon1
-                                        }
-                                      /> : ""
-                                  }
-                                  <FiberManualRecordIcon />
-                                  {fromNow(
-                                    moment(data.newsFeedShare.createdate),
-                                    moment(new Date())
+                                  </div>
+                                  {data.newsFeedShare.groupidpost > 0 && (
+                                    <div>
+                                      <img src={Group} />
+                                      <FiberManualRecordIcon
+                                        style={{ width: "6px", height: "6px" }}
+                                      />
+                                      <span>
+                                        <u onClick={() => this.setState({ showGroupForPostDrawer: false }, () => {
+                                          // this.props.setCurrentGroup({ groupid: data.groupidpost })
+                                          this.handleGetGroupDetail(data.newsFeedShare.groupidpost)
+                                          this.props.toggleGroupDetailDrawer(true)
+
+                                        })}>{data.newsFeedShare.groupnamepost}</u>
+                                      </span>
+                                    </div>
                                   )}
                                 </div>
-                                {data.newsFeedShare.groupidpost > 0 && (
-                                  <div>
-                                    <img src={Group} />
-                                    <FiberManualRecordIcon
-                                      style={{ width: "6px", height: "6px" }}
-                                    />
-                                    <span>
-                                      <u onClick={() => this.setState({ showGroupForPostDrawer: false }, () => {
-                                        // this.props.setCurrentGroup({ groupid: data.groupidpost })
-                                        this.handleGetGroupDetail(data.newsFeedShare.groupidpost)
-                                        this.props.toggleGroupDetailDrawer(true)
+                              }
+                            />
+                            : <CardHeader
+                              className="card-header-auth"
+                              avatar={<div className="avatar-auth">x</div>}
+                              title={<b>Nội dung này đã được chủ sở hữu bài đăng thay đổi quyền được xem hoặc đã xóa nội dung.</b>}
+                            />
+                          }
 
-                                      })}>{data.newsFeedShare.groupnamepost}</u>
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            }
-                          />
-                          : <CardHeader 
-                            className="card-header-auth"
-                            avatar={<div className="avatar-auth">x</div>}
-                            title={<b>Nội dung này đã được chủ sở hữu bài đăng thay đổi quyền được xem hoặc đã xóa nội dung.</b>}
-                          />
-                           }
-                                        
                           {data.newsFeedShare.nfcontent != "" ? (
                             <div
                               className={
@@ -1544,7 +1544,7 @@ class Index extends React.Component {
                           ) : (
                               ""
                             )}
-                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid,foloweds)) && <CardContent className="card-content">
+                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds)) && <CardContent className="card-content">
                             <div className="media-grid">
                               {data.newsFeedShare.mediaPlays.length > 1 ? (
                                 <GridList cols={maxCols}>
