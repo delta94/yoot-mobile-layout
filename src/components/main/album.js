@@ -607,7 +607,7 @@ class Index extends React.Component {
                                 </div>
                                 <div className="title-album">
                                     <label>{albumDetail.albumname}</label>
-                                    <PostContent content={albumDetail.albumdescription} />
+                                    <pre>{albumDetail.albumdescription}</pre>
                                     <p>{albumDetail.albumfortext}</p>
                                 </div>
                                 {
