@@ -69,7 +69,7 @@ class Index extends React.Component {
         let {
             content,
         } = this.props
-        if (!content) return
+        if (!content || !content.nfcontent) return
         let hashtagSelected = content.nfcontent.match(/#(\S+)/g)
         if (hashtagSelected && hashtagSelected.length > 0) {
             hashtagSelected.map(item => {
