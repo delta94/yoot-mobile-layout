@@ -890,6 +890,7 @@ class Index extends React.Component {
 
 
   render() {
+
     let {
       anchor,
       showLocalMenu,
@@ -899,7 +900,8 @@ class Index extends React.Component {
       isFullScreen,
       isPlaying,
     } = this.state;
-    let { profile, daskMode, data, containerRef, foloweds } = this.props;
+    let { profile, daskMode, data, containerRef } = this.props;
+    let {foloweds} = this.props.profile
 
     let PrivacyOptions = objToArray(Privacies);
     let GroupPrivacyOptions = objToArray(GroupPrivacies);
@@ -920,7 +922,6 @@ class Index extends React.Component {
         item.postid = data.newsFeedShare.nfid
       })
     }
-
     return data && (!data.isPedding || data.isPedding === false) ? (
       <div>
         <ScrollTrigger
@@ -1522,7 +1523,7 @@ class Index extends React.Component {
                             />
                           }
 
-                          {data.newsFeedShare.nfcontent != "" ? (
+                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds)) && data.newsFeedShare.nfcontent !== "" && (
                             <div
                               className={
                                 "post-content" +
@@ -1541,9 +1542,7 @@ class Index extends React.Component {
                             >
                               <PostContent content={data.newsFeedShare} />
                             </div>
-                          ) : (
-                              ""
-                            )}
+                          )}
                           {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds)) && <CardContent className="card-content">
                             <div className="media-grid">
                               {data.newsFeedShare.mediaPlays.length > 1 ? (
