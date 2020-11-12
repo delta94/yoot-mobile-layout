@@ -275,7 +275,6 @@ const renderConfirmDrawer = (component) => {
     confirmTitle,
     confirmMessage
   } = component.state
-  console.log("rennder")
   return (
     <Drawer anchor="bottom" className="confirm-drawer" open={showConfim} onClose={() => component.setState({ showConfim: false })}>
       <div className='jon-group-confirm'>

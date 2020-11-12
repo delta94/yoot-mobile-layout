@@ -75,7 +75,6 @@ class Index extends React.Component {
             postid: data.nfid,
             icon: reaction.code,
         };
-        console.log("data", data)
         this.props.likePosted(data, reaction.code, "", data.iduserpost);
         if (data.usersTag.length > 0) {
             data.usersTag.map(item => {
@@ -720,8 +719,6 @@ class Index extends React.Component {
             activeItem = mediaToView && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0 ? mediaToView[mediaViewerFeature.activeIndex] : null
         }
 
-        console.log("this.state", this.state)
-        console.log("this.props", this.props)
 
         return (
             <div>

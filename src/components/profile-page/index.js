@@ -1527,7 +1527,6 @@ const renderUserHistoryDrawer = (component) => {
   let { showUserHistory, userDetail, profile } = component.props;
   let { historyPoints, isLoadHistory } = component.state;
 
-  console.log("profile", profile)
 
   return (
     <Drawer
@@ -2717,17 +2716,17 @@ const renderUserDetailDrawer = (component) => {
                           </Avatar>
                           <div className="friend-title">
                             <b
-                            className="user-name"
-                            onClick={() => {
-                              component.props.setCurrenUserDetail(item);
-                              component.props.toggleUserPageDrawer(true);
-                            }}
-                          >
-                            {item.friendname}
+                              className="user-name"
+                              onClick={() => {
+                                component.props.setCurrenUserDetail(item);
+                                component.props.toggleUserPageDrawer(true);
+                              }}
+                            >
+                              {item.friendname}
                             </b>
                             <p>{item.numfriendwith} bạn chung</p>
                           </div>
-                          
+
                           {item.ismefollow === 0 ? (
                             <Button
                               onClick={() =>
@@ -2781,18 +2780,18 @@ const renderUserDetailDrawer = (component) => {
                             />
                           </Avatar>
                           <div className="friend-title">
-                          <b
-                            className="user-name"
-                            onClick={() => {
-                              component.props.setCurrenUserDetail(item);
-                              component.props.toggleUserPageDrawer(true);
-                            }}
-                          >
-                            {item.friendname}
-                          </b>
-                          <p>{item.numfriendwith} bạn chung</p>
+                            <b
+                              className="user-name"
+                              onClick={() => {
+                                component.props.setCurrenUserDetail(item);
+                                component.props.toggleUserPageDrawer(true);
+                              }}
+                            >
+                              {item.friendname}
+                            </b>
+                            <p>{item.numfriendwith} bạn chung</p>
                           </div>
-                          
+
                           {item.ismefollow === 0 ? (
                             <Button
                               onClick={() =>

@@ -1185,7 +1185,7 @@ class Index extends React.Component {
                     ")",
                 }}
               >
-                <PostContent content={data.nfcontent} />
+                <PostContent content={data} />
               </div>
             ) : (
                 ""
@@ -1539,7 +1539,7 @@ class Index extends React.Component {
                                   ")",
                               }}
                             >
-                              <PostContent content={data.newsFeedShare.nfcontent} />
+                              <PostContent content={data.newsFeedShare} />
                             </div>
                           ) : (
                               ""
@@ -1939,7 +1939,7 @@ class Index extends React.Component {
                 <img src={daskMode ? comment1 : comment} />
                 Bình luận
               </Button>
-              {(data.postforid !== 4 && data.typegroup !==2) && (
+              {(data.postforid !== 4 && data.typegroup !== 2) && (
                 <Button
                   onClick={() =>
                     this.setState(
@@ -2842,7 +2842,7 @@ const renderDetailPosted = (component) => {
                       ")",
                   }}
                 >
-                  <PostContent content={data.nfcontent} />
+                  <PostContent content={data} />
                 </div>
               ) : (
                   ""
@@ -2905,7 +2905,6 @@ const renderDetailPosted = (component) => {
                 <Button
                   onClick={() => {
                     component.props.toggleCommentDrawer(true, data)
-                    console.log("data", data)
                   }
                   }
                 >

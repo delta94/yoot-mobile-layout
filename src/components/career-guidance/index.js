@@ -313,7 +313,6 @@ class Index extends React.Component {
         })
         window.localStorage.setItem("FORM_REG", JSON.stringify(profile))
       }
-      console.log("result", result)
     })
   }
 
@@ -383,7 +382,6 @@ class Index extends React.Component {
 
   handleGetSearchOptions() {
     post(BUILD_YS_API, "Finder/GetTagView?findtext=" + this.state.searchKey, null, result => {
-      console.log("result", result)
       if (result && result.result == 1)
         this.setState({
           searchOptions: result.content.finders
@@ -411,7 +409,6 @@ class Index extends React.Component {
       param.careerids = careerids
     }
     post(BUILD_YS_API, "Ology/GetListMany", param, result => {
-      console.log("result", result)
       if (result && result.result == 1)
         this.setState({
           careerList: result.content.careers
@@ -561,7 +558,6 @@ class Index extends React.Component {
     if (window.addEventListener) {
       let that = this
       window.addEventListener('message', e => {
-        console.log("message", e.data)
         if (typeof e.data == "string")
           that.handleMessage(JSON.parse(e.data))
       }, false);

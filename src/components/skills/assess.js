@@ -223,8 +223,6 @@ class Index extends React.Component {
       reviews
     } = this.state
 
-    console.log("reviews", reviews)
-
 
     return (
       <div className="assess-page" >

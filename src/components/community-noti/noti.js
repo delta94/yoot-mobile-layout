@@ -120,7 +120,6 @@ class Index extends React.Component {
       onNotiClick
     } = this.props
 
-    console.log(data.type, "-", data)
     return (
       data ? <li className={"noti-item" + (data.userstatus == 0 ? " unread" : "")} >
         <Avatar className="avatar">

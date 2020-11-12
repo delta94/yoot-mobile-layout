@@ -959,8 +959,10 @@
         padding-bottom: 100px !important;
     }
 }
-
-// .reply-box{
-//     width: calc(100% - 30px);
-//     margin-left: 50px;
-// }
+.post-list.search-post{
+    padding: 10px !important;
+    background: #f2f3f7;
+    > li{
+        margin-bottom: 10px !important;
+    }
+}

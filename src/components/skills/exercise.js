@@ -303,8 +303,6 @@ class Index extends React.Component {
       homeworks,
       reviewers
     } = this.state
-    console.log('homeworks', homeworks)
-    console.log('exercises', exercises)
     return (
       <div className="exercise-item-page" >
         <StickyContainer className="container">

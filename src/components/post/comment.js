@@ -568,7 +568,7 @@ class Index extends React.Component {
                                 data.nfcontent != "" ? <div
                                     className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                     style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                    <PostContent content={data.nfcontent} />
+                                    <PostContent content={data} />
                                 </div> : ""
                             }
 
@@ -742,7 +742,7 @@ class Index extends React.Component {
                                                             data.newsFeedShare.nfcontent != "" ? <div
                                                                 className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                                                 style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                                                <PostContent content={data.newsFeedShare.nfcontent} />
+                                                                <PostContent content={data.newsFeedShare} />
                                                             </div> : ""
                                                         }
                                                         <CardContent className="card-content">
@@ -1110,6 +1110,8 @@ const renderDetailPosted = (component) => {
     let PrivacyOptions = objToArray(Privacies)
 
 
+    console.log("data", data)
+
     return (
         <Drawer anchor="bottom" className="posted-detail-drawer" open={showPostedDetail}>
             <div className="drawer-detail">
@@ -1182,7 +1184,7 @@ const renderDetailPosted = (component) => {
                                 data.nfcontent != "" ? <div
                                     className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                     style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                    <PostContent content={data.nfcontent} />
+                                    <PostContent content={data} />
                                 </div> : ""
                             }
 
@@ -1264,7 +1266,7 @@ const renderDetailPosted = (component) => {
                                                                     media.iconNumbers.filter(item => item.icon != media.iconlike).map((item, index) => item.icon > 0 && item.num > 0 && <img key={index} src={ReactSelectorIcon[item.icon].icon}></img>)
                                                                 }
                                                                 {
-                                                                    media.islike == 1 ? <img src={ReactSelectorIcon[media.iconlike].icon}></img> : ""
+                                                                    media.islike == 1 && media.iconlike > 0 ? <img src={ReactSelectorIcon[media.iconlike].icon}></img> : ""
                                                                 }
                                                                 <span>{media.numlike}</span>
                                                             </span> : <span className="like">

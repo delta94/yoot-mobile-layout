@@ -40,6 +40,7 @@ export const SET_CURRENT_NETWORK = "app@SET_CURRENT_NETWORK"
 export const TOGGLE_USER_INFO_FORM_DRAWER = "app@TOGGLE_USER_INFO_FORM_DRAWER"
 export const TOGGLE_COMMENT_DRAWER = "app@TOGGLE_COMMENT_DRAWER"
 export const TOGGLE_COMMENT_IMAGE_DRAWER = "app@TOGGLE_COMMENT_IMAGE_DRAWER"
+export const TOGGLE_SEARCH_POST_DRAWER = "app@TOGGLE_SEARCH_POST_DRAWER"
 
 export const setProccessDuration = (percent) => {
     return dispatch => {
@@ -369,6 +370,15 @@ export const toggleCommentImageDrawer = (isShow, currentImageForComment, current
     }
 }
 
+export const toggleSeachPosts = (isShow, hashtag) => {
+    return dispatch => {
+        dispatch({
+            type: TOGGLE_SEARCH_POST_DRAWER,
+            payload: isShow,
+            hashtag: hashtag
+        })
+    }
+}
 
 
 

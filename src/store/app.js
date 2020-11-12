@@ -34,7 +34,8 @@ import {
     SET_CURRENT_NETWORK,
     TOGGLE_USER_INFO_FORM_DRAWER,
     TOGGLE_COMMENT_DRAWER,
-    TOGGLE_COMMENT_IMAGE_DRAWER
+    TOGGLE_COMMENT_IMAGE_DRAWER,
+    TOGGLE_SEARCH_POST_DRAWER
 } from '../actions/app'
 
 const initialState = {
@@ -77,7 +78,9 @@ const initialState = {
     showCommentDrawer: false,
     currentPostForComment: null,
     currentImageForComment: null,
-    showCommentImageDrawer: false
+    showCommentImageDrawer: false,
+    showSearchPostDrawer: false,
+    currentHashtag: null
 };
 
 export default (state = initialState, action) => {
@@ -284,6 +287,12 @@ export default (state = initialState, action) => {
                 showCommentImageDrawer: action.payload,
                 currentPostForComment: action.currentPostForComment,
                 currentImageForComment: action.currentImageForComment
+            });
+        }
+        case TOGGLE_SEARCH_POST_DRAWER: {
+            return Object.assign({}, state, {
+                showSearchPostDrawer: action.payload,
+                currentHashtag: action.hashtag
             });
         }
 
