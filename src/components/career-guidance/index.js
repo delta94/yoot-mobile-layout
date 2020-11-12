@@ -248,18 +248,14 @@ class Index extends React.Component {
         if (jobSelectedParam && jobSelectedParam.length > 0) {
           jobSelected = JSON.parse(jobSelectedParam)
         }
-        if (jobSelected.length > 0) {
-          careers.map(item => {
-            if (jobSelected.find(e => e.id == item.id)) {
-              item.selected = true
-            }
-            else item.selected = false
-          })
-        }
-        let list = careers.filter(item => item.selected == true).concat(careers.filter(item => item.selected == false))
-
+        careers.map(item => {
+          if (jobSelected.find(e => e.id == item.id)) {
+            item.selected = true
+          }
+          else item.selected = false
+        })
         this.setState({
-          findedJobs: list,
+          findedJobs: careers,
           jobSelected: jobSelected
         })
       }
@@ -675,7 +671,7 @@ const renderScholarDrawer = (component) => {
               </IconButton>
               <label>Học sinh</label>
             </div>
-            <div className="user-reward">
+            <div className="user-reward" onClick={() => component.props.history.push("/profile")}>
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
@@ -747,7 +743,7 @@ const renderStyleTestDrawer = (component) => {
               </IconButton>
               <label>Kết quả DISC</label>
             </div>
-            <div className="user-reward">
+            <div className="user-reward" onClick={() => component.props.history.push("/profile")}>
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
@@ -887,7 +883,7 @@ const renderDISCDrawer = (component) => {
               </IconButton>
               <label>Tìm hiểu DISC</label>
             </div>
-            <div className="user-reward">
+            <div className="user-reward" onClick={() => component.props.history.push("/profile")}>
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
@@ -944,7 +940,7 @@ const renderYourJobDrawer = (component) => {
               </IconButton>
               <label>Công việc</label>
             </div>
-            <div className="user-reward">
+            <div className="user-reward" onClick={() => component.props.history.push("/profile")}>
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
@@ -965,7 +961,15 @@ const renderYourJobDrawer = (component) => {
                   </button>
                 </div> : ""
               }
-              <input type="text" name="search" value={searchKey} onChange={(e) => component.setState({ searchKey: e.target.value, isSearching: true }, () => component.handleSearchJob())} className="searchBox" placeholder="Vui lòng chọn công việc phù hợp" />
+              <input
+                type="text"
+                id="search-job-input-ref"
+                name="search"
+                value={searchKey}
+                onChange={(e) => component.setState({ searchKey: e.target.value, isSearching: true }, () => component.handleSearchJob())}
+                className="searchBox" placeholder="Vui lòng chọn công việc phù hợp"
+                onKeyUp={e => e.key == "Enter" ? $("#search-job-input-ref").blur() : null}
+              />
               <div className="btn-search">
                 <button type="submit" className="searchBtn">
                   <img src={searchBtn} />
@@ -973,7 +977,7 @@ const renderYourJobDrawer = (component) => {
               </div>
             </div>
           </div>
-          <div style={{ overflow: "scroll", background: "#f2f3f7" }} id="your-job-list">
+          <div style={{ overflow: "scroll", background: "#f2f3f7" }} id="your-job-list" onScroll={() => $("#search-job-input-ref").blur()}>
             <div style={{ padding: "1px 0 10px 0", background: "white", marginBottom: "10px" }}>
               <div className="jobList-Noti">
                 <div className="divContent">
@@ -998,11 +1002,14 @@ const renderYourJobDrawer = (component) => {
                 ? item.videolinks.map((video, j) => <Video videoURL={video} videoThumb={item.thumbnaillinks[j]} />)
                 : <span>image</span>)
             } */}
+
           </div>
           <div className="footer-drawer">
-            <Button onClick={() => component.props.toggleYourMajorsDrawer(true)}>Ngành học tương ứng</Button>
+            <Button onClick={() => {
+              component.props.toggleYourMajorsDrawer(true)
+              component.handleGetCareers()
+            }}>Ngành học tương ứng</Button>
           </div>
-
         </div> : ""
       }
     </Drawer>
@@ -1013,6 +1020,7 @@ const renderYourMajorsDrawer = (component) => {
   let {
     showYourMajorsPage,
     profile,
+    careerHistory
   } = component.props
   let {
     isSearching,
@@ -1044,7 +1052,7 @@ const renderYourMajorsDrawer = (component) => {
               </IconButton>
               <label>Ngành học</label>
             </div>
-            <div className="user-reward">
+            <div className="user-reward" onClick={() => component.props.history.push("/profile")}>
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">
@@ -1111,12 +1119,26 @@ const renderYourMajorsDrawer = (component) => {
             <div className="favoriteSchool" onClick={() => component.setState({ showFavorateSchoolDrawer: true }, () => component.handleGetFavorateSchools())}>
               <i class="fas fa-heart"></i> Trường đang quan tâm
             </div>
-            <div className="major-noti jobList-Noti" style={{ padding: "0px 10px", width: "90%" }}>
-              <div className="divContent">
-                <i class="fas fa-play"></i>
-                <p className="content">Trang ngành học được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những ngành học mà bạn muốn tìm hiểu nhé.</p>
-              </div>
-            </div>
+            {
+              careerHistory ? <div className="major-noti jobList-Noti" style={{ padding: "0px 10px", width: "90%" }}>
+                <div className="divContent">
+                  <i class="fas fa-play"></i>
+                  <p className="content">Trang ngành học được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những ngành học mà bạn muốn tìm hiểu nhé.</p>
+                </div>
+              </div> : <div className="major-noti jobList-Noti" style={{ padding: "0px 10px", width: "90%" }}>
+                  <div className="divContent">
+                    <i class="fas fa-play"></i>
+                    <p className="content">Bạn đang muốn tìm hiểu ngàn học và trường học theo nhu cầu thì nhập vào thanh tìm kiếm.</p>
+                  </div>
+                  <div className="divContent">
+                    <i class="fas fa-play"></i>
+                    <p className="content">Bạn muốn tìm hiểu ngành học và trường học theo nhóm tính cách vui lòng thực hiện chức năng "Phong cách hành vi".</p>
+                  </div>
+                  <div className="divContent" style={{ textAlign: "center", width: "100%" }}>
+                    <Button className="bt-submit width60pc" style={{ margin: "0px auto" }} onClick={() => component.props.toggleStyleTestDrawer(true)}>Phong cách hành vi</Button>
+                  </div>
+                </div>
+            }
             <div style={{ width: "100%", overflowX: "auto", overflowY: "hidden" }}>
               <Tabs
                 value={tabValue}
@@ -1354,7 +1376,7 @@ const renderFavorateSchoolDrawer = (component) => {
               </IconButton>
               <label>Trường quan tâm</label>
             </div>
-            <div className="user-reward">
+            <div className="user-reward" onClick={() => component.props.history.push("/profile")}>
               <div className="profile">
                 <span className="user-name">{profile.fullname}</span>
                 <span className="point">

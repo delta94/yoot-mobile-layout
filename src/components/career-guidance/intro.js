@@ -12,6 +12,10 @@ import {
     Drawer,
     Avatar
 } from '@material-ui/core'
+import {
+    setMediaToViewer,
+    toggleMediaViewerDrawer
+} from '../../actions/app'
 import { PDFReader } from 'reactjs-pdf-reader';
 import { connect } from 'react-redux'
 import { formatCurrency } from "../../utils/common";
@@ -132,7 +136,8 @@ class Index extends React.Component {
                                     this.props.toggleMediaViewerDrawer(true, {
                                         showInfo: false,
                                         activeIndex: 0,
-                                        isvideo: true
+                                        isvideo: true,
+                                        videoCurrentTime: this.video[0].current.getState().player.currentTime
                                     })
                                 }}></div>
                             </ControlBar>
@@ -191,18 +196,14 @@ const mapStateToProps = state => {
     }
 };
 
-// const mapDispatchToProps = dispatch => ({
-//     addHeaderContent: (headerContent) => dispatch(addHeaderContent(headerContent)),
-//     addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
-//     toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
-//     toggleFooter: (isShow) => dispatch(toggleFooter(isShow)),
-//     setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
-//     toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
-// });
+const mapDispatchToProps = dispatch => ({
+    setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
+    toggleMediaViewerDrawer: (isShow, feature) => dispatch(toggleMediaViewerDrawer(isShow, feature)),
+});
 
 export default connect(
     mapStateToProps,
-    null
+    mapDispatchToProps
 )(Index);
 
 const renderDocumentDrawer = (component) => {

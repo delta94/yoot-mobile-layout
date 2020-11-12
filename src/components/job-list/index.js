@@ -163,10 +163,10 @@ class Index extends React.Component {
     } = this.props
     if (!jobSelected) jobSelected = []
 
-    const jobList = searchKey && searchKey.length > 0 ? findedJobs : jobSelected.concat(suggestJobs.filter(item => item.selected == false))
+    const jobList = searchKey && searchKey.length > 0 ? findedJobs : suggestJobs
 
     return (
-      jobList.map((item, index) => <Card className={classes.root} key={index}>
+      jobList.length > 0 ? jobList.map((item, index) => <Card className={classes.root} key={index}>
         <CardHeader className={classes.CardHeaderHeader}
           action={<div className={classes.CardHeaderAction}>
             <Avatar aria-label="recipe" className={classes.avatar}><img className="drawerAvatar" src={DISC} /></Avatar>
@@ -176,7 +176,7 @@ class Index extends React.Component {
           title={<Typography className={classes.TypographyError} variant="h6" color="colorError" gutterBottom>{item.text}</Typography>}
         />
         <CardContent className={classes.CardContent}>
-          <Typography variant="subtitle1" color="textSecondary" component="p">{item.description}</Typography>
+          <pre variant="subtitle1" color="textSecondary" component="p">{item.description}</pre>
         </CardContent>
         {
           item.videolinks.length > 0 ? <div className={classes.mediaDiv}>
@@ -185,7 +185,7 @@ class Index extends React.Component {
             }
           </div> : <img src={bannervideo} className={classes.defaultImage} />
         }
-      </Card>)
+      </Card>) : <div style={{ width: "100%", height: "100vh" }} />
     );
   }
 

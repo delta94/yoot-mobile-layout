@@ -6,6 +6,12 @@
     }
 }
 .job-list-drawer{
+    .drawer-detail{
+        min-height: calc(100%) !important;
+    }
+    #your-job-list{
+        min-height: 100%;
+    }
     .filter{
         position: relative;
         font-family: Roboto-Medium;
@@ -36,6 +42,9 @@
             border-radius: 7px;
             background-color: #f2f3f7;
             position: relative;
+            > input{
+                background: none !important;
+            }
             .search-param{
                 display: block;
                 width: 100%;
@@ -58,7 +67,7 @@
                     }
                 }
                 input{
-                    background: none;
+                    background: none !important;
                     &.search-job{
                         width: auto;
                         min-width: 130px;
