@@ -122,6 +122,7 @@ const Newfeed = require("../../assets/icon/Newfeed@1x.png");
 const search = require("../../assets/icon/Find@1x.png");
 const mute = require("../../assets/icon/mute.png");
 const unmute = require("../../assets/icon/unmute.png");
+const thank = require("../../assets/icon/thank.png");
 
 
 
@@ -3561,20 +3562,21 @@ const renderReportSuccessAlert = (component) => {
         </div>
         <span>Bạn đã báo cáo bài đăng này có dấu hiệu</span>
         {reasonSelected && (
-          <Button className="bt-submit" disabled>
-            {reasonSelected.issuename}
-          </Button>
+          <div>
+            <Button className="btn-reason" disabled>
+              {reasonSelected.issuename}
+            </Button>
+          </div>
         )}
         {orderReasonText.length > 0 && (
-          <Button className="bt-submit" disabled>
+          <Button className="btn-reason" disabled>
             {orderReasonText}
           </Button>
         )}
-        <ul>
-          <li></li>
-          <li></li>
-          <li></li>
-        </ul>
+        <div className="warning-css">
+          <div className='line-css' />
+          <img src={thank} />
+        </div>
         <p>Cảm ơn bạn đã báo cáo.</p>
         <p>Bài viết đã được gửi đến quản trị YOOT</p>
       </div>
