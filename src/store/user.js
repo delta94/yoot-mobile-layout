@@ -6,7 +6,9 @@ import {
   FOLLOW_FRIEND,
   UN_FOLLOW_FRIEND,
   UPDATE_CHANGE_FOLLOWED,
-  UPDATE_CHANGE_FOLLOWING
+  UPDATE_CHANGE_FOLLOWING,
+  GET_FOLOWED_ME_COUNT,
+  GET_ME_FOLOWING_COUNT,
 } from "../actions/user";
 
 const initialState = {
@@ -41,6 +43,14 @@ export default (state = initialState, action) => {
         profile,
       });
     }
+    case GET_FOLOWED_ME_COUNT: {
+      if (profile) {
+        profile.folowedCount = action.payload
+      }
+      return Object.assign({}, state, {
+        profile,
+      });
+    }
     case GET_ME_FOLOWING: {
       let folowings = action.payload;
       if (profile) {
@@ -49,6 +59,14 @@ export default (state = initialState, action) => {
         } else {
           profile.folowings = folowings;
         }
+      }
+      return Object.assign({}, state, {
+        profile,
+      });
+    }
+    case GET_ME_FOLOWING_COUNT: {
+      if (profile) {
+        profile.folowingCount = action.payload
       }
       return Object.assign({}, state, {
         profile,

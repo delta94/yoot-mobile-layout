@@ -168,12 +168,12 @@ export default (state = initialState, action) => {
 
                 }
 
-                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShareRoot && item.newsFeedShareRoot.nfid == action.payload.nfid)
 
                 if (sharedPostIndex > 0) {
-                    let newIconNumbers = userPostedsList[sharedPostIndex].newsFeedShare.iconNumbers
+                    let newIconNumbers = userPostedsList[sharedPostIndex].newsFeedShareRoot.iconNumbers
 
-                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == userPostedsList[sharedPostIndex].newsFeedShare.iconlike)
+                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == userPostedsList[sharedPostIndex].newsFeedShareRoot.iconlike)
                     if (likedIconIndex >= 0)
                         newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
                     if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
@@ -184,11 +184,11 @@ export default (state = initialState, action) => {
                     } else {
                         newIconNumbers.push({ icon: action.iconCode, num: 1 })
                     }
-                    userPostedsList[sharedPostIndex].newsFeedShare.iconNumbers = newIconNumbers
-                    userPostedsList[sharedPostIndex].newsFeedShare.iconlike = action.iconCode
-                    if (userPostedsList[sharedPostIndex].newsFeedShare.islike == 0) {
-                        userPostedsList[sharedPostIndex].newsFeedShare.numlike = userPostedsList[sharedPostIndex].newsFeedShare.numlike + 1
-                        userPostedsList[sharedPostIndex].newsFeedShare.islike = 1
+                    userPostedsList[sharedPostIndex].newsFeedShareRoot.iconNumbers = newIconNumbers
+                    userPostedsList[sharedPostIndex].newsFeedShareRoot.iconlike = action.iconCode
+                    if (userPostedsList[sharedPostIndex].newsFeedShareRoot.islike == 0) {
+                        userPostedsList[sharedPostIndex].newsFeedShareRoot.numlike = userPostedsList[sharedPostIndex].newsFeedShareRoot.numlike + 1
+                        userPostedsList[sharedPostIndex].newsFeedShareRoot.islike = 1
                     }
                 }
             }
@@ -223,12 +223,12 @@ export default (state = initialState, action) => {
                 }
 
 
-                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShareRoot && item.newsFeedShareRoot.nfid == action.payload.nfid)
 
                 if (sharedPostIndex > 0) {
-                    let newIconNumbers = allPosteds[sharedPostIndex].newsFeedShare.iconNumbers
+                    let newIconNumbers = allPosteds[sharedPostIndex].newsFeedShareRoot.iconNumbers
 
-                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == allPosteds[sharedPostIndex].newsFeedShare.iconlike)
+                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == allPosteds[sharedPostIndex].newsFeedShareRoot.iconlike)
                     if (likedIconIndex >= 0)
                         newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
                     if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
@@ -239,11 +239,11 @@ export default (state = initialState, action) => {
                     } else {
                         newIconNumbers.push({ icon: action.iconCode, num: 1 })
                     }
-                    allPosteds[sharedPostIndex].newsFeedShare.iconNumbers = newIconNumbers
-                    allPosteds[sharedPostIndex].newsFeedShare.iconlike = action.iconCode
-                    if (allPosteds[sharedPostIndex].newsFeedShare.islike == 0) {
-                        allPosteds[sharedPostIndex].newsFeedShare.numlike = allPosteds[sharedPostIndex].newsFeedShare.numlike + 1
-                        allPosteds[sharedPostIndex].newsFeedShare.islike = 1
+                    allPosteds[sharedPostIndex].newsFeedShareRoot.iconNumbers = newIconNumbers
+                    allPosteds[sharedPostIndex].newsFeedShareRoot.iconlike = action.iconCode
+                    if (allPosteds[sharedPostIndex].newsFeedShareRoot.islike == 0) {
+                        allPosteds[sharedPostIndex].newsFeedShareRoot.numlike = allPosteds[sharedPostIndex].newsFeedShareRoot.numlike + 1
+                        allPosteds[sharedPostIndex].newsFeedShareRoot.islike = 1
                     }
                 }
             }
@@ -374,23 +374,23 @@ export default (state = initialState, action) => {
 
                 }
 
-                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShareRoot && item.newsFeedShareRoot.nfid == action.payload.nfid)
                 if (sharedPostIndex >= 0) {
 
-                    let newIconNumbers = userPostedsList[sharedPostIndex].newsFeedShare.iconNumbers
+                    let newIconNumbers = userPostedsList[sharedPostIndex].newsFeedShareRoot.iconNumbers
 
-                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == userPostedsList[sharedPostIndex].newsFeedShare.iconlike)
+                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == userPostedsList[sharedPostIndex].newsFeedShareRoot.iconlike)
 
                     if (likedIconIndex >= 0) {
                         newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
                         if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
                     }
 
-                    userPostedsList[sharedPostIndex].newsFeedShare.iconNumbers = newIconNumbers
-                    userPostedsList[sharedPostIndex].newsFeedShare.iconlike = 0
-                    if (userPostedsList[sharedPostIndex].newsFeedShare.islike == 1) {
-                        userPostedsList[sharedPostIndex].newsFeedShare.numlike = userPostedsList[sharedPostIndex].newsFeedShare.numlike - 1
-                        userPostedsList[sharedPostIndex].newsFeedShare.islike = 0
+                    userPostedsList[sharedPostIndex].newsFeedShareRoot.iconNumbers = newIconNumbers
+                    userPostedsList[sharedPostIndex].newsFeedShareRoot.iconlike = 0
+                    if (userPostedsList[sharedPostIndex].newsFeedShareRoot.islike == 1) {
+                        userPostedsList[sharedPostIndex].newsFeedShareRoot.numlike = userPostedsList[sharedPostIndex].newsFeedShareRoot.numlike - 1
+                        userPostedsList[sharedPostIndex].newsFeedShareRoot.islike = 0
                     }
 
                 }
@@ -419,24 +419,24 @@ export default (state = initialState, action) => {
 
                 }
 
-                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShareRoot && item.newsFeedShareRoot.nfid == action.payload.nfid)
 
                 if (sharedPostIndex >= 0) {
 
-                    let newIconNumbers = allPosteds[sharedPostIndex].newsFeedShare.iconNumbers
+                    let newIconNumbers = allPosteds[sharedPostIndex].newsFeedShareRoot.iconNumbers
 
-                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == allPosteds[sharedPostIndex].newsFeedShare.iconlike)
+                    let likedIconIndex = newIconNumbers.findIndex(item => item.icon == allPosteds[sharedPostIndex].newsFeedShareRoot.iconlike)
 
                     if (likedIconIndex >= 0) {
                         newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
                         if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
                     }
 
-                    allPosteds[sharedPostIndex].newsFeedShare.iconNumbers = newIconNumbers
-                    allPosteds[sharedPostIndex].newsFeedShare.iconlike = 0
-                    if (allPosteds[sharedPostIndex].newsFeedShare.islike == 1) {
-                        allPosteds[sharedPostIndex].newsFeedShare.numlike = allPosteds[sharedPostIndex].newsFeedShare.numlike - 1
-                        allPosteds[sharedPostIndex].newsFeedShare.islike = 0
+                    allPosteds[sharedPostIndex].newsFeedShareRoot.iconNumbers = newIconNumbers
+                    allPosteds[sharedPostIndex].newsFeedShareRoot.iconlike = 0
+                    if (allPosteds[sharedPostIndex].newsFeedShareRoot.islike == 1) {
+                        allPosteds[sharedPostIndex].newsFeedShareRoot.numlike = allPosteds[sharedPostIndex].newsFeedShareRoot.numlike - 1
+                        allPosteds[sharedPostIndex].newsFeedShareRoot.islike = 0
                     }
 
                 }
@@ -565,11 +565,11 @@ export default (state = initialState, action) => {
                     userPostedsList[postIndex].mediaPlays = mediaList
                 }
 
-                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShareRoot && item.newsFeedShareRoot.nfid == action.payload.nfid)
 
                 if (sharedPostIndex >= 0) {
 
-                    let mediaList = userPostedsList[sharedPostIndex].newsFeedShare.mediaPlays
+                    let mediaList = userPostedsList[sharedPostIndex].newsFeedShareRoot.mediaPlays
 
                     let mediaIndex = mediaList.findIndex(item => item.detailimageid == action.imageId)
 
@@ -596,7 +596,7 @@ export default (state = initialState, action) => {
                         mediaList[mediaIndex].numlike = mediaList[mediaIndex].numlike + 1
                         mediaList[mediaIndex].islike = 1
                     }
-                    userPostedsList[sharedPostIndex].newsFeedShare.mediaPlays = mediaList
+                    userPostedsList[sharedPostIndex].newsFeedShareRoot.mediaPlays = mediaList
                 }
             }
 
@@ -635,11 +635,11 @@ export default (state = initialState, action) => {
                     allPosteds[postIndex].mediaPlays = mediaList
                 }
 
-                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShareRoot && item.newsFeedShareRoot.nfid == action.payload.nfid)
 
                 if (sharedPostIndex >= 0) {
 
-                    let mediaList = allPosteds[sharedPostIndex].newsFeedShare.mediaPlays
+                    let mediaList = allPosteds[sharedPostIndex].newsFeedShareRoot.mediaPlays
 
                     let mediaIndex = mediaList.findIndex(item => item.detailimageid == action.imageId)
 
@@ -666,7 +666,7 @@ export default (state = initialState, action) => {
                         mediaList[mediaIndex].numlike = mediaList[mediaIndex].numlike + 1
                         mediaList[mediaIndex].islike = 1
                     }
-                    allPosteds[sharedPostIndex].newsFeedShare.mediaPlays = mediaList
+                    allPosteds[sharedPostIndex].newsFeedShareRoot.mediaPlays = mediaList
                 }
             }
 
@@ -822,17 +822,17 @@ export default (state = initialState, action) => {
                     userPostedsList[postIndex].mediaPlays = mediaList
                 }
 
-                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+                let sharedPostIndex = userPostedsList.findIndex(item => item.newsFeedShareRoot && item.newsFeedShareRoot.nfid == action.payload.nfid)
 
                 if (sharedPostIndex >= 0) {
 
-                    let mediaList = userPostedsList[sharedPostIndex].newsFeedShare.mediaPlays
+                    let mediaList = userPostedsList[sharedPostIndex].newsFeedShareRoot.mediaPlays
 
                     let mediaIndex = mediaList.findIndex(item => item.detailimageid == action.imageId)
 
                     if (mediaIndex >= 0) {
                         let newIconNumbers = mediaList[mediaIndex].iconNumbers
-                        let likedIconIndex = newIconNumbers.findIndex(item => item.icon == userPostedsList[sharedPostIndex].newsFeedShare.iconlike)
+                        let likedIconIndex = newIconNumbers.findIndex(item => item.icon == userPostedsList[sharedPostIndex].newsFeedShareRoot.iconlike)
                         if (likedIconIndex >= 0)
                             newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
                         if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
@@ -845,7 +845,7 @@ export default (state = initialState, action) => {
                         mediaList[mediaIndex].numlike = mediaList[mediaIndex].numlike - 1
                         mediaList[mediaIndex].islike = 0
                     }
-                    userPostedsList[sharedPostIndex].newsFeedShare.mediaPlays = mediaList
+                    userPostedsList[sharedPostIndex].newsFeedShareRoot.mediaPlays = mediaList
                 }
             }
 
@@ -876,17 +876,17 @@ export default (state = initialState, action) => {
                     allPosteds[postIndex].mediaPlays = mediaList
                 }
 
-                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShare && item.newsFeedShare.nfid == action.payload.nfid)
+                let sharedPostIndex = allPosteds.findIndex(item => item.newsFeedShareRoot && item.newsFeedShareRoot.nfid == action.payload.nfid)
 
                 if (sharedPostIndex >= 0) {
 
-                    let mediaList = allPosteds[sharedPostIndex].newsFeedShare.mediaPlays
+                    let mediaList = allPosteds[sharedPostIndex].newsFeedShareRoot.mediaPlays
 
                     let mediaIndex = mediaList.findIndex(item => item.detailimageid == action.imageId)
 
                     if (mediaIndex >= 0) {
                         let newIconNumbers = mediaList[mediaIndex].iconNumbers
-                        let likedIconIndex = newIconNumbers.findIndex(item => item.icon == allPosteds[sharedPostIndex].newsFeedShare.iconlike)
+                        let likedIconIndex = newIconNumbers.findIndex(item => item.icon == allPosteds[sharedPostIndex].newsFeedShareRoot.iconlike)
                         if (likedIconIndex >= 0)
                             newIconNumbers[likedIconIndex].num = newIconNumbers[likedIconIndex].num - 1
                         if (newIconNumbers[likedIconIndex].num < 0) newIconNumbers[likedIconIndex].num = 0
@@ -899,7 +899,7 @@ export default (state = initialState, action) => {
                         mediaList[mediaIndex].numlike = mediaList[mediaIndex].numlike - 1
                         mediaList[mediaIndex].islike = 0
                     }
-                    allPosteds[sharedPostIndex].newsFeedShare.mediaPlays = mediaList
+                    allPosteds[sharedPostIndex].newsFeedShareRoot.mediaPlays = mediaList
                 }
             }
 

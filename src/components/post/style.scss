@@ -991,3 +991,55 @@
     margin-bottom: 10px !important;
   }
 }
+.like-reward-drawed{
+  .like-reward{
+    .filter{
+      padding: 0px;
+      .custom-tab{
+        width: 100%;
+        margin: 0px;
+        background: #fff !important;
+        padding: 0px;
+        .tab-item{
+          &[aria-selected="true"]{
+            span{
+              color: #2980b9 !important;
+            }
+          }
+        }
+        > div > div > div{
+          display: inherit !important;
+        }
+        > div > div > div > span:last-child{
+          background: #2980b9 !important;
+          height: 2px !important;
+          border-radius: 0px !important;
+        }
+      }
+    }
+    .user-likes{
+      ul{
+        li{
+          display: flex;
+          align-items: center;
+          padding: 10px;
+          position: relative;
+          .avatar{
+            border: none;
+            width: 35px;
+            height: 35px;
+          }
+          img{
+            position: absolute;
+            left: 30px;
+            bottom: 5px;
+          }
+          span{
+            margin-left: 15px;
+            font-family: Roboto-Medium;
+          }
+        }
+      }
+    }
+  }
+}

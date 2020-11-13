@@ -303,6 +303,8 @@ class Index extends React.Component {
       homeworks,
       reviewers
     } = this.state
+
+    console.log("homeworks", homeworks)
     return (
       <div className="exercise-item-page" >
         <StickyContainer className="container">
@@ -400,7 +402,7 @@ class Index extends React.Component {
                         homeworks && !homeworks.some(item => item.STATUS === 1) && <Dropzone onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
                           {({ getRootProps, getInputProps }) => (
                             <div {...getRootProps()} className="box-upload-file" id="upload-homework-bt">
-                              <input {...getInputProps()} accept={exercises.EXERCISE_TYPE_FK == 1 ? "file/*" : "video/*"} />
+                              <input {...getInputProps()} accept={item.EXERCISE_TYPE_FK == 3 ? "file/*" : "video/*"} />
                               {
                                 fileSelected
                                   ? <div className="file-selected">
@@ -414,7 +416,7 @@ class Index extends React.Component {
                                   </div>
                                   : <div className="bt-upload-file">
                                     <img src={VIDEO1} />
-                                    <span>{exercises.EXERCISE_TYPE_FK == 1 ? "Tải file" : "Tải lên video"}</span>
+                                    <span>{item.EXERCISE_TYPE_FK == 3 ? "Tải file" : "Tải lên video"}</span>
                                   </div>
                               }
                             </div>
@@ -451,38 +453,46 @@ class Index extends React.Component {
                             </div>
                           </div>
                           <div className="task-content">
-                            <Player
-                              ref={this.video[index + 1]}
-                              src={item.LINK_VIDEO}
-                              playsInline={true}
-                              key={index}
-                              className={"custome-video-layout" + (playingIndex == index + 1 ? " active" : " inactive")}
-                            >
-                              <ControlBar autoHide={true} >
-                                <div className={"custom-bt-control-bar"}>
-                                  {
-                                    playingIndex == index + 1 ? <IconButton onClick={() => this.handleChangeCurrentTime(-10, this.video[index + 1])}><Replay10Icon /></IconButton> : ""
-                                  }
-                                  <IconButton onClick={() => playingIndex == index + 1 ? this.handlePauseVideo(this.video[index + 1], index + 1) : this.handlePlayVideo(this.video[index + 1], index + 1)}>
-                                    {
-                                      playingIndex == index + 1 ? <PauseIcon /> : <PlayArrowIcon />
-                                    }
-                                  </IconButton>
-                                  {
-                                    playingIndex == index + 1 ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video[index + 1])}><Forward10Icon /></IconButton> : ""
-                                  }
-                                </div>
-                                <div className="fullscreen-overlay" onClick={() => {
-                                  this.handlePauseVideo(this.video[index + 1], index + 1)
-                                  this.props.setMediaToViewer([{ name: item.LINK_VIDEO }])
-                                  this.props.toggleMediaViewerDrawer(true, {
-                                    showInfo: false,
-                                    activeIndex: 0,
-                                    isvideo: true
-                                  })
-                                }}></div>
-                              </ControlBar>
-                            </Player>
+                            {
+                              item.EXERCISE_TYPE_FK == 3 ? <div className="homework-text">
+                                <a href={item.LINK_VIDEO} target="blank">
+                                  <img src={VIDEO1} />
+                                  <span>{item.LINK_VIDEO.split("/").slice(0).pop()}</span>
+                                </a>
+                              </div>
+                                : <Player
+                                  ref={this.video[index + 1]}
+                                  src={item.LINK_VIDEO}
+                                  playsInline={true}
+                                  key={index}
+                                  className={"custome-video-layout" + (playingIndex == index + 1 ? " active" : " inactive")}
+                                >
+                                  <ControlBar autoHide={true} >
+                                    <div className={"custom-bt-control-bar"}>
+                                      {
+                                        playingIndex == index + 1 ? <IconButton onClick={() => this.handleChangeCurrentTime(-10, this.video[index + 1])}><Replay10Icon /></IconButton> : ""
+                                      }
+                                      <IconButton onClick={() => playingIndex == index + 1 ? this.handlePauseVideo(this.video[index + 1], index + 1) : this.handlePlayVideo(this.video[index + 1], index + 1)}>
+                                        {
+                                          playingIndex == index + 1 ? <PauseIcon /> : <PlayArrowIcon />
+                                        }
+                                      </IconButton>
+                                      {
+                                        playingIndex == index + 1 ? <IconButton onClick={() => this.handleChangeCurrentTime(10, this.video[index + 1])}><Forward10Icon /></IconButton> : ""
+                                      }
+                                    </div>
+                                    <div className="fullscreen-overlay" onClick={() => {
+                                      this.handlePauseVideo(this.video[index + 1], index + 1)
+                                      this.props.setMediaToViewer([{ name: item.LINK_VIDEO }])
+                                      this.props.toggleMediaViewerDrawer(true, {
+                                        showInfo: false,
+                                        activeIndex: 0,
+                                        isvideo: true
+                                      })
+                                    }}></div>
+                                  </ControlBar>
+                                </Player>
+                            }
                           </div>
                           <div className="assess">
                             <span>Được đánh giá bởi</span>

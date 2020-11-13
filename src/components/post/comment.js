@@ -75,8 +75,8 @@ import Dropzone from 'react-dropzone'
 import CustomMenu from '../common/custom-menu'
 import Loader from '../common/loader'
 import $ from 'jquery'
-import ShowMoreText from 'react-show-more-text';
 import PostContent from './post-content'
+import LikeReward from './like-reward'
 
 const maxCols = 6
 const like1 = require('../../assets/icon/like1@1x.png')
@@ -516,7 +516,7 @@ class Index extends React.Component {
                                         data.kindpost == 2 ? <span className="mesage">{data.titlepost.replace("{username}", " ")}</span> : ""
                                     }
                                     {
-                                        data.kindpost == 1 && data.newsFeedShare ? <span className="mesage"> đã chia sẽ một bài viết</span> : ""
+                                        data.kindpost == 1 && data.newsFeedShareRoot ? <span className="mesage"> đã chia sẽ một bài viết</span> : ""
                                     }
                                     {
                                         data.usersTag.length > 0 ? <span className="mesage">
@@ -696,10 +696,10 @@ class Index extends React.Component {
                                     </GridList> : ""
                                 } */}
                                     {
-                                        data.newsFeedShare ? <div className="post-shared" onClick={() => this.setState({ currentPost: data.newsFeedShare, showCommentDrawer: true })}>
+                                        data.newsFeedShareRoot ? <div className="post-shared" onClick={() => this.setState({ currentPost: data.newsFeedShareRoot, showCommentDrawer: true })}>
                                             <div>
                                                 {
-                                                    data.newsFeedShare && <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
+                                                    data.newsFeedShareRoot && <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
 
                                                         <CardHeader
                                                             className="card-header"
@@ -709,56 +709,56 @@ class Index extends React.Component {
                                                                 </Avatar>
                                                             }
                                                             title={<span className="poster-name">
-                                                                <span className="name">{data.newsFeedShare.nameuserpost}</span>
+                                                                <span className="name">{data.newsFeedShareRoot.nameuserpost}</span>
                                                                 {
-                                                                    data.newsFeedShare.kindpost == 4 ? <span>{data.newsFeedShare.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
+                                                                    data.newsFeedShareRoot.kindpost == 4 ? <span>{data.newsFeedShareRoot.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
                                                                 }
                                                                 {
-                                                                    data.newsFeedShare.kindpost == 3 ? <span>{data.newsFeedShare.titlepost.replace("{username}", " ")}</span> : ""
+                                                                    data.newsFeedShareRoot.kindpost == 3 ? <span>{data.newsFeedShareRoot.titlepost.replace("{username}", " ")}</span> : ""
                                                                 }
                                                                 {
-                                                                    data.newsFeedShare.kindpost == 2 ? <span>{data.newsFeedShare.titlepost.replace("{username}", " ")}</span> : ""
+                                                                    data.newsFeedShareRoot.kindpost == 2 ? <span>{data.newsFeedShareRoot.titlepost.replace("{username}", " ")}</span> : ""
                                                                 }
                                                             </span>}
                                                             subheader={<div className="poster-subtitle">
                                                                 <div>
-                                                                    <img src={PrivacyOptions.find(privacy => privacy.code == data.newsFeedShare.postforid).icon1} />
+                                                                    <img src={PrivacyOptions.find(privacy => privacy.code == data.newsFeedShareRoot.postforid).icon1} />
                                                                     <FiberManualRecordIcon />
-                                                                    <span>{fromNow(moment(data.newsFeedShare.createdate), moment(new Date))}</span>
+                                                                    <span>{fromNow(moment(data.newsFeedShareRoot.createdate), moment(new Date))}</span>
                                                                 </div>
                                                                 <div>
                                                                     <img src={Group} />
                                                                     <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
-                                                                    <span><u>{data.newsFeedShare.groupnamepost}</u></span>
+                                                                    <span><u>{data.newsFeedShareRoot.groupnamepost}</u></span>
                                                                 </div>
                                                             </div>}
                                                         />
                                                         {
-                                                            data.newsFeedShare.kindpost == 4 ? <div className="album-name">
-                                                                <span>Album <span>{data.newsFeedShare.albumname}</span></span>
+                                                            data.newsFeedShareRoot.kindpost == 4 ? <div className="album-name">
+                                                                <span>Album <span>{data.newsFeedShareRoot.albumname}</span></span>
                                                             </div> : ""
                                                         }
                                                         {
-                                                            data.newsFeedShare.nfcontent != "" ? <div
+                                                            data.newsFeedShareRoot.nfcontent != "" ? <div
                                                                 className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                                                 style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                                                <PostContent content={data.newsFeedShare} />
+                                                                <PostContent content={data.newsFeedShareRoot} />
                                                             </div> : ""
                                                         }
                                                         <CardContent className="card-content">
                                                             <div className="media-grid">
                                                                 {
                                                                     daskMode ? "" : (
-                                                                        data.newsFeedShare.mediaPlays.length > 1
+                                                                        data.newsFeedShareRoot.mediaPlays.length > 1
                                                                             ? <GridList cols={maxCols} >
-                                                                                {data.newsFeedShare.mediaPlays.slice(0, 5).map((media, index) => (
+                                                                                {data.newsFeedShareRoot.mediaPlays.slice(0, 5).map((media, index) => (
                                                                                     <GridListTile
                                                                                         className={media.typeobject == 2 ? "video" : "image"}
                                                                                         style={{
-                                                                                            height: this.handleCellHeightCal(index, data.newsFeedShare.mediaPlays.slice(0, 5).length),
+                                                                                            height: this.handleCellHeightCal(index, data.newsFeedShareRoot.mediaPlays.slice(0, 5).length),
                                                                                         }}
                                                                                         key={media.name}
-                                                                                        cols={this.handleColumnCal(index, data.newsFeedShare.mediaPlays.slice(0, 5).length)}
+                                                                                        cols={this.handleColumnCal(index, data.newsFeedShareRoot.mediaPlays.slice(0, 5).length)}
                                                                                     >
                                                                                         {
                                                                                             media.typeobject == 2
@@ -789,15 +789,15 @@ class Index extends React.Component {
                                                                                                 : <img src={media.name} alt={media.name} onClick={() => this.setState({ showPostedDetail: true })} />
                                                                                         }
                                                                                         {
-                                                                                            data.newsFeedShare.mediaPlays.length > 5 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
-                                                                                                <span>+{data.newsFeedShare.mediaPlays.length - 5}</span>
+                                                                                            data.newsFeedShareRoot.mediaPlays.length > 5 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
+                                                                                                <span>+{data.newsFeedShareRoot.mediaPlays.length - 5}</span>
                                                                                             </div> : ""
                                                                                         }
                                                                                     </GridListTile>
                                                                                 ))}
                                                                             </GridList>
                                                                             : <GridList cols={1}>
-                                                                                {data.newsFeedShare.mediaPlays.map((media, index) => (
+                                                                                {data.newsFeedShareRoot.mediaPlays.map((media, index) => (
                                                                                     <GridListTile className={media.typeobject == 2 ? "video" : "image"} style={{ height: "auto" }} key={media.name} cols={1} >
                                                                                         {
                                                                                             media.typeobject == 2
@@ -837,9 +837,9 @@ class Index extends React.Component {
                                                                                                     }} />
                                                                                                 </div> :
                                                                                                 <img src={media.name} alt={media.name} style={{ width: "100%", height: "auto" }} onClick={() => {
-                                                                                                    this.props.setMediaToViewer(data.newsFeedShare.mediaPlays)
+                                                                                                    this.props.setMediaToViewer(data.newsFeedShareRoot.mediaPlays)
                                                                                                     this.props.toggleMediaViewerDrawer(true, {
-                                                                                                        actions: data.newsFeedShare.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
+                                                                                                        actions: data.newsFeedShareRoot.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
                                                                                                         showInfo: true,
                                                                                                         activeIndex: index
                                                                                                     })
@@ -852,8 +852,8 @@ class Index extends React.Component {
                                                                 }
                                                             </div>
                                                             {
-                                                                data.newsFeedShare.numlike > 0 || data.newsFeedShare.numcomment > 0 ? <div className="react-reward">
-                                                                    <span>{data.newsFeedShare.numlike + data.newsFeedShare.numcomment} lượt xem</span>
+                                                                data.newsFeedShareRoot.numlike > 0 || data.newsFeedShareRoot.numcomment > 0 ? <div className="react-reward">
+                                                                    <span>{data.newsFeedShareRoot.numlike + data.newsFeedShareRoot.numcomment} lượt xem</span>
                                                                 </div> : ""
                                                             }
                                                         </CardContent>
@@ -866,7 +866,7 @@ class Index extends React.Component {
                                 {
                                     data.numlike > 0 || data.numcomment > 0 ? <div className="react-reward">
                                         {
-                                            data.numlike > 0 ? <span className="like">
+                                            data.numlike > 0 ? <span className="like" onClick={() => this.setState({ showLikeRewardDrawer: true })}>
 
                                                 {
                                                     data.iconNumbers.filter(item => item.icon != data.iconlike).map((item, index) => item.icon > 0 && item.num > 0 && <img key={index} src={ReactSelectorIcon[item.icon].icon}></img>)
@@ -975,6 +975,9 @@ class Index extends React.Component {
                 }
                 {
                     renderConfirmDrawer(this)
+                }
+                {
+                    renderLikeRewardDrawer(this)
                 }
             </div >
         );
@@ -1109,7 +1112,6 @@ const renderDetailPosted = (component) => {
 
     let PrivacyOptions = objToArray(Privacies)
 
-
     console.log("data", data)
 
     return (
@@ -1192,7 +1194,7 @@ const renderDetailPosted = (component) => {
                                 {
                                     data.numlike > 0 || data.numcomment > 0 ? <div className="react-reward">
                                         {
-                                            data.numlike > 0 ? <span className="like">
+                                            data.numlike > 0 ? <span className="like" onClick={() => component.setState({ showLikeRewardDrawer: true })}>
                                                 {
                                                     data.iconNumbers.filter(item => item.icon != data.iconlike).map((item, index) => item.icon > 0 && item.num > 0 && <img key={index} src={ReactSelectorIcon[item.icon].icon}></img>)
                                                 }
@@ -1227,10 +1229,10 @@ const renderDetailPosted = (component) => {
                     }
                     {
 
-                        data ? <div className="list-image">
+                        data.newsFeedShareRoot ? <div className="list-image">
                             <ul>
                                 {
-                                    data.mediaPlays.map((media, index) => <li key={index}>
+                                    data.newsFeedShareRoot.mediaPlays.map((media, index) => <li key={index}>
                                         <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
                                             <CardContent className="card-content">
                                                 {
@@ -1261,7 +1263,7 @@ const renderDetailPosted = (component) => {
                                                 {
                                                     media.numlike > 0 || media.numcomment > 0 ? <div className="react-reward">
                                                         {
-                                                            media.numlike > 0 ? <span className="like">
+                                                            media.numlike > 0 ? <span className="like" onClick={() => component.setState({ showLikeRewardDrawer: true, currentImage: media })}>
                                                                 {
                                                                     media.iconNumbers.filter(item => item.icon != media.iconlike).map((item, index) => item.icon > 0 && item.num > 0 && <img key={index} src={ReactSelectorIcon[item.icon].icon}></img>)
                                                                 }
@@ -1328,3 +1330,22 @@ const renderConfirmDrawer = (component) => {
     )
 }
 
+const renderLikeRewardDrawer = (component) => {
+    let {
+        showLikeRewardDrawer,
+        currentImage
+    } = component.state;
+    let {
+        data
+    } = component.props
+    return (
+        <Drawer
+            anchor="bottom"
+            className="like-reward-drawed"
+            open={showLikeRewardDrawer}
+            onClose={() => component.setState({ showLikeRewardDrawer: false })}
+        >
+            <LikeReward data={data} image={currentImage} history={component.props.history} onClose={() => component.setState({ showLikeRewardDrawer: false })} />
+        </Drawer>
+    );
+};

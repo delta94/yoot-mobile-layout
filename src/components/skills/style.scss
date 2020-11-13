@@ -463,6 +463,21 @@
                         width: 100% ;
                         
                     }
+                    .homework-text{
+                        a{
+                            display: flex;
+                            align-items: center;
+                            text-decoration: none;
+                            color: #333;
+                            img{
+                                width: 35px;
+                                margin-right: 10px;
+                            }
+                            span{
+                                font-family: Roboto-Medium;
+                            }
+                        }
+                    }
                 }
                 .assess{
                     text-align: center;

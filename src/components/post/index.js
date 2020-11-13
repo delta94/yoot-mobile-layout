@@ -102,6 +102,7 @@ import CustomMenu from "../common/custom-menu";
 import { APP_SETTING } from "../../constants/localStorageKeys";
 import ShowMoreText from "react-show-more-text";
 import PostContent from './post-content'
+import LikeReward from './like-reward'
 
 
 const maxCols = 6;
@@ -880,14 +881,14 @@ class Index extends React.Component {
     })
   }
 
-  handlePostAuth(postforid, foloweds,statuspost) {
-    if(statuspost === 3){
+  handlePostAuth(postforid, foloweds, statuspost) {
+    if (statuspost === 3) {
       return false
     }
     else if (postforid === 4) {
       return false
     }
-    else if (postforid === 3 && foloweds.length <=0){
+    else if (postforid === 3 && foloweds.length <= 0) {
       return false
     }
     else if (postforid === 3 && foloweds.some(item => item.status !== 10)) {
@@ -908,7 +909,7 @@ class Index extends React.Component {
       isPlaying,
     } = this.state;
     let { profile, daskMode, data, containerRef } = this.props;
-    let {foloweds} = this.props.profile
+    let { foloweds } = this.props.profile
 
     let PrivacyOptions = objToArray(Privacies);
     let GroupPrivacyOptions = objToArray(GroupPrivacies);
@@ -924,9 +925,9 @@ class Index extends React.Component {
     if (data.postforid == 1) data.postforid = 2
 
 
-    if (data.newsFeedShare) {
-      data.newsFeedShare.mediaPlays.map(item => {
-        item.postid = data.newsFeedShare.nfid
+    if (data.newsFeedShareRoot) {
+      data.newsFeedShareRoot.mediaPlays.map(item => {
+        item.postid = data.newsFeedShareRoot.nfid
       })
     }
     return data && (!data.isPedding || data.isPedding === false) ? (
@@ -1127,7 +1128,7 @@ class Index extends React.Component {
                   ) : (
                       ""
                     )}
-                  {data.kindpost == 1 && data.newsFeedShare ? (
+                  {data.kindpost == 1 && data.newsFeedShareRoot ? (
                     <span className="mesage"> đã chia sẻ một bài viết</span>
                   ) : (
                       ""
@@ -1401,26 +1402,26 @@ class Index extends React.Component {
                       ))}
                     </GridList>
                   )}
-                {data.newsFeedShare ? (
+                {data.newsFeedShareRoot ? (
                   <div className="post-shared">
                     <div>
-                      {data.newsFeedShare && (
+                      {data.newsFeedShareRoot && (
                         <Card
                           className={
                             "post-item " + (daskMode ? "dask-mode" : "")
                           }
                         >
-                          {/* {data.newsFeedShare.kindpost == 4 ? (
+                          {/* {data.newsFeedShareRoot.kindpost == 4 ? (
                             <div className="album-name">
                               <span>
                                 Album{" "}
-                                <span>{data.newsFeedShare.albumname}</span>
+                                <span>{data.newsFeedShareRoot.albumname}</span>
                               </span>
                             </div>
                           ) : (
                               ""
                             )} */}
-                          {foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds,data.newsFeedShare.statuspost)
+                          {foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost)
                             ? <CardHeader
                               className="card-header"
                               avatar={
@@ -1428,7 +1429,7 @@ class Index extends React.Component {
                                   <div
                                     className="img"
                                     style={{
-                                      background: `url("${data.newsFeedShare.avataruserpost}")`,
+                                      background: `url("${data.newsFeedShareRoot.avataruserpost}")`,
                                     }}
                                   />
                                 </Avatar>
@@ -1436,21 +1437,21 @@ class Index extends React.Component {
                               title={
                                 <span className="poster-name">
                                   <span className="name" onClick={() => {
-                                    if (data.newsFeedShare.iduserpost == profile.id) {
+                                    if (data.newsFeedShareRoot.iduserpost == profile.id) {
                                       this.props.history.push("/profile");
                                     } else {
                                       this.props.setCurrenUserDetail({
                                         ...data,
-                                        friendid: data.newsFeedShare.iduserpost,
+                                        friendid: data.newsFeedShareRoot.iduserpost,
                                       });
                                       this.props.toggleUserPageDrawer(true);
                                     }
                                   }}>
-                                    {data.newsFeedShare.nameuserpost}
+                                    {data.newsFeedShareRoot.nameuserpost}
                                   </span>
-                                  {data.newsFeedShare.kindpost == 4 ? (
+                                  {data.newsFeedShareRoot.kindpost == 4 ? (
                                     // <span>
-                                    //   {data.newsFeedShare.titlepost
+                                    //   {data.newsFeedShareRoot.titlepost
                                     //     .replace("{usernamesend}", " ")
                                     //     .replace("{namealbum}", data.albumname)}
                                     // </span>
@@ -1458,9 +1459,9 @@ class Index extends React.Component {
                                   ) : (
                                       ""
                                     )}
-                                  {data.newsFeedShare.kindpost == 3 ? (
+                                  {data.newsFeedShareRoot.kindpost == 3 ? (
                                     <span>
-                                      {data.newsFeedShare.titlepost.replace(
+                                      {data.newsFeedShareRoot.titlepost.replace(
                                         "{username}",
                                         " "
                                       )}
@@ -1468,9 +1469,9 @@ class Index extends React.Component {
                                   ) : (
                                       ""
                                     )}
-                                  {data.newsFeedShare.kindpost == 2 ? (
+                                  {data.newsFeedShareRoot.kindpost == 2 ? (
                                     <span>
-                                      {data.newsFeedShare.titlepost.replace(
+                                      {data.newsFeedShareRoot.titlepost.replace(
                                         "{username}",
                                         " "
                                       )}
@@ -1487,24 +1488,24 @@ class Index extends React.Component {
                                       PrivacyOptions.find(
                                         (privacy) =>
                                           privacy.code ==
-                                          data.newsFeedShare.postforid
+                                          data.newsFeedShareRoot.postforid
                                       ) ? <img
                                           src={
                                             PrivacyOptions.find(
                                               (privacy) =>
                                                 privacy.code ==
-                                                data.newsFeedShare.postforid
+                                                data.newsFeedShareRoot.postforid
                                             ).icon1
                                           }
                                         /> : ""
                                     }
                                     <FiberManualRecordIcon />
                                     {fromNow(
-                                      moment(data.newsFeedShare.createdate),
+                                      moment(data.newsFeedShareRoot.createdate),
                                       moment(new Date())
                                     )}
                                   </div>
-                                  {data.newsFeedShare.groupidpost > 0 && (
+                                  {data.newsFeedShareRoot.groupidpost > 0 && (
                                     <div>
                                       <img src={Group} />
                                       <FiberManualRecordIcon
@@ -1513,10 +1514,10 @@ class Index extends React.Component {
                                       <span>
                                         <u onClick={() => this.setState({ showGroupForPostDrawer: false }, () => {
                                           // this.props.setCurrentGroup({ groupid: data.groupidpost })
-                                          this.handleGetGroupDetail(data.newsFeedShare.groupidpost)
+                                          this.handleGetGroupDetail(data.newsFeedShareRoot.groupidpost)
                                           this.props.toggleGroupDetailDrawer(true)
 
-                                        })}>{data.newsFeedShare.groupnamepost}</u>
+                                        })}>{data.newsFeedShareRoot.groupnamepost}</u>
                                       </span>
                                     </div>
                                   )}
@@ -1530,7 +1531,7 @@ class Index extends React.Component {
                             />
                           }
 
-                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds,data.newsFeedShare.statuspost)) && data.newsFeedShare.nfcontent !== "" && (
+                          {(foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost)) && data.newsFeedShareRoot.nfcontent !== "" && (
                             <div
                               className={
                                 "post-content" +
@@ -1547,14 +1548,14 @@ class Index extends React.Component {
                                   ")",
                               }}
                             >
-                              <PostContent content={data.newsFeedShare} />
+                              <PostContent content={data.newsFeedShareRoot} />
                             </div>
                           )}
-                          {(foloweds && this.handlePostAuth(data.newsFeedShare.postforid, foloweds,data.newsFeedShare.statuspost)) && <CardContent className="card-content">
+                          {(foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost)) && <CardContent className="card-content">
                             <div className="media-grid">
-                              {data.newsFeedShare.mediaPlays.length > 1 ? (
+                              {data.newsFeedShareRoot.mediaPlays.length > 1 ? (
                                 <GridList cols={maxCols}>
-                                  {data.newsFeedShare.mediaPlays
+                                  {data.newsFeedShareRoot.mediaPlays
                                     .slice(0, 5)
                                     .map((media, index) => (
                                       <GridListTile
@@ -1566,7 +1567,7 @@ class Index extends React.Component {
                                         style={{
                                           height: this.handleCellHeightCal(
                                             index,
-                                            data.newsFeedShare.mediaPlays.slice(
+                                            data.newsFeedShareRoot.mediaPlays.slice(
                                               0,
                                               5
                                             ).length
@@ -1575,7 +1576,7 @@ class Index extends React.Component {
                                         key={media.name}
                                         cols={this.handleColumnCal(
                                           index,
-                                          data.newsFeedShare.mediaPlays.slice(
+                                          data.newsFeedShareRoot.mediaPlays.slice(
                                             0,
                                             5
                                           ).length
@@ -1587,7 +1588,7 @@ class Index extends React.Component {
                                               onClick={() => {
                                                 this.setState({
                                                   showPostedDetail: true,
-                                                  sharedPost: data.newsFeedShare
+                                                  sharedPost: data.newsFeedShareRoot
                                                 })
                                                 this.handlePauseVideo()
                                               }
@@ -1663,7 +1664,7 @@ class Index extends React.Component {
                                               onClick={() => {
                                                 this.setState({
                                                   showPostedDetail: true,
-                                                  sharedPost: data.newsFeedShare
+                                                  sharedPost: data.newsFeedShareRoot
                                                 })
                                                 this.handlePauseVideo()
                                               }
@@ -1678,7 +1679,7 @@ class Index extends React.Component {
                                               onClick={() => {
                                                 this.setState({
                                                   showPostedDetail: true,
-                                                  sharedPost: data.newsFeedShare
+                                                  sharedPost: data.newsFeedShareRoot
                                                 })
                                                 this.handlePauseVideo()
                                               }
@@ -1686,14 +1687,14 @@ class Index extends React.Component {
                                               }
                                             />
                                           )}
-                                        {data.newsFeedShare.mediaPlays.length >
+                                        {data.newsFeedShareRoot.mediaPlays.length >
                                           5 && index == 4 ? (
                                             <div
                                               className="grid-overlay"
                                               onClick={() => {
                                                 this.setState({
                                                   showPostedDetail: true,
-                                                  sharedPost: data.newsFeedShare
+                                                  sharedPost: data.newsFeedShareRoot
                                                 })
                                                 this.handlePauseVideo()
                                               }
@@ -1702,7 +1703,7 @@ class Index extends React.Component {
                                             >
                                               <span>
                                                 +
-                                              {data.newsFeedShare.mediaPlays
+                                              {data.newsFeedShareRoot.mediaPlays
                                                   .length - 5}
                                               </span>
                                             </div>
@@ -1714,7 +1715,7 @@ class Index extends React.Component {
                                 </GridList>
                               ) : (
                                   <GridList cols={1}>
-                                    {data.newsFeedShare.mediaPlays.map(
+                                    {data.newsFeedShareRoot.mediaPlays.map(
                                       (media, index) => (
                                         <GridListTile
                                           className={
@@ -1824,13 +1825,13 @@ class Index extends React.Component {
                                                 }}
                                                 onClick={() => {
                                                   this.props.setMediaToViewer(
-                                                    data.newsFeedShare.mediaPlays
+                                                    data.newsFeedShareRoot.mediaPlays
                                                   );
                                                   this.props.toggleMediaViewerDrawer(
                                                     true,
                                                     {
                                                       actions:
-                                                        data.newsFeedShare
+                                                        data.newsFeedShareRoot
                                                           .iduserpost == profile.id
                                                           ? mediaRootActions(this)
                                                           : mediaGuestActions(this),
@@ -1848,11 +1849,11 @@ class Index extends React.Component {
                                 )}
                             </div>
                             {
-                              // data.newsFeedShare.numlike > 0 ||
-                              //   data.newsFeedShare.numcomment > 0 ||
-                              data.newsFeedShare.nummedia > 0 && data.newsFeedShare.mediaPlays[0].numview > 0 ? (
+                              // data.newsFeedShareRoot.numlike > 0 ||
+                              //   data.newsFeedShareRoot.numcomment > 0 ||
+                              data.newsFeedShareRoot.nummedia > 0 && data.newsFeedShareRoot.mediaPlays[0].numview > 0 ? (
                                 <div className="react-reward">
-                                  <span>{data.newsFeedShare.mediaPlays[0].numview}{" "}lượt xem</span>
+                                  <span>{data.newsFeedShareRoot.mediaPlays[0].numview}{" "}lượt xem</span>
                                 </div>
                               ) : (
                                   ""
@@ -1873,7 +1874,7 @@ class Index extends React.Component {
                 ? (
                   <div className="react-reward">
                     {data.numlike > 0 ? (
-                      <span className="like">
+                      <span className="like" onClick={() => this.setState({ showLikeRewardDrawer: true })}>
                         {data.iconNumbers
                           .filter((item) => item.icon != data.iconlike)
                           .map(
@@ -2022,6 +2023,7 @@ class Index extends React.Component {
             {renderTagFriendForShareDrawer(this)}
             {renderGroupForShareDrawer(this)}
             {renderReportGroupDrawer(this)}
+            {renderLikeRewardDrawer(this)}
           </Card>
         </ScrollTrigger>
       </div >
@@ -2161,12 +2163,13 @@ const renderCommentDrawer = (component) => {
             data={currentPostForComment}
             userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
             onClose={() => component.props.toggleCommentDrawer(false, null)}
+            history={component.props.history}
           /> : ""
         }
       </Drawer>
     )
   else {
-    if (currentPostForComment && data && data.newsFeedShare && currentPostForComment.nfid == data.newsFeedShare.nfid)
+    if (currentPostForComment && data && data.newsFeedShareRoot && currentPostForComment.nfid == data.newsFeedShareRoot.nfid)
       return (
         <Drawer
           anchor="bottom"
@@ -2179,6 +2182,7 @@ const renderCommentDrawer = (component) => {
               data={currentPostForComment}
               userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
               onClose={() => component.props.toggleCommentDrawer(false, null)}
+              history={component.props.history}
             /> : ""
           }
         </Drawer>
@@ -2208,7 +2212,7 @@ const renderCommentImageDrawer = (component) => {
       </Drawer>
     )
   else {
-    if (currentPostForComment && data && data.newsFeedShare && currentPostForComment.nfid == data.newsFeedShare.nfid)
+    if (currentPostForComment && data && data.newsFeedShareRoot && currentPostForComment.nfid == data.newsFeedShareRoot.nfid)
       return (
         <Drawer
           anchor="bottom"
@@ -2672,6 +2676,8 @@ const renderDetailPosted = (component) => {
 
   let PrivacyOptions = objToArray(Privacies);
 
+  console.log("data", data)
+
   return (
     <Drawer
       anchor="bottom"
@@ -2858,7 +2864,7 @@ const renderDetailPosted = (component) => {
                 {data.numlike > 0 || data.numcomment > 0 ? (
                   <div className="react-reward">
                     {data.numlike > 0 ? (
-                      <span className="like">
+                      <span className="like" onClick={() => component.setState({ showLikeRewardDrawer: true })}>
                         {data.iconNumbers
                           .filter((item) => item.icon != data.iconlike)
                           .map(
@@ -2989,7 +2995,7 @@ const renderDetailPosted = (component) => {
                       {media.numlike > 0 || media.numcomment > 0 ? (
                         <div className="react-reward">
                           {media.numlike > 0 ? (
-                            <span className="like">
+                            <span className="like" onClick={() => component.setState({ showLikeRewardDrawer: true, currentImage: media })}>
                               {media.iconNumbers
                                 .filter((item) => item.icon != media.iconlike)
                                 .map(
@@ -3701,6 +3707,26 @@ const renderTagFriendForShareDrawer = (component) => {
             )}
         </div>
       </div>
+    </Drawer>
+  );
+};
+
+const renderLikeRewardDrawer = (component) => {
+  let {
+    showLikeRewardDrawer,
+    currentImage
+  } = component.state;
+  let {
+    data
+  } = component.props
+  return (
+    <Drawer
+      anchor="bottom"
+      className="like-reward-drawed"
+      open={showLikeRewardDrawer}
+      onClose={() => component.setState({ showLikeRewardDrawer: false })}
+    >
+      <LikeReward data={data} image={currentImage} history={component.props.history} onClose={() => component.setState({ showLikeRewardDrawer: false, currentImage: null })} />
     </Drawer>
   );
 };

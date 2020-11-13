@@ -81,6 +81,7 @@ import Post from "../post";
 import { result } from "lodash";
 import ClickTooltip from "../common/click-tooltip";
 import { APP_SETTING } from "../../constants/localStorageKeys";
+import FolowReward from './following'
 
 const noti = require("../../assets/icon/NotiBw@1x.png");
 const profileBw = require("../../assets/icon/Profile.png");
@@ -1283,6 +1284,7 @@ class Index extends React.Component {
         {renderUserDetailDrawer(this)}
         {renderAutoPlaySettingDrawer(this)}
         {renderSettingDrawer(this)}
+        {renderFolowRewardDrawer(this)}
         <div style={{ height: "50px", background: "#f0f0f0", zIndex: 0 }}>
           {isLoadMore ? (
             <Loader
@@ -2670,6 +2672,7 @@ const renderUserDetailDrawer = (component) => {
                   }
                   {...a11yProps(0)}
                   className="tab-item"
+                  onClick={() => userDetailFolowTabIndex == 0 ? component.setState({ showFolowRewardDrawer: true }) : ""}
                 />
                 <Tab
                   label={
@@ -2677,6 +2680,7 @@ const renderUserDetailDrawer = (component) => {
                   }
                   {...a11yProps(1)}
                   className="tab-item"
+                  onClick={() => userDetailFolowTabIndex == 1 ? component.setState({ showFolowRewardDrawer: true }) : ""}
                 />
               </Tabs>
             </AppBar>
@@ -2695,7 +2699,7 @@ const renderUserDetailDrawer = (component) => {
                 <div className="folowed-list">
                   <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                     <span>Số lượng</span>
-                    <span className="red">{profile.foloweds ? profile.foloweds.length : 0}</span>
+                    <span className="red">{profile.folowedCount ? profile.folowedCount : 0}</span>
                   </div>
                   {profile.foloweds && profile.foloweds.length > 0 ? (
                     <ul>
@@ -2760,7 +2764,7 @@ const renderUserDetailDrawer = (component) => {
                 <div className="folowing-list">
                   <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                     <span>Số lượng</span>
-                    <span className="red">{profile.folowings ? profile.folowings.length : 0}</span>
+                    <span className="red">{profile.folowingCount ? profile.folowingCount : 0}</span>
                   </div>
                   {profile.folowings && profile.folowings.length > 0 ? (
                     <ul>
@@ -2927,6 +2931,30 @@ const renderUserDetailDrawer = (component) => {
     </Drawer>
   );
 };
+
+const renderFolowRewardDrawer = (component) => {
+  let {
+    profile
+  } = component.props
+  let {
+    showFolowRewardDrawer
+  } = component.state
+  return (
+    <Drawer
+      anchor="bottom"
+      className="drawer-detail"
+      open={showFolowRewardDrawer}
+      onClose={() => component.setState({ showFolowRewardDrawer: false })}
+    >
+      {profile ? (
+        <FolowReward userId={profile.id} onClose={() => component.setState({ showFolowRewardDrawer: false })} />
+      ) : (
+          ""
+        )}
+    </Drawer>
+  );
+}
+
 
 const renderSettingDrawer = (component) => {
   let {

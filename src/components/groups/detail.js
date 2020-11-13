@@ -665,8 +665,8 @@ class Index extends React.Component {
                     activeMenuIndex === 0 ? <div id="info-content-0">
                       <ShowMoreText
                         lines={5}
-                        more={<span><span>&#8811;</span> Rút gọn</span>}
-                        less={<span><span>&#8811;</span> Xem thêm</span>}
+                        more={<span><span>&#8811;</span> Xem thêm</span>}
+                        less={<span><span>&#8811;</span> Rút gọn</span>}
                         className='content-css'
                         anchorClass='toggle-button blued'
                         expanded={showMoreDescription}

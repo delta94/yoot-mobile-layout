@@ -11,6 +11,8 @@ export const UN_FOLLOW_FRIEND = "user@UN_FOLLOW_FRIEND"
 export const FOLLOW_FRIEND = "user@FOLLOW_FRIEND"
 export const UPDATE_CHANGE_FOLLOWED = "user@UPDATE_CHANGE_FOLLOWED"
 export const UPDATE_CHANGE_FOLLOWING = "user@UPDATE_CHANGE_FOLLOWING"
+export const GET_FOLOWED_ME_COUNT = "user@GET_FOLOWED_ME_COUNT"
+export const GET_ME_FOLOWING_COUNT = "user@GET_ME_FOLOWING_COUNT"
 
 export const unFollowFriend = (friendId) => ({
     type: UN_FOLLOW_FRIEND,
@@ -74,6 +76,14 @@ export const getFolowedMe = (currentpage) => {
                     payload: result.content.userInvites
                 })
             }
+            get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + queryParam, result => {
+                if (result.result == 1) {
+                    dispatch({
+                        type: GET_FOLOWED_ME_COUNT,
+                        payload: result.content.count
+                    })
+                }
+            })
         })
 
     }
@@ -96,6 +106,14 @@ export const getMeFolowing = (currentpage) => {
                     payload: result.content.userInvites
                 })
             }
+            get(SOCIAL_NET_WORK_API, "Friends/GetCountListFriends" + queryParam, result => {
+                if (result.result == 1) {
+                    dispatch({
+                        type: GET_ME_FOLOWING_COUNT,
+                        payload: result.content.count
+                    })
+                }
+            })
         })
 
     }

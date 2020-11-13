@@ -46,6 +46,7 @@ import Videos from "./videos";
 import Post from "../post";
 import $ from "jquery";
 import ClickTooltip from "../common/click-tooltip";
+import FolowReward from './following'
 
 const coin = require("../../assets/icon/Coins_Y.png");
 const address = require("../../assets/icon/address@1x.png");
@@ -580,20 +581,20 @@ class Index extends React.Component {
               </Avatar>
             </div>
           ) : (
-            <ContentLoader
-              speed={2}
-              width={200}
-              height={42}
-              viewBox="0 0 200 42"
-              backgroundColor="#f3f3f3"
-              foregroundColor="#ecebeb"
-              style={{ height: "100%" }}
-            >
-              <rect x="7" y="6" rx="4" ry="4" width="140" height="8" />
-              <rect x="47" y="21" rx="8" ry="8" width="100" height="16" />
-              <rect x="160" y="0" rx="100" ry="100" width="40" height="40" />
-            </ContentLoader>
-          )}
+              <ContentLoader
+                speed={2}
+                width={200}
+                height={42}
+                viewBox="0 0 200 42"
+                backgroundColor="#f3f3f3"
+                foregroundColor="#ecebeb"
+                style={{ height: "100%" }}
+              >
+                <rect x="7" y="6" rx="4" ry="4" width="140" height="8" />
+                <rect x="47" y="21" rx="8" ry="8" width="100" height="16" />
+                <rect x="160" y="0" rx="100" ry="100" width="40" height="40" />
+              </ContentLoader>
+            )}
         </div>
         <div className="filter"></div>
         <div
@@ -616,8 +617,8 @@ class Index extends React.Component {
                     <MoreHorizIcon />
                   </IconButton>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </div>
               <div className="user-avatar">
                 <div
@@ -674,16 +675,16 @@ class Index extends React.Component {
               {userDetail.statusfriend != 10 ? (
                 <div className="friend-actions">
                   {userDetail.statusfriend == 0 ||
-                  userDetail.statusfriend == 5 ? (
-                    <Button
-                      className="bt-submit"
-                      onClick={() => this.addFriend(userDetail.id)}
-                    >
-                      Kết bạn
-                    </Button>
-                  ) : (
-                    ""
-                  )}
+                    userDetail.statusfriend == 5 ? (
+                      <Button
+                        className="bt-submit"
+                        onClick={() => this.addFriend(userDetail.id)}
+                      >
+                        Kết bạn
+                      </Button>
+                    ) : (
+                      ""
+                    )}
                   {userDetail.statusfriend == 1 ? (
                     <Button
                       className="bt-submit"
@@ -692,8 +693,8 @@ class Index extends React.Component {
                       Huỷ
                     </Button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {userDetail.ismefollow == 0 ? (
                     <Button
                       className="bt-cancel"
@@ -702,8 +703,8 @@ class Index extends React.Component {
                       Theo dõi
                     </Button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {userDetail.ismefollow == 1 ? (
                     <Button
                       className="bt-cancel"
@@ -720,8 +721,8 @@ class Index extends React.Component {
                       Bỏ theo dõi
                     </Button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   <IconButton
                     className="bt-more"
                     style={{ background: "rgba(0,0,0,0.07)" }}
@@ -731,37 +732,37 @@ class Index extends React.Component {
                   </IconButton>
                 </div>
               ) : (
-                ""
-              )}
+                  ""
+                )}
 
               <div className="user-profile">
                 <ul>
                   {userDetail.userExperience &&
-                  userDetail.userExperience.length > 0 ? (
-                    <li>
-                      <img src={job} />
-                      <span className="title">
-                        Từng làm <b>{userDetail.userExperience[0].title}</b> tại{" "}
-                        <b>{userDetail.userExperience[0].companyname}</b>
-                      </span>
-                    </li>
-                  ) : (
-                    ""
-                  )}
+                    userDetail.userExperience.length > 0 ? (
+                      <li>
+                        <img src={job} />
+                        <span className="title">
+                          Từng làm <b>{userDetail.userExperience[0].title}</b> tại{" "}
+                          <b>{userDetail.userExperience[0].companyname}</b>
+                        </span>
+                      </li>
+                    ) : (
+                      ""
+                    )}
                   {userDetail.userStudyGraduation &&
-                  userDetail.userStudyGraduation.length > 0 ? (
-                    <li>
-                      <img src={education} />
-                      <span className="title">
-                        Từng học{" "}
-                        <b>{userDetail.userStudyGraduation[0].specialized}</b>{" "}
+                    userDetail.userStudyGraduation.length > 0 ? (
+                      <li>
+                        <img src={education} />
+                        <span className="title">
+                          Từng học{" "}
+                          <b>{userDetail.userStudyGraduation[0].specialized}</b>{" "}
                         tại{" "}
-                        <b>{userDetail.userStudyGraduation[0].schoolname}</b>
-                      </span>
-                    </li>
-                  ) : (
-                    ""
-                  )}
+                          <b>{userDetail.userStudyGraduation[0].schoolname}</b>
+                        </span>
+                      </li>
+                    ) : (
+                      ""
+                    )}
                   {/* BINH: add info address */}
                   {userDetail && userDetail.address && (
                     <li>
@@ -779,8 +780,8 @@ class Index extends React.Component {
                       </span>
                     </li>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {userDetail.gendertext ? (
                     <li>
                       <img src={sex} />
@@ -789,8 +790,8 @@ class Index extends React.Component {
                       </span>
                     </li>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </ul>
                 <span
                   className="view-detail-link"
@@ -831,8 +832,8 @@ class Index extends React.Component {
                             {item.numfriendwith} bạn chung
                           </span>
                         ) : (
-                          ""
-                        )}
+                            ""
+                          )}
                       </div>
                     ))}
                 </div>
@@ -874,8 +875,8 @@ class Index extends React.Component {
                     ))}
                   </ul>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </div>
 
               <Friends
@@ -888,6 +889,7 @@ class Index extends React.Component {
               {renderUserPageDrawer(this)}
               {renderConfirmDrawer(this)}
               {renderUserDetailDrawer(this)}
+              {renderFolowRewardDrawer(this)}
               <Medias
                 open={openMediaDrawer}
                 onClose={() => this.setState({ openMediaDrawer: false })}
@@ -900,8 +902,8 @@ class Index extends React.Component {
               />
             </div>
           ) : (
-            <Loader type={"small"} width={30} height={30} />
-          )}
+              <Loader type={"small"} width={30} height={30} />
+            )}
           {/* {
 
             posteds && posteds.length > 0 && posteds.map((post, index) =>
@@ -1028,15 +1030,15 @@ const renderUserMenuDrawer = (component) => {
             </Button>
           </li>
         ) : (
-          <li onClick={() => component.folowFriend(userDetail.id)}>
-            <Button>
-              <span>
-                <span>Theo dõi ( {userDetail.fullname} )</span>
-                <span>Nhìn thấy các hoạt động của nhau.</span>
-              </span>
-            </Button>
-          </li>
-        )}
+            <li onClick={() => component.folowFriend(userDetail.id)}>
+              <Button>
+                <span>
+                  <span>Theo dõi ( {userDetail.fullname} )</span>
+                  <span>Nhìn thấy các hoạt động của nhau.</span>
+                </span>
+              </Button>
+            </li>
+          )}
         <li>
           <Button
             onClick={() =>
@@ -1060,8 +1062,8 @@ const renderUserMenuDrawer = (component) => {
             <Button className="bt-submit">Xoá bạn</Button>
           </li>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </ul>
     </Drawer>
   );
@@ -1243,8 +1245,8 @@ const renderMediaDrawer = (component) => {
           </div>
         </div>
       ) : (
-        ""
-      )}
+          ""
+        )}
     </Drawer>
   );
 };
@@ -1334,11 +1336,13 @@ const renderUserDetailDrawer = (component) => {
                   label={"Người theo dõi "}
                   {...a11yProps(0)}
                   className="tab-item"
+                  onClick={() => userDetailFolowTabIndex == 0 ? component.setState({ showFolowRewardDrawer: true }) : ""}
                 />
                 <Tab
                   label={"Đang theo dõi "}
                   {...a11yProps(1)}
                   className="tab-item"
+                  onClick={() => userDetailFolowTabIndex == 1 ? component.setState({ showFolowRewardDrawer: true }) : ""}
                 />
               </Tabs>
             </AppBar>
@@ -1403,23 +1407,23 @@ const renderUserDetailDrawer = (component) => {
                               Theo dõi
                             </Button>
                           ) : (
-                            <Button
-                              onClick={() =>
-                                component.unFolowFriend(item.friendid)
-                              }
-                              style={{ background: "rgba(0,0,0,0.05)" }}
-                            >
-                              Đang Theo dõi
-                            </Button>
-                          )}
+                              <Button
+                                onClick={() =>
+                                  component.unFolowFriend(item.friendid)
+                                }
+                                style={{ background: "rgba(0,0,0,0.05)" }}
+                              >
+                                Đang Theo dõi
+                              </Button>
+                            )}
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <span className="list-empty-message">
-                      Chưa có ai theo dõi
-                    </span>
-                  )}
+                      <span className="list-empty-message">
+                        Chưa có ai theo dõi
+                      </span>
+                    )}
                 </div>
               </TabPanel>
               <TabPanel value={userDetailFolowTabIndex} index={1}>
@@ -1472,23 +1476,23 @@ const renderUserDetailDrawer = (component) => {
                               Theo dõi
                             </Button>
                           ) : (
-                            <Button
-                              onClick={() =>
-                                component.unFolowFriend(item.friendid)
-                              }
-                              style={{ background: "rgba(0,0,0,0.05)" }}
-                            >
-                              Đang Theo dõi
-                            </Button>
-                          )}
+                              <Button
+                                onClick={() =>
+                                  component.unFolowFriend(item.friendid)
+                                }
+                                style={{ background: "rgba(0,0,0,0.05)" }}
+                              >
+                                Đang Theo dõi
+                              </Button>
+                            )}
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <span className="list-empty-message">
-                      Chưa theo dõi bất kì ai
-                    </span>
-                  )}
+                      <span className="list-empty-message">
+                        Chưa theo dõi bất kì ai
+                      </span>
+                    )}
                 </div>
               </TabPanel>
             </SwipeableViews>
@@ -1513,32 +1517,32 @@ const renderUserDetailDrawer = (component) => {
                   <b>{userDetail.userStudyGraduation[0].schoolname}</b>
                 </span>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               {userDetail.userStudyGraduation[0] ? (
                 <span>
                   <b>Trình độ: </b>
                   {userDetail.userStudyGraduation[0].qualificationname}
                 </span>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               {userDetail.userStudyGraduation[0] ? (
                 <span>
                   <b>Mã hớp: </b>
                   {userDetail.userStudyGraduation[0].codeclass}
                 </span>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               {userDetail.userStudyGraduation[0] ? (
                 <span>
                   <b>Loại tốt nghiệp: </b>
                   {userDetail.userStudyGraduation[0].graduationname}
                 </span>
               ) : (
-                ""
-              )}
+                  ""
+                )}
             </div>
 
             <div className="job-reward info-box">
@@ -1584,19 +1588,42 @@ const renderUserDetailDrawer = (component) => {
                       ))}
                     </ul>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </li>
               </ul>
             </div>
           </div>
         </div>
       ) : (
-        ""
-      )}
+          ""
+        )}
     </Drawer>
   );
 };
+
+const renderFolowRewardDrawer = (component) => {
+  let {
+    userDetail
+  } = component.state
+  let {
+    showFolowRewardDrawer
+  } = component.state
+  return (
+    <Drawer
+      anchor="bottom"
+      className="drawer-detail"
+      open={showFolowRewardDrawer}
+      onClose={() => component.setState({ showFolowRewardDrawer: false })}
+    >
+      {userDetail ? (
+        <FolowReward userId={userDetail.id} onClose={() => component.setState({ showFolowRewardDrawer: false })} />
+      ) : (
+          ""
+        )}
+    </Drawer>
+  );
+}
 
 function a11yProps(index) {
   return {
@@ -1637,8 +1664,8 @@ const renderUserPageDrawer = (component) => {
           onClose={() => component.setState({ showUserPage: false })}
         />
       ) : (
-        ""
-      )}
+          ""
+        )}
     </Drawer>
   );
 };
