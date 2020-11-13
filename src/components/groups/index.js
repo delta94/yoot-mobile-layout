@@ -148,11 +148,11 @@ class Index extends React.Component {
         groupsCurrentPage: 0,
         isEndOfGroupList: false,
         groups: [],
-      },
-      () => {
-        this.handleGetAllGroup(0);
-      }
-    );
+      })
+    clearTimeout(this.inputTimer)
+    this.inputTimer = setTimeout(()=>{
+          this.handleGetAllGroup(0);
+    },500)
   }
 
   handleGetAllGroup(currentpage) {
