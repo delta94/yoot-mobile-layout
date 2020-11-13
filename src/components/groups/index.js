@@ -742,7 +742,6 @@ const renderSearchGroupDrawer = (component) => {
     groups,
     isLoadMoreGroup,
   } = component.state;
-  console.log(component.state);
 
   return (
     <Drawer

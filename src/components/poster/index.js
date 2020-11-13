@@ -22,7 +22,10 @@ import {
   TextField,
   InputAdornment,
   Avatar,
+  CardHeader,
+  Divider,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   ChevronLeft as ChevronLeftIcon,
   Close as CloseIcon,
@@ -31,6 +34,7 @@ import {
   Done as DoneIcon,
   ExpandMore as ExpandMoreIcon,
 } from "@material-ui/icons";
+import ArrowForwardIosRoundedIcon from "@material-ui/icons/ArrowForwardIosRounded";
 import {
   Privacies,
   GroupPrivacies,
@@ -45,6 +49,7 @@ import { postFormData, get } from "../../api";
 import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
 import { showInfo } from "../../utils/app";
 import Loader from "../common/loader";
+import Post from "../post";
 import moment from "moment";
 import ShowMoreText from "react-show-more-text";
 
@@ -380,12 +385,8 @@ export class Index extends React.Component {
         "postfor",
         GroupPrivacies[currentGroup.typegroupname].code.toString()
       );
-      data.append(
-        "groupid",
-        currentGroup.groupid.toString()
-      );
-    }
-    else data.append("postfor", privacySelected.code.toString());
+      data.append("groupid", currentGroup.groupid.toString());
+    } else data.append("postfor", privacySelected.code.toString());
     data.append("postshareid", "0");
     if (
       /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?./gm.test(postContent)
@@ -614,11 +615,11 @@ export class Index extends React.Component {
       <div className="poster-content">
         {renderPostDrawer(this)}
         {renderPostPrivacyMenuDrawer(this)}
-
         {renderAlbumSelectDrawer(this)}
         {renderTagFriendDrawer(this)}
         {renderGroupForPostDrawer(this)}
         {renderConfirmDrawer(this)}
+        {editShare(this)}
       </div>
     );
   }
@@ -670,8 +671,9 @@ const renderPostDrawer = (component) => {
     isChange,
   } = component.state;
 
-  let { currentGroup } = component.props;
-
+  let { currentGroup, currentPost } = component.props;
+  console.log("state", component.state);
+  console.log("props", component.props);
   return (
     <div>
       <Drawer anchor="bottom" className="poster-drawer" open={showPostDrawer}>
@@ -720,69 +722,94 @@ const renderPostDrawer = (component) => {
             ) : (
                 ""
               )}
-            <ul>
-              <li>
-                <Dropzone
-                  onDrop={(acceptedFiles) =>
-                    component.selectImage(acceptedFiles)
-                  }
-                >
-                  {({ getRootProps, getInputProps }) => (
-                    <div {...getRootProps()} id="bt-select-image">
-                      <input {...getInputProps()} accept="image/*" />
-                      <img src={uploadImage} />
-                      <span>Tải ảnh</span>
-                    </div>
-                  )}
-                </Dropzone>
-              </li>
-              <li>
-                <Dropzone
-                  onDrop={(acceptedFiles) =>
-                    component.selectVideo(acceptedFiles)
-                  }
-                >
-                  {({ getRootProps, getInputProps }) => (
-                    <div {...getRootProps()} id="bt-select-video">
-                      <input {...getInputProps()} accept="video/*" />
-                      <img src={uploadVideo} />
-                      <span>Tải video</span>
-                    </div>
-                  )}
-                </Dropzone>
-              </li>
-              <li
-                onClick={() =>
-                  component.setState(
-                    { showAlbumSelectDrawer: true, albums: [] },
-                    () => component.getAlbum(0, 0)
-                  )
-                }
-                id="bt-create-album"
-              >
-                <img src={album} />
-                <span>Tạo Album</span>
-              </li>
-              <li
-                onClick={() =>
-                  component.setState({ showTagFriendDrawer: true })
-                }
-              >
-                <img src={tag} />
-                <span>Gắn thẻ</span>
-              </li>
-              <li
-                onClick={() =>
-                  component.setState({
-                    isBackgroundSelect: true,
-                    backgroundSelected: backgroundList[0],
-                  })
-                }
-              >
-                <img src={color} />
-                <span>Màu nền</span>
-              </li>
-            </ul>
+            {currentPost && currentPost.newsFeedShareRoot ? (
+              <div className="title-edit-share">
+                <Avatar aria-label="recipe" className="avatar">
+                  <div
+                    className="img"
+                    style={{
+                      background: `url("${currentPost.newsFeedShareRoot.avataruserpost}")`,
+                    }}
+                  />
+                </Avatar>
+                <div className="edit-share-info">
+                  <b>{currentPost.newsFeedShareRoot.nameuserpost}</b>
+                  <div
+                    className="tag-edit-share"
+                    onClick={() =>
+                      component.setState({ showTagFriendDrawer: true })
+                    }
+                  >
+                    <img src={tag} />
+                    <span>Gắn thẻ</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+                <ul>
+                  <li>
+                    <Dropzone
+                      onDrop={(acceptedFiles) =>
+                        component.selectImage(acceptedFiles)
+                      }
+                    >
+                      {({ getRootProps, getInputProps }) => (
+                        <div {...getRootProps()} id="bt-select-image">
+                          <input {...getInputProps()} accept="image/*" />
+                          <img src={uploadImage} />
+                          <span>Tải ảnh</span>
+                        </div>
+                      )}
+                    </Dropzone>
+                  </li>
+                  <li>
+                    <Dropzone
+                      onDrop={(acceptedFiles) =>
+                        component.selectVideo(acceptedFiles)
+                      }
+                    >
+                      {({ getRootProps, getInputProps }) => (
+                        <div {...getRootProps()} id="bt-select-video">
+                          <input {...getInputProps()} accept="video/*" />
+                          <img src={uploadVideo} />
+                          <span>Tải video</span>
+                        </div>
+                      )}
+                    </Dropzone>
+                  </li>
+                  <li
+                    onClick={() =>
+                      component.setState(
+                        { showAlbumSelectDrawer: true, albums: [] },
+                        () => component.getAlbum(0, 0)
+                      )
+                    }
+                    id="bt-create-album"
+                  >
+                    <img src={album} />
+                    <span>Tạo Album</span>
+                  </li>
+                  <li
+                    onClick={() =>
+                      component.setState({ showTagFriendDrawer: true })
+                    }
+                  >
+                    <img src={tag} />
+                    <span>Gắn thẻ</span>
+                  </li>
+                  <li
+                    onClick={() =>
+                      component.setState({
+                        isBackgroundSelect: true,
+                        backgroundSelected: backgroundList[0],
+                      })
+                    }
+                  >
+                    <img src={color} />
+                    <span>Màu nền</span>
+                  </li>
+                </ul>
+              )}
           </div>
           {/* BINH: change tag friend */}
           {tagedFrieds && tagedFrieds.length > 0 && (
@@ -896,7 +923,15 @@ const renderPostDrawer = (component) => {
                   </span>
                 </div>
               )}
-
+            {currentPost && currentPost.newsFeedShareRoot && (
+              <div
+                className="edit-show-share"
+                onClick={() => component.setState({ showEditShare: true })}
+              >
+                <p>Xem bài được chia sẻ</p>
+                <ArrowForwardIosRoundedIcon style={{ color: "#ff5a5a" }} />
+              </div>
+            )}
             <div className="media-selected">
               {(postedImage && postedImage.length > 0) ||
                 (imageSelected && imageSelected.length > 0) ? (
@@ -1276,7 +1311,48 @@ const renderTagFriendDrawer = (component) => {
     </Drawer>
   );
 };
+//share edit layout
 
+const editShare = (component) => {
+  const { showEditShare } = component.state;
+  const { currentPost } = component.props;
+  currentPost && console.log(currentPost.newsFeedShareRoot)
+  return (
+    <Drawer
+      className="edit-share-layout"
+      anchor="right"
+      open={showEditShare}
+      onClose={() => component.setState({ showEditShare: false })}
+    >
+      <div className="drawer-detail">
+        <div className="drawer-header">
+          <div
+            className="direction"
+            onClick={() => component.setState({ showEditShare: false })}
+          >
+            <IconButton
+              style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }}
+            >
+              <ChevronLeftIcon
+                style={{ color: "#ff5a59", width: "25px", height: "25px" }}
+              />
+            </IconButton>
+            <label>Chi tiết</label>
+          </div>
+        </div>
+        <div className="filter"></div>
+        <div className="drawer-content" style={{ overflow: "scroll" }}>
+          <ul className="p10" style={{background: "#f2f3f7"}}>
+            <li>
+              {currentPost && <Post data={currentPost.newsFeedShareRoot} />}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </Drawer>
+  );
+};
+//-----
 const renderGroupForPostDrawer = (component) => {
   let { showGroupForPostDrawer, isLoadMoreGroup } = component.state;
   let { joinedGroups } = component.props;
