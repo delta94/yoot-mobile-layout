@@ -982,12 +982,15 @@ const renderYourJobDrawer = (component) => {
               <div className="jobList-Noti">
                 <div className="divContent">
                   <i class="fas fa-play"></i>
-                  <p className="content">Trang công việc được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những công việc mà bạn muốn tìm hiểu nhé.</p>
+                  <p className="content">Bạn muốn tìm hiểu công việc theo nhu cầu thì nhập vào thanh tìm kiếm.</p>
                 </div>
-                <p className="quote">
-                  <img src={DISC} />
-                  <span>Phù hợp với phong cách hành vi.</span>
-                </p>
+                <div className="divContent">
+                  <i class="fas fa-play"></i>
+                  <p className="content">Bạn muốn tìm hiểu công việc theo nhóm tính cách vui lòng thực hiện chức năng "Phong cách hành vi".</p>
+                </div>
+                <div className="divContent" style={{ textAlign: "center", width: "100%" }}>
+                    <Button className="bt-submit width60pc" style={{ margin: "0px auto" }} onClick={() => component.props.toggleStyleTestDrawer(true)}>Phong cách hành vi</Button>
+                  </div>
               </div>
             </div>
             <YourJobs
