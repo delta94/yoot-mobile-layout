@@ -683,7 +683,7 @@ class Index extends React.Component {
             mediaToView,
 
         } = this.props
-
+        
         let actions = {}
         if (mediaViewerFeature && mediaViewerFeature.actions) {
             actions = mediaViewerFeature.actions
@@ -930,7 +930,7 @@ class Index extends React.Component {
                                                     }
                                                 </div> : ""
                                             }
-                                            <div className="footer-action">
+                                            {activeItem && <div className="footer-action">
                                                 <ul>
                                                     <li>
                                                         <FacebookSelector
@@ -958,7 +958,7 @@ class Index extends React.Component {
                                                         </Button>
                                                     </li>
                                                 </ul>
-                                            </div>
+                                            </div>}
                                         </div> : ""
                                     }
                                 </div>

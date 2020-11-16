@@ -451,7 +451,6 @@ class Index extends React.Component {
             comments = postComments[data.nfid]
 
         if (data && data.postforid == 1) data.postforid = 2
-
         return (
             <div className="drawer-detail comment-post">
                 <div className="drawer-header">
@@ -1112,7 +1111,6 @@ const renderDetailPosted = (component) => {
 
     let PrivacyOptions = objToArray(Privacies)
 
-
     return (
         <Drawer anchor="bottom" className="posted-detail-drawer" open={showPostedDetail}>
             <div className="drawer-detail">
@@ -1228,7 +1226,7 @@ const renderDetailPosted = (component) => {
                     }
                     {
 
-                        data.newsFeedShareRoot ? <div className="list-image">
+                        data.newsFeedShareRoot && <div className="list-image">
                             <ul>
                                 {
                                     data.newsFeedShareRoot.mediaPlays.map((media, index) => <li key={index}>
@@ -1252,11 +1250,11 @@ const renderDetailPosted = (component) => {
                                                             </div>
                                                         </div>
                                                         : <img src={media.name} className="image" onClick={() => {
-                                                            this.props.setMediaToViewer([media])
-                                                            this.props.toggleMediaViewerDrawer(true, {
+                                                            component.props.setMediaToViewer([media])
+                                                            component.props.toggleMediaViewerDrawer(true, {
                                                                 showInfo: true,
                                                             })
-                                                            this.handlePauseVideo()
+                                                            component.handlePauseVideo()
                                                         }} />
                                                 }
                                                 {
@@ -1295,7 +1293,7 @@ const renderDetailPosted = (component) => {
                                     </li>)
                                 }
                             </ul>
-                        </div> : ""
+                        </div>
                     }
                 </div>
 
