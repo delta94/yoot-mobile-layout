@@ -1888,7 +1888,7 @@ class Index extends React.Component {
                               )
                           )}
                         {data.islike == 1 && data.iconlike > 0 && (
-                          <img src={ReactSelectorIcon[data.iconlike].icon}></img>
+                          <img src={ReactSelectorIcon[data.iconlike].icon} />
                         )}
                         <span>{data.numlike}</span>
                       </span>
@@ -1896,9 +1896,9 @@ class Index extends React.Component {
                         <span className="like"></span>
                       )}
                     {
-                      data.numcomment > 0 ||
+                      (data.numcomment > 0 ||
                       (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ||
-                      data.numshare > 0 && (
+                      data.numshare > 0) && (
                         <span
                           onClick={() =>
                             // this.setState({
@@ -1916,7 +1916,7 @@ class Index extends React.Component {
                             ? `${data.mediaPlays[0].numview} lượt xem `
                             : ""}
                           {
-                            data.numshare > 0 ? `${data.numshare} chia sẻ ` : ""
+                            data.numshare > 0 && `${data.numshare} chia sẻ `
                           }
                         </span>
                       )}
