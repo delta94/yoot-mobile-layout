@@ -402,8 +402,9 @@ class Index extends React.Component {
           array.map(item => careerids.push(item.id))
         }
       }
-      param.careerids = careerids
+      param.careerids = careerids.length > 0 ? careerids : null
     }
+    if (param.careerids == null) return
     post(BUILD_YS_API, "Ology/GetListMany", param, result => {
       if (result && result.result == 1)
         this.setState({
@@ -989,8 +990,8 @@ const renderYourJobDrawer = (component) => {
                   <p className="content">Bạn muốn tìm hiểu công việc theo nhóm tính cách vui lòng thực hiện chức năng "Phong cách hành vi".</p>
                 </div>
                 <div className="divContent" style={{ textAlign: "center", width: "100%" }}>
-                    <Button className="bt-submit width60pc" style={{ margin: "0px auto" }} onClick={() => component.props.toggleStyleTestDrawer(true)}>Phong cách hành vi</Button>
-                  </div>
+                  <Button className="bt-submit width60pc" style={{ margin: "0px auto" }} onClick={() => component.props.toggleStyleTestDrawer(true)}>Phong cách hành vi</Button>
+                </div>
               </div>
             </div>
             <YourJobs
@@ -1034,7 +1035,8 @@ const renderYourMajorsDrawer = (component) => {
     tabValue,
     favorateSchoolIds,
     favorateOlogyIds,
-    favorateCareerIds
+    favorateCareerIds,
+    jobSelected
   } = component.state
   // console.log("favorateSchoolIds", favorateSchoolIds.includes(157))
   return (
@@ -1046,7 +1048,8 @@ const renderYourMajorsDrawer = (component) => {
               component.setState({
                 searchKey: "",
                 isSearching: false,
-                searchOptions: []
+                searchOptions: [],
+                careerList: []
               })
               component.props.toggleYourMajorsDrawer(false)
             }}>
@@ -1124,10 +1127,15 @@ const renderYourMajorsDrawer = (component) => {
             </div>
             {
               careerHistory ? <div className="major-noti jobList-Noti" style={{ padding: "0px 10px", width: "90%" }}>
-                <div className="divContent">
-                  <i class="fas fa-play"></i>
-                  <p className="content">Trang ngành học được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những ngành học mà bạn muốn tìm hiểu nhé.</p>
-                </div>
+                {
+                  jobSelected && jobSelected.length > 0 ? <div className="divContent">
+                    <i class="fas fa-play"></i>
+                    <p className="content">Trang ngành học được hệ thống chọn lọc theo kết quả trắc nghiệm tính cách của bạn. Bạn hãy chọn những ngành học mà bạn muốn tìm hiểu nhé.</p>
+                  </div> : <div className="divContent">
+                      <i class="fas fa-play"></i>
+                      <p className="content">Bạn vui lòng "CHỌN" vị trí công việc nào mà bạn muốn tìm hiểu, YOOT sẽ đề xuất ngành học hoặc trường học tương ứng.</p>
+                    </div>
+                }
               </div> : <div className="major-noti jobList-Noti" style={{ padding: "0px 10px", width: "90%" }}>
                   <div className="divContent">
                     <i class="fas fa-play"></i>

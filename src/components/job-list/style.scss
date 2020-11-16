@@ -2,13 +2,13 @@ img.drawerAvatar{
     width:100%;
 }
 .jobList-Noti{
-    width: 95%;
+    width: calc(100% - 20px) !important;
     margin: 15px auto;
     background: #f0f8fb;
     color:  #52a5d9;
     padding: 0 0 20px;
     border-radius: 10px;
-    box-shadow: 0px 5px 10px -5px grey;
+    box-shadow: 0px 2px 10px -5px rgba(0,0,0,0.6);
     font-family: Roboto-Medium;
     .divContent{
         padding:10px 0px 10px 10px;

@@ -591,7 +591,7 @@ class Index extends React.Component {
                                 </TabPanel>
                                 <TabPanel value={friendTabIndex} index={1} >
                                     <div className="friend-list" >
-                                        <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                        <div className="p10 pt00 pb00" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                                             <span>Số lượng</span>
                                             <span className="red">{queueCount}</span>
                                         </div>
@@ -624,7 +624,7 @@ class Index extends React.Component {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value={friendTabIndex} index={2} className="content-box">
-                                    <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                    <div className="p10  pt00 pb00" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                                         <span>Số lượng</span>
                                         <span className="red">{waitingCount}</span>
                                     </div>
@@ -664,7 +664,7 @@ class Index extends React.Component {
                                 <TabPanel value={friendTabIndex} index={3} >
                                     {
                                         friends && friends.length > 0 ? <div className="friend-list" >
-                                            <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                            <div className="p10 pt00 pb00" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                                                 <span>Số lượng</span>
                                                 <span className="red">{friendCount}</span>
                                             </div>

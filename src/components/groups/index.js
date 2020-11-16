@@ -150,9 +150,9 @@ class Index extends React.Component {
         groups: [],
       })
     clearTimeout(this.inputTimer)
-    this.inputTimer = setTimeout(()=>{
-          this.handleGetAllGroup(0);
-    },500)
+    this.inputTimer = setTimeout(() => {
+      this.handleGetAllGroup(0);
+    }, 500)
   }
 
   handleGetAllGroup(currentpage) {
@@ -321,7 +321,7 @@ class Index extends React.Component {
             groups: groups.map((item) =>
               item.groupid === groupid
                 ? item.typegroup === 1
-                  ? { ...item, status: 10 }
+                  ? { ...item, status: 1 }
                   : item.typegroup === 2 && { ...item, status: 1 }
                 : item
             ),
@@ -742,6 +742,7 @@ const renderSearchGroupDrawer = (component) => {
     groups,
     isLoadMoreGroup,
   } = component.state;
+
 
   return (
     <Drawer

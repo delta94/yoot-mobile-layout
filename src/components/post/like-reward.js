@@ -45,7 +45,6 @@ class Index extends React.Component {
             param.nameimage = image.nameimage
         }
         get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetUserNumAllLikeNewsFeed" + objToQuery(param), result => {
-            console.log("result", result)
             if (result && result.result == 1) {
                 if (result.content.numLikes.length > 0) {
                     result.content.numLikes.map(item => {
@@ -137,7 +136,6 @@ class Index extends React.Component {
             data,
             onClose
         } = this.props
-        console.log("iconList", numLikes)
 
         return (
             data && <div className="drawer-detail like-reward">

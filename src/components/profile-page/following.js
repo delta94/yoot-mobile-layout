@@ -231,7 +231,6 @@ export class Index extends React.Component {
         let {
             onClose
         } = this.props
-        console.log("this.state", this.state)
         return (
             <div className="drawer-detail">
                 <div className="drawer-header">
@@ -296,7 +295,7 @@ export class Index extends React.Component {
                             className="content-box"
                         >
                             <div className="folowed-list" style={{ maxHeight: "100%" }}>
-                                <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                <div className="p10 pt00 pb00" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                                     <span>Số lượng</span>
                                     <span className="red">{folowedCount}</span>
                                 </div>
@@ -361,7 +360,7 @@ export class Index extends React.Component {
                         </TabPanel>
                         <TabPanel value={userDetailFolowTabIndex} index={1}>
                             <div className="folowing-list" style={{ maxHeight: "100%" }}>
-                                <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                <div className="p10 pt00 pb00" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                                     <span>Số lượng</span>
                                     <span className="red">{folowingCount}</span>
                                 </div>

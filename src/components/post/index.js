@@ -2676,7 +2676,6 @@ const renderDetailPosted = (component) => {
 
   let PrivacyOptions = objToArray(Privacies);
 
-  console.log("data", data)
 
   return (
     <Drawer

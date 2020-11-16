@@ -672,8 +672,6 @@ const renderPostDrawer = (component) => {
   } = component.state;
 
   let { currentGroup, currentPost } = component.props;
-  console.log("state", component.state);
-  console.log("props", component.props);
   return (
     <div>
       <Drawer anchor="bottom" className="poster-drawer" open={showPostDrawer}>
@@ -1316,7 +1314,6 @@ const renderTagFriendDrawer = (component) => {
 const editShare = (component) => {
   const { showEditShare } = component.state;
   const { currentPost } = component.props;
-  currentPost && console.log(currentPost.newsFeedShareRoot)
   return (
     <Drawer
       className="edit-share-layout"
@@ -1342,7 +1339,7 @@ const editShare = (component) => {
         </div>
         <div className="filter"></div>
         <div className="drawer-content" style={{ overflow: "scroll" }}>
-          <ul className="p10" style={{background: "#f2f3f7"}}>
+          <ul className="p10" style={{ background: "#f2f3f7" }}>
             <li>
               {currentPost && <Post data={currentPost.newsFeedShareRoot} />}
             </li>

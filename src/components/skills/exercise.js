@@ -304,7 +304,8 @@ class Index extends React.Component {
       reviewers
     } = this.state
 
-    console.log("homeworks", homeworks)
+    console.log("exercises", exercises)
+
     return (
       <div className="exercise-item-page" >
         <StickyContainer className="container">
@@ -351,7 +352,7 @@ class Index extends React.Component {
                       <div className="list-header">
                         <label>Đề bài</label>
                         <span className="reward">
-                          <span>Thưởng hoàn thành: <span>{exercises[0].point}</span></span>
+                          <span>Thưởng hoàn thành: <span>{exercises[0].point > 0 ? exercises[0].point : 2000}</span></span>
                         </span>
                       </div>
                       {

@@ -511,7 +511,7 @@ class Index extends React.Component {
                                 </TabPanel>
                                 <TabPanel value={friendTabIndex} index={1} >
                                     <div className="friend-list" >
-                                        <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                        <div className="p10 pt00 pb00s" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                                             <span>Số lượng</span>
                                             <span className="red">{friendsWithFriendCount}</span>
                                         </div>
@@ -545,7 +545,7 @@ class Index extends React.Component {
                                 </TabPanel>
                                 <TabPanel value={friendTabIndex} index={2} className="content-box find-friends">
                                     <div className="friend-list" >
-                                        <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                                        <div className="p10 pt00 pb00" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                                             <span>Số lượng</span>
                                             <span className="red">{allUserCount}</span>
                                         </div>

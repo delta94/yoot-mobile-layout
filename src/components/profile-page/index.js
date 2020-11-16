@@ -971,6 +971,8 @@ class Index extends React.Component {
     if (profile && userPosteds) {
       myPosteds = userPosteds[profile.id];
     }
+
+    console.log("profile", profile)
     return profile ? (
       <div className="profile-page">
         <div
@@ -1022,7 +1024,7 @@ class Index extends React.Component {
                 activeIndex: 0,
               });
             }}
-            style={{ background: "url(" + profile.avatar + ")" }}
+            style={{ background: "url(" + profile.avatarroot + ")" }}
           ></div>
           <Dropzone
             onDrop={(acceptedFiles) => this.onSelectAvatarFile(acceptedFiles)}
@@ -2697,7 +2699,7 @@ const renderUserDetailDrawer = (component) => {
                 className="content-box"
               >
                 <div className="folowed-list">
-                  <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                  <div className="p10 pt00 pb00" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                     <span>Số lượng</span>
                     <span className="red">{profile.folowedCount ? profile.folowedCount : 0}</span>
                   </div>
@@ -2762,7 +2764,7 @@ const renderUserDetailDrawer = (component) => {
               </TabPanel>
               <TabPanel value={userDetailFolowTabIndex} index={1}>
                 <div className="folowing-list">
-                  <div className="p10" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
+                  <div className="p10 pt00 pb00" style={{ display: "flex", justifyContent: "space-between", fontWeight: "bold" }}>
                     <span>Số lượng</span>
                     <span className="red">{profile.folowingCount ? profile.folowingCount : 0}</span>
                   </div>

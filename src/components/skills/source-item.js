@@ -93,7 +93,6 @@ class Index extends React.Component {
       "STUDENT_FK": profile.id,
       "isfinish": isfinish == true ? 1 : 0
     }
-    console.log("param", param)
     post(SCHOOL_API, "Course/timeStudyLesson", param)
   }
 
@@ -209,7 +208,7 @@ class Index extends React.Component {
                     </div>
                     <div className="proccess">
                       <LinearProgress value={(srouceDetail.numfinish * 100) / srouceDetail.numtotal} className="proccess-bar" variant="determinate" />
-                      <span>+ {srouceDetail.finishpoint} <img src={Coins_Y} /></span>
+                      <span>+ {srouceDetail.totalpoint * (srouceDetail.numfinish / srouceDetail.numtotal)} <img src={Coins_Y} /></span>
                     </div>
                     {
                       currentLesstion ? <div className="video">

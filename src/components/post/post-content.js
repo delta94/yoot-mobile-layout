@@ -53,7 +53,6 @@ class Index extends React.Component {
         })
         get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetAllNewsFeed" + objToQuery(param), result => {
             if (result && result.result == 1) {
-                console.log("result", result)
                 this.setState({
                     allPost: result.content.newsFeeds,
                 })

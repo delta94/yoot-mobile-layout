@@ -1359,7 +1359,7 @@ const renderUserDetailDrawer = (component) => {
                 className="content-box"
               >
                 <div className="folowed-list" onScroll={handleScroll}>
-                  <div className="friend-count">
+                  <div className="friend-count p10 pt00 pb00">
                     <span>Số lượng</span>
                     <span className="red">{numOfFollowed}</span>
                   </div>
@@ -1428,7 +1428,7 @@ const renderUserDetailDrawer = (component) => {
               </TabPanel>
               <TabPanel value={userDetailFolowTabIndex} index={1}>
                 <div className="folowing-list" onScroll={handleScroll}>
-                  <div className="friend-count">
+                  <div className="friend-count p10 pt00 pb00">
                     <span>Số lượng</span>
                     <span className="red">{numOfFollowing}</span>
                   </div>

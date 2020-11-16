@@ -719,7 +719,6 @@ class Index extends React.Component {
             activeItem = mediaToView && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0 ? mediaToView[mediaViewerFeature.activeIndex] : null
         }
 
-        console.log("activeItem", activeItem)
 
 
         return (
@@ -808,10 +807,10 @@ class Index extends React.Component {
                                                                                                     {
                                                                                                         activeItem.numcomment > 0 || activeItem.numview > 0 ? <li>
                                                                                                             {
-                                                                                                                activeItem.numcomment > 0 ? <span>{activeItem ? activeItem.numcomment : 0} bình luận</span> : ""
+                                                                                                                activeItem.numcomment > 0 ? <span>{activeItem ? activeItem.numcomment : 0} bình luận </span> : ""
                                                                                                             }
                                                                                                             {
-                                                                                                                activeItem.numview > 0 ? <span>{activeItem ? activeItem.numview : 0} lượt xem</span> : ""
+                                                                                                                activeItem.numview > 0 ? <span className="ml05">{activeItem ? activeItem.numview : 0} lượt xem </span> : ""
                                                                                                             }
 
                                                                                                         </li> : <li></li>
