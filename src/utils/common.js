@@ -195,7 +195,7 @@ export const fromNow = (date = moment().now(), now, hideDate) => {
           hideDate ? "" : moment(date).format("DD/MM/yyyy HH:mm")
         }
         {
-          hideDate ? "" : <FiberManualRecordIcon style={{ width: 6, height: 6, opacity: 0.5, margin: '0px 5px' }} />
+          hideDate ? "" : " \u2022 "
         }
         {result.replace('days ago', 'ngày trước')}
       </span>
@@ -206,7 +206,7 @@ export const fromNow = (date = moment().now(), now, hideDate) => {
           hideDate ? "" : moment(date).format("DD/MM/yyyy HH:mm")
         }
         {
-          hideDate ? "" : <FiberManualRecordIcon style={{ width: 6, height: 6, opacity: 0.5, margin: '0px 5px' }} />
+          hideDate ? "" : " \u2022 "
         }
         {result.replace('a month ago', '1 tháng trước')}
       </span>
@@ -217,7 +217,7 @@ export const fromNow = (date = moment().now(), now, hideDate) => {
           hideDate ? "" : moment(date).format("DD/MM/yyyy HH:mm")
         }
         {
-          hideDate ? "" : <FiberManualRecordIcon style={{ width: 6, height: 6, opacity: 0.5, margin: '0px 5px' }} />
+          hideDate ? "" : " \u2022 "
         }
         {result.replace('months ago', 'tháng trước')}
       </span>
