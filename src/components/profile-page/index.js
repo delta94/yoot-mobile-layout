@@ -971,13 +971,11 @@ class Index extends React.Component {
     if (profile && userPosteds) {
       myPosteds = userPosteds[profile.id];
     }
-
-    console.log("profile", profile)
     return profile ? (
       <div className="profile-page">
         <div
           className="cover-img"
-          style={{ background: "url(" + profile.background + ")" }}
+          style={{ background: "url(" + profile.backgroundroot + ")" }}
         >
           <div
             className="overlay"

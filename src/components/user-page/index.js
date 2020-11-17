@@ -544,6 +544,7 @@ class Index extends React.Component {
     if (userDetail) {
       posteds = userPosteds[userDetail.id];
     }
+
     return (
       <div className="drawer-detail">
         <div className="drawer-header">
@@ -607,7 +608,7 @@ class Index extends React.Component {
               <div className="none-bg">
                 <div
                   className="cover-img"
-                  style={{ background: "url(" + userDetail.background + ")" }}
+                  style={{ background: "url(" + userDetail.backgroundroot + ")" }}
                 ></div>
                 {userDetail.statusfriend == 10 ? (
                   <IconButton
@@ -623,7 +624,7 @@ class Index extends React.Component {
               <div className="user-avatar">
                 <div
                   className="img"
-                  style={{ background: "url(" + userDetail.avatar + ")" }}
+                  style={{ background: "url(" + userDetail.avatarroot + ")" }}
                 ></div>
               </div>
 
