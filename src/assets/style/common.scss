@@ -235,10 +235,13 @@ input{
   font-weight: normal !important;
   opacity: 0.4 !important;
 }
+input[type="date"]:not(.has-value){
+    color: #fff
+}
 input[type="date"]:not(.has-value):before{
-  color: #000;
+  color: #000 !important;
   font-family: Roboto-Regular;
-  opacity: 0.4;
+  opacity: 0.4 !important;
   content: attr(placeholder);
 }
 // input[type="color"],

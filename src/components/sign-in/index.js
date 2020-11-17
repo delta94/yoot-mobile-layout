@@ -50,6 +50,7 @@ class Index extends React.Component {
       isShowConfirmPass: false,
       isProccessinng: false,
       rememberPassword: false,
+      isSelectedBirthday: false
     };
   }
 
@@ -262,7 +263,10 @@ class Index extends React.Component {
       registerEmail,
       registerBirthDay,
       isAcceptTerms,
+      isSelectedBirthday
     } = this.state
+
+    console.log("registerBirthDay == defaultDate", isSelectedBirthday)
 
     return (
       <div className="sign-in-page" >
@@ -280,7 +284,7 @@ class Index extends React.Component {
               className="tab-header"
             >
               <Tab label="Đăng nhập" {...a11yProps(0)} className="tab-item" />
-              <Tab label="Đăng ký mới" {...a11yProps(1)} className="tab-item" />
+              <Tab label="Đăng ký mới" {...a11yProps(1)} className="tab-item" onClick={() => this.setState({ registerBirthDay: defaultDate, isSelectedBirthday: false })} />
             </Tabs>
           </AppBar>
           <SwipeableViews
@@ -447,12 +451,11 @@ class Index extends React.Component {
                   <div className="date-time-input" >
                     <input
                       type="date"
-                      className={(registerBirthDay ? "has-value" : "")}
+                      className={(registerBirthDay && registerBirthDay != defaultDate || (registerBirthDay == defaultDate && isSelectedBirthday == true) ? "has-value" : "")}
                       value={registerBirthDay}
-                      // defaultValue={defaultDate}
                       placeholder="Ngày sinh"
-                      onChange={e => this.setState({ registerBirthDay: e.target.value })}
-                      onClick={() => registerBirthDay ? null : this.setState({ registerBirthDay: defaultDate })}
+                      onChange={e => this.setState({ registerBirthDay: e.target.value, isSelectedBirthday: true })}
+                    // onClick={() => isSelectedBirthday == true ? null : this.setState({ registerBirthDay: defaultDate })}
                     />
                     <IconButton onClick={() => this.setState({ registerBirthDay: '' })}><CancelIcon /></IconButton>
                   </div>
