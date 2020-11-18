@@ -636,8 +636,8 @@ class Index extends React.Component {
                                                    }} />
                                              }
                                              {
-                                                data.mediaPlays.length > 5 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
-                                                   <span>+{data.mediaPlays.length - 5}</span>
+                                                data.mediaPlays.length > 4 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
+                                                   <span>{data.mediaPlays.length - 4}+</span>
                                                 </div> : ""
                                              }
                                           </GridListTile>
@@ -810,8 +810,8 @@ class Index extends React.Component {
                                                                            : <img src={media.name} alt={media.name} onClick={() => this.setState({ showPostedDetail: true })} />
                                                                      }
                                                                      {
-                                                                        data.newsFeedShareRoot.mediaPlays.length > 5 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
-                                                                           <span>+{data.newsFeedShareRoot.mediaPlays.length - 5}</span>
+                                                                        data.newsFeedShareRoot.mediaPlays.length > 4 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
+                                                                           <span>{data.newsFeedShareRoot.mediaPlays.length - 4}+</span>
                                                                         </div> : ""
                                                                      }
                                                                   </GridListTile>
