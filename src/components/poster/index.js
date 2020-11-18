@@ -60,6 +60,8 @@ const tag = require("../../assets/icon/tag@1x.png");
 const color = require("../../assets/icon/color@1x.png");
 const defaultImage = "https://dapp.dblog.org/img/default.jpg";
 const search = require("../../assets/icon/Find@1x.png");
+const noImageGroup = require("../../assets/images/group_members_icon.png");
+
 
 export class Index extends React.Component {
   constructor(props) {
@@ -1443,7 +1445,7 @@ const renderGroupForPostDrawer = (component) => {
                     <Avatar className="avatar">
                       <div
                         className="img"
-                        style={{ background: `url("${group.thumbnail}")` }}
+                        style={{ background: group.thumbnail ? `url("${group.thumbnail}")`:`url("${noImageGroup}")` }}
                       />
                     </Avatar>
                     <div className="group-info">
