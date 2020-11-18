@@ -69,6 +69,7 @@ const search = require("../../assets/icon/Find@1x.png");
 
 const checkIcon = require("../../assets/images/check.png");
 const checkedIcon = require("../../assets/images/checked.png");
+const noImageGroup = require("../../assets/images/group_members_icon.png");
 
 let currentDate = moment(new Date()).format(CurrentDate);
 
@@ -813,7 +814,7 @@ const renderSearchGroupDrawer = (component) => {
                   <Avatar className="avatar">
                     <div
                       className="img"
-                      style={{ background: "url(" + group.thumbnail + ")" }}
+                      style={{ background: group.thumbnail ? `url("${group.thumbnail}")`:`url("${noImageGroup}")` }}
                     />
                   </Avatar>
                   <div className="group-info">

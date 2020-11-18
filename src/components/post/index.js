@@ -153,11 +153,11 @@ class Index extends React.Component {
   handleTagFriend(friend) {
     let { tagedFrieds } = this.state;
     let existFriend = tagedFrieds.find(
-      (item) => item.friendid == friend.friendid
+      (item) => item.friendid === friend.friendid
     );
     if (existFriend) {
       tagedFrieds = tagedFrieds.filter(
-        (item) => item.friendid != friend.friendid
+        (item) => item.friendid !== friend.friendid
       );
     } else {
       tagedFrieds.push(friend);
@@ -643,13 +643,14 @@ class Index extends React.Component {
     this.setState({
       isLoadMore: true,
     });
+
     get(
       SOCIAL_NET_WORK_API,
       "Friends/GetListFriends" + objToQuery(param),
       (result) => {
         if (result && result.result == 1) {
           this.setState({
-            friends: friends.concat(result.content.userInvites),
+            friends: currentpage === 0 ? result.content.userInvites : friends.concat(result.content.userInvites),
             isLoadMore: false,
           });
           if (result.content.userInvites.length == 0) {
@@ -2403,12 +2404,15 @@ const renderShareDrawer = (component) => {
                         </span>
                       </div>
                     </div>
+                    <div>
                     <Button
                       className="bt-submit"
                       onClick={() => component.handleShare(group.groupid)}
                     >
                       Chia sẻ
                     </Button>
+                    </div>
+                    
                   </li>
                 ))}
               </ul>
@@ -3603,7 +3607,10 @@ const renderTagFriendForShareDrawer = (component) => {
         <div className="drawer-header">
           <div
             className="direction"
-            onClick={() => component.setState({ showTagFriendDrawer: false })}
+            onClick={() => component.setState({
+              showTagFriendDrawer: false,
+              tagedFrieds: []
+            })}
           >
             <IconButton
               style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }}
@@ -3615,7 +3622,7 @@ const renderTagFriendForShareDrawer = (component) => {
             <label>Gắn thẻ bạn bè</label>
           </div>
           <Button
-            onClick={() => component.setState({ showTagFriendDrawer: false })}
+            onClick={() => { component.setState({ showTagFriendDrawer: false }) }}
           >
             Xong
           </Button>
