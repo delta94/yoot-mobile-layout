@@ -1203,7 +1203,10 @@ const renderTagFriendDrawer = (component) => {
         <div className="drawer-header">
           <div
             className="direction"
-            onClick={() => component.setState({ showTagFriendDrawer: false })}
+            onClick={() => component.setState({
+              showTagFriendDrawer: false,
+              tagedFrieds: []
+            })}
           >
             <IconButton
               style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }}
