@@ -232,8 +232,6 @@
 }
 
 .drawer-detail{
-  display: grid;
-  grid-template-rows: min-content min-content auto;
   height: 100%;
   .folowing-list,
   .folowed-list{
@@ -1009,7 +1007,7 @@
           bottom: 10px;
           border-radius: 7px;
           &.light{
-            background: rgba(255,255,255,0.4);
+            background: rgba(0,0,0,0.4);
             > span{
               color: #fff;
             }

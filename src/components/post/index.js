@@ -910,6 +910,8 @@ class Index extends React.Component {
       isPlaying,
     } = this.state;
     let { profile, daskMode, data, containerRef } = this.props;
+    console.log('props',this.props)
+    console.log('state',this.state)
     let { foloweds } = this.props.profile
 
     let PrivacyOptions = objToArray(Privacies);
@@ -1938,30 +1940,33 @@ class Index extends React.Component {
                     : this.likePosted(reaction)
                 }
               />
-              <Button
-                onClick={() =>
-                  // this.setState({ showCommentDrawer: true, currentPost: data })
-                  this.props.toggleCommentDrawer(true, data)
-                }
-              >
-                <img src={daskMode ? comment1 : comment} />
+              {(data.postforid !== 4 && data.typegroup !== 2) && (
+                <>
+                  <Button
+                    onClick={() =>
+                      // this.setState({ showCommentDrawer: true, currentPost: data })
+                      this.props.toggleCommentDrawer(true, data)
+                    }
+                  >
+                    <img src={daskMode ? comment1 : comment} />
                 Bình luận
               </Button>
-              {(data.postforid !== 4 && data.typegroup !== 2) && (
-                <Button
-                  onClick={() =>
-                    this.setState(
-                      { showShareDrawer: true, groupSelected: null },
-                      () => {
-                        this.getFriends(0);
-                        this.getGroup(0);
-                      }
-                    )
-                  }
-                >
-                  <img src={daskMode ? share1 : share} />
+
+                  <Button
+                    onClick={() =>
+                      this.setState(
+                        { showShareDrawer: true, groupSelected: null },
+                        () => {
+                          this.getFriends(0);
+                          this.getGroup(0);
+                        }
+                      )
+                    }
+                  >
+                    <img src={daskMode ? share1 : share} />
                   Chia sẻ
                 </Button>
+                </>
               )}
             </CardActions>
             {data.numcomment > 0 && !daskMode ? (
@@ -2405,14 +2410,14 @@ const renderShareDrawer = (component) => {
                       </div>
                     </div>
                     <div>
-                    <Button
-                      className="bt-submit"
-                      onClick={() => component.handleShare(group.groupid)}
-                    >
-                      Chia sẻ
+                      <Button
+                        className="bt-submit"
+                        onClick={() => component.handleShare(group.groupid)}
+                      >
+                        Chia sẻ
                     </Button>
                     </div>
-                    
+
                   </li>
                 ))}
               </ul>
