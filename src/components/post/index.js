@@ -930,6 +930,7 @@ class Index extends React.Component {
         item.postid = data.newsFeedShareRoot.nfid
       })
     }
+
     return data && (!data.isPedding || data.isPedding === false) ? (
       <div>
         <ScrollTrigger
@@ -1290,7 +1291,7 @@ class Index extends React.Component {
                               }
                             />
                           )}
-                        {data.mediaPlays.length > 5 && index == 4 ? (
+                        {data.mediaPlays.length > 4 && index == 4 ? (
                           <div
                             className="grid-overlay"
                             onClick={() => {
@@ -1300,7 +1301,7 @@ class Index extends React.Component {
 
                             }
                           >
-                            <span>+{data.mediaPlays.length - 5}</span>
+                            <span>{data.mediaPlays.length - 4}+</span>
                           </div>
                         ) : (
                             ""
@@ -1688,7 +1689,7 @@ class Index extends React.Component {
                                             />
                                           )}
                                         {data.newsFeedShareRoot.mediaPlays.length >
-                                          5 && index == 4 ? (
+                                          4 && index == 4 ? (
                                             <div
                                               className="grid-overlay"
                                               onClick={() => {
@@ -1702,9 +1703,8 @@ class Index extends React.Component {
                                               }
                                             >
                                               <span>
-                                                +
-                                              {data.newsFeedShareRoot.mediaPlays
-                                                  .length - 5}
+                                                {data.newsFeedShareRoot.mediaPlays
+                                                  .length - 4}+
                                               </span>
                                             </div>
                                           ) : (
@@ -1897,8 +1897,8 @@ class Index extends React.Component {
                       )}
                     {
                       (data.numcomment > 0 ||
-                      (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ||
-                      data.numshare > 0) && (
+                        (data.mediaPlays[0] && data.mediaPlays[0].numview > 0) ||
+                        data.numshare > 0) && (
                         <span
                           onClick={() =>
                             // this.setState({
