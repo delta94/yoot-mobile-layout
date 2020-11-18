@@ -898,6 +898,7 @@ class Index extends React.Component {
   }
 
 
+
   render() {
 
     let {
@@ -910,8 +911,8 @@ class Index extends React.Component {
       isPlaying,
     } = this.state;
     let { profile, daskMode, data, containerRef } = this.props;
-    console.log('props',this.props)
-    console.log('state',this.state)
+    console.log('props', this.props)
+    console.log('state', this.state)
     let { foloweds } = this.props.profile
 
     let PrivacyOptions = objToArray(Privacies);
@@ -2163,6 +2164,7 @@ const renderCommentDrawer = (component) => {
         className="comment-drawer"
         open={showCommentDrawer}
         onClose={() => component.props.toggleCommentDrawer(false, null)}
+      // onFocus={() => { console.log("abc") }}
       >
         {
           currentPostForComment ? <CommentBox
@@ -2170,6 +2172,7 @@ const renderCommentDrawer = (component) => {
             userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
             onClose={() => component.props.toggleCommentDrawer(false, null)}
             history={component.props.history}
+            onFocus={console.log("abc")}
           /> : ""
         }
       </Drawer>
