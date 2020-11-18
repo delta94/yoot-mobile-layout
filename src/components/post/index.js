@@ -208,7 +208,7 @@ class Index extends React.Component {
       (result) => {
         if (result && result.result == 1) {
           this.props.deletePostSuccess(data.nfid, profile.id);
-          showInfo("Xoá bài đăng thành công.");
+          // showInfo("Xoá bài đăng thành công.");
         }
       }
     );

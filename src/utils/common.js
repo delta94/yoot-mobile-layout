@@ -252,7 +252,7 @@ export const copyToClipboard = (str, successCallback) => {
   el.select();
   document.execCommand('copy');
   document.body.removeChild(el);
-  showInfo("Đã sao chép liên kết")
+  // showInfo("Đã sao chép liên kết")
 };
 
 export const removeAccents = (str) => {

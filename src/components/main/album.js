@@ -603,7 +603,7 @@ class Index extends React.Component {
                         {
                             albumDetail ? <div className="drawer-content" id="album-content" style={{ overflow: "scroll", width: "100vw" }} onScroll={() => this.onScroll(tabIndex)}>
                                 <div className="album-background">
-                                    <div style={{ background: "url(" + albumDetail.background + ")" }}></div>
+                                    <div style={{ background: "url(" + albumDetail.topimgname + ")" }}></div>
                                 </div>
                                 <div className="title-album">
                                     <label>{albumDetail.albumname}</label>

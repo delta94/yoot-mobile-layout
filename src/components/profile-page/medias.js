@@ -610,7 +610,6 @@ export class Index extends React.Component {
             isCoverImageLoading
         } = this.state
 
-
         return (
             <div className="media-drawer">
                 <Drawer anchor="bottom" open={open} >
@@ -736,7 +735,7 @@ export class Index extends React.Component {
                                                         })
                                                     }}>
                                                         <div style={{ background: "url(" + (defaultImage) + ")" }}>
-                                                            <div className="demo-bg" style={{ background: "url(" + (album.background) + ")" }} />
+                                                            <div className="demo-bg" style={{ background: "url(" + (album.topimgname) + ")" }} />
                                                         </div>
                                                         <span className="name">{album.albumname}</span>
                                                     </li>)
