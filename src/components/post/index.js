@@ -900,7 +900,6 @@ class Index extends React.Component {
 
 
   render() {
-
     let {
       anchor,
       showLocalMenu,
@@ -911,8 +910,6 @@ class Index extends React.Component {
       isPlaying,
     } = this.state;
     let { profile, daskMode, data, containerRef } = this.props;
-    console.log('props', this.props)
-    console.log('state', this.state)
     let { foloweds } = this.props.profile
 
     let PrivacyOptions = objToArray(Privacies);

@@ -54,7 +54,8 @@ import {
    dislikeImage,
    setCurrentPosted,
    deletePostSuccess,
-   changeCommentCountForPost
+   changeCommentCountForPost,
+   updateCommentPosted
 } from '../../actions/posted'
 import {
    setComment,
@@ -77,6 +78,7 @@ import Loader from '../common/loader'
 import $ from 'jquery'
 import PostContent from './post-content'
 import LikeReward from './like-reward'
+import { checkServerIdentity } from "tls";
 
 const maxCols = 6
 const like1 = require('../../assets/icon/like1@1x.png')
@@ -353,9 +355,7 @@ class Index extends React.Component {
       let {
          data
       } = this.props
-
       let formData = new FormData
-
 
       formData.append("content", commentContent)
       formData.append("postid", data.nfid)
@@ -398,6 +398,7 @@ class Index extends React.Component {
                this.props.commentSuccess(result.content.commentModel, data.nfid)
             }
             this.props.changeCommentCountForPost(1, data.nfid, data.iduserpost)
+            this.props.updateCommentPosted(this.props.postComments[data.nfid],data.nfid)
          }
       })
    }
@@ -465,6 +466,7 @@ class Index extends React.Component {
          comments = postComments[data.nfid]
 
       if (data && data.postforid == 1) data.postforid = 2
+
       return (
          <div className="drawer-detail comment-post">
             <div className="drawer-header">
@@ -1013,6 +1015,7 @@ const mapStateToProps = state => {
    }
 };
 const mapDispatchToProps = dispatch => ({
+    updateCommentPosted: (comments,postId) =>dispatch(updateCommentPosted(comments,postId)),
    togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
    toggleMediaViewerDrawer: (isShow, features) => dispatch(toggleMediaViewerDrawer(isShow, features)),
    setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),

@@ -18,7 +18,8 @@ import {
     SET_VIDEO_POSTED,
     SET_GROUP_POSTED,
     SET_CURRENT_GROUP_POSTED,
-    UPDATE_PRIVACY_POSTED
+    UPDATE_PRIVACY_POSTED,
+    UPDATE_COMMENT_POSTED
 } from '../actions/posted'
 
 const initialState = {
@@ -1297,6 +1298,19 @@ export default (state = initialState, action) => {
                 currentGroupPosteds: newList
             })
         }
+        case UPDATE_COMMENT_POSTED:
+            let postedsUpdate = state.allPosteds.map(item => item.nfid === action.payload.postId
+                ? {
+                    ...item,
+                    comments: action.payload.comments.length > 2
+                        ? action.payload.comments.slice(0, 2)
+                        : action.payload.comments
+                }
+                : item)
+            return {
+                ...state,
+                allPosteds: postedsUpdate
+            }
         default:
             return state;
     }

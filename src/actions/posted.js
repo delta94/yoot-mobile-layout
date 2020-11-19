@@ -22,6 +22,7 @@ export const SET_VIDEO_POSTED = "posted@SET_VIDEO_POSTED"
 export const SET_GROUP_POSTED = "posted@SET_GROUP_POSTED"
 export const SET_CURRENT_GROUP_POSTED = "post@SET_CURRENT_GROUP_POSTED"
 export const UPDATE_PRIVACY_POSTED = "post@UPDATE_PRIVACY_POSTED"
+export const UPDATE_COMMENT_POSTED = "post@UPDATE_COMMENT_POSTED"
 
 export const setMePosted = (posteds) => {
     return dispatch => {
@@ -228,4 +229,9 @@ export const updatePrivacyPosted = (userId, postId, privacy) => {
 
     }
 }
+
+export const updateCommentPosted = (comments,postId) =>({
+    type: UPDATE_COMMENT_POSTED,
+    payload: {postId,comments}
+})
 
