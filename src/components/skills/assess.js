@@ -222,6 +222,7 @@ class Index extends React.Component {
       reviewers,
       reviews
     } = this.state
+    console.log("srouceDetail", exercises)
 
 
     return (
@@ -229,6 +230,13 @@ class Index extends React.Component {
         {
           srouceDetail ? <div className="exercise-scource">
             <label className="red">{srouceDetail.NAME}</label>
+
+            {
+              exercises && exercises.length > 0 && exercises.map((item, index) => <div>
+                {item.exerciseMedias.length > 0 && item.exerciseMedias.map((image, index) => <img key={index} src={image.link} style={{ width: "100%", height: "200px", border: "1px solid #666", marginTop: "10px" }} />)}
+              </div>
+              )
+            }
             {
               reviews && reviews.length == 0 ? <div className="empty-record">
                 <span>Chưa có bài tập nào chờ bạn đánh giá</span>
