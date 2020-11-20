@@ -210,6 +210,7 @@ export class Loader extends React.Component {
         } = this.props
         if (value && value.length > 0)
             this.setDefaultValue(value)
+        this.focus()
     }
 
 
