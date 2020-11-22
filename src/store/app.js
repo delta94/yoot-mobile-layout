@@ -35,7 +35,8 @@ import {
     TOGGLE_USER_INFO_FORM_DRAWER,
     TOGGLE_COMMENT_DRAWER,
     TOGGLE_COMMENT_IMAGE_DRAWER,
-    TOGGLE_SEARCH_POST_DRAWER
+    TOGGLE_SEARCH_POST_DRAWER,
+    TOGGLE_REPORT_COMMENT
 } from '../actions/app'
 
 const initialState = {
@@ -295,7 +296,12 @@ export default (state = initialState, action) => {
                 currentHashtag: action.hashtag
             });
         }
-
+        case TOGGLE_REPORT_COMMENT:
+            return {
+                ...state,
+                currentPostForComment: action.payload.data,
+                showReportPost: action.payload.isShow
+            }
         default:
             return state;
     }

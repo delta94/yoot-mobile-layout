@@ -470,15 +470,9 @@ class Index extends React.Component {
             }
           </div>
         </StickyContainer>
-        {
-          renderGroupListDrawer(this)
-        }
-        {
-          renderCreateGroupDrawer(this)
-        }
-        {
-          renderConfirmDrawer(this)
-        }
+        {renderGroupListDrawer(this)}
+        {renderCreateGroupDrawer(this)}
+        {renderConfirmDrawer(this)}
       </div >
     );
   }

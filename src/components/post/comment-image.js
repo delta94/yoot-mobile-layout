@@ -41,7 +41,8 @@ import {
     toggleMediaViewerDrawer,
     setMediaToViewer,
     toggleUserDetail,
-    toggleUserPageDrawer
+    toggleUserPageDrawer,
+    toggleReportComment
 } from '../../actions/app'
 import {
     setCurrenUserDetail
@@ -463,7 +464,7 @@ class Index extends React.Component {
                   data.iduserpost != profile.id ? <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
                 } */}
                                     {
-                                        data.iduserpost != profile.id ? <MenuItem onClick={() => this.handleOpenReportDrawer()}>Báo cáo vi phạm</MenuItem> : ""
+                                        data.iduserpost != profile.id ? <MenuItem onClick={() => this.props.toggleReportComment(true,data)}>Báo cáo vi phạm</MenuItem> : ""
                                     }
                                 </CustomMenu>
                             }
@@ -658,6 +659,7 @@ const mapStateToProps = state => {
     }
 };
 const mapDispatchToProps = dispatch => ({
+   toggleReportComment: (isShow, data) => dispatch(toggleReportComment(isShow, data)),
     togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
     toggleMediaViewerDrawer: (isShow, features) => dispatch(toggleMediaViewerDrawer(isShow, features)),
     setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),

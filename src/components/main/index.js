@@ -77,6 +77,7 @@ import Player from '../common/player'
 import LoadingBar from 'react-top-loading-bar'
 import GroupDetail from '../groups/detail'
 import MediaViewr from './viewer'
+import Report from '../main/report'
 import { APP_SETTING } from "../../constants/localStorageKeys";
 
 const coin = require('../../assets/icon/Coins_Y.png')
@@ -328,6 +329,7 @@ class Main extends React.Component {
         {
           renderGroupDetailDrawer(this)
         }
+        <Report />
         <Album history={this.props.history} />
       </div>
 

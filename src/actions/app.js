@@ -41,7 +41,15 @@ export const TOGGLE_USER_INFO_FORM_DRAWER = "app@TOGGLE_USER_INFO_FORM_DRAWER"
 export const TOGGLE_COMMENT_DRAWER = "app@TOGGLE_COMMENT_DRAWER"
 export const TOGGLE_COMMENT_IMAGE_DRAWER = "app@TOGGLE_COMMENT_IMAGE_DRAWER"
 export const TOGGLE_SEARCH_POST_DRAWER = "app@TOGGLE_SEARCH_POST_DRAWER"
+export const TOGGLE_REPORT_COMMENT = "app@TOGGLE_REPORT_COMMENT"
 
+
+export const toggleReportComment = (isShow, data) => dispatch => {
+    return dispatch({
+        type: TOGGLE_REPORT_COMMENT,
+        payload: { isShow, data }
+    })
+}
 export const setProccessDuration = (percent) => {
     return dispatch => {
         dispatch({

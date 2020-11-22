@@ -55,7 +55,8 @@ import {
   toggleUserPageDrawer,
   setProccessDuration,
   toggleCommentDrawer,
-  toggleCommentImageDrawer
+  toggleCommentImageDrawer,
+  toggleReportComment
 } from "../../actions/app";
 import { setCurrenUserDetail } from "../../actions/user";
 import {
@@ -1027,7 +1028,7 @@ class Index extends React.Component {
                   data.iduserpost != profile.id ? <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
                 } */}
                   {data.iduserpost != profile.id ? (
-                    <MenuItem onClick={() => this.handleOpenReportDrawer()}>
+                    <MenuItem onClick={() => this.props.toggleReportComment(true,data)}>
                       Báo cáo vi phạm
                     </MenuItem>
                   ) : (
@@ -1902,10 +1903,6 @@ class Index extends React.Component {
                         data.numshare > 0) && (
                         <span
                           onClick={() =>
-                            // this.setState({
-                            //   showCommentDrawer: true,
-                            //   currentPost: data,
-                            // })
                             this.props.toggleCommentDrawer(true, data)
                           }
                           className="comment"
@@ -2045,6 +2042,7 @@ const mapStateToProps = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => ({
+  toggleReportComment: (isShow, data) => dispatch(toggleReportComment(isShow, data)),
   togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
   toggleMediaViewerDrawer: (isShow, features) =>
     dispatch(toggleMediaViewerDrawer(isShow, features)),
@@ -2783,7 +2781,7 @@ const renderDetailPosted = (component) => {
                       <MenuItem
                         onClick={() =>
                           component.setState({ showLocalMenu: false }, () =>
-                            component.props.toggleReportDrawer(true)
+                            component.props.toggleReportComment(true,data)
                           )
                         }
                       >

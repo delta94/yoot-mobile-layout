@@ -41,7 +41,8 @@ import {
    toggleMediaViewerDrawer,
    setMediaToViewer,
    toggleUserDetail,
-   toggleUserPageDrawer
+   toggleUserPageDrawer,
+   toggleReportComment
 } from '../../actions/app'
 import {
    setCurrenUserDetail
@@ -398,7 +399,7 @@ class Index extends React.Component {
                this.props.commentSuccess(result.content.commentModel, data.nfid)
             }
             this.props.changeCommentCountForPost(1, data.nfid, data.iduserpost)
-            this.props.updateCommentPosted(this.props.postComments[data.nfid],data.nfid)
+            this.props.updateCommentPosted(this.props.postComments[data.nfid], data.nfid)
          }
       })
    }
@@ -508,7 +509,7 @@ class Index extends React.Component {
                   data.iduserpost != profile.id ? <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
                 } */}
                               {
-                                 data.iduserpost != profile.id ? <MenuItem onClick={() => this.handleOpenReportDrawer()}>Báo cáo vi phạm</MenuItem> : ""
+                                 data.iduserpost != profile.id ? <MenuItem onClick={() => this.props.toggleReportComment(true, data)}>Báo cáo vi phạm</MenuItem> : ""
                               }
                            </CustomMenu>
                         }
@@ -902,7 +903,17 @@ class Index extends React.Component {
                                     </span>
                               }
                               {
-                                 data.numcomment > 0 ? <span className="comment">{data.numcomment} bình luận</span> : ""
+                                 data.numcomment > 0 && <span className="comment">
+                                    {data.numcomment > 0
+                                       && `${data.numcomment} bình luận `
+                                    }
+                                    {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
+                                       && `${data.mediaPlays[0].numview} lượt xem `
+                                    }
+                                    {
+                                       data.numshare > 0 && `${data.numshare} chia sẻ `
+                                    }
+                                 </span>
                               }
                            </div> : ""
                         }
@@ -1015,7 +1026,8 @@ const mapStateToProps = state => {
    }
 };
 const mapDispatchToProps = dispatch => ({
-    updateCommentPosted: (comments,postId) =>dispatch(updateCommentPosted(comments,postId)),
+   toggleReportComment: (isShow, data) => dispatch(toggleReportComment(isShow, data)),
+   updateCommentPosted: (comments, postId) => dispatch(updateCommentPosted(comments, postId)),
    togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
    toggleMediaViewerDrawer: (isShow, features) => dispatch(toggleMediaViewerDrawer(isShow, features)),
    setMediaToViewer: (media) => dispatch(setMediaToViewer(media)),
@@ -1173,7 +1185,7 @@ const renderDetailPosted = (component) => {
                                  data.iduserpost != profile.id ? <MenuItem onClick={() => component.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
                               }
                               {
-                                 data.iduserpost != profile.id ? <MenuItem onClick={() => component.setState({ showLocalMenu: false }, () => component.props.toggleReportDrawer(true))}>Báo cáo vi phạm</MenuItem> : ""
+                                 data.iduserpost != profile.id ? <MenuItem onClick={() => component.setState({ showLocalMenu: false }, () => component.props.toggleReportComment(true, data))}>Báo cáo vi phạm</MenuItem> : ""
                               }
                            </CustomMenu>
                         }
