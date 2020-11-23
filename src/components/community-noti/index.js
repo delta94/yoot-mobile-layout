@@ -173,9 +173,9 @@ class Index extends React.Component {
           }
         </ul>
 
-        {
+        {/* {
           renderCommentDrawer(this)
-        }
+        } */}
         {
           renderConfirmDrawer(this)
         }
@@ -256,17 +256,17 @@ const renderFooter = (component) => {
   )
 }
 
-const renderCommentDrawer = (component) => {
-  let {
-    showCommentDrawer,
-    currentPost
-  } = component.state
-  return (
-    <Drawer anchor="bottom" className="comment-drawer" open={showCommentDrawer}>
-      <CommentBox data={currentPost} userId={currentPost ? currentPost.iduserpost : 0} onClose={() => component.setState({ showCommentDrawer: false })} />
-    </Drawer>
-  )
-}
+// const renderCommentDrawer = (component) => {
+//   let {
+//     showCommentDrawer,
+//     currentPost
+//   } = component.state
+//   return (
+//     <Drawer anchor="bottom" className="comment-drawer" open={showCommentDrawer}>
+//       <CommentBox data={currentPost} userId={currentPost ? currentPost.iduserpost : 0} onClose={() => component.setState({ showCommentDrawer: false })} />
+//     </Drawer>
+//   )
+// }
 
 const renderConfirmDrawer = (component) => {
   let {

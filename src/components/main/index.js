@@ -47,7 +47,8 @@ import {
   toggleGroupInviteDrawer,
   toggleCreateAlbumDrawer,
   setProccessDuration,
-  setCurrentNetwork
+  setCurrentNetwork,
+  toggleCommentDrawer
 } from '../../actions/app'
 import {
   setUserProfile,
@@ -78,6 +79,9 @@ import LoadingBar from 'react-top-loading-bar'
 import GroupDetail from '../groups/detail'
 import MediaViewr from './viewer'
 import Report from '../main/report'
+import CommentBox from "../post/comment";
+import CommentImageBox from "../post/comment-image";
+
 import { APP_SETTING } from "../../constants/localStorageKeys";
 
 const coin = require('../../assets/icon/Coins_Y.png')
@@ -329,7 +333,9 @@ class Main extends React.Component {
         {
           renderGroupDetailDrawer(this)
         }
-        <Report />
+        {renderCommentDrawer(this)}
+        {renderCommentImageDrawer(this)}
+        <Report history={this.props.history} />
         <Album history={this.props.history} />
       </div>
 
@@ -362,7 +368,8 @@ const mapDispatchToProps = dispatch => ({
   setProccessDuration: (value) => dispatch(setProccessDuration(value)),
   setUnreadNotiCount: (number) => dispatch(setUnreadNotiCount(number)),
   setSkillUnreadNotiCount: (number) => dispatch(setSkillUnreadNotiCount(number)),
-  setCurrentNetwork: (networkType) => dispatch(setCurrentNetwork(networkType))
+  setCurrentNetwork: (networkType) => dispatch(setCurrentNetwork(networkType)),
+  toggleCommentDrawer: (isShow, currentPostForComment) => dispatch(toggleCommentDrawer(isShow, currentPostForComment)),
 });
 
 export default connect(
@@ -739,13 +746,55 @@ const renderGroupDetailDrawer = (component) => {
   return (
     <Drawer anchor="bottom" className="group-detail" open={showGroupDetail}>
       {
-        currentGroup ? <GroupDetail history={component.props.history} /> : ""
+        currentGroup && <GroupDetail history={component.props.history} />
       }
     </Drawer>
   )
 }
 
+const renderCommentDrawer = (component) => {
+  let { showCommentDrawer, currentPostForComment, data } = component.props;
 
+
+    return (
+      <Drawer
+        anchor="bottom"
+        className="comment-drawer"
+        open={showCommentDrawer}
+        onClose={() => component.props.toggleCommentDrawer(false, null)}
+      >
+        {
+          currentPostForComment ? <CommentBox
+            data={currentPostForComment}
+            userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
+            onClose={() => component.props.toggleCommentDrawer(false, null)}
+            history={component.props.history}
+          /> : ""
+        }
+      </Drawer>)
+
+};
+
+const renderCommentImageDrawer = (component) => {
+  let { showCommentImageDrawer, currentPostForComment, currentImageForComment, data } = component.props;
+    return (
+      <Drawer
+        anchor="bottom"
+        className="comment-drawer"
+        open={showCommentImageDrawer}
+        onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
+      >
+        <CommentImageBox
+          data={currentPostForComment}
+          image={currentImageForComment}
+          userId={currentImageForComment ? currentImageForComment.iduserpost : 0}
+          onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
+          onLikeImage={(reaction) => component.likeImage(reaction, currentImageForComment)}
+          onDislikeImage={() => component.dislikeImage(currentImageForComment)}
+        />
+      </Drawer>
+    )
+};
 const groups = [
   {
     groupName: "MÓN NGON DỄ LÀM NGON BỔ RẺ",

@@ -182,7 +182,6 @@ const Report = ({  toggleReportComment,app }) => {
          anchor="bottom"
          className="report-drawer"
          open={showReportPost}
-         onClose={() => toggleReportComment(false)}
       >
          <div className="drawer-detail">
             <div className="drawer-header">
@@ -197,7 +196,7 @@ const Report = ({  toggleReportComment,app }) => {
                         willUnfollow: false,
                         willUnfriend: false,
                      })
-                     toggleReportComment(false)
+                     toggleReportComment(false,currentPostForComment)
                   }
                   }
                >

@@ -97,8 +97,6 @@ import ScrollTrigger from "react-scroll-trigger";
 import { Player, ControlBar, BigPlayButton } from "video-react";
 import { showInfo } from "../../utils/app";
 import MultiInput from "../common/multi-input";
-import CommentBox from "./comment";
-import CommentImageBox from "./comment-image";
 import CustomMenu from "../common/custom-menu";
 import { APP_SETTING } from "../../constants/localStorageKeys";
 import ShowMoreText from "react-show-more-text";
@@ -877,14 +875,19 @@ class Index extends React.Component {
   handleGetGroupDetail(groupid) {
     if (!groupid) return
     get(SOCIAL_NET_WORK_API, "GroupUser/GetOneGroupUser?groupid=" + groupid, result => {
-      if (result && result.result == 1) {
+      if (result && result.result === 1) {
         this.props.setCurrentGroup(result.content.groupUser)
       }
     })
   }
 
-  handlePostAuth(postforid, foloweds, statuspost) {
-    if (statuspost === 3) {
+  handlePostAuth(newsFeedShareRoot, profile) {
+    const { statuspost, postforid,iduserpost } = newsFeedShareRoot
+    const { foloweds,id } = profile
+    if (iduserpost === id){
+      return true
+    }
+    else if (statuspost === 3) {
       return false
     }
     else if (postforid === 4) {
@@ -911,7 +914,6 @@ class Index extends React.Component {
       isPlaying,
     } = this.state;
     let { profile, daskMode, data, containerRef } = this.props;
-    let { foloweds } = this.props.profile
 
     let PrivacyOptions = objToArray(Privacies);
     let GroupPrivacyOptions = objToArray(GroupPrivacies);
@@ -932,7 +934,8 @@ class Index extends React.Component {
         item.postid = data.newsFeedShareRoot.nfid
       })
     }
-
+    console.log('state', this.state)
+    console.log('props', this.props)
     return data && (!data.isPedding || data.isPedding === false) ? (
       <div>
         <ScrollTrigger
@@ -1169,10 +1172,8 @@ class Index extends React.Component {
                       />
                       <span>
                         <u onClick={() => this.setState({ showGroupForPostDrawer: false }, () => {
-                          // this.props.setCurrentGroup({ groupid: data.groupidpost })
                           this.handleGetGroupDetail(data.groupidpost)
                           this.props.toggleGroupDetailDrawer(true)
-
                         })}>{data.groupnamepost}</u>
                       </span>
                     </div>
@@ -1424,7 +1425,7 @@ class Index extends React.Component {
                           ) : (
                               ""
                             )} */}
-                          {foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost)
+                          {profile && this.handlePostAuth(data.newsFeedShareRoot, profile)
                             ? <CardHeader
                               className="card-header"
                               avatar={
@@ -1534,7 +1535,7 @@ class Index extends React.Component {
                             />
                           }
 
-                          {(foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost)) && data.newsFeedShareRoot.nfcontent !== "" && (
+                          {(profile && this.handlePostAuth(data.newsFeedShareRoot, profile)) && data.newsFeedShareRoot.nfcontent !== "" && (
                             <div
                               className={
                                 "post-content" +
@@ -1554,7 +1555,7 @@ class Index extends React.Component {
                               <PostContent content={data.newsFeedShareRoot} />
                             </div>
                           )}
-                          {(foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost)) && <CardContent className="card-content">
+                          {(profile && this.handlePostAuth(data.newsFeedShareRoot, profile)) && <CardContent className="card-content">
                             <div className="media-grid">
                               {data.newsFeedShareRoot.mediaPlays.length > 1 ? (
                                 <GridList cols={maxCols}>
@@ -1937,7 +1938,6 @@ class Index extends React.Component {
               />
               <Button
                 onClick={() =>
-                  // this.setState({ showCommentDrawer: true, currentPost: data })
                   this.props.toggleCommentDrawer(true, data)
                 }
               >
@@ -1974,10 +1974,6 @@ class Index extends React.Component {
                   <ul
                     className="comment-list"
                     onClick={() =>
-                      // this.setState({
-                      //   showCommentDrawer: true,
-                      //   currentPost: data,
-                      // })
                       this.props.toggleCommentDrawer(true, data)
                     }
                   >
@@ -2009,7 +2005,6 @@ class Index extends React.Component {
             ) : (
                 ""
               )}
-            {renderCommentDrawer(this)}
             {renderShareDrawer(this)}
             {renderSharePrivacyMenuDrawer(this)}
             {renderUpdatePrivacyImageDrawer(this)}
@@ -2019,7 +2014,6 @@ class Index extends React.Component {
             {renderUpdateInfoOfProfilePostDrawer(this)}
             {renderReportPostDrawer(this)}
             {renderReportSuccessAlert(this)}
-            {renderCommentImageDrawer(this)}
             {renderTagFriendForShareDrawer(this)}
             {renderGroupForShareDrawer(this)}
             {renderReportGroupDrawer(this)}
@@ -2148,94 +2142,7 @@ const renderConfirmDrawer = (component) => {
   );
 };
 
-const renderCommentDrawer = (component) => {
-  let { showCommentDrawer, currentPostForComment, data } = component.props;
 
-  if (currentPostForComment && data && currentPostForComment.nfid == data.nfid)
-    return (
-      <Drawer
-        anchor="bottom"
-        className="comment-drawer"
-        open={showCommentDrawer}
-        onClose={() => component.props.toggleCommentDrawer(false, null)}
-      // onFocus={() => { console.log("abc") }}
-      >
-        {
-          currentPostForComment ? <CommentBox
-            data={currentPostForComment}
-            userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
-            onClose={() => component.props.toggleCommentDrawer(false, null)}
-            history={component.props.history}
-            onFocus={console.log("abc")}
-          /> : ""
-        }
-      </Drawer>
-    )
-  else {
-    if (currentPostForComment && data && data.newsFeedShareRoot && currentPostForComment.nfid == data.newsFeedShareRoot.nfid)
-      return (
-        <Drawer
-          anchor="bottom"
-          className="comment-drawer"
-          open={showCommentDrawer}
-          onClose={() => component.props.toggleCommentDrawer(false, null)}
-        >
-          {
-            currentPostForComment ? <CommentBox
-              data={currentPostForComment}
-              userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
-              onClose={() => component.props.toggleCommentDrawer(false, null)}
-              history={component.props.history}
-            /> : ""
-          }
-        </Drawer>
-      );
-  }
-  return null
-};
-
-const renderCommentImageDrawer = (component) => {
-  let { showCommentImageDrawer, currentPostForComment, currentImageForComment, data } = component.props;
-  if (currentPostForComment && data && currentPostForComment.nfid == data.nfid)
-    return (
-      <Drawer
-        anchor="bottom"
-        className="comment-drawer"
-        open={showCommentImageDrawer}
-        onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
-      >
-        <CommentImageBox
-          data={currentPostForComment}
-          image={currentImageForComment}
-          userId={currentImageForComment ? currentImageForComment.iduserpost : 0}
-          onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
-          onLikeImage={(reaction) => component.likeImage(reaction, currentImageForComment)}
-          onDislikeImage={() => component.dislikeImage(currentImageForComment)}
-        />
-      </Drawer>
-    )
-  else {
-    if (currentPostForComment && data && data.newsFeedShareRoot && currentPostForComment.nfid == data.newsFeedShareRoot.nfid)
-      return (
-        <Drawer
-          anchor="bottom"
-          className="comment-drawer"
-          open={showCommentImageDrawer}
-          onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
-        >
-          <CommentImageBox
-            data={currentPostForComment}
-            image={currentImageForComment}
-            userId={currentImageForComment ? currentImageForComment.iduserpost : 0}
-            onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
-            onLikeImage={(reaction) => component.likeImage(reaction, currentImageForComment)}
-            onDislikeImage={() => component.dislikeImage(currentImageForComment)}
-          />
-        </Drawer>
-      )
-  }
-  return null
-};
 
 const renderShareDrawer = (component) => {
   let {
