@@ -1452,7 +1452,7 @@ const renderGroupInviteDrawer = (component) => {
                   <Avatar className="avatar">
                     <div
                       className="img"
-                      style={{ background: `url("${group.thumbnail}")` }}
+                      style={{ background: group.thumbnail ? `url("${group.thumbnail}")`:`url("${noImageGroup}")` }}
                     />
                   </Avatar>
                   <div className="group-info">

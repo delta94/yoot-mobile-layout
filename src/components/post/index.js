@@ -1028,7 +1028,7 @@ class Index extends React.Component {
                   data.iduserpost != profile.id ? <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
                 } */}
                   {data.iduserpost != profile.id ? (
-                    <MenuItem onClick={() => this.props.toggleReportComment(true,data)}>
+                    <MenuItem onClick={() => this.props.toggleReportComment(true, data)}>
                       Báo cáo vi phạm
                     </MenuItem>
                   ) : (
@@ -1935,18 +1935,17 @@ class Index extends React.Component {
                     : this.likePosted(reaction)
                 }
               />
-              {(data.postforid !== 4 && data.typegroup !== 2) && (
-                <>
-                  <Button
-                    onClick={() =>
-                      // this.setState({ showCommentDrawer: true, currentPost: data })
-                      this.props.toggleCommentDrawer(true, data)
-                    }
-                  >
-                    <img src={daskMode ? comment1 : comment} />
+              <Button
+                onClick={() =>
+                  // this.setState({ showCommentDrawer: true, currentPost: data })
+                  this.props.toggleCommentDrawer(true, data)
+                }
+              >
+                <img src={daskMode ? comment1 : comment} />
                 Bình luận
               </Button>
-
+              {(data.postforid !== 4 && data.typegroup !== 2) && (
+                <>
                   <Button
                     onClick={() =>
                       this.setState(
@@ -2682,7 +2681,8 @@ const renderDetailPosted = (component) => {
   if (sharedPost) data = sharedPost;
 
   let PrivacyOptions = objToArray(Privacies);
-
+  console.log('props', component.props)
+  console.log('state', component.state)
 
   return (
     <Drawer
@@ -2781,7 +2781,7 @@ const renderDetailPosted = (component) => {
                       <MenuItem
                         onClick={() =>
                           component.setState({ showLocalMenu: false }, () =>
-                            component.props.toggleReportComment(true,data)
+                            component.props.toggleReportComment(true, data)
                           )
                         }
                       >

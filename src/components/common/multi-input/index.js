@@ -154,7 +154,9 @@ export class Loader extends React.Component {
     }
 
     focus = () => {
-        this.editor.focus();
+        setTimeout(() => {
+            this.editor.focus();
+        }, 100);
     };
 
     stringToBlock(string) {
@@ -252,6 +254,7 @@ export class Loader extends React.Component {
                         />
                     </div>
                     <Editor
+                        onClick={this.focus}
                         editorState={this.state.editorState}
                         onChange={this.onChange}
                         plugins={plugins}
@@ -261,6 +264,7 @@ export class Loader extends React.Component {
                 </div>
                 : <div onClick={this.focus} className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
                     <Editor
+                        onClick={this.focus}
                         editorState={this.state.editorState}
                         onChange={this.onChange}
                         plugins={plugins}

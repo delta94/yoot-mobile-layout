@@ -130,8 +130,9 @@ class Index extends React.Component {
         let {
             likeRewardIndex,
             iconList,
-            numLikes
+            numLikes,
         } = this.state
+        console.log(this.state)
         let {
             data,
             onClose
@@ -206,19 +207,24 @@ class Index extends React.Component {
                                     <ul>
                                         {
                                             icon.userLikes && icon.userLikes.map((user, j) => <li key={j} onClick={() => this.handlUserClick(user)}>
-                                                <Avatar aria-label="recipe" className="avatar">
-                                                    <div
-                                                        className="img"
-                                                        style={{
-                                                            background: `url("${user.thumbnail_avatar}")`,
-                                                        }}
+                                                <div className="user-likes-avatar">
+                                                    <Avatar aria-label="recipe" className="avatar">
+                                                        <div
+                                                            className="img"
+                                                            style={{
+                                                                background: `url("${user.thumbnail_avatar}")`,
+                                                            }}
+                                                        />
+                                                    </Avatar>
+                                                    <img
+                                                        src={ReactSelectorIcon[user.icon].icon}
+                                                        style={{ width: "20px", marginRight: "5px" }}
                                                     />
-                                                </Avatar>
-                                                <img
-                                                    src={ReactSelectorIcon[user.icon].icon}
-                                                    style={{ width: "20px", marginRight: "5px" }}
-                                                />
-                                                <span>{user.fullname}</span>
+                                                </div>
+                                                <div className="user-likes-content">
+                                                    <b>{user.fullname}</b>
+                                                    {user.statusfriend === 10 && <p>Bạn bè</p>}
+                                                </div>
                                             </li>)
                                         }
                                     </ul>
