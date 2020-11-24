@@ -1346,7 +1346,7 @@ const renderFriendsForBlockDrawer = (component) => {
           <TextField
             className="custom-input"
             variant="outlined"
-            placeholder="Tìm kiếm"
+            placeholder="Nhập tên bạn bè để tìm..."
             className="search-box"
             style={{
               width: "100%",

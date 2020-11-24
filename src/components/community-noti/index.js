@@ -6,6 +6,7 @@ import {
   toggleHeader,
   toggleFooter,
   toggleGroupDetailDrawer,
+  toggleCommentDrawer,
 } from '../../actions/app'
 import {
   setWorldNoti,
@@ -31,7 +32,6 @@ import { objToQuery, showNotification } from "../../utils/common";
 import moment from 'moment'
 import { get } from "../../api";
 import $ from 'jquery'
-import CommentBox from '../post/comment'
 import { showInfo } from "../../utils/app";
 
 const Newfeed = require('../../assets/icon/Lesson.png')
@@ -92,11 +92,8 @@ class Index extends React.Component {
     if (type == 19 || type == 5 || type == 6 || type == 7 || type == 15 || type == 16 || type == 19 || type == 24 || type == 25 || type == 26 || type == 31 || type == 32 || type == 35) {
       get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetOneNewsFeed?newsfeedid=" + noti.postid, result => {
         if (result) {
-          if (result.result == 1) {
-            this.setState({
-              currentPost: result.content.newsFeed,
-              showCommentDrawer: true
-            })
+          if (result.result === 1) {
+            this.props.toggleCommentDrawer(true, result.content.newsFeed)
           }
           else {
             this.setState({
@@ -172,10 +169,6 @@ class Index extends React.Component {
             />)
           }
         </ul>
-
-        {/* {
-          renderCommentDrawer(this)
-        } */}
         {
           renderConfirmDrawer(this)
         }
@@ -193,6 +186,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
+  toggleCommentDrawer: (isShow, currentPostForComment) => dispatch(toggleCommentDrawer(isShow, currentPostForComment)),
   addHeaderContent: (headerContent) => dispatch(addHeaderContent(headerContent)),
   addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
   toggleHeader: (isShow) => dispatch(toggleHeader(isShow)),
@@ -255,18 +249,6 @@ const renderFooter = (component) => {
     </div>
   )
 }
-
-// const renderCommentDrawer = (component) => {
-//   let {
-//     showCommentDrawer,
-//     currentPost
-//   } = component.state
-//   return (
-//     <Drawer anchor="bottom" className="comment-drawer" open={showCommentDrawer}>
-//       <CommentBox data={currentPost} userId={currentPost ? currentPost.iduserpost : 0} onClose={() => component.setState({ showCommentDrawer: false })} />
-//     </Drawer>
-//   )
-// }
 
 const renderConfirmDrawer = (component) => {
   let {

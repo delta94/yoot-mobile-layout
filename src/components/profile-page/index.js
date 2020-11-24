@@ -2313,6 +2313,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
     isReviewMode,
     avatarToUpload,
     isProccessing,
+    backgroundSrc
   } = component.state;
   let { profile } = component.props;
   return (
@@ -2373,8 +2374,8 @@ const renderUpdateAvatarReviewDrawer = (component) => {
               style={{
                 background:
                   "url(" +
-                  (avatarToUpload && avatarToUpload.file
-                    ? URL.createObjectURL(avatarToUpload.file)
+                  (backgroundSrc
+                    ? backgroundSrc
                     : profile.avatar) +
                   ")",
               }}
@@ -2460,8 +2461,8 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
     openUploadBackgroundReview,
     postContent,
     isReviewMode,
-    backgroundToUpload,
     isProccessing,
+    backgroundSrc
   } = component.state;
   let { profile } = component.props;
   return (
@@ -2518,8 +2519,8 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
               style={{
                 background:
                   "url(" +
-                  (backgroundToUpload && backgroundToUpload.file
-                    ? URL.createObjectURL(backgroundToUpload.file)
+                  (backgroundSrc
+                    ? backgroundSrc
                     : profile.background) +
                   ")",
               }}
