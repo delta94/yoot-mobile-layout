@@ -68,7 +68,7 @@ class Index extends React.Component {
     };
     this.video = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]
   }
-
+  
   goback() {
     let path = window.localStorage.getItem("REDIRECT")
     if (path) {
@@ -399,7 +399,7 @@ class Index extends React.Component {
                         </div>
                       }
                       {
-                        homeworks && !homeworks.some(item => item.STATUS === 1) && <Dropzone onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
+                        homeworks && !homeworks.some(item => item.STATUS === 1) && <Dropzone  multiple={false} onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
                           {({ getRootProps, getInputProps }) => (
                             <div {...getRootProps()} className="box-upload-file" id="upload-homework-bt">
                               <input {...getInputProps()} accept={!item.EXERCISE_TYPE_FK == 3 && "video/*"} />
@@ -697,7 +697,7 @@ const renderApplyDrawer = (component) => {
             <span>Bài tập: </span>
             <img src={IMG_1038} />
             <span>Bài làm của bạn:</span>
-            <Dropzone onDrop={acceptedFiles => component.setState({ videoSelected: acceptedFiles })}>
+            <Dropzone multiple={false} onDrop={acceptedFiles => component.setState({ videoSelected: acceptedFiles })}>
               {({ getRootProps, getInputProps }) => (
                 <div {...getRootProps()} id="bt-select-video">
                   <input {...getInputProps()} accept="video/*" />

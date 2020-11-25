@@ -732,7 +732,6 @@ const renderStyleTestDrawer = (component) => {
     profile,
     careerHistory
   } = component.props
-
   return (
     <Drawer anchor="bottom" className="style-test-drawer" open={showStyleTestPage} onClose={() => component.props.toggleStyleTestDrawer(false)}>
       {
@@ -765,10 +764,8 @@ const renderStyleTestDrawer = (component) => {
             {
               linkview && linkview !== "" && <Iframe url={linkview}
                 width="100%"
-                height={"100%"}
                 id="iframe-DISC"
                 className="myClassname"
-                display="initial"
                 position="relative"
               />
             }

@@ -1,3 +1,11 @@
+.myClassname{
+    min-height: 550px;
+}
+@media screen and (max-width: 400px){
+    .myClassname{
+        min-height: 600px;
+    }
+}
 .career-guidance-banner{
     overflow: hidden;
     margin-bottom: 25px;
