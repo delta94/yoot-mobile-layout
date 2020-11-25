@@ -154,9 +154,12 @@ export class Loader extends React.Component {
     }
 
     focus = () => {
-        setTimeout(() => {
-            this.editor.focus();
-        }, 100);
+        const timer = setTimeout(() => {
+            if(this.editor){
+                this.editor.focus();
+            }
+        }, 500);
+        return () => clearTimeout(timer);
     };
 
     stringToBlock(string) {
@@ -242,7 +245,7 @@ export class Loader extends React.Component {
 
         return (
             topDown == false ?
-                <div className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
+                <div onClick={this.focus} className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
                     <div className="mention-box">
                         <MentionSuggestions
                             onSearchChange={this.onSearchChange}
@@ -253,7 +256,6 @@ export class Loader extends React.Component {
                         />
                     </div>
                     <Editor
-                        onFocus
                         editorState={this.state.editorState}
                         onChange={this.onChange}
                         plugins={plugins}
@@ -261,9 +263,8 @@ export class Loader extends React.Component {
                         placeholder={placeholder}
                     />
                 </div>
-                : <div className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
+                : <div onClick={this.focus} className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
                     <Editor
-                        onFocus
                         editorState={this.state.editorState}
                         onChange={this.onChange}
                         plugins={plugins}

@@ -89,7 +89,7 @@ class Index extends React.Component {
 
   onNotiClick(noti) {
     let type = noti.type
-    if (type == 19 || type == 5 || type == 6 || type == 7 || type == 15 || type == 16 || type == 19 || type == 24 || type == 25 || type == 26 || type == 31 || type == 32 || type == 35) {
+    if (type == 3 || type == 19 || type == 5 || type == 6 || type == 7 || type == 15 || type == 16 || type == 19 || type == 24 || type == 25 || type == 26 || type == 31 || type == 32 || type == 35) {
       get(SOCIAL_NET_WORK_API, "PostNewsFeed/GetOneNewsFeed?newsfeedid=" + noti.postid, result => {
         if (result) {
           if (result.result === 1) {

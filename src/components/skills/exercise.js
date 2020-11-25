@@ -402,7 +402,7 @@ class Index extends React.Component {
                         homeworks && !homeworks.some(item => item.STATUS === 1) && <Dropzone onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
                           {({ getRootProps, getInputProps }) => (
                             <div {...getRootProps()} className="box-upload-file" id="upload-homework-bt">
-                              <input {...getInputProps()} accept={item.EXERCISE_TYPE_FK == 3 ? "file/*" : "video/*"} />
+                              <input {...getInputProps()} accept={!item.EXERCISE_TYPE_FK == 3 && "video/*"} />
                               {
                                 fileSelected
                                   ? <div className="file-selected">
