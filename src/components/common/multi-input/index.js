@@ -242,8 +242,7 @@ export class Loader extends React.Component {
 
         return (
             topDown == false ?
-                <div onClick={this.focus} className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
-
+                <div className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
                     <div className="mention-box">
                         <MentionSuggestions
                             onSearchChange={this.onSearchChange}
@@ -254,6 +253,7 @@ export class Loader extends React.Component {
                         />
                     </div>
                     <Editor
+                        onFocus
                         editorState={this.state.editorState}
                         onChange={this.onChange}
                         plugins={plugins}
@@ -261,8 +261,9 @@ export class Loader extends React.Component {
                         placeholder={placeholder}
                     />
                 </div>
-                : <div onClick={this.focus} className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
+                : <div className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
                     <Editor
+                        onFocus
                         editorState={this.state.editorState}
                         onChange={this.onChange}
                         plugins={plugins}

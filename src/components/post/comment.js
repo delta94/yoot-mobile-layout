@@ -42,7 +42,8 @@ import {
    setMediaToViewer,
    toggleUserDetail,
    toggleUserPageDrawer,
-   toggleReportComment
+   toggleReportComment,
+   toggleGroupDetailDrawer
 } from '../../actions/app'
 import {
    setCurrenUserDetail
@@ -80,6 +81,7 @@ import $ from 'jquery'
 import PostContent from './post-content'
 import LikeReward from './like-reward'
 import { checkServerIdentity } from "tls";
+import { setCurrentGroup } from "../../actions/group";
 
 const maxCols = 6
 const like1 = require('../../assets/icon/like1@1x.png')
@@ -442,6 +444,14 @@ class Index extends React.Component {
          return false
       } else return true
    }
+   handleGetGroupDetail(groupid) {
+      if (!groupid) return
+      get(SOCIAL_NET_WORK_API, "GroupUser/GetOneGroupUser?groupid=" + groupid, result => {
+         if (result && result.result === 1) {
+            this.props.setCurrentGroup(result.content.groupUser)
+         }
+      })
+   }
    render() {
       let {
          onClose,
@@ -562,7 +572,13 @@ class Index extends React.Component {
                               data.groupidpost > 0 ? <div>
                                  <img src={Group} />
                                  <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
-                                 <span><u>{data.groupnamepost}</u></span>
+                                 <span><u onClick={
+                                    () => {
+                                       this.handleGetGroupDetail(data.groupidpost)
+                                       this.props.toggleGroupDetailDrawer(true)
+                                    }
+                                 }
+                                 >{data.groupnamepost}</u></span>
                               </div> : ""
                            }
                         </div>}
@@ -746,7 +762,12 @@ class Index extends React.Component {
                                                    <div>
                                                       <img src={Group} />
                                                       <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
-                                                      <span><u>{data.newsFeedShareRoot.groupnamepost}</u></span>
+                                                      <span><u onClick={
+                                                         () => {
+                                                            this.handleGetGroupDetail(data.newsFeedShareRoot.groupidpost)
+                                                            this.props.toggleGroupDetailDrawer(true)
+                                                         }
+                                                      }>{data.newsFeedShareRoot.groupnamepost}</u></span>
                                                    </div>
                                                 </div>}
                                              />
@@ -926,7 +947,7 @@ class Index extends React.Component {
                            onReaction={(reaction) => this.likePosted(reaction)}
                            onShortPress={(reaction) => data.islike == 1 ? this.dislikePosted(reaction) : this.likePosted(reaction)}
                         />
-                        {(data.postforid !== 4 && data.typegroup !== 2) &&<Button onClick={() => this.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>}
+                        {(data.postforid !== 4 && data.typegroup !== 2) && <Button onClick={() => this.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>}
                      </CardActions>
                      {
                         daskMode ? "" : (data.numcomment > 0 ? <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>
@@ -1026,6 +1047,8 @@ const mapStateToProps = state => {
    }
 };
 const mapDispatchToProps = dispatch => ({
+   setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
+   toggleGroupDetailDrawer: (isShow) => dispatch(toggleGroupDetailDrawer(isShow)),
    toggleReportComment: (isShow, data) => dispatch(toggleReportComment(isShow, data)),
    updateCommentPosted: (comments, postId) => dispatch(updateCommentPosted(comments, postId)),
    togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
@@ -1044,7 +1067,7 @@ const mapDispatchToProps = dispatch => ({
    commentSuccess: (comment, postId) => dispatch(commentSuccess(comment, postId)),
    setComment: (comments, postId) => dispatch(setComment(comments, postId)),
    replySuccess: (comment, replyId, postId) => dispatch(replySuccess(comment, replyId, postId)),
-   changeCommentCountForPost: (number, postId, userId) => dispatch(changeCommentCountForPost(number, postId, userId))
+   changeCommentCountForPost: (number, postId, userId) => dispatch(changeCommentCountForPost(number, postId, userId)),
 });
 
 
@@ -1208,11 +1231,20 @@ const renderDetailPosted = (component) => {
                               {fromNow(moment(data.createdate), moment(new Date))}
                            </div>
                            {
-                              data.groupidpost > 0 ? <div>
+                              data.groupidpost > 0 && <div>
                                  <img src={Group} />
                                  <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
-                                 <span><u>{data.groupnamepost}</u></span>
-                              </div> : ""
+                                 <span><u
+                                    onClick={
+                                       () => {
+                                          component.handleGetGroupDetail(data.groupidpost)
+                                          this.props.toggleGroupDetailDrawer(true)
+                                       }
+                                    }
+                                 >
+                                    {data.groupnamepost}
+                                 </u></span>
+                              </div>
                            }
                         </div>}
                      />

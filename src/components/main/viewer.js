@@ -718,7 +718,7 @@ class Index extends React.Component {
       if (!activeItem) {
          activeItem = mediaToView && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0 ? mediaToView[mediaViewerFeature.activeIndex] : null
       }
-      
+
       return (
          <div>
             <Drawer anchor="bottom" className="custom-viewer-drawer" open={showMediaViewerDrawer} onClose={() => this.props.toggleMediaViewerDrawer(false)}>
@@ -804,7 +804,12 @@ class Index extends React.Component {
                                                                               </li>
                                                                            }
                                                                            {
-                                                                              (activeItem.numcomment > 0 || activeItem.numview > 0) && <li onClick={()=>this.props.toggleCommentDrawer(true, currentPost)}>
+                                                                              (activeItem.numcomment > 0 || activeItem.numview > 0) &&
+                                                                              <li
+                                                                                 onClick={() => {
+                                                                                    this.handlePauseVideo()
+                                                                                    this.props.toggleCommentDrawer(true, currentPost)
+                                                                                 }}>
                                                                                  {
                                                                                     activeItem.numcomment > 0 && <span>{activeItem ? activeItem.numcomment : 0} bình luận </span>
                                                                                  }
