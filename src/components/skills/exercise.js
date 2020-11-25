@@ -304,7 +304,6 @@ class Index extends React.Component {
       reviewers
     } = this.state
 
-    console.log("exercises", exercises)
 
     return (
       <div className="exercise-item-page" >

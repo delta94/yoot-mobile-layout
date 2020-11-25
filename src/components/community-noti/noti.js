@@ -119,7 +119,6 @@ class Index extends React.Component {
       data,
       onNotiClick
     } = this.props
-
     return (
       data ? <li className={"noti-item" + (data.userstatus == 0 ? " unread" : "")} >
         <Avatar className="avatar">
@@ -320,6 +319,8 @@ const renderType5 = (component) => {
         <pre className="message" dangerouslySetInnerHTML={{
           __html: data.content
             .replace('{usernamesend}', `<b>${data.nameusersend}</b>`)
+            .replace('{groupname}', `<b>${data.namegroup}</b>`)
+            .replace("và {nummem} người khác", data.nummem > 1 ? `và <b>${data.nummem -1} người khác</b>` : "")
             .replace(data.contentpost != "" ? '{contentpost}' : ': "{contentpost}"', `<b>${data.contentpost.length > 60 ? (data.contentpost.slice(0, 60) + "...") : data.contentpost}</b>`)
 
         }}>

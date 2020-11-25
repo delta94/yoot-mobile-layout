@@ -934,8 +934,6 @@ class Index extends React.Component {
         item.postid = data.newsFeedShareRoot.nfid
       })
     }
-    console.log('state', this.state)
-    console.log('props', this.props)
     return data && (!data.isPedding || data.isPedding === false) ? (
       <div>
         <ScrollTrigger
@@ -2588,8 +2586,6 @@ const renderDetailPosted = (component) => {
   if (sharedPost) data = sharedPost;
 
   let PrivacyOptions = objToArray(Privacies);
-  console.log('props', component.props)
-  console.log('state', component.state)
 
   return (
     <Drawer

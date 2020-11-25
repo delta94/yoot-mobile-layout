@@ -926,7 +926,7 @@ class Index extends React.Component {
                            onReaction={(reaction) => this.likePosted(reaction)}
                            onShortPress={(reaction) => data.islike == 1 ? this.dislikePosted(reaction) : this.likePosted(reaction)}
                         />
-                        <Button onClick={() => this.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+                        {(data.postforid !== 4 && data.typegroup !== 2) &&<Button onClick={() => this.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>}
                      </CardActions>
                      {
                         daskMode ? "" : (data.numcomment > 0 ? <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>

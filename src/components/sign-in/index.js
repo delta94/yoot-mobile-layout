@@ -266,7 +266,6 @@ class Index extends React.Component {
       isSelectedBirthday
     } = this.state
 
-    console.log("registerBirthDay == defaultDate", isSelectedBirthday)
 
     return (
       <div className="sign-in-page" >

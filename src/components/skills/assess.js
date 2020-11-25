@@ -222,7 +222,6 @@ class Index extends React.Component {
       reviewers,
       reviews
     } = this.state
-    console.log("srouceDetail", exercises)
 
 
     return (

@@ -132,7 +132,6 @@ class Index extends React.Component {
             iconList,
             numLikes,
         } = this.state
-        console.log(this.state)
         let {
             data,
             onClose
