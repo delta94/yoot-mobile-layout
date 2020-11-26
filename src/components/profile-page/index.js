@@ -1067,9 +1067,7 @@ class Index extends React.Component {
                 title="Số lượt thích"
                 placement="top-start"
               >
-                <span>
-                  <img src={like}></img>
-                </span>
+                <span><img src={like}></img></span>
                 <span>{profile.numlike}</span>
               </ClickTooltip>
             </li>
@@ -1079,9 +1077,7 @@ class Index extends React.Component {
                 title="Số người theo dõi"
                 placement="top"
               >
-                <span>
-                  <img src={follower}></img>
-                </span>
+                <span><img src={follower}></img></span>
                 <span>{profile.numfollow}</span>
               </ClickTooltip>
             </li>
@@ -1091,9 +1087,7 @@ class Index extends React.Component {
                 title="Số bài đăng"
                 placement="top-end"
               >
-                <span>
-                  <img src={donePractice}></img>
-                </span>
+                <span><img src={donePractice}></img></span>
                 <span>{profile.numpost}</span>
               </ClickTooltip>
             </li>
@@ -2309,11 +2303,9 @@ const renderFriendActionsDrawer = (component) => {
 const renderUpdateAvatarReviewDrawer = (component) => {
   let {
     openUploadAvatarReview,
-    postContent,
     isReviewMode,
     avatarToUpload,
     isProccessing,
-    backgroundSrc
   } = component.state;
   let { profile } = component.props;
   return (
@@ -2374,8 +2366,8 @@ const renderUpdateAvatarReviewDrawer = (component) => {
               style={{
                 background:
                   "url(" +
-                  (backgroundSrc
-                    ? backgroundSrc
+                  (avatarToUpload && avatarToUpload.file
+                    ? URL.createObjectURL(avatarToUpload.file)
                     : profile.avatar) +
                   ")",
               }}
@@ -2462,7 +2454,7 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
     postContent,
     isReviewMode,
     isProccessing,
-    backgroundSrc
+    backgroundToUpload
   } = component.state;
   let { profile } = component.props;
   return (
@@ -2519,8 +2511,8 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
               style={{
                 background:
                   "url(" +
-                  (backgroundSrc
-                    ? backgroundSrc
+                  (backgroundToUpload && backgroundToUpload.file
+                    ? URL.createObjectURL(backgroundToUpload.file)
                     : profile.background) +
                   ")",
               }}
@@ -2542,6 +2534,7 @@ const renderBackgroundCropperDrawer = (component) => {
     openBackgroundCropperDrawer,
     crop,
     backgroundSrc,
+    backgroundToUpload,
     backgroundCroppedImage,
     isProccessing,
   } = component.state;

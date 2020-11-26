@@ -155,14 +155,16 @@ class Index extends React.Component {
     })
   }
   render() {
+    console.log(this.props)
     let {
       worldNoties
     } = this.props
+    let notices = worldNoties && worldNoties.filter(item => item.userstatus === 0)
     return (
       <div className="community-page groups-page" >
         <ul>
           {
-            worldNoties.map((noti, index) => <Noti
+            notices.map((noti, index) => <Noti
               key={index}
               data={noti}
               onNotiClick={noti => this.onNotiClick(noti)}

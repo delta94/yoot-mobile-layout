@@ -114,7 +114,7 @@ class Index extends React.Component {
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 20
+      limit: 27
     }
     let queryParam = objToQuery(param)
     get(SOCIAL_NET_WORK_API, "User/GetTopUsers" + queryParam, result => {
@@ -142,7 +142,7 @@ class Index extends React.Component {
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 20,
+      limit: 27,
       skin: 'TopGroup'
     }
     let queryParam = objToQuery(param)

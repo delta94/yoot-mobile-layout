@@ -1,105 +1,48 @@
 import React from "react";
 import "./style.scss";
-
 import {
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  CardActions,
-  IconButton,
-  Avatar,
-  GridList,
-  GridListTile,
-  Menu,
-  MenuItem,
-  Collapse,
-  Button,
-  Drawer,
-  TextField,
-  InputAdornment,
-  Radio,
+  Card, CardHeader, CardMedia, CardContent, CardActions, IconButton, Avatar, GridList, GridListTile,
+  Menu, MenuItem, Collapse, Button, Drawer, TextField, InputAdornment, Radio,
 } from "@material-ui/core";
 
 import {
-  Favorite as FavoriteIcon,
-  Share as ShareIcon,
-  MoreHoriz as MoreHorizIcon,
-  FiberManualRecord as FiberManualRecordIcon,
-  ChevronLeft as ChevronLeftIcon,
-  MusicOff as MusicOffIcon,
-  MusicNote as MusicNoteIcon,
-  FullscreenExit as FullscreenExitIcon,
-  Fullscreen as FullscreenIcon,
-  PlayArrow as PlayArrowIcon,
-  Pause as PauseIcon,
-  Forward10 as Forward10Icon,
-  Replay10 as Replay10Icon,
-  Close as CloseIcon,
-  Done as DoneIcon,
-  AssignmentReturn,
+  Favorite as FavoriteIcon, Share as ShareIcon, MoreHoriz as MoreHorizIcon, FiberManualRecord as FiberManualRecordIcon,
+  ChevronLeft as ChevronLeftIcon, MusicOff as MusicOffIcon, MusicNote as MusicNoteIcon, FullscreenExit as FullscreenExitIcon,
+  Fullscreen as FullscreenIcon, PlayArrow as PlayArrowIcon, Pause as PauseIcon, Forward10 as Forward10Icon,
+  Replay10 as Replay10Icon, Close as CloseIcon, Done as DoneIcon, AssignmentReturn,
 } from "@material-ui/icons";
 import moment from "moment";
-import {
-  Privacies,
-  ReactSelectorIcon,
-  backgroundList,
-  GroupPrivacies,
-} from "../../constants/constants";
+import ScrollTrigger from "react-scroll-trigger";
+import { Player, ControlBar, BigPlayButton } from "video-react";
 import { connect } from "react-redux";
+import $ from "jquery";
+
 import {
-  togglePostDrawer,
-  toggleMediaViewerDrawer,
-  setMediaToViewer,
-  toggleUserDetail,
-  toggleUserPageDrawer,
-  setProccessDuration,
-  toggleCommentDrawer,
-  toggleCommentImageDrawer,
-  toggleReportComment
+  Privacies, ReactSelectorIcon, backgroundList, GroupPrivacies,
+} from "../../constants/constants";
+import {
+  togglePostDrawer, toggleMediaViewerDrawer, setMediaToViewer, toggleUserDetail, toggleUserPageDrawer, setProccessDuration,
+  toggleCommentDrawer, toggleCommentImageDrawer, toggleReportComment
 } from "../../actions/app";
 import { setCurrenUserDetail } from "../../actions/user";
 import {
-  updatePosted,
-  likePosted,
-  dislikePosted,
-  likeImage,
-  dislikeImage,
-  setCurrentPosted,
-  deletePostSuccess,
-  createPostSuccess,
+  updatePosted, likePosted, dislikePosted, likeImage, dislikeImage, setCurrentPosted, deletePostSuccess, createPostSuccess
 } from "../../actions/posted";
 
-import {
-  setCurrentGroup,
-} from '../../actions/group'
-import {
-  toggleGroupDetailDrawer
-} from '../../actions/app'
-import {
-  confirmSubmit,
-  fromNow,
-  objToQuery,
-  showNotification,
-} from "../../utils/common";
+import { setCurrentGroup } from '../../actions/group'
+import { toggleGroupDetailDrawer } from '../../actions/app'
+import { fromNow, objToQuery, showNotification, } from "../../utils/common";
 import FacebookSelector from "../common/facebook-selector";
-import $ from "jquery";
 import Comment from "./comment-item";
 import { objToArray, copyToClipboard } from "../../utils/common";
 import Loader from "../common/loader";
 import { get, post, postFormData } from "../../api";
-import {
-  SOCIAL_NET_WORK_API,
-  PostLinkToCoppy,
-  CurrentDate,
-} from "../../constants/appSettings";
-import ScrollTrigger from "react-scroll-trigger";
-import { Player, ControlBar, BigPlayButton } from "video-react";
+import { SOCIAL_NET_WORK_API, PostLinkToCoppy, CurrentDate } from "../../constants/appSettings";
+
 import { showInfo } from "../../utils/app";
 import MultiInput from "../common/multi-input";
 import CustomMenu from "../common/custom-menu";
 import { APP_SETTING } from "../../constants/localStorageKeys";
-import ShowMoreText from "react-show-more-text";
 import PostContent from './post-content'
 import LikeReward from './like-reward'
 
@@ -123,7 +66,6 @@ const search = require("../../assets/icon/Find@1x.png");
 const mute = require("../../assets/icon/mute.png");
 const unmute = require("../../assets/icon/unmute.png");
 const thank = require("../../assets/icon/thank.png");
-
 
 
 class Index extends React.Component {
@@ -151,9 +93,7 @@ class Index extends React.Component {
 
   handleTagFriend(friend) {
     let { tagedFrieds } = this.state;
-    let existFriend = tagedFrieds.find(
-      (item) => item.friendid === friend.friendid
-    );
+    let existFriend = tagedFrieds.find((item) => item.friendid === friend.friendid);
     if (existFriend) {
       tagedFrieds = tagedFrieds.filter(
         (item) => item.friendid !== friend.friendid
@@ -587,13 +527,7 @@ class Index extends React.Component {
   }
 
   handleReportGroup() {
-    let {
-      reasonSelected,
-      orderReasonText,
-      willBlock,
-      willUnfriend,
-      willUnfollow,
-    } = this.state;
+    let { reasonSelected, orderReasonText, willBlock, willUnfriend, willUnfollow } = this.state;
     if (reasonSelected || orderReasonText != "") {
       let { data } = this.props;
       let param = {
@@ -739,8 +673,6 @@ class Index extends React.Component {
     if (nfid > 0) {
       formData.append("id", nfid.toString());
       let nameMediaPlays = [];
-      // debugger
-
       postedVideo.map((video) =>
         nameMediaPlays.push(video.name.split("/").slice(-1).pop())
       );
@@ -882,9 +814,9 @@ class Index extends React.Component {
   }
 
   handlePostAuth(newsFeedShareRoot, profile) {
-    const { statuspost, postforid,iduserpost } = newsFeedShareRoot
-    const { foloweds,id } = profile
-    if (iduserpost === id){
+    const { statuspost, postforid, iduserpost } = newsFeedShareRoot
+    const { foloweds, id } = profile
+    if (iduserpost === id) {
       return true
     }
     else if (statuspost === 3) {
@@ -963,9 +895,8 @@ class Index extends React.Component {
               }
               action={
                 <CustomMenu placement="bottom-end">
-                  {data.iduserpost === profile.id &&
-                    data.kindpost !== 2 &&
-                    data.kindpost !== 3 ? (
+                  {data.iduserpost === profile.id && data.kindpost !== 2 && data.kindpost !== 3 ?
+                    (
                       <MenuItem
                         onClick={() =>
                           this.setState({ showLocalMenu: false }, () => {
@@ -979,8 +910,8 @@ class Index extends React.Component {
                     ) : (
                       ""
                     )}
-                  {data.iduserpost == profile.id &&
-                    (data.kindpost == 2 || data.kindpost == 3) ? (
+                  {data.iduserpost == profile.id && (data.kindpost == 2 || data.kindpost == 3) ?
+                    (
                       <MenuItem
                         onClick={() =>
                           this.setState({
