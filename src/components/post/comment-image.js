@@ -525,7 +525,7 @@ class Index extends React.Component {
                     </Card>
                 </div>
                 <div className="filter"></div>
-                <div className="drawer-content" style={{ overflow: "scroll" }}>
+                <div className="drawer-content">
                     <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
                         <CardContent className="card-content">
                             {

@@ -19,7 +19,7 @@
 #root{
   background: #fff;
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   margin: 0px auto;
   position: relative;
 }
@@ -233,6 +233,8 @@
 
 .drawer-detail{
   height: 100%;
+  max-width: 600px;
+  width: 100%;
   .folowing-list,
   .folowed-list{
     max-height: 260px;
@@ -1183,6 +1185,15 @@
   ul{
     li{
       margin-bottom: 10px;
+    }
+  }
+}
+
+@media screen and (min-width:400px){
+  .drawer-detail{
+    overflow: initial;
+    .drawer-detail{
+      overflow: initial;
     }
   }
 }

@@ -313,6 +313,21 @@
             }
         }
     }
+    @media screen and (min-width:600px){
+        .friend-reward{
+            .friend-list{
+                margin: auto;
+                grid-template-columns: repeat(4,130px);
+                grid-template-rows: repeat(2, 200px);
+                .friend-item{
+                    .avatar{
+                    width: 130px;
+                    height: 130px;
+                    }
+                }
+            }
+        }
+    }
     .post-bt{
         border-top: 10px solid rgba(0,0,0,0.06);
         padding: 10px;

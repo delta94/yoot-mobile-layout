@@ -430,20 +430,25 @@ class Index extends React.Component {
          this.getComment(0, nextProps.data.nfid)
       }
    }
-   handlePostAuth(postforid, foloweds, statuspost) {
-      if (statuspost === 3) {
-         return false
+   handlePostAuth(newsFeedShareRoot, profile) {
+      const { statuspost, postforid,iduserpost } = newsFeedShareRoot
+      const { foloweds,id } = profile
+      if (iduserpost === id){
+        return true
+      }
+      else if (statuspost === 3) {
+        return false
       }
       else if (postforid === 4) {
-         return false
+        return false
       }
       else if (postforid === 3 && foloweds.length <= 0) {
-         return false
+        return false
       }
       else if (postforid === 3 && foloweds.some(item => item.status !== 10)) {
-         return false
+        return false
       } else return true
-   }
+    }
    handleGetGroupDetail(groupid) {
       if (!groupid) return
       get(SOCIAL_NET_WORK_API, "GroupUser/GetOneGroupUser?groupid=" + groupid, result => {
@@ -587,7 +592,7 @@ class Index extends React.Component {
                }
             </div>
             <div className="filter"></div>
-            <div className="drawer-content" style={{ overflow: "scroll" }}>
+            <div className="drawer-content">
                {
                   data ? <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
                      {
@@ -733,7 +738,7 @@ class Index extends React.Component {
                                     {
                                        data.newsFeedShareRoot && <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
 
-                                          {foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost)
+                                          {profile && this.handlePostAuth(data.newsFeedShareRoot, profile)
                                              ? <CardHeader
                                                 className="card-header"
                                                 avatar={
@@ -778,18 +783,18 @@ class Index extends React.Component {
                                              />}
 
                                           {
-                                             (foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost) && data.newsFeedShareRoot.kindpost === 4) ? <div className="album-name">
+                                             (profile && this.handlePostAuth(data.newsFeedShareRoot, profile) && data.newsFeedShareRoot.kindpost === 4) ? <div className="album-name">
                                                 <span>Album <span>{data.newsFeedShareRoot.albumname}</span></span>
                                              </div> : ""
                                           }
                                           {
-                                             (foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost) && data.newsFeedShareRoot.nfcontent !== "") ? <div
+                                             (profile && this.handlePostAuth(data.newsFeedShareRoot, profile) && data.newsFeedShareRoot.nfcontent !== "") ? <div
                                                 className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
                                                 style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
                                                 <PostContent content={data.newsFeedShareRoot} />
                                              </div> : ""
                                           }
-                                          {(foloweds && this.handlePostAuth(data.newsFeedShareRoot.postforid, foloweds, data.newsFeedShareRoot.statuspost)) &&
+                                          {(profile && this.handlePostAuth(data.newsFeedShareRoot, profile)) &&
                                              <CardContent className="card-content">
                                                 <div className="media-grid">
                                                    {
@@ -1182,7 +1187,7 @@ const renderDetailPosted = (component) => {
                </div>
             </div>
             <div className="filter"></div>
-            <div className="drawer-content" style={{ overflow: "scroll", background: "#ededed", padding: "10px" }}>
+            <div className="drawer-content" style={{ background: "#ededed", padding: "10px" }}>
                {
                   data && <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
                      {
