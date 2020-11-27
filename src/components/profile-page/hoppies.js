@@ -201,18 +201,8 @@ export class Index extends React.Component {
 
 
     render() {
-        let {
-            anchor,
-            showLocalMenu,
-            showUpdateForm,
-            hoppies,
-            otherSkill,
-            skills,
-            isProcessing
-        } = this.state
-        let {
-            data
-        } = this.props
+        let { anchor, showLocalMenu, showUpdateForm, hoppies, otherSkill, skills, isProcessing } = this.state
+        let { data } = this.props
         return (
             <div className="content-box">
                 <label>
@@ -329,16 +319,10 @@ const mapDispatchToProps = dispatch => ({
     getMeFolowing: (currentpage) => dispatch(getMeFolowing(currentpage))
 });
 
-export default connect(
-    null,
-    mapDispatchToProps
-)(Index);
+export default connect(null, mapDispatchToProps)(Index);
 
 const renderDeleteConfirm = (component) => {
-    let {
-        showDeleteConfirm,
-        isProcessing
-    } = component.state
+    let { showDeleteConfirm, isProcessing } = component.state
     return (
         <Drawer anchor="bottom" className="confirm-drawer" open={showDeleteConfirm} onClose={() => component.setState({ showDeleteConfirm: false })}>
             <div className='jon-group-confirm'>
@@ -360,9 +344,7 @@ const renderDeleteConfirm = (component) => {
 
 
 const renderCloseForm = (component) => {
-    let {
-        showCloseConfim,
-    } = component.state
+    let { showCloseConfim, } = component.state
     return (
         <Drawer anchor="bottom" className="confirm-drawer" open={showCloseConfim} onClose={() => component.setState({ showCloseConfim: false })}>
             <div className='jon-group-confirm'>

@@ -37,9 +37,11 @@ export class Loader extends React.Component {
     };
 
     onCropChange = (crop, percentCrop) => {
+        const {component} = this.props
         // You could also use percentCrop:
         // this.setState({ crop: percentCrop });
         this.setState({ crop });
+        component && component.setState({crop: crop})
     };
 
     getCroppedImg(image, crop, fileName, extention) {

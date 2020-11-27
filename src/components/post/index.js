@@ -866,6 +866,8 @@ class Index extends React.Component {
         item.postid = data.newsFeedShareRoot.nfid
       })
     }
+    console.log('props', this.props)
+    console.log('state', this.state)
     return data && (!data.isPedding || data.isPedding === false) ? (
       <div>
         <ScrollTrigger
@@ -926,25 +928,23 @@ class Index extends React.Component {
                     ) : (
                       ""
                     )}
-                  {data.iduserpost == profile.id &&
-                    data.kindpost != 2 &&
-                    data.kindpost != 3 ? (
-                      <MenuItem
-                        onClick={() =>
-                          this.setState({ showLocalMenu: false }, () =>
-                            this.setState({
-                              showConfim: true,
-                              okCallback: () => this.handleDeletePost(),
-                              confirmTitle: "Xoá bài đăng",
-                              confirmMessage:
-                                "Bạn có thật sự muốn xoá bài đăng này?",
-                            })
-                          )
-                        }
-                      >
-                        Xoá bài đăng
-                      </MenuItem>
-                    ) : (
+                  {(data.iduserpost == profile.id && (data.kindpost != 2 && data.kindpost != 3)) ? (
+                    <MenuItem
+                      onClick={() =>
+                        this.setState({ showLocalMenu: false }, () =>
+                          this.setState({
+                            showConfim: true,
+                            okCallback: () => this.handleDeletePost(),
+                            confirmTitle: "Xoá bài đăng",
+                            confirmMessage:
+                              "Bạn có thật sự muốn xoá bài đăng này?",
+                          })
+                        )
+                      }
+                    >
+                      Xoá bài đăng
+                    </MenuItem>
+                  ) : (
                       ""
                     )}
                   <MenuItem

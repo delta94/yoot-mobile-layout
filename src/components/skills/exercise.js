@@ -68,7 +68,7 @@ class Index extends React.Component {
     };
     this.video = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]
   }
-  
+
   goback() {
     let path = window.localStorage.getItem("REDIRECT")
     if (path) {
@@ -183,10 +183,7 @@ class Index extends React.Component {
   }
 
   handleSubmitHomework() {
-    let {
-      fileSelected,
-      exercises
-    } = this.state
+    let { fileSelected, exercises } = this.state
     let { sourceId } = this.props.match.params
     if (fileSelected) {
       let formData = new FormData
@@ -399,7 +396,12 @@ class Index extends React.Component {
                         </div>
                       }
                       {
-                        homeworks && !homeworks.some(item => item.STATUS === 1) && <Dropzone  multiple={false} onDrop={acceptedFiles => this.selectFile(acceptedFiles)} disabled={fileSelected != null && fileSelected != undefined}>
+                        homeworks && !homeworks.some(item => item.STATUS === 1) &&
+                        <Dropzone
+                          multiple={false} 
+                          onDrop={acceptedFiles => this.selectFile(acceptedFiles)}
+                          disabled={fileSelected != null && fileSelected != undefined}
+                        >
                           {({ getRootProps, getInputProps }) => (
                             <div {...getRootProps()} className="box-upload-file" id="upload-homework-bt">
                               <input {...getInputProps()} accept={!item.EXERCISE_TYPE_FK == 3 && "video/*"} />

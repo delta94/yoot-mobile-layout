@@ -431,24 +431,24 @@ class Index extends React.Component {
       }
    }
    handlePostAuth(newsFeedShareRoot, profile) {
-      const { statuspost, postforid,iduserpost } = newsFeedShareRoot
-      const { foloweds,id } = profile
-      if (iduserpost === id){
-        return true
+      const { statuspost, postforid, iduserpost } = newsFeedShareRoot
+      const { foloweds, id } = profile
+      if (iduserpost === id) {
+         return true
       }
       else if (statuspost === 3) {
-        return false
+         return false
       }
       else if (postforid === 4) {
-        return false
+         return false
       }
       else if (postforid === 3 && foloweds.length <= 0) {
-        return false
+         return false
       }
       else if (postforid === 3 && foloweds.some(item => item.status !== 10)) {
-        return false
+         return false
       } else return true
-    }
+   }
    handleGetGroupDetail(groupid) {
       if (!groupid) return
       get(SOCIAL_NET_WORK_API, "GroupUser/GetOneGroupUser?groupid=" + groupid, result => {
@@ -1291,7 +1291,11 @@ const renderDetailPosted = (component) => {
                            onShortPress={(reaction) => data.islike == 1 ? component.dislikePosted(reaction) : component.likePosted(reaction)}
                         />
 
-                        <Button onClick={() => component.setState({ showCommentDrawer: true, currentPost: data })}><img src={daskMode ? comment1 : comment} />Bình luận</Button>
+                        <Button
+                           onClick={() => component.setState({ showCommentDrawer: true, currentPost: data })}
+                        >
+                           <img src={daskMode ? comment1 : comment} />Bình luận
+                        </Button>
                         <Button onClick={() => component.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
                      </CardActions>
 

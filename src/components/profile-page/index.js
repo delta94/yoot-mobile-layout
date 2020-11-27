@@ -1,56 +1,20 @@
 import React from "react";
 import "./style.scss";
 import {
-  addHeaderContent,
-  addFooterContent,
-  toggleHeader,
-  toggleUserDetail,
-  toggleUserHistory,
-  toggleChangePasswordForm,
-  toggleBlockFriendForm,
-  toggleFriendsForBlockForm,
-  toggleFriendDrawer,
-  togglePostDrawer,
-  toggleFooter,
-  setMediaToViewer,
-  toggleMediaViewerDrawer,
-  toggleUserPageDrawer,
-  toggleSeachFriends,
-  setCurrentFriendId,
+  addHeaderContent, addFooterContent, toggleHeader, toggleUserDetail, toggleUserHistory, toggleChangePasswordForm,
+  toggleBlockFriendForm, toggleFriendsForBlockForm, toggleFriendDrawer, togglePostDrawer, toggleFooter, setMediaToViewer,
+  toggleMediaViewerDrawer, toggleUserPageDrawer, toggleSeachFriends, setCurrentFriendId,
 } from "../../actions/app";
 import { setMePosted, likePosted, setUserPosted } from "../../actions/posted";
-import {
-  setUserProfile,
-  getFolowedMe,
-  getMeFolowing,
-  unFollowFriend,
-  followFriend,
-} from "../../actions/user";
+import { setUserProfile, getFolowedMe, getMeFolowing, unFollowFriend, followFriend, } from "../../actions/user";
 import { setCurrenUserDetail } from "../../actions/user";
 import {
-  PhotoCamera as PhotoCameraIcon,
-  ChevronLeft as ChevronLeftIcon,
-  MoreHoriz as MoreHorizIcon,
-  PlayArrow as PlayArrowIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
-  AddCircleOutline as AddCircleOutlineIcon,
-  NavigateNext as NavigateNextIcon,
-  Check as CheckIcon,
+  PhotoCamera as PhotoCameraIcon, ChevronLeft as ChevronLeftIcon, MoreHoriz as MoreHorizIcon, PlayArrow as PlayArrowIcon,
+  Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon, AddCircleOutline as AddCircleOutlineIcon,
+  NavigateNext as NavigateNextIcon, Check as CheckIcon,
 } from "@material-ui/icons";
 import { connect } from "react-redux";
-import {
-  IconButton,
-  Drawer,
-  Button,
-  Avatar,
-  TextField,
-  InputAdornment,
-  AppBar,
-  Tabs,
-  Tab,
-  Badge,
-} from "@material-ui/core";
+import { IconButton, Drawer, Button, Avatar, TextField, InputAdornment, AppBar, Tabs, Tab, Badge, } from "@material-ui/core";
 import Switch from "react-ios-switch";
 import moment from "moment";
 import { signOut } from "../../auth";
@@ -67,12 +31,7 @@ import "react-image-crop/lib/ReactCrop.scss";
 import Cropper from "../common/cropper";
 import { postFormData, get, post } from "../../api";
 import { SOCIAL_NET_WORK_API, CurrentDate } from "../../constants/appSettings";
-import {
-  showNotification,
-  objToQuery,
-  jsonFromUrlParams,
-  formatCurrency,
-} from "../../utils/common";
+import { showNotification, objToQuery, jsonFromUrlParams, formatCurrency, } from "../../utils/common";
 import { signIn } from "../../auth";
 import $ from "jquery";
 import Medias from "./medias";
@@ -456,12 +415,8 @@ class Index extends React.Component {
   };
 
   updateBackground() {
-    let {
-      backgroundToUpload,
-      rootBackgroundToUpload,
-      isProccessing,
-      postContent,
-    } = this.state;
+    let { backgroundToUpload, rootBackgroundToUpload, isProccessing, postContent, } = this.state;
+
     var fr = new FileReader();
     let that = this;
     if (isProccessing == true) return;
@@ -472,7 +427,6 @@ class Index extends React.Component {
       var img = new Image();
       img.onload = function () {
         const formData = new FormData();
-
         if (backgroundToUpload) {
           let backgroundFileToUpload = new File(
             [backgroundToUpload.file],
@@ -484,24 +438,13 @@ class Index extends React.Component {
             }
           );
           formData.append(
-            "avatarcut_1_" +
-            backgroundToUpload.width +
-            "_" +
-            backgroundToUpload.height,
-            backgroundFileToUpload
+            "avatarcut_1_" + backgroundToUpload.width + "_" + backgroundToUpload.height, backgroundFileToUpload
           );
         } else {
-          formData.append(
-            "avatarcut_1_" + img.width + "_" + img.height,
-            rootBackgroundToUpload
-          );
+          formData.append("avatarcut_1_" + img.width + "_" + img.height, rootBackgroundToUpload);
         }
-
         formData.append("content", postContent ? postContent : "");
-        formData.append(
-          "avatarroot_0_" + img.width + "_" + img.height,
-          rootBackgroundToUpload
-        );
+        formData.append("avatarroot_0_" + img.width + "_" + img.height, rootBackgroundToUpload);
 
         postFormData(
           SOCIAL_NET_WORK_API,
@@ -956,14 +899,7 @@ class Index extends React.Component {
 
   render() {
     let {
-      showUserMenu,
-      croppedImageUrl,
-      numOfFriend,
-      friends,
-      openMediaDrawer,
-      isLoadMore,
-      postIndexActive,
-      openVideoDrawer,
+      showUserMenu, croppedImageUrl, numOfFriend, friends, openMediaDrawer, isLoadMore, postIndexActive, openVideoDrawer
     } = this.state;
     let { profile, userPosteds } = this.props;
 
@@ -971,11 +907,11 @@ class Index extends React.Component {
     if (profile && userPosteds) {
       myPosteds = userPosteds[profile.id];
     }
-    return profile ? (
+    return profile && (
       <div className="profile-page">
         <div
           className="cover-img"
-          style={{ background: "url(" + profile.backgroundroot + ")" }}
+          style={{ background: "url(" + profile.background + ")" }}
         >
           <div
             className="overlay"
@@ -1272,7 +1208,6 @@ class Index extends React.Component {
         {renderUpdateBackgroundReviewDrawer(this)}
         {renderBackgroundCropperDrawer(this)}
         {renderAllFriendsDrawer(this)}
-
         {renderConfirmDrawer(this)}
         {renderFriendActionsDrawer(this)}
         {renderUserDetailDrawer(this)}
@@ -1292,9 +1227,7 @@ class Index extends React.Component {
             )}
         </div>
       </div>
-    ) : (
-        ""
-      );
+    )
   }
 }
 
@@ -1957,7 +1890,7 @@ const renderFriendsForBlockDrawer = (component) => {
           <TextField
             className="custom-input"
             variant="outlined"
-            placeholder="Tìm kiếm"
+            placeholder="Nhập tên bạn bè để tìm..."
             className="search-box"
             style={{
               width: "100%",
@@ -2002,10 +1935,7 @@ const renderFriendsForBlockDrawer = (component) => {
                       }}
                     >
                       <Avatar aria-label="recipe" className="avatar">
-                        <div
-                          className="img"
-                          style={{ background: `url("${item.friendavatar}")` }}
-                        />
+                        <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                       </Avatar>
                       <label
                         onClick={() => {
@@ -2301,12 +2231,7 @@ const renderFriendActionsDrawer = (component) => {
 };
 
 const renderUpdateAvatarReviewDrawer = (component) => {
-  let {
-    openUploadAvatarReview,
-    isReviewMode,
-    avatarToUpload,
-    isProccessing,
-  } = component.state;
+  let { openUploadAvatarReview, isReviewMode, avatarToUpload, isProccessing, } = component.state;
   let { profile } = component.props;
   return (
     <Drawer
@@ -2381,13 +2306,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
 };
 
 const renderCropperDrawer = (component) => {
-  let {
-    openCropperDrawer,
-    crop,
-    src,
-    croppedImage,
-    isProccessing,
-  } = component.state;
+  let { openCropperDrawer, crop, src, croppedImage, isProccessing, } = component.state;
   return (
     <Drawer
       anchor="bottom"
@@ -2449,13 +2368,7 @@ const renderCropperDrawer = (component) => {
 };
 
 const renderUpdateBackgroundReviewDrawer = (component) => {
-  let {
-    openUploadBackgroundReview,
-    postContent,
-    isReviewMode,
-    isProccessing,
-    backgroundToUpload
-  } = component.state;
+  let { openUploadBackgroundReview, postContent,backgroundSrc, isReviewMode, isProccessing, backgroundToUpload } = component.state;
   let { profile } = component.props;
   return (
     <Drawer
@@ -2493,7 +2406,7 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "scroll", width: "100%" }}
         >
           <div className="post-content">
             <MultiInput
@@ -2509,12 +2422,9 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
             <div
               className="cover-img"
               style={{
-                background:
-                  "url(" +
-                  (backgroundToUpload && backgroundToUpload.file
-                    ? URL.createObjectURL(backgroundToUpload.file)
-                    : profile.background) +
-                  ")",
+                background: "url(" + (backgroundToUpload && backgroundToUpload.file
+                  ? URL.createObjectURL(backgroundToUpload.file)
+                  : backgroundSrc) + ")",
               }}
             ></div>
             <div
@@ -2531,13 +2441,10 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
 
 const renderBackgroundCropperDrawer = (component) => {
   let {
-    openBackgroundCropperDrawer,
-    crop,
-    backgroundSrc,
-    backgroundToUpload,
-    backgroundCroppedImage,
-    isProccessing,
+    openBackgroundCropperDrawer, crop, backgroundSrc, backgroundToUpload,rootBackgroundToUpload, backgroundCroppedImage, isProccessing,
   } = component.state;
+  console.log(component.state)
+  console.log(component.props.profile)
   return (
     <Drawer
       anchor="bottom"
@@ -2552,22 +2459,23 @@ const renderBackgroundCropperDrawer = (component) => {
             style={{ overflow: "scroll", background: "#f2f3f7" }}
           >
             <Cropper
+              component={component}
               src={backgroundSrc}
               crop={crop}
               onCropped={(file) =>
-                component.setState({ backgroundCroppedImage: file })
-              }
+                component.setState({
+                  backgroundCroppedImage: file
+                })}
             />
           </div>
           <div className="footer-drawer">
             <label>Kéo hình của bạn muốn hiển thị theo khung ảnh</label>
             <div>
               <Button
-                onClick={() =>
-                  component.setState({
-                    openBackgroundCropperDrawer: false,
-                    isReviewMode: false,
-                  })
+                onClick={() => component.setState({
+                  openBackgroundCropperDrawer: false,
+                  isReviewMode: false,
+                })
                 }
               >
                 Huỷ
@@ -2577,7 +2485,7 @@ const renderBackgroundCropperDrawer = (component) => {
                   component.setState({
                     openBackgroundCropperDrawer: false,
                     isReviewMode: true,
-                    backgroundToUpload: backgroundCroppedImage,
+                    backgroundToUpload: (crop.x!==0 || crop.y !== 0) ? backgroundCroppedImage : "",
                   })
                 }
               >
@@ -2586,7 +2494,7 @@ const renderBackgroundCropperDrawer = (component) => {
               <Button
                 onClick={() =>
                   component.setState(
-                    { backgroundToUpload: backgroundCroppedImage },
+                    { backgroundToUpload: (crop.x!==0 || crop.y !== 0) ? backgroundCroppedImage : "" },
                     () => component.updateBackground()
                   )
                 }

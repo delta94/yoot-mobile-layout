@@ -53,13 +53,8 @@ export class Loader extends React.Component {
 
     onChange = (editorState) => {
 
-        let {
-            mentionIdSelected
-        } = this.state
-        let {
-            maxLength,
-            unit
-        } = this.props
+        let { mentionIdSelected } = this.state
+        let { maxLength, unit } = this.props
 
         let outputString = editorState.getCurrentContent().getPlainText("")
 
@@ -143,9 +138,7 @@ export class Loader extends React.Component {
     };
 
     onAddMention = (mention) => {
-        let {
-            mentionIdSelected
-        } = this.state
+        let { mentionIdSelected } = this.state
         mentionIdSelected = mentionIdSelected.filter(item => item.id != mention.friendid)
         mentionIdSelected.push({ id: mention.friendid, key: '@' + mention.name })
         this.setState({
@@ -210,9 +203,7 @@ export class Loader extends React.Component {
     }
 
     componentDidMount() {
-        let {
-            value
-        } = this.props
+        let { value } = this.props
         if (value && value.length > 0)
             this.setDefaultValue(value)
         this.focus()
@@ -223,15 +214,7 @@ export class Loader extends React.Component {
     render() {
         const { MentionSuggestions } = this.mentionPlugin;
         let plugins = [];
-        let {
-            style,
-            topDown,
-            placeholder,
-            enableHashtag,
-            enableMention,
-            centerMode,
-            suggestionClass
-        } = this.props
+        let { style, topDown, placeholder, enableHashtag, enableMention, centerMode, suggestionClass } = this.props
 
         if (enableHashtag == true) {
             plugins.push(this.hashtagPlugin)

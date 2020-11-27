@@ -360,18 +360,8 @@ export class Index extends React.Component {
 
   handlePost() {
     let {
-      postContent,
-      mentionSelected,
-      hashtagSelected,
-      privacySelected,
-      isPosting,
-      backgroundSelected,
-      tagedFrieds,
-      imageSelected,
-      videoSelected,
-      nfid,
-      postedImage,
-      postedVideo,
+      postContent, mentionSelected, hashtagSelected, privacySelected, isPosting, backgroundSelected,
+      tagedFrieds, imageSelected, videoSelected, nfid, postedImage, postedVideo,
     } = this.state;
     let { albumSelected, profile, currentGroup } = this.props;
     if (isPosting == true) return;
@@ -439,15 +429,7 @@ export class Index extends React.Component {
 
     if (imageSelected.length > 0) {
       imageSelected.map((image, index) => {
-        data.append(
-          "image_" +
-          (index + currentIndex) +
-          "_" +
-          image.width +
-          "_" +
-          image.height,
-          image.file
-        );
+        data.append("image_" + (index + currentIndex) + "_" + image.width + "_" + image.height, image.file);
       });
     }
 
@@ -1445,7 +1427,7 @@ const renderGroupForPostDrawer = (component) => {
                     <Avatar className="avatar">
                       <div
                         className="img"
-                        style={{ background: group.thumbnail ? `url("${group.thumbnail}")`:`url("${noImageGroup}")` }}
+                        style={{ background: group.thumbnail ? `url("${group.thumbnail}")` : `url("${noImageGroup}")` }}
                       />
                     </Avatar>
                     <div className="group-info">
