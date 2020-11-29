@@ -1183,7 +1183,7 @@ const renderYourMajorsDrawer = (component) => {
               </Tabs>
             </div>
           </div>
-          <div style={{ overflow: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
+          <div style={{ overflowY: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
             {
               careerList && careerList.length > 0 ? <div className="panel" style={{ borderBottom: "1px solid #f2f3f7", width: "95%", margin: "0 auto 10px" }}>
 

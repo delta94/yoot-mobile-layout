@@ -1145,7 +1145,7 @@ const renderMediaDrawer = (component) => {
           </div>
           <div
             className="content-form"
-            style={{ overflow: "scroll", width: "100vw" }}
+            style={{ overflow: "scroll"}}
           >
             <SwipeableViews
               index={mediaTabIndex}

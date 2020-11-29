@@ -1069,7 +1069,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
                     </div>
                     <div className="filter">
                     </div>
-                    <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+                    <div className="content-form" style={{ overflow: "scroll"}}>
                         <div className="post-content">
                             <MultiInput
                                 disabledInput={true}
@@ -1170,7 +1170,7 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
                     </div>
                     <div className="filter">
                     </div>
-                    <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+                    <div className="content-form" style={{ overflow: "scroll" }}>
                         <div className="post-content">
                             <MultiInput
                                 placeholder="Nhập nội dung"

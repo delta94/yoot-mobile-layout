@@ -1355,7 +1355,7 @@ const renderUserMenuDrawer = (component) => {
   let { profile } = component.props;
   return (
     <Drawer
-      anchor="right"
+      anchor="bottom"
       className="user-menu full"
       open={showUserMenu}
       onClose={() => component.setState({ showUserMenu: false })}
@@ -1459,7 +1459,7 @@ const renderUserHistoryDrawer = (component) => {
 
   return (
     <Drawer
-      anchor="right"
+      anchor="bottom"
       open={showUserHistory}
       onClose={() => component.props.toggleUserHistory(false)}
       style={{ height: "100%", position: "fixed" }}
@@ -1613,7 +1613,7 @@ const renderChangePasswordDrawer = (component) => {
   } = component.state;
   return (
     <Drawer
-      anchor="right"
+      anchor="bottom"
       open={showChangePasswordForm}
       onClose={() => component.props.toggleChangePasswordForm(false)}
     >
@@ -1638,7 +1638,7 @@ const renderChangePasswordDrawer = (component) => {
           className="content-form"
           style={{
             height: "calc(100vh - 60px)",
-            width: "100vw",
+            maxWidth: "600px",
             display: "flex",
             alignItems: "center",
           }}
@@ -1775,7 +1775,7 @@ const renderBlockFriendDrawer = (component) => {
   let { rejectFriends } = component.state;
   return (
     <Drawer
-      anchor="right"
+      anchor="bottom"
       open={showBlockFriendForm}
       onClose={() => component.props.toggleBlockFriendForm(false)}
     >
@@ -1810,7 +1810,7 @@ const renderBlockFriendDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflowY: "scroll", maxWidth: "600px" }}
           id="friend-blocked"
           onScroll={() => component.onBlockedScroll()}
         >
@@ -1919,7 +1919,7 @@ const renderFriendsForBlockDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "scroll"}}
           id="all-friend-for-block"
           onScroll={() => component.onAllFriendScrool()}
         >
@@ -2269,7 +2269,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "scroll" }}
         >
           <div className="post-content">
             <MultiInput
@@ -2901,7 +2901,7 @@ const renderSettingDrawer = (component) => {
           </div>
         </div>
         <div className="filter"></div>
-        <div className="content-form" style={{ width: "100vw" }}>
+        <div className="content-form">
           <div>
             <span>Tắt tiếng video trên bản tin</span>
             <Switch

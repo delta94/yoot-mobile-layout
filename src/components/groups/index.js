@@ -988,7 +988,7 @@ const renderCreateGroupDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", width: "100vw", paddingBottom: "100px" }}
+          style={{ overflow: "scroll", paddingBottom: "100px" }}
         >
           <div>
             <label>Tên nhóm</label>
@@ -1229,7 +1229,7 @@ const renderGroupListDrawer = (component) => {
         <div
           className="content-form"
           id="group-list"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "scroll"}}
           onScroll={() => component.groupScroll(groupTabIndex)}
         >
           <SwipeableViews

@@ -239,8 +239,6 @@
   .folowing-list,
   .folowed-list{
     max-height: 260px;
-    overflow-y: scroll;
-    overflow-x: hidden;
   }
   .drawer-header{
     border-bottom: 1px solid rgba(0,0,0,0.1);
@@ -490,6 +488,7 @@
     background: rgba(0, 0, 0, 0.0)  !important;
     padding: 0px !important;
     .tab-header{
+      max-width: 600px;
       > div{
         >div{
           > span:last-child{
@@ -515,6 +514,7 @@
     }
   }
   .friend-list{
+    max-width: 600px;
     ul{
       li{
         display: flex;
@@ -665,7 +665,7 @@
     display: flex;
     align-items: center;
     position: relative;
-    overflow: scroll;
+    overflow-y: scroll;
     .overlay{
       position: absolute;
       top: 0px;
@@ -1192,6 +1192,7 @@
 
 @media screen and (min-width:400px){
   .drawer-detail{
+    max-width: 600px;
     overflow: initial;
     .drawer-detail{
       overflow: initial;

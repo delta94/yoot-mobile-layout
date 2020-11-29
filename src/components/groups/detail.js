@@ -1237,7 +1237,7 @@ const renderUpdateGroupDrawer = (component) => {
         </div>
         <div className="filter">
         </div>
-        <div className="content-form" style={{ overflow: "scroll", width: "100vw", paddingBottom: "100px" }} >
+        <div className="content-form" style={{ overflow: "scroll", paddingBottom: "100px" }} >
           <div>
             <label>Tên nhóm</label>
             <TextField

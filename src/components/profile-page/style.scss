@@ -412,6 +412,7 @@
 }
 
 .user-menu{
+    margin: auto;
     &.full{
         > div:last-child{
             border-radius: 0px !important;
@@ -432,9 +433,12 @@
         }
     }
     .menu-list{
+        max-width: 600px;
+        margin: auto;
         padding: 0px 10px;
         margin-top: 20px;
         li{
+            width: 600px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -468,8 +472,10 @@
 
 .update-profile-form{
     div.content-form{
+        margin: auto;
         height: calc(100vh - 60px);
-        overflow: scroll;
+        max-width: 600px;
+        overflow-y: scroll;
     }
     .form-header{
         display: flex;
@@ -627,7 +633,7 @@
     .form-content{
         padding: 20px;
         height: calc(100vh - 60px);
-        overflow: scroll;
+        overflow-y: scroll;
         .date-select{
             border: 1px solid rgba(0,0,0,0.15);
             border-radius: 7px;

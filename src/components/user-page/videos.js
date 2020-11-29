@@ -132,7 +132,7 @@ export class Index extends React.Component {
                             </div>
                             <div className="filter">
                             </div>
-                            <div className="content-form" style={{ overflow: "scroll", width: "100vw" }} id={"video-content-" + currentUser.id} onScroll={() => this.onScroll(currentUser.id)}>
+                            <div className="content-form" style={{ overflow: "scroll" }} id={"video-content-" + currentUser.id} onScroll={() => this.onScroll(currentUser.id)}>
                                 <div className="image-posted image-box">
                                     <ul className="image-list">
                                         {

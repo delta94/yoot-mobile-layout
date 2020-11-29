@@ -209,7 +209,7 @@ const Report = ({  toggleReportComment,app }) => {
                </div>
             </div>
             <div className="filter"></div>
-            <div className="content-form" style={{ overflow: "scroll", width: "100vw" }}>
+            <div className="content-form">
                <div>
                   <img src={report} />
                   <label>Bạn thấy bài đăng này có dấu hiệu nào dưới đây?</label>

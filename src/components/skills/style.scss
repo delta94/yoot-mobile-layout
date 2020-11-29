@@ -643,6 +643,7 @@
         border-radius: 10px;
     }
     .drawer-detail{
+        max-width: 600px;
         height: 100%;
         grid-template-rows: min-content auto min-content ;
         .drawer-header{

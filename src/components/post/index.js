@@ -3127,7 +3127,7 @@ const renderReportPostDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "scroll" }}
         >
           <div>
             <img src={report} />
@@ -3278,7 +3278,7 @@ const renderReportGroupDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "scroll" }}
         >
           <div>
             <img src={report} />
