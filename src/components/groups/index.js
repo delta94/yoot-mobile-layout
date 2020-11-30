@@ -1443,7 +1443,6 @@ const renderGroupInviteDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="drawer-content"
-          style={{ overflow: "scroll", width: "100vw" }}
         >
           <div className="my-group-list">
             <ul>

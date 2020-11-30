@@ -16,8 +16,10 @@
   }
   
 }
+body{
+  background: #f2f3f7;
+}
 #root{
-  background: #fff;
   width: 100%;
   max-width: 600px;
   margin: 0px auto;
@@ -58,6 +60,7 @@
       }
     }
     .user-reward{
+      cursor: pointer;
       .profile{
         width: fit-content;
         padding-right: 15px;
@@ -104,6 +107,7 @@
   
 }
 .user-reward{
+  cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -182,6 +186,7 @@
     justify-content: space-between;
     width: 100%;
     li{
+      cursor: pointer;
       text-align: center;
       width: 100%;
       img{
@@ -265,6 +270,7 @@
       }
     }
     .user-reward{
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: flex-end;

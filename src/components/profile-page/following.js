@@ -280,7 +280,7 @@ export class Index extends React.Component {
                         </Tabs>
                     </AppBar>
                 </div>
-                <div style={{ overflow: "scroll", height: "100%" }} id="folow-reward-list" onScroll={() => this.onScroll()}>
+                <div style={{ height: "100%" }} id="folow-reward-list" onScroll={() => this.onScroll()}>
 
                     <SwipeableViews
                         index={userDetailFolowTabIndex}

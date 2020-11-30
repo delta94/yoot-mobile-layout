@@ -1866,7 +1866,7 @@ const renderFriendsForBlockDrawer = (component) => {
   let { showFriendsForBlockForm } = component.props;
   return (
     <Drawer
-      anchor="right"
+      anchor="bottom"
       open={showFriendsForBlockForm}
       onClose={() => component.props.toggleFriendsForBlockForm(false)}
     >
@@ -1919,7 +1919,6 @@ const renderFriendsForBlockDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          style={{ overflow: "scroll"}}
           id="all-friend-for-block"
           onScroll={() => component.onAllFriendScrool()}
         >
@@ -2869,7 +2868,7 @@ const renderSettingDrawer = (component) => {
   } = component.state;
   // BINH: change setting when click back button
   return (
-    <Drawer anchor="right" open={showSettingDrawer}>
+    <Drawer anchor="bottom" open={showSettingDrawer}>
       <div className="drawer-detail setting-drawer">
         <div className="drawer-header">
           <div

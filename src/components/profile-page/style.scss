@@ -20,7 +20,13 @@
         
     }
 }
-
+@media screen and (min-width: 400px){
+    .profile-page{
+        .cover-img{
+            height: 60vh !important;
+        }
+    }
+}
 .profile-page{
     min-height: 100vh;
     border-bottom: 10px solid rgba(0,0,0,0.06);
@@ -221,6 +227,7 @@
             }
         }
         .view-detail-link{
+            cursor: pointer;
             padding-left: 3px;
             margin-top: 10px;
             display: flex;
@@ -1040,7 +1047,6 @@
     }
     .drawer-content{
         .album-background{
-            width: 100vw;
             height: 50vw;
             background: #EDEDED;
             > div{

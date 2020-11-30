@@ -599,7 +599,7 @@ class Index extends React.Component {
         </div>
         <div className="filter"></div>
         <div
-          style={{ overflow: "scroll" }}
+          // style={{ overflow: "scroll" }}
           onScroll={() => this.onScroll()}
           id={"user-page-scrolling"}
         >

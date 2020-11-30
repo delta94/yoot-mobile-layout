@@ -1375,7 +1375,6 @@ const renderFriendsForBlockDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", width: "100vw" }}
           id="all-friend-for-block"
           onScroll={() => component.onAllFriendScrool()}
         >

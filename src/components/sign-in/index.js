@@ -292,7 +292,7 @@ class Index extends React.Component {
             className="tab-content"
           >
             <TabPanel value={value} index={0} className="content-box">
-              <div>
+              <div style={{overflowX:"hidden"}}>
                 <TextField
                   className="custom-input"
                   variant="outlined"
@@ -344,7 +344,7 @@ class Index extends React.Component {
               </div>
             </TabPanel>
             <TabPanel value={value} index={1} >
-              <div className="sign-up-form">
+              <div className="sign-up-form"  style={{overflowX:"hidden"}}>
                 <div>
                   <label>Thông tin tài khoản</label>
                   <TextField
