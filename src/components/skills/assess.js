@@ -481,7 +481,7 @@ const renderAddAssessDrawer = (component) => {
             </IconButton>
           </div>
         </div>
-        <div className="drawer-content" style={{ overflow: "scroll" }}>
+        <div className="drawer-content" style={{ overflow: "auto" }}>
           <ul className="assess-list">
             {
               assessors.map((assess, index) => <li key={index}>
@@ -520,7 +520,7 @@ const renderApplyDrawer = (component) => {
           </div>
         </div>
         <div className="filter"></div>
-        <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="drawer-content" style={{ overflow: "auto"}}>
           <div className="apply-form">
             <label>{lesson.name}</label>
             <span>Bài tập: </span>

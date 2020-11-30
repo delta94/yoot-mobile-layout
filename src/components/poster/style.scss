@@ -1,4 +1,13 @@
 
+@media screen and (min-width: 400px){
+  .background-list {
+    ul {
+      li {
+        height: 200px !important;
+      }
+    }
+  }
+}
 .poster-drawer {
   .drawer-detail {
     max-width: 600px;
@@ -51,6 +60,7 @@
           width: 100%;
           display: flex;
           align-items: center;
+          cursor: pointer;
           padding: 0px 5px;
           border-radius: 7px;
           height: 35px;
@@ -121,6 +131,7 @@
           }
         }
         .bt-sumbit {
+          cursor: pointer;
           display: flex;
           align-items: center;
           padding: 0px 15px 0px 10px;

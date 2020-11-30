@@ -580,6 +580,7 @@ class Index extends React.Component {
 
 
     return (
+      <div className="wrapper" style={{background:"#f2f3f7"}}>
       <div className="drawer-detail">
         <div className="drawer-header">
           <div className="direction" onClick={() => {
@@ -621,7 +622,7 @@ class Index extends React.Component {
         </div>
         <div className="filter">
         </div>
-        <div className="drawer-content" id="group-page-scrolling" style={{ overflow: "scroll", width: "100vw" }} >
+        <div className="drawer-content" id="group-page-scrolling" >
           {
             groupDetail ? <div className="group-detail-content">
               <div className="group-background" style={{ background: `url("${groupDetail.backgroundimage}")` }}>
@@ -796,6 +797,7 @@ class Index extends React.Component {
           renderUpdateGroupDrawer(this)
         }
       </div>
+      </div>
     );
   }
 }
@@ -848,7 +850,7 @@ const renderSearchGroupDrawer = (component) => {
         <div className="filter">
 
         </div>
-        <StickyContainer className="drawer-content" style={{ overflow: "scroll", width: "100vw" }} relative={true}>
+        <StickyContainer className="drawer-content" style={{ overflow: "auto"}} relative={true}>
           <Sticky relative={true}>
             {({ style }) => (
               <div style={{ ...style, zIndex: 999 }}>
@@ -975,7 +977,7 @@ const renderAllUserDrawer = (component) => {
         <div className="filter">
 
         </div>
-        <div className="drawer-content" id="all-user-in-group" style={{ overflow: "scroll", width: "100vw" }} onScroll={() => component.onScroll()}>
+        <div className="drawer-content" id="all-user-in-group" style={{ overflow: "auto"}} onScroll={() => component.onScroll()}>
           {
             userList && userList.length > 0 ? <div className="user-list">
               <ul>
@@ -1058,7 +1060,7 @@ const renderAllFriendToInvite = (component) => {
             }}
           />
         </div>
-        <div style={{ overflow: "scroll", width: "100vw" }} id="all-user-list" onScroll={() => component.onAllUserScroll()}>
+        <div style={{ overflow: "auto" }} id="all-user-list" onScroll={() => component.onAllUserScroll()}>
           <div className="friend-list" >
             <ul>
               {
@@ -1237,7 +1239,7 @@ const renderUpdateGroupDrawer = (component) => {
         </div>
         <div className="filter">
         </div>
-        <div className="content-form" style={{ overflow: "scroll", paddingBottom: "100px" }} >
+        <div className="content-form" style={{ overflow: "auto", paddingBottom: "100px" }} >
           <div>
             <label>Tên nhóm</label>
             <TextField

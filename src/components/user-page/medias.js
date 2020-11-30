@@ -309,7 +309,7 @@ export class Index extends React.Component {
                                     </Tabs>
                                 </AppBar>
                             </div>
-                            <div className="content-form" style={{ overflow: "scroll" }} id="media-content" onScroll={() => this.onScroll(mediaTabIndex)}>
+                            <div className="content-form" style={{ overflow: "auto" }} id="media-content" onScroll={() => this.onScroll(mediaTabIndex)}>
                                 <SwipeableViews
                                     index={mediaTabIndex}
                                     onChangeIndex={(value) => this.setState({ mediaTabIndex: value })}

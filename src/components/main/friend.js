@@ -543,7 +543,7 @@ class Index extends React.Component {
                                     })}
                                     indicatorColor="primary"
                                     textColor="primary"
-                                    // variant="fullWidth"
+                                    variant="fullWidth"
                                     aria-label="full width tabs example"
                                     className="tab-header"
                                 >
@@ -554,7 +554,7 @@ class Index extends React.Component {
                                 </Tabs>
                             </AppBar>
                         </div>
-                        <div className="content-form" style={{ overflow: "scroll"}} id="friend-content" onScroll={() => this.handleScroll()}>
+                        <div className="content-form" style={{ overflow: "auto"}} id="friend-content" onScroll={() => this.handleScroll()}>
                             <SwipeableViews
                                 index={friendTabIndex}
                                 onChangeIndex={(value) => this.setState({ friendTabIndex: value })}

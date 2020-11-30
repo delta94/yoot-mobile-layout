@@ -26,13 +26,31 @@
             height: 60vh !important;
         }
     }
+    .album {
+        ul{
+            grid-template-columns: repeat(3,1fr) !important;
+            li{
+                >div{
+                    height: 200px !important;
+                }
+            }
+        }
+    }
+    .img-select-option{
+        .option-header,.option-list{
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+    }
 }
 .profile-page{
     min-height: 100vh;
-    border-bottom: 10px solid rgba(0,0,0,0.06);
+    border-bottom: 10px solid #f2f3f7;
     .posted{
         padding: 10px;
-        background: #F0F0F0;
+        background: #f2f3f7;
         > ul{
             > li{
                 margin-bottom: 10px;
@@ -268,6 +286,7 @@
             width: calc(100vw - 20px);
             grid-column-gap: 10px;
             .friend-item{
+                cursor: pointer;
                 margin: 5px 0px;
                 .avatar{
                     width: calc((100vw - 40px)/3);
@@ -304,6 +323,7 @@
             }
         }
         .search-friend{
+            cursor: pointer;
             position: absolute;
             top: 10px;
             right: 15px;
@@ -327,6 +347,7 @@
                 grid-template-columns: repeat(4,130px);
                 grid-template-rows: repeat(2, 200px);
                 .friend-item{
+                    cursor: pointer;
                     .avatar{
                     width: 130px;
                     height: 130px;
@@ -334,9 +355,10 @@
                 }
             }
         }
+        
     }
     .post-bt{
-        border-top: 10px solid rgba(0,0,0,0.06);
+        border-top: 10px solid #f2f3f7;
         padding: 10px;
         display: flex;
         align-items: center;
@@ -347,12 +369,13 @@
         }
     }
     .quit-post-bt{
-        border-top: 10px solid rgba(0,0,0,0.06);
+        border-top: 10px solid #f2f3f7;
         padding: 10px;
         ul{
             display: flex;
             align-items: center;
             li{
+                cursor: pointer;
                 display: flex;
                 align-items: center;
                 height: 45px;
@@ -445,7 +468,6 @@
         padding: 0px 10px;
         margin-top: 20px;
         li{
-            width: 600px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -482,7 +504,7 @@
         margin: auto;
         height: calc(100vh - 60px);
         max-width: 600px;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .form-header{
         display: flex;

@@ -654,7 +654,7 @@ const renderTopRankDrawer = (component) => {
             </Tabs>
           </AppBar>
         </div>
-        <div className="content-form" style={{ overflow: "scroll" }} id="top-rank-content" onScroll={(e) => component.onScroll(e)}>
+        <div className="content-form" style={{ overflow: "auto" }} id="top-rank-content" onScroll={(e) => component.onScroll(e)}>
           <div className="member-list">
             <SwipeableViews
               index={rankTabIndex}

@@ -15,6 +15,7 @@
 }
 .job-list-drawer{
     .drawer-detail{
+        overflow: hidden;
         min-height: calc(100%) !important;
         max-width: 600px;
     }
@@ -384,6 +385,7 @@
     grid-gap:30px;
     margin: auto;
     .item{
+        cursor: pointer;
         border-radius:15px;
         text-align: center;
         color:white;
@@ -596,7 +598,8 @@
     height: calc(100vh - 60px);
     position: relative;
     > .bt-submit{
-        position: absolute;
+        // position: absolute;
+        margin-top: 1rem;
         width: calc(100% - 40px) !important;
         bottom: 20px;
         left: 20px;

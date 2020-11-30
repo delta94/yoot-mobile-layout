@@ -817,7 +817,6 @@ const renderPostDrawer = (component) => {
           )}
           <div
             className="drawer-content"
-            style={{ overflow: "scroll", width: "100vw" }}
           >
             <MultiInput
               style={{
@@ -1123,7 +1122,6 @@ const renderAlbumSelectDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="drawer-content"
-          style={{ overflow: "scroll", width: "100vw" }}
         >
           <div className="album image-box">
             <ul>
@@ -1253,7 +1251,6 @@ const renderTagFriendDrawer = (component) => {
         </div>
         <div
           className="drawer-content"
-          style={{ overflow: "scroll", width: "100vw" }}
         >
           {friends && friends.length > 0 ? (
             <div className="friend-list">
@@ -1325,7 +1322,7 @@ const editShare = (component) => {
           </div>
         </div>
         <div className="filter"></div>
-        <div className="drawer-content" style={{ overflow: "scroll" }}>
+        <div className="drawer-content" style={{ overflow: "auto" }}>
           <ul className="p10" style={{ background: "#f2f3f7" }}>
             <li>
               {currentPost && <Post data={currentPost.newsFeedShareRoot} />}
@@ -1348,7 +1345,7 @@ const renderGroupForPostDrawer = (component) => {
       open={showGroupForPostDrawer}
       onClose={() => component.setState({ showGroupForPostDrawer: false })}
     >
-      <div className="drawer-detail">
+      <div className="drawer-detail" style={{overflow: "hidden"}}>
         <div className="drawer-header">
           <div
             className="direction"
@@ -1397,7 +1394,7 @@ const renderGroupForPostDrawer = (component) => {
         </div>
         <div
           className="drawer-content"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "auto" }}
         >
           {isLoadMoreGroup ? (
             <div style={{ height: "50px" }}>

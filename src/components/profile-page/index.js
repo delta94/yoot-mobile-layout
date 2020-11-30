@@ -1497,7 +1497,7 @@ const renderUserHistoryDrawer = (component) => {
           </div>
           <div className="filter"></div>
           <div
-            style={{ overflow: "scroll", width: "100%" }}
+            style={{ width: "100%" }}
             id="history-list"
             onScroll={() => component.onScroll()}
           >
@@ -1810,7 +1810,7 @@ const renderBlockFriendDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          style={{ overflowY: "scroll", maxWidth: "600px" }}
+          style={{ overflowY: "auto", maxWidth: "600px" }}
           id="friend-blocked"
           onScroll={() => component.onBlockedScroll()}
         >
@@ -2025,7 +2025,7 @@ const renderAllFriendsDrawer = (component) => {
           />
         </div>
         <div
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "auto"}}
           id="all-user-list"
           onScroll={() => component.onAllUserScroll()}
         >
@@ -2159,6 +2159,7 @@ const renderFriendActionsDrawer = (component) => {
       open={showFriendActionsDrawer}
       onClose={() => component.setState({ showFriendActionsDrawer: false })}
     >
+      <div className="wrapper-action">
       <div className="title-more-action">Tác vụ</div>
       {currentFriend ? (
         <div className="drawer-content">
@@ -2225,6 +2226,7 @@ const renderFriendActionsDrawer = (component) => {
       ) : (
           ""
         )}
+        </div>
     </Drawer>
   );
 };
@@ -2268,7 +2270,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll" }}
+          style={{ overflow: "auto" }}
         >
           <div className="post-content">
             <MultiInput
@@ -2405,7 +2407,7 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", width: "100%" }}
+          style={{ overflow: "auto", width: "100%" }}
         >
           <div className="post-content">
             <MultiInput
@@ -2455,7 +2457,7 @@ const renderBackgroundCropperDrawer = (component) => {
         <div className="drawer-detail">
           <div
             className="drawer-content"
-            style={{ overflow: "scroll", background: "#f2f3f7" }}
+            style={{ overflow: "auto", background: "#f2f3f7" }}
           >
             <Cropper
               component={component}
@@ -2554,7 +2556,7 @@ const renderUserDetailDrawer = (component) => {
             </div>
           </div>
           <div className="filter"></div>
-          <div style={{ overflow: "scroll", height: "100%" }}>
+          <div style={{height: "100%" }}>
             <AppBar position="static" color="default" className={"custom-tab"}>
               <Tabs
                 value={userDetailFolowTabIndex}

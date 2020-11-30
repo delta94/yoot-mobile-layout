@@ -22,6 +22,7 @@
 .cropper-drawer{
     background: #0e1013 !important;
     .drawer-detail{
+        overflow: hidden;
         display: grid;
         grid-template-rows: auto min-content;
         height: 100%;

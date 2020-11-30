@@ -953,7 +953,7 @@ const renderUserHistoryDrawer = (component) => {
           </div>
           <div className="filter"></div>
           <div
-            style={{ overflow: "scroll", width: "100%" }}
+            style={{  width: "100%" }}
             id="history-list"
             onScroll={() => component.onScroll()}
           >
@@ -1266,7 +1266,7 @@ const renderBlockFriendDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          style={{ overflowY: "scroll", maxWidth: "600px" }}
+          style={{ overflowY: "auto", maxWidth: "600px" }}
           id="friend-blocked"
           onScroll={() => component.onBlockedScroll()}
         >

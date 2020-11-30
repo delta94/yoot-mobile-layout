@@ -420,7 +420,7 @@ class Index extends React.Component {
           <Sticky topOffset={-60} >
             {({ style, wasSticky }) => (
               <div style={{ ...style, top: "60px", zIndex: 1000 }}>
-                <div className="post-menu-list">
+                <div className="post-menu-list" id="scroll-style-1">
                   <div className={wasSticky ? "was-stiky" : ""}>
                     <span className={"bt "} onClick={() => {
                       this.props.toggleSeachFriends(true)
@@ -589,7 +589,7 @@ const renderCreateGroupDrawer = (component) => {
         </div>
         <div className="filter">
         </div>
-        <div className="content-form" style={{ overflowY: "scroll", paddingBottom: "100px" }} >
+        <div className="content-form" style={{ overflowY: "auto", paddingBottom: "100px" }} >
           <div>
             <label>Tên nhóm</label>
             <TextField
@@ -739,7 +739,7 @@ const renderGroupListDrawer = (component) => {
             </Tabs>
           </AppBar>
         </div>
-        <div className="content-form" id="group-list" style={{ overflow: "scroll" }} onScroll={() => component.groupScroll(groupTabIndex)} >
+        <div className="content-form" id="group-list" style={{ overflow: "auto" }} onScroll={() => component.groupScroll(groupTabIndex)} >
           <SwipeableViews
             index={groupTabIndex}
             onChangeIndex={(value) => component.setState({ groupTabIndex: value })}

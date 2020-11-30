@@ -546,6 +546,7 @@ class Index extends React.Component {
     }
 
     return (
+      <div className="wrapper" style={{background:"#f2f3f7"}}>
       <div className="drawer-detail">
         <div className="drawer-header">
           <div
@@ -913,6 +914,7 @@ class Index extends React.Component {
           } */}
         </div>
       </div>
+      </div>
     );
   }
 }
@@ -1145,7 +1147,7 @@ const renderMediaDrawer = (component) => {
           </div>
           <div
             className="content-form"
-            style={{ overflow: "scroll"}}
+            style={{ overflow: "auto"}}
           >
             <SwipeableViews
               index={mediaTabIndex}
@@ -1320,7 +1322,7 @@ const renderUserDetailDrawer = (component) => {
             </div>
           </div>
           <div className="filter"></div>
-          <div style={{ overflow: "scroll" }}>
+          <div>
             <AppBar position="static" color="default" className={"custom-tab"}>
               <Tabs
                 value={userDetailFolowTabIndex}

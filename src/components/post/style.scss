@@ -544,7 +544,7 @@
       }
     }
     .drawer-content {
-      overflow-y: scroll;
+      overflow-y: auto;
       height: 550px;
       .post-item {
         width: 100%;

@@ -600,7 +600,7 @@ const renderGroupInviteDrawer = (component) => {
           </div>
         </div>
         <div className="filter"></div>
-        <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="drawer-content" style={{ overflow: "auto"}}>
           <div className="my-group-list">
             <ul>
               {
@@ -650,7 +650,7 @@ const renderCreateAlbumDrawer = (component) => {
           <Button onClick={() => component.createAlbum()}>LƯU</Button>
         </div>
         <div className="filter"></div>
-        <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="drawer-content">
           <label>Tên album</label>
           <TextField
             className="custom-input"

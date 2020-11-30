@@ -298,7 +298,7 @@ class Index extends React.Component {
 
         return (
             <Drawer anchor="bottom" className="find-friends" open={showSearchFriendDrawer} onClose={() => this.props.toggleSeachFriends(false)}>
-                <div className="drawer-detail">
+                <div className="drawer-detail" style={{ overflow: "hidden" }} >
                     <div className="drawer-header">
                         <div className="direction"
                             onClick={() =>
@@ -333,7 +333,7 @@ class Index extends React.Component {
                             }}
                         />
                     </div>
-                    <div style={{ overflowX: "hidden", width: "100vw" }} id="search-fiend-list" onScroll={() => this.onAllUserScroll()}>
+                    <div id="search-fiend-list" onScroll={() => this.onAllUserScroll()}>
                         <div className="friend-list" >
                             <ul>
                                 {
@@ -467,7 +467,8 @@ const renderFriendActionsDrawer = (component) => {
     return (
         <Drawer anchor="bottom" className="friend-actions-drawer" open={showFriendActionsDrawer} onClose={() => component.setState({ showFriendActionsDrawer: false })}>
             {
-                currentFriend ? <div className="drawer-content">
+                currentFriend ? 
+                <div className="drawer-content">
                     <ul>
                         {
                             currentFriend.ismefollow == 1 ? <li onClick={() => component.setState({

@@ -2117,7 +2117,7 @@ const renderShareDrawer = (component) => {
             )}
         </div>
         <div className="filter"></div>
-        <div className="drawer-content" style={{ overflow: "scroll" }}>
+        <div className="drawer-content" >
           <ul>
             <li
               onClick={() => component.setState({ showTagFriendDrawer: true })}
@@ -2128,9 +2128,7 @@ const renderShareDrawer = (component) => {
           </ul>
           {tagedFrieds && tagedFrieds.length > 0 && (
             <div className="taged-friend">
-              <span>
-                <img src={tag} />
-              </span>
+              <span><img src={tag} /></span>
               <b className="tag-item">Bạn</b> đã gắn thẻ&nbsp;
               <span>
                 <b className="tag-item">
@@ -2277,7 +2275,7 @@ const renderGroupForShareDrawer = (component) => {
       className="tag-friend-drawer"
       open={showFindGroupToShareDrawer}
     >
-      <div className="drawer-detail">
+      <div className="drawer-detail" style={{overflow: "hidden"}}>
         <div className="drawer-header">
           <div
             className="direction"
@@ -2302,10 +2300,10 @@ const renderGroupForShareDrawer = (component) => {
           <TextField
             className="custom-input"
             variant="outlined"
-            placeholder="Nhập tên bạn bè để tìm kiếm"
+            placeholder="Nhập tên nhóm để tìm"
             className="search-box"
             style={{
-              width: "calc(100% - 20px",
+              width: "calc(100% - 20px)",
               margin: "0px 0px 10px 10px",
             }}
             value={groupSearchKey}
@@ -2328,7 +2326,7 @@ const renderGroupForShareDrawer = (component) => {
         </div>
         <div
           className="drawer-content"
-          style={{ overflow: "scroll", width: "100vw", padding: "0px 10px" }}
+          style={{ overflow: "auto", padding: "0px 10px" }}
         >
           <div className="group-list">
             {groupForShare && groupForShare.length > 0 ? (
@@ -2462,7 +2460,7 @@ const renderUpdatePrivacyImageDrawer = (component) => {
           </Button>
         </div>
         <div className="filter"></div>
-        <div className="drawer-content" style={{ overflow: "scroll" }}>
+        <div className="drawer-content">
           <ul>
             {PrivacyOptions.map((privacy, index) => (
               <li
@@ -2544,7 +2542,7 @@ const renderDetailPosted = (component) => {
         <div className="filter"></div>
         <div
           className="drawer-content"
-          style={{ overflow: "scroll", background: "#ededed", padding: "10px" }}
+          style={{ overflow: "auto", background: "#ededed", padding: "10px" }}
         >
           {data && (
             <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
@@ -2968,7 +2966,7 @@ const renderTagsFriendDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="drawer-content"
-          style={{ overflow: "scroll", padding: "10px" }}
+          style={{ overflow: "auto", padding: "10px" }}
         >
           {data ? (
             <div className="tag-friend-list">
@@ -3052,7 +3050,7 @@ const renderUpdateInfoOfProfilePostDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="drawer-content"
-          style={{ overflow: "scroll", padding: "10px" }}
+          style={{ overflow: "auto", padding: "10px" }}
         >
           <MultiInput
             style={{
@@ -3127,7 +3125,7 @@ const renderReportPostDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll" }}
+          style={{ overflow: "auto" }}
         >
           <div>
             <img src={report} />
@@ -3278,7 +3276,7 @@ const renderReportGroupDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll" }}
+          style={{ overflow: "auto" }}
         >
           <div>
             <img src={report} />
@@ -3510,7 +3508,6 @@ const renderTagFriendForShareDrawer = (component) => {
         </div>
         <div
           className="drawer-content"
-          style={{ overflow: "scroll", width: "100vw" }}
         >
           {friends && friends.length > 0 ? (
             <div className="friend-list">

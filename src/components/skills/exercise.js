@@ -652,7 +652,7 @@ const renderAddAssessDrawer = (component) => {
             </IconButton>
           </div>
         </div>
-        <div className="drawer-content" style={{ overflow: "scroll", overflowX: "hidden" }}>
+        <div className="drawer-content" style={{ overflow: "auto"}}>
           {
             reviewers && reviewers.length > 0 ? <ul className="assess-list">
               {
@@ -693,7 +693,7 @@ const renderApplyDrawer = (component) => {
           </div>
         </div>
         <div className="filter"></div>
-        <div className="drawer-content" style={{ overflow: "scroll", width: "100vw" }}>
+        <div className="drawer-content" style={{ overflow: "auto" }}>
           <div className="apply-form">
             <label>{lesson.name}</label>
             <span>Bài tập: </span>

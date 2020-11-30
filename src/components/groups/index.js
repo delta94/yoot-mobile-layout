@@ -752,7 +752,7 @@ const renderSearchGroupDrawer = (component) => {
       open={showSearchGroupDrawer}
       onClose={() => component.setState({ showSearchGroupDrawer: false })}
     >
-      <div className="drawer-detail">
+      <div className="drawer-detail" style={{overflow: "hidden"}}>
         <div className="drawer-header">
           <div
             className="direction"
@@ -793,7 +793,7 @@ const renderSearchGroupDrawer = (component) => {
         <div
           className="drawer-content"
           id="search-groups-box"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "auto"}}
           onScroll={() => component.onSearchGroupScroll()}
         >
           <div className="my-group-list">
@@ -988,7 +988,7 @@ const renderCreateGroupDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="content-form"
-          style={{ overflow: "scroll", paddingBottom: "100px" }}
+          style={{ overflow: "auto", paddingBottom: "100px" }}
         >
           <div>
             <label>Tên nhóm</label>
@@ -1229,7 +1229,7 @@ const renderGroupListDrawer = (component) => {
         <div
           className="content-form"
           id="group-list"
-          style={{ overflow: "scroll"}}
+          style={{ overflow: "auto"}}
           onScroll={() => component.groupScroll(groupTabIndex)}
         >
           <SwipeableViews

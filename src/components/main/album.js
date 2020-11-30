@@ -601,7 +601,10 @@ class Index extends React.Component {
                         </div>
                         <div className="filter"></div>
                         {
-                            albumDetail ? <div className="drawer-content" id="album-content" style={{ overflow: "scroll", width: "100vw" }} onScroll={() => this.onScroll(tabIndex)}>
+                            albumDetail ? 
+                            <div 
+                            className="drawer-content" id="album-content"
+                            onScroll={() => this.onScroll(tabIndex)}>
                                 <div className="album-background">
                                     <div style={{ background: "url(" + albumDetail.topimgname + ")" }}></div>
                                 </div>
@@ -830,7 +833,7 @@ const renderUpdateAlbumDrawer = (component) => {
                     <Button onClick={() => component.hanldeUpdate()}>Cập nhật</Button>
                 </div>
                 <div className="filter"></div>
-                <div className="drawer-content" style={{ overflow: "scroll" }}>
+                <div className="drawer-content">
                     <label>Tên album</label>
                     <TextField
                         className="custom-input"
@@ -926,7 +929,7 @@ const renderUpdatePrivacyImageDrawer = (component) => {
                     <Button className="bt-default" onClick={() => component.updateImagePrivacy()}>Lưu</Button>
                 </div>
                 <div className="filter"></div>
-                <div className="drawer-content" style={{ overflow: "scroll" }}>
+                <div className="drawer-content" style={{ overflow: "auto" }}>
                     <ul>
                         {
                             PrivacyOptions.map((privacy, index) => <li key={index} onClick={() => component.setState({ privacySelected: privacy.code })}>
@@ -981,7 +984,7 @@ const renderUpdateAlbumBackgroundReviewDrawer = (component) => {
                     </div>
                     <div className="filter">
                     </div>
-                    <div className="content-form" style={{ overflow: "scroll" }}>
+                    <div className="content-form" style={{ overflow: "auto" }}>
                         {
                             albumBackgroundToUpload ? <div className="profile-page" >
                                 <div className="background-box" style={{ background: "url(" + (URL.createObjectURL(albumBackgroundToUpload.file)) + ")" }}>
@@ -1013,7 +1016,7 @@ const renderCropperDrawer = (component) => {
             <Drawer anchor="bottom" className="cropper-drawer" open={openAlbumBackgroundCropperDrawer} onClose={() => component.setState({ openAlbumBackgroundCropperDrawer: false })}>
                 {
                     albumBackgroundSelected ? <div className="drawer-detail">
-                        <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+                        <div className="drawer-content" style={{ overflow: "auto", background: "#f2f3f7" }}>
                             <Cropper
                                 src={albumBackgroundSelected}
                                 crop={crop}
@@ -1069,7 +1072,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
                     </div>
                     <div className="filter">
                     </div>
-                    <div className="content-form" style={{ overflow: "scroll"}}>
+                    <div className="content-form" style={{ overflow: "auto"}}>
                         <div className="post-content">
                             <MultiInput
                                 disabledInput={true}
@@ -1114,7 +1117,7 @@ const renderAvatarCropperDrawer = (component) => {
             <Drawer anchor="bottom" className="cropper-drawer" open={openAvatarCropperDrawer} onClose={() => component.setState({ openAvatarCropperDrawer: false })}>
                 {
                     avatarSelected ? <div className="drawer-detail">
-                        <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+                        <div className="drawer-content" style={{ overflow: "auto", background: "#f2f3f7" }}>
                             <Cropper
                                 src={avatarSelected}
                                 crop={crop}
@@ -1170,7 +1173,7 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
                     </div>
                     <div className="filter">
                     </div>
-                    <div className="content-form" style={{ overflow: "scroll" }}>
+                    <div className="content-form" style={{ overflow: "auto" }}>
                         <div className="post-content">
                             <MultiInput
                                 placeholder="Nhập nội dung"
@@ -1214,7 +1217,7 @@ const renderBackgroundCropperDrawer = (component) => {
             <Drawer anchor="bottom" className="cropper-drawer" open={openBackgroundCropperDrawer} onClose={() => component.setState({ openBackgroundCropperDrawer: false })}>
                 {
                     backgroundSrc ? <div className="drawer-detail">
-                        <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+                        <div className="drawer-content" style={{ overflow: "auto", background: "#f2f3f7" }}>
                             <Cropper
                                 src={backgroundSrc}
                                 crop={crop}
