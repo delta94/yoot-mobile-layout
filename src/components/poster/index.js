@@ -470,10 +470,11 @@ export class Index extends React.Component {
       endPoint = "PostNewsFeed/EditNewsFeed";
     }
     postFormData(SOCIAL_NET_WORK_API, endPoint, data, (result) => {
-      if (result && result.result == 1) {
+      if (result && result.result === 1) {
+        console.log(result)
         if (nfid > 0) {
           this.props.updatePosted(
-            { ...result.content.newsFeeds, isPendding: false },
+            { ...result.content.newsFeeds, isPendding: true },
             profile.id
           );
         } else {
@@ -1301,7 +1302,7 @@ const editShare = (component) => {
   return (
     <Drawer
       className="edit-share-layout"
-      anchor="right"
+      anchor="bottom"
       open={showEditShare}
       onClose={() => component.setState({ showEditShare: false })}
     >

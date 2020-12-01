@@ -55,6 +55,17 @@ export const updatePosted = (posted, userId) => {
     }
 }
 
+export const createPostSuccess = (post, userId) => {
+    return dispatch => {
+        dispatch({
+            type: CREATE_POST_SUCCESS,
+            payload: post,
+            userId: userId
+        })
+
+    }
+}
+
 export const likePosted = (post, iconCode, targetKey, userId) => {
     return dispatch => {
         dispatch({
@@ -106,16 +117,7 @@ export const dislikeImage = (post, imageId, userId) => {
     }
 }
 
-export const createPostSuccess = (post, userId) => {
-    return dispatch => {
-        dispatch({
-            type: CREATE_POST_SUCCESS,
-            payload: post,
-            userId: userId
-        })
 
-    }
-}
 
 export const deletePostSuccess = (postId, userId) => {
     return dispatch => {

@@ -22,7 +22,9 @@ body {
 
 @media (min-width: 1000px) {
   body .wrapper {
-    width: 100%; } }
+    width: 100%; 
+    background: #fff;
+  } }
 
 
 .row {

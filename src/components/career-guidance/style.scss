@@ -358,6 +358,7 @@
             font-family: Roboto-Medium;
             display:grid;
             padding:20px 0px;
+            cursor: pointer;
             img{
                 max-width: 50%;
                 margin: 0px auto 10px
@@ -665,6 +666,15 @@
             position: absolute;
             top: -20px;
             right: 20px;
+        }
+    }
+}
+
+@media screen and (min-width: 400px){
+    .user-info-form{
+        > div:last-child{
+            max-width: 600px !important;
+            min-width: auto;
         }
     }
 }

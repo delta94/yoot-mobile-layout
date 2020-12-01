@@ -184,6 +184,7 @@
                 }
             }
             li{
+                cursor: pointer;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
@@ -375,6 +376,7 @@
                         }
                     }
                     .bt-upload-file{
+                        cursor: pointer;
                         background: #fbf2f3;
                         border: 1px dashed #ed807d;
                         border-radius: 7px;
@@ -601,6 +603,7 @@
             text-align: left;
         }
         .bt-upload{
+            cursor: pointer;
             margin: 20px 0px;
             padding: 15px 10px;
             display: flex;
