@@ -866,8 +866,6 @@ class Index extends React.Component {
         item.postid = data.newsFeedShareRoot.nfid
       })
     }
-    console.log('props', this.props)
-    console.log('state', this.state)
     return data && (!data.isPedding || data.isPedding === false) ? (
       <div>
         <ScrollTrigger

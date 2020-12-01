@@ -484,244 +484,245 @@ class Index extends React.Component {
       if (data && data.postforid == 1) data.postforid = 2
 
       return (
-         <div className="drawer-detail comment-post">
-            <div className="drawer-header">
-               <div className="direction" onClick={() => this.handleClose()}>
-                  <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-                     <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-                  </IconButton>
-               </div>
-               {
-                  data ? <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
-                     <CardHeader
-                        className="card-header"
-                        avatar={
-                           <Avatar aria-label="recipe" className="avatar">
-                              <div className="img" style={{ background: `url("${data.avataruserpost}")` }} />
-                           </Avatar>
-                        }
-                        action={
-                           <CustomMenu>
-                              {
-                                 data.iduserpost == profile.id && data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => {
-                                    this.props.togglePostDrawer(true)
-                                    this.props.setCurrentPosted(data)
-                                 })}>Chỉnh sửa bài đăng</MenuItem> : ""
-                              }
-                              {
-                                 data.iduserpost == profile.id && (data.kindpost == 2 || data.kindpost == 3) ? <MenuItem onClick={() => this.setState({ showLocalMenu: false, showUpdateInfoOfProfilePost: true, postContent: data.nfcontent })}>Chỉnh sửa nội dung</MenuItem> : ""
-                              }
-                              {
-                                 data.iduserpost == profile.id && data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.setState({
-                                    showConfim: true,
-                                    okCallback: () => this.handleDeletePost(),
-                                    confirmTitle: "Xoá bài đăng",
-                                    confirmMessage: "Bạn có thật sự muốn xoá bài đăng này?"
-                                 }))}>Xoá bài đăng</MenuItem> : ""
-                              }
-                              <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => copyToClipboard(PostLinkToCoppy + data.nfid))}>Sao chép liên kết</MenuItem>
-                              {/* {
+         <div className="wrapper">
+            <div className="drawer-detail comment-post">
+               <div className="drawer-header">
+                  <div className="direction" onClick={() => this.handleClose()}>
+                     <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                        <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+                     </IconButton>
+                  </div>
+                  {
+                     data ? <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
+                        <CardHeader
+                           className="card-header"
+                           avatar={
+                              <Avatar aria-label="recipe" className="avatar">
+                                 <div className="img" style={{ background: `url("${data.avataruserpost}")` }} />
+                              </Avatar>
+                           }
+                           action={
+                              <CustomMenu>
+                                 {
+                                    data.iduserpost == profile.id && data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => {
+                                       this.props.togglePostDrawer(true)
+                                       this.props.setCurrentPosted(data)
+                                    })}>Chỉnh sửa bài đăng</MenuItem> : ""
+                                 }
+                                 {
+                                    data.iduserpost == profile.id && (data.kindpost == 2 || data.kindpost == 3) ? <MenuItem onClick={() => this.setState({ showLocalMenu: false, showUpdateInfoOfProfilePost: true, postContent: data.nfcontent })}>Chỉnh sửa nội dung</MenuItem> : ""
+                                 }
+                                 {
+                                    data.iduserpost == profile.id && data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.setState({
+                                       showConfim: true,
+                                       okCallback: () => this.handleDeletePost(),
+                                       confirmTitle: "Xoá bài đăng",
+                                       confirmMessage: "Bạn có thật sự muốn xoá bài đăng này?"
+                                    }))}>Xoá bài đăng</MenuItem> : ""
+                                 }
+                                 <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => copyToClipboard(PostLinkToCoppy + data.nfid))}>Sao chép liên kết</MenuItem>
+                                 {/* {
                   data.iduserpost != profile.id ? <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
                 } */}
-                              {
-                                 data.iduserpost != profile.id ? <MenuItem onClick={() => this.props.toggleReportComment(true, data)}>Báo cáo vi phạm</MenuItem> : ""
-                              }
-                           </CustomMenu>
-                        }
-                        title={<span className="poster-name">
-                           <span className="name" onClick={() => {
-                              if (data.iduserpost == profile.id) {
-                                 this.props.history.push("/profile")
-                              } else {
-                                 this.props.setCurrenUserDetail({ ...data, friendid: data.iduserpost })
-                                 this.props.toggleUserPageDrawer(true)
-                              }
-                           }}>{data.nameuserpost} </span>
-                           {
-                              data.kindpost == 4 ? <span className="mesage">{data.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
+                                 {
+                                    data.iduserpost != profile.id ? <MenuItem onClick={() => this.props.toggleReportComment(true, data)}>Báo cáo vi phạm</MenuItem> : ""
+                                 }
+                              </CustomMenu>
                            }
-                           {
-                              data.kindpost == 3 ? <span className="mesage">{data.titlepost.replace("{username}", " ")}</span> : ""
-                           }
-                           {
-                              data.kindpost == 2 ? <span className="mesage">{data.titlepost.replace("{username}", " ")}</span> : ""
-                           }
-                           {
-                              data.kindpost == 1 && data.newsFeedShareRoot ? <span className="mesage"> đã chia sẽ một bài viết</span> : ""
-                           }
-                           {
-                              data.usersTag.length > 0 ? <span className="mesage">
-                                 <span>cùng với <b onClick={() => {
-                                    this.props.setCurrenUserDetail({ ...data.usersTag[0], friendid: data.usersTag[0].id })
+                           title={<span className="poster-name">
+                              <span className="name" onClick={() => {
+                                 if (data.iduserpost == profile.id) {
+                                    this.props.history.push("/profile")
+                                 } else {
+                                    this.props.setCurrenUserDetail({ ...data, friendid: data.iduserpost })
                                     this.props.toggleUserPageDrawer(true)
-                                 }}>{data.usersTag[0].fullname}</b></span>
-                                 {
-                                    data.usersTag.length == 2 ? <span> và <b onClick={() => {
-                                       this.props.setCurrenUserDetail({ ...data.usersTag[1], friendid: data.usersTag[1].id })
+                                 }
+                              }}>{data.nameuserpost} </span>
+                              {
+                                 data.kindpost == 4 ? <span className="mesage">{data.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
+                              }
+                              {
+                                 data.kindpost == 3 ? <span className="mesage">{data.titlepost.replace("{username}", " ")}</span> : ""
+                              }
+                              {
+                                 data.kindpost == 2 ? <span className="mesage">{data.titlepost.replace("{username}", " ")}</span> : ""
+                              }
+                              {
+                                 data.kindpost == 1 && data.newsFeedShareRoot ? <span className="mesage"> đã chia sẽ một bài viết</span> : ""
+                              }
+                              {
+                                 data.usersTag.length > 0 ? <span className="mesage">
+                                    <span>cùng với <b onClick={() => {
+                                       this.props.setCurrenUserDetail({ ...data.usersTag[0], friendid: data.usersTag[0].id })
                                        this.props.toggleUserPageDrawer(true)
-                                    }}>{data.usersTag[1].fullname}</b></span> : ""
-                                 }
-                                 {
-                                    data.usersTag.length > 2 ? <span> và <b onClick={() => this.setState({ showTagsFriendDrawer: true })}>{data.usersTag.length - 1} người khác</b></span> : ""
-                                 }
-                              </span> : ""
-                           }
-                        </span>}
-                        subheader={<div className="poster-subtitle">
-                           <div>
-                              <img src={PrivacyOptions.find(privacy => privacy.code == data.postforid).icon1} />
-                              <FiberManualRecordIcon />
-                              {fromNow(moment(data.createdate), moment(new Date))}
-                           </div>
-                           {
-                              data.groupidpost > 0 ? <div>
-                                 <img src={Group} />
-                                 <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
-                                 <span><u onClick={
-                                    () => {
-                                       this.handleGetGroupDetail(data.groupidpost)
-                                       this.props.toggleGroupDetailDrawer(true)
+                                    }}>{data.usersTag[0].fullname}</b></span>
+                                    {
+                                       data.usersTag.length == 2 ? <span> và <b onClick={() => {
+                                          this.props.setCurrenUserDetail({ ...data.usersTag[1], friendid: data.usersTag[1].id })
+                                          this.props.toggleUserPageDrawer(true)
+                                       }}>{data.usersTag[1].fullname}</b></span> : ""
                                     }
-                                 }
-                                 >{data.groupnamepost}</u></span>
-                              </div> : ""
-                           }
-                        </div>}
-                     />
-                  </Card> : ""
-               }
-            </div>
-            <div className="filter"></div>
-            <div className="drawer-content">
-               {
-                  data ? <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
-                     {
-                        data.kindpost == 4 ? <div className="album-name">
-                           <span>Album <span>{data.albumname}</span></span>
-                        </div> : ""
-                     }
+                                    {
+                                       data.usersTag.length > 2 ? <span> và <b onClick={() => this.setState({ showTagsFriendDrawer: true })}>{data.usersTag.length - 1} người khác</b></span> : ""
+                                    }
+                                 </span> : ""
+                              }
+                           </span>}
+                           subheader={<div className="poster-subtitle">
+                              <div>
+                                 <img src={PrivacyOptions.find(privacy => privacy.code == data.postforid).icon1} />
+                                 <FiberManualRecordIcon />
+                                 {fromNow(moment(data.createdate), moment(new Date))}
+                              </div>
+                              {
+                                 data.groupidpost > 0 ? <div>
+                                    <img src={Group} />
+                                    <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
+                                    <span><u onClick={
+                                       () => {
+                                          this.handleGetGroupDetail(data.groupidpost)
+                                          this.props.toggleGroupDetailDrawer(true)
+                                       }
+                                    }
+                                    >{data.groupnamepost}</u></span>
+                                 </div> : ""
+                              }
+                           </div>}
+                        />
+                     </Card> : ""
+                  }
+               </div>
+               <div className="filter"></div>
+               <div className="drawer-content">
+                  {
+                     data ? <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
+                        {
+                           data.kindpost == 4 ? <div className="album-name">
+                              <span>Album <span>{data.albumname}</span></span>
+                           </div> : ""
+                        }
 
-                     {
-                        data.nfcontent != "" ? <div
-                           className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
-                           style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                           <PostContent content={data} />
-                        </div> : ""
-                     }
+                        {
+                           data.nfcontent != "" ? <div
+                              className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
+                              style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
+                              <PostContent content={data} />
+                           </div> : ""
+                        }
 
-                     <CardContent className="card-content">
-                        <div className="media-grid">
-                           {
-                              daskMode ? "" : (
-                                 data.mediaPlays.length > 1
-                                    ? <GridList cols={maxCols} >
-                                       {data.mediaPlays.slice(0, 5).map((media, index) => (
-                                          <GridListTile
-                                             className={media.typeobject == 2 ? "video" : "image"}
-                                             style={{
-                                                height: this.handleCellHeightCal(index, data.mediaPlays.slice(0, 5).length),
-                                             }}
-                                             key={media.name}
-                                             cols={this.handleColumnCal(index, data.mediaPlays.slice(0, 5).length)}
-                                          >
-                                             {
-                                                media.typeobject == 2
-                                                   ? <div>
-                                                      <div onClick={() => this.setState({ showPostedDetail: true })}>
-                                                         <Player
-                                                            ref={index == 0 ? this.player : null}
-                                                            poster={media.thumbnailname}
-                                                            src={media.name}
-                                                            videoWidth={media.width}
-                                                            videoHeight={media.height}
-                                                            playsInline={true}
+                        <CardContent className="card-content">
+                           <div className="media-grid">
+                              {
+                                 daskMode ? "" : (
+                                    data.mediaPlays.length > 1
+                                       ? <GridList cols={maxCols} >
+                                          {data.mediaPlays.slice(0, 5).map((media, index) => (
+                                             <GridListTile
+                                                className={media.typeobject == 2 ? "video" : "image"}
+                                                style={{
+                                                   height: this.handleCellHeightCal(index, data.mediaPlays.slice(0, 5).length),
+                                                }}
+                                                key={media.name}
+                                                cols={this.handleColumnCal(index, data.mediaPlays.slice(0, 5).length)}
+                                             >
+                                                {
+                                                   media.typeobject == 2
+                                                      ? <div>
+                                                         <div onClick={() => this.setState({ showPostedDetail: true })}>
+                                                            <Player
+                                                               ref={index == 0 ? this.player : null}
+                                                               poster={media.thumbnailname}
+                                                               src={media.name}
+                                                               videoWidth={media.width}
+                                                               videoHeight={media.height}
+                                                               playsInline={true}
 
-                                                         >
-                                                            <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
-                                                            </ControlBar>
-                                                         </Player>
+                                                            >
+                                                               <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
+                                                               </ControlBar>
+                                                            </Player>
+                                                         </div>
+                                                         {
+                                                            index == 0 ? <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
+                                                               {isMuted == true ? <img style={{ width: 24, height: 24 }} src={mute} /> : <img style={{ width: 24, height: 24 }} src={unmute} />}
+                                                            </IconButton> : <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-play">
+                                                                  <PlayArrowIcon />
+                                                               </IconButton>
+                                                         }
+                                                         <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => this.setState({ showPostedDetail: true })} />
                                                       </div>
-                                                      {
-                                                         index == 0 ? <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
-                                                            {isMuted == true ? <img style={{ width: 24, height: 24 }} src={mute} /> : <img style={{ width: 24, height: 24 }} src={unmute} />}
-                                                         </IconButton> : <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-play">
-                                                               <PlayArrowIcon />
-                                                            </IconButton>
-                                                      }
-                                                      <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => this.setState({ showPostedDetail: true })} />
-                                                   </div>
-                                                   : <img src={media.name} alt={media.name} onClick={() => {
-                                                      this.props.setMediaToViewer(data.mediaPlays)
-                                                      this.props.toggleMediaViewerDrawer(true, {
-                                                         actions: data.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
-                                                         showInfo: true,
-                                                         activeIndex: index
-                                                      })
-                                                   }} />
-                                             }
-                                             {
-                                                data.mediaPlays.length > 4 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
-                                                   <span>{data.mediaPlays.length - 4}+</span>
-                                                </div> : ""
-                                             }
-                                          </GridListTile>
-                                       ))}
-                                    </GridList>
-                                    : <GridList cols={1}>
-                                       {data.mediaPlays.map((media, index) => (
-                                          <GridListTile className={media.typeobject == 2 ? "video" : "image"} style={{ height: "auto" }} key={media.name} cols={1} >
-                                             {
-                                                media.typeobject == 2
-                                                   ? <div>
-                                                      <div onClick={() => {
-                                                         this.props.setMediaToViewer([media])
+                                                      : <img src={media.name} alt={media.name} onClick={() => {
+                                                         this.props.setMediaToViewer(data.mediaPlays)
                                                          this.props.toggleMediaViewerDrawer(true, {
+                                                            actions: data.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
                                                             showInfo: true,
-                                                            activeIndex: index,
-                                                            isvideo: true
+                                                            activeIndex: index
                                                          })
-                                                         this.handlePauseVideo()
-                                                      }}>
-                                                         <Player
-                                                            ref={this.player}
-                                                            poster={media.thumbnailname}
-                                                            src={media.name}
-                                                            videoWidth={media.width}
-                                                            videoHeight={media.height}
-                                                            playsInline={true}
-                                                         >
-                                                            <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
-                                                            </ControlBar>
-                                                         </Player>
-                                                      </div>
-                                                      <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
-                                                         {isMuted == true ? <img style={{ width: 24, height: 24 }} src={mute} /> : <img style={{ width: 24, height: 24 }} src={unmute} />}
-                                                      </IconButton>
-                                                      <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => {
-                                                         this.props.setMediaToViewer([media])
-                                                         this.props.toggleMediaViewerDrawer(true, {
-                                                            showInfo: true,
-                                                            activeIndex: index,
-                                                            isvideo: true
-                                                         })
-                                                         this.handlePauseVideo()
                                                       }} />
-                                                   </div> :
-                                                   <img src={media.name} alt={media.name} style={{ width: "100%", height: "auto" }} onClick={() => {
-                                                      this.props.setMediaToViewer(data.mediaPlays)
-                                                      this.props.toggleMediaViewerDrawer(true, {
-                                                         actions: data.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
-                                                         showInfo: true,
-                                                         activeIndex: index
-                                                      })
-                                                   }} />
-                                             }
-                                          </GridListTile>
-                                       ))}
-                                    </GridList>
-                              )
-                           }
-                           {/* {
+                                                }
+                                                {
+                                                   data.mediaPlays.length > 4 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
+                                                      <span>{data.mediaPlays.length - 4}+</span>
+                                                   </div> : ""
+                                                }
+                                             </GridListTile>
+                                          ))}
+                                       </GridList>
+                                       : <GridList cols={1}>
+                                          {data.mediaPlays.map((media, index) => (
+                                             <GridListTile className={media.typeobject == 2 ? "video" : "image"} style={{ height: "auto" }} key={media.name} cols={1} >
+                                                {
+                                                   media.typeobject == 2
+                                                      ? <div>
+                                                         <div onClick={() => {
+                                                            this.props.setMediaToViewer([media])
+                                                            this.props.toggleMediaViewerDrawer(true, {
+                                                               showInfo: true,
+                                                               activeIndex: index,
+                                                               isvideo: true
+                                                            })
+                                                            this.handlePauseVideo()
+                                                         }}>
+                                                            <Player
+                                                               ref={this.player}
+                                                               poster={media.thumbnailname}
+                                                               src={media.name}
+                                                               videoWidth={media.width}
+                                                               videoHeight={media.height}
+                                                               playsInline={true}
+                                                            >
+                                                               <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
+                                                               </ControlBar>
+                                                            </Player>
+                                                         </div>
+                                                         <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
+                                                            {isMuted == true ? <img style={{ width: 24, height: 24 }} src={mute} /> : <img style={{ width: 24, height: 24 }} src={unmute} />}
+                                                         </IconButton>
+                                                         <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => {
+                                                            this.props.setMediaToViewer([media])
+                                                            this.props.toggleMediaViewerDrawer(true, {
+                                                               showInfo: true,
+                                                               activeIndex: index,
+                                                               isvideo: true
+                                                            })
+                                                            this.handlePauseVideo()
+                                                         }} />
+                                                      </div> :
+                                                      <img src={media.name} alt={media.name} style={{ width: "100%", height: "auto" }} onClick={() => {
+                                                         this.props.setMediaToViewer(data.mediaPlays)
+                                                         this.props.toggleMediaViewerDrawer(true, {
+                                                            actions: data.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
+                                                            showInfo: true,
+                                                            activeIndex: index
+                                                         })
+                                                      }} />
+                                                }
+                                             </GridListTile>
+                                          ))}
+                                       </GridList>
+                                 )
+                              }
+                              {/* {
                                     daskMode ? <GridList cols={maxCols}>
                                         {videos.map((video, index) => (
                                             <GridListTile className="video" style={{ height: this.handleCellHeightCal(index, videos.length) }} key={video.url} cols={this.handleColumnCal(index, videos.length)}>
@@ -732,314 +733,317 @@ class Index extends React.Component {
                                         ))}
                                     </GridList> : ""
                                 } */}
-                           {
-                              data.newsFeedShareRoot ? <div className="post-shared" onClick={() => this.setState({ currentPost: data.newsFeedShareRoot, showCommentDrawer: true })}>
-                                 <div>
-                                    {
-                                       data.newsFeedShareRoot && <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
+                              {
+                                 data.newsFeedShareRoot ? <div className="post-shared" onClick={() => this.setState({ currentPost: data.newsFeedShareRoot, showCommentDrawer: true })}>
+                                    <div>
+                                       {
+                                          data.newsFeedShareRoot && <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
 
-                                          {profile && this.handlePostAuth(data.newsFeedShareRoot, profile)
-                                             ? <CardHeader
-                                                className="card-header"
-                                                avatar={
-                                                   <Avatar aria-label="recipe" className="avatar">
-                                                      <div className="img" style={{ background: `url("${data.avataruserpost}")` }} />
-                                                   </Avatar>
-                                                }
-                                                title={<span className="poster-name">
-                                                   <span className="name">{data.newsFeedShareRoot.nameuserpost}</span>
-                                                   {
-                                                      data.newsFeedShareRoot.kindpost == 4 ? <span>{data.newsFeedShareRoot.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
+                                             {profile && this.handlePostAuth(data.newsFeedShareRoot, profile)
+                                                ? <CardHeader
+                                                   className="card-header"
+                                                   avatar={
+                                                      <Avatar aria-label="recipe" className="avatar">
+                                                         <div className="img" style={{ background: `url("${data.avataruserpost}")` }} />
+                                                      </Avatar>
                                                    }
-                                                   {
-                                                      data.newsFeedShareRoot.kindpost == 3 ? <span>{data.newsFeedShareRoot.titlepost.replace("{username}", " ")}</span> : ""
-                                                   }
-                                                   {
-                                                      data.newsFeedShareRoot.kindpost == 2 ? <span>{data.newsFeedShareRoot.titlepost.replace("{username}", " ")}</span> : ""
-                                                   }
-                                                </span>}
-                                                subheader={<div className="poster-subtitle">
-                                                   <div>
-                                                      <img src={PrivacyOptions.find(privacy => privacy.code == data.newsFeedShareRoot.postforid).icon1} />
-                                                      <FiberManualRecordIcon />
-                                                      <span>{fromNow(moment(data.newsFeedShareRoot.createdate), moment(new Date))}</span>
-                                                   </div>
-                                                   <div>
-                                                      <img src={Group} />
-                                                      <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
-                                                      <span><u onClick={
-                                                         () => {
-                                                            this.handleGetGroupDetail(data.newsFeedShareRoot.groupidpost)
-                                                            this.props.toggleGroupDetailDrawer(true)
-                                                         }
-                                                      }>{data.newsFeedShareRoot.groupnamepost}</u></span>
-                                                   </div>
-                                                </div>}
-                                             />
-                                             : <CardHeader
-                                                className="card-header-auth"
-                                                avatar={<div className="avatar-auth">x</div>}
-                                                title={<b>Nội dung này đã được chủ sở hữu bài đăng thay đổi quyền được xem hoặc đã xóa nội dung.</b>}
-                                             />}
+                                                   title={<span className="poster-name">
+                                                      <span className="name">{data.newsFeedShareRoot.nameuserpost}</span>
+                                                      {
+                                                         data.newsFeedShareRoot.kindpost == 4 ? <span>{data.newsFeedShareRoot.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
+                                                      }
+                                                      {
+                                                         data.newsFeedShareRoot.kindpost == 3 ? <span>{data.newsFeedShareRoot.titlepost.replace("{username}", " ")}</span> : ""
+                                                      }
+                                                      {
+                                                         data.newsFeedShareRoot.kindpost == 2 ? <span>{data.newsFeedShareRoot.titlepost.replace("{username}", " ")}</span> : ""
+                                                      }
+                                                   </span>}
+                                                   subheader={<div className="poster-subtitle">
+                                                      <div>
+                                                         <img src={PrivacyOptions.find(privacy => privacy.code == data.newsFeedShareRoot.postforid).icon1} />
+                                                         <FiberManualRecordIcon />
+                                                         <span>{fromNow(moment(data.newsFeedShareRoot.createdate), moment(new Date))}</span>
+                                                      </div>
+                                                      <div>
+                                                         <img src={Group} />
+                                                         <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
+                                                         <span><u onClick={
+                                                            () => {
+                                                               this.handleGetGroupDetail(data.newsFeedShareRoot.groupidpost)
+                                                               this.props.toggleGroupDetailDrawer(true)
+                                                            }
+                                                         }>{data.newsFeedShareRoot.groupnamepost}</u></span>
+                                                      </div>
+                                                   </div>}
+                                                />
+                                                : <CardHeader
+                                                   className="card-header-auth"
+                                                   avatar={<div className="avatar-auth">x</div>}
+                                                   title={<b>Nội dung này đã được chủ sở hữu bài đăng thay đổi quyền được xem hoặc đã xóa nội dung.</b>}
+                                                />}
 
-                                          {
-                                             (profile && this.handlePostAuth(data.newsFeedShareRoot, profile) && data.newsFeedShareRoot.kindpost === 4) ? <div className="album-name">
-                                                <span>Album <span>{data.newsFeedShareRoot.albumname}</span></span>
-                                             </div> : ""
-                                          }
-                                          {
-                                             (profile && this.handlePostAuth(data.newsFeedShareRoot, profile) && data.newsFeedShareRoot.nfcontent !== "") ? <div
-                                                className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
-                                                style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
-                                                <PostContent content={data.newsFeedShareRoot} />
-                                             </div> : ""
-                                          }
-                                          {(profile && this.handlePostAuth(data.newsFeedShareRoot, profile)) &&
-                                             <CardContent className="card-content">
-                                                <div className="media-grid">
-                                                   {
-                                                      daskMode ? "" : (
-                                                         data.newsFeedShareRoot.mediaPlays.length > 1
-                                                            ? <GridList cols={maxCols} >
-                                                               {data.newsFeedShareRoot.mediaPlays.slice(0, 5).map((media, index) => (
-                                                                  <GridListTile
-                                                                     className={media.typeobject == 2 ? "video" : "image"}
-                                                                     style={{
-                                                                        height: this.handleCellHeightCal(index, data.newsFeedShareRoot.mediaPlays.slice(0, 5).length),
-                                                                     }}
-                                                                     key={media.name}
-                                                                     cols={this.handleColumnCal(index, data.newsFeedShareRoot.mediaPlays.slice(0, 5).length)}
-                                                                  >
-                                                                     {
-                                                                        media.typeobject == 2
-                                                                           ? <div>
-                                                                              <div onClick={() => this.setState({ showPostedDetail: true })}>
-                                                                                 <Player
-                                                                                    ref={index == 0 ? this.player : null}
-                                                                                    poster={media.thumbnailname}
-                                                                                    src={media.name}
-                                                                                    videoWidth={media.width}
-                                                                                    videoHeight={media.height}
-                                                                                    playsInline={true}
+                                             {
+                                                (profile && this.handlePostAuth(data.newsFeedShareRoot, profile) && data.newsFeedShareRoot.kindpost === 4) ? <div className="album-name">
+                                                   <span>Album <span>{data.newsFeedShareRoot.albumname}</span></span>
+                                                </div> : ""
+                                             }
+                                             {
+                                                (profile && this.handlePostAuth(data.newsFeedShareRoot, profile) && data.newsFeedShareRoot.nfcontent !== "") ? <div
+                                                   className={"post-content" + (data.backgroundid > 0 ? " have-background" : "")}
+                                                   style={{ background: "url(" + backgroundList.filter(item => item.id == data.backgroundid)[0].background + ")" }} >
+                                                   <PostContent content={data.newsFeedShareRoot} />
+                                                </div> : ""
+                                             }
+                                             {(profile && this.handlePostAuth(data.newsFeedShareRoot, profile)) &&
+                                                <CardContent className="card-content">
+                                                   <div className="media-grid">
+                                                      {
+                                                         daskMode ? "" : (
+                                                            data.newsFeedShareRoot.mediaPlays.length > 1
+                                                               ? <GridList cols={maxCols} >
+                                                                  {data.newsFeedShareRoot.mediaPlays.slice(0, 5).map((media, index) => (
+                                                                     <GridListTile
+                                                                        className={media.typeobject == 2 ? "video" : "image"}
+                                                                        style={{
+                                                                           height: this.handleCellHeightCal(index, data.newsFeedShareRoot.mediaPlays.slice(0, 5).length),
+                                                                        }}
+                                                                        key={media.name}
+                                                                        cols={this.handleColumnCal(index, data.newsFeedShareRoot.mediaPlays.slice(0, 5).length)}
+                                                                     >
+                                                                        {
+                                                                           media.typeobject == 2
+                                                                              ? <div>
+                                                                                 <div onClick={() => this.setState({ showPostedDetail: true })}>
+                                                                                    <Player
+                                                                                       ref={index == 0 ? this.player : null}
+                                                                                       poster={media.thumbnailname}
+                                                                                       src={media.name}
+                                                                                       videoWidth={media.width}
+                                                                                       videoHeight={media.height}
+                                                                                       playsInline={true}
 
-                                                                                 >
-                                                                                    <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
-                                                                                    </ControlBar>
-                                                                                 </Player>
+                                                                                    >
+                                                                                       <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
+                                                                                       </ControlBar>
+                                                                                    </Player>
+                                                                                 </div>
+                                                                                 {
+                                                                                    index == 0 ? <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
+                                                                                       {isMuted == true ? <img style={{ width: 24, height: 24 }} src={mute} /> : <img style={{ width: 24, height: 24 }} src={unmute} />}
+                                                                                    </IconButton> : <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-play">
+                                                                                          <PlayArrowIcon />
+                                                                                       </IconButton>
+                                                                                 }
+                                                                                 <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => this.setState({ showPostedDetail: true })} />
                                                                               </div>
-                                                                              {
-                                                                                 index == 0 ? <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
+                                                                              : <img src={media.name} alt={media.name} onClick={() => this.setState({ showPostedDetail: true })} />
+                                                                        }
+                                                                        {
+                                                                           data.newsFeedShareRoot.mediaPlays.length > 4 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
+                                                                              <span>{data.newsFeedShareRoot.mediaPlays.length - 4}+</span>
+                                                                           </div> : ""
+                                                                        }
+                                                                     </GridListTile>
+                                                                  ))}
+                                                               </GridList>
+                                                               : <GridList cols={1}>
+                                                                  {data.newsFeedShareRoot.mediaPlays.map((media, index) => (
+                                                                     <GridListTile className={media.typeobject == 2 ? "video" : "image"} style={{ height: "auto" }} key={media.name} cols={1} >
+                                                                        {
+                                                                           media.typeobject == 2
+                                                                              ? <div>
+                                                                                 <div onClick={() => {
+                                                                                    this.props.setMediaToViewer([media])
+                                                                                    this.props.toggleMediaViewerDrawer(true, {
+                                                                                       showInfo: true,
+                                                                                       activeIndex: index,
+                                                                                       isvideo: true
+                                                                                    })
+                                                                                    this.handlePauseVideo()
+                                                                                 }}>
+                                                                                    <Player
+                                                                                       ref={this.player}
+                                                                                       poster={media.thumbnailname}
+                                                                                       src={media.name}
+                                                                                       videoWidth={media.width}
+                                                                                       videoHeight={media.height}
+                                                                                       playsInline={true}
+                                                                                    >
+                                                                                       <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
+                                                                                       </ControlBar>
+                                                                                    </Player>
+                                                                                 </div>
+                                                                                 <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
                                                                                     {isMuted == true ? <img style={{ width: 24, height: 24 }} src={mute} /> : <img style={{ width: 24, height: 24 }} src={unmute} />}
-                                                                                 </IconButton> : <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-play">
-                                                                                       <PlayArrowIcon />
-                                                                                    </IconButton>
-                                                                              }
-                                                                              <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => this.setState({ showPostedDetail: true })} />
-                                                                           </div>
-                                                                           : <img src={media.name} alt={media.name} onClick={() => this.setState({ showPostedDetail: true })} />
-                                                                     }
-                                                                     {
-                                                                        data.newsFeedShareRoot.mediaPlays.length > 4 && index == 4 ? <div className="grid-overlay" onClick={() => this.setState({ showPostedDetail: true })}>
-                                                                           <span>{data.newsFeedShareRoot.mediaPlays.length - 4}+</span>
-                                                                        </div> : ""
-                                                                     }
-                                                                  </GridListTile>
-                                                               ))}
-                                                            </GridList>
-                                                            : <GridList cols={1}>
-                                                               {data.newsFeedShareRoot.mediaPlays.map((media, index) => (
-                                                                  <GridListTile className={media.typeobject == 2 ? "video" : "image"} style={{ height: "auto" }} key={media.name} cols={1} >
-                                                                     {
-                                                                        media.typeobject == 2
-                                                                           ? <div>
-                                                                              <div onClick={() => {
-                                                                                 this.props.setMediaToViewer([media])
+                                                                                 </IconButton>
+                                                                                 <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => {
+                                                                                    this.props.setMediaToViewer([media])
+                                                                                    this.props.toggleMediaViewerDrawer(true, {
+                                                                                       showInfo: true,
+                                                                                       activeIndex: index,
+                                                                                       isvideo: true
+                                                                                    })
+                                                                                    this.handlePauseVideo()
+                                                                                 }} />
+                                                                              </div> :
+                                                                              <img src={media.name} alt={media.name} style={{ width: "100%", height: "auto" }} onClick={() => {
+                                                                                 this.props.setMediaToViewer(data.newsFeedShareRoot.mediaPlays)
                                                                                  this.props.toggleMediaViewerDrawer(true, {
+                                                                                    actions: data.newsFeedShareRoot.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
                                                                                     showInfo: true,
-                                                                                    activeIndex: index,
-                                                                                    isvideo: true
+                                                                                    activeIndex: index
                                                                                  })
-                                                                                 this.handlePauseVideo()
-                                                                              }}>
-                                                                                 <Player
-                                                                                    ref={this.player}
-                                                                                    poster={media.thumbnailname}
-                                                                                    src={media.name}
-                                                                                    videoWidth={media.width}
-                                                                                    videoHeight={media.height}
-                                                                                    playsInline={true}
-                                                                                 >
-                                                                                    <ControlBar disableDefaultControls={true} autoHide={false} className={"video-control"} >
-                                                                                    </ControlBar>
-                                                                                 </Player>
-                                                                              </div>
-                                                                              <IconButton onClick={() => this.handleSetMuted(!isMuted)} className="bt-mute">
-                                                                                 {isMuted == true ? <img style={{ width: 24, height: 24 }} src={mute} /> : <img style={{ width: 24, height: 24 }} src={unmute} />}
-                                                                              </IconButton>
-                                                                              <div className="thumb" ref={index == 0 ? this.thumbnail : null} style={{ background: "url(" + media.thumbnailname + ")" }} onClick={() => {
-                                                                                 this.props.setMediaToViewer([media])
-                                                                                 this.props.toggleMediaViewerDrawer(true, {
-                                                                                    showInfo: true,
-                                                                                    activeIndex: index,
-                                                                                    isvideo: true
-                                                                                 })
-                                                                                 this.handlePauseVideo()
                                                                               }} />
-                                                                           </div> :
-                                                                           <img src={media.name} alt={media.name} style={{ width: "100%", height: "auto" }} onClick={() => {
-                                                                              this.props.setMediaToViewer(data.newsFeedShareRoot.mediaPlays)
-                                                                              this.props.toggleMediaViewerDrawer(true, {
-                                                                                 actions: data.newsFeedShareRoot.iduserpost == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
-                                                                                 showInfo: true,
-                                                                                 activeIndex: index
-                                                                              })
-                                                                           }} />
-                                                                     }
-                                                                  </GridListTile>
-                                                               ))}
-                                                            </GridList>
-                                                      )
+                                                                        }
+                                                                     </GridListTile>
+                                                                  ))}
+                                                               </GridList>
+                                                         )
+                                                      }
+                                                   </div>
+                                                   {
+                                                      data.newsFeedShareRoot.numlike > 0 || data.newsFeedShareRoot.numcomment > 0 ? <div className="react-reward">
+                                                         <span>{data.newsFeedShareRoot.numlike + data.newsFeedShareRoot.numcomment} lượt xem</span>
+                                                      </div> : ""
                                                    }
-                                                </div>
-                                                {
-                                                   data.newsFeedShareRoot.numlike > 0 || data.newsFeedShareRoot.numcomment > 0 ? <div className="react-reward">
-                                                      <span>{data.newsFeedShareRoot.numlike + data.newsFeedShareRoot.numcomment} lượt xem</span>
-                                                   </div> : ""
-                                                }
-                                             </CardContent>}
-                                       </Card>
-                                    }
-                                 </div>
+                                                </CardContent>}
+                                          </Card>
+                                       }
+                                    </div>
+                                 </div> : ""
+                              }
+                           </div>
+                           {
+                              data.numlike > 0 || data.numcomment > 0 ? <div className="react-reward">
+                                 {
+                                    data.numlike > 0 ? <span className="like" onClick={() => this.setState({ showLikeRewardDrawer: true })}>
+
+                                       {
+                                          data.iconNumbers.filter(item => item.icon != data.iconlike).map((item, index) => item.icon > 0 && item.num > 0 && <img key={index} src={ReactSelectorIcon[item.icon].icon}></img>)
+                                       }
+                                       {
+                                          data.islike == 1 && data.iconlike > 0 ? <img src={ReactSelectorIcon[data.iconlike].icon}></img> : ""
+                                       }
+                                       <span>{data.numlike}</span>
+                                    </span> : <span className="like">
+                                       </span>
+                                 }
+                                 {
+                                    data.numcomment > 0 && <span className="comment">
+                                       {data.numcomment > 0
+                                          && `${data.numcomment} bình luận `
+                                       }
+                                       {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
+                                          && `${data.mediaPlays[0].numview} lượt xem `
+                                       }
+                                       {
+                                          data.numshare > 0 && `${data.numshare} chia sẻ `
+                                       }
+                                    </span>
+                                 }
                               </div> : ""
                            }
-                        </div>
+                        </CardContent>
+                        <CardActions disableSpacing className="post-actions">
+                           <FacebookSelector
+                              open={openReactions}
+                              active={data.iconlike}
+                              onClose={() => this.setState({ openReactions: false })}
+                              onReaction={(reaction) => this.likePosted(reaction)}
+                              onShortPress={(reaction) => data.islike == 1 ? this.dislikePosted(reaction) : this.likePosted(reaction)}
+                           />
+                           {(data.postforid !== 4 && data.typegroup !== 2) && <Button onClick={() => this.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>}
+                        </CardActions>
                         {
-                           data.numlike > 0 || data.numcomment > 0 ? <div className="react-reward">
-                              {
-                                 data.numlike > 0 ? <span className="like" onClick={() => this.setState({ showLikeRewardDrawer: true })}>
-
+                           daskMode ? "" : (data.numcomment > 0 ? <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>
+                              <CardContent className={"card-container"}>
+                                 <ul className="comment-list" onClick={() => this.setState({ showCommentDrawer: true, currentPost: data })}>
                                     {
-                                       data.iconNumbers.filter(item => item.icon != data.iconlike).map((item, index) => item.icon > 0 && item.num > 0 && <img key={index} src={ReactSelectorIcon[item.icon].icon}></img>)
+                                       comments.map((comment, index) => <Comment
+                                          key={index}
+                                          comment={comment}
+                                          hideReactions={false}
+                                          onReply={comment => this.setState({ replyFor: comment })}
+                                          posted={data}
+                                       />)
                                     }
-                                    {
-                                       data.islike == 1 && data.iconlike > 0 ? <img src={ReactSelectorIcon[data.iconlike].icon}></img> : ""
-                                    }
-                                    <span>{data.numlike}</span>
-                                 </span> : <span className="like">
-                                    </span>
-                              }
-                              {
-                                 data.numcomment > 0 && <span className="comment">
-                                    {data.numcomment > 0
-                                       && `${data.numcomment} bình luận `
-                                    }
-                                    {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
-                                       && `${data.mediaPlays[0].numview} lượt xem `
-                                    }
-                                    {
-                                       data.numshare > 0 && `${data.numshare} chia sẻ `
-                                    }
-                                 </span>
-                              }
-                           </div> : ""
-                        }
-                     </CardContent>
-                     <CardActions disableSpacing className="post-actions">
-                        <FacebookSelector
-                           open={openReactions}
-                           active={data.iconlike}
-                           onClose={() => this.setState({ openReactions: false })}
-                           onReaction={(reaction) => this.likePosted(reaction)}
-                           onShortPress={(reaction) => data.islike == 1 ? this.dislikePosted(reaction) : this.likePosted(reaction)}
-                        />
-                        {(data.postforid !== 4 && data.typegroup !== 2) && <Button onClick={() => this.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>}
-                     </CardActions>
-                     {
-                        daskMode ? "" : (data.numcomment > 0 ? <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>
-                           <CardContent className={"card-container"}>
-                              <ul className="comment-list" onClick={() => this.setState({ showCommentDrawer: true, currentPost: data })}>
+                                 </ul>
                                  {
-                                    comments.map((comment, index) => <Comment
-                                       key={index}
-                                       comment={comment}
-                                       hideReactions={false}
-                                       onReply={comment => this.setState({ replyFor: comment })}
-                                       posted={data}
-                                    />)
+                                    <div style={{ height: "50px", background: "#fff", zIndex: 0 }}>
+                                       {
+                                          isLoading ? <Loader type="small" daskMode={true} style={{ background: "#fff" }} width={30} height={30} /> : ""
+                                       }
+                                    </div>
                                  }
-                              </ul>
-                              {
-                                 <div style={{ height: "50px", background: "#fff", zIndex: 0 }}>
-                                    {
-                                       isLoading ? <Loader type="small" daskMode={true} style={{ background: "#fff" }} width={30} height={30} /> : ""
-                                    }
-                                 </div>
-                              }
-                           </CardContent>
-                        </Collapse> : "")
-                     }
+                              </CardContent>
+                           </Collapse> : "")
+                        }
 
-                  </Card> : ""
-               }
-            </div>
-            <div className="comment-input-text">
-               <div className="image-selected">
-                  {
-                     imageSelected && imageSelected.map((image, index) => <div key={index} >
-                        <div style={{ background: "url(" + URL.createObjectURL(image.file) + ")" }}></div>
-                        <IconButton onClick={() => this.handleDeleteImage(image)}><CloseIcon /></IconButton>
-                     </div>)
+                     </Card> : ""
                   }
+               </div>
+               <div className="comment-input-text">
+                  <div className="image-selected">
+                     {
+                        imageSelected && imageSelected.map((image, index) => <div key={index} >
+                           <div style={{ background: "url(" + URL.createObjectURL(image.file) + ")" }}></div>
+                           <IconButton onClick={() => this.handleDeleteImage(image)}><CloseIcon /></IconButton>
+                        </div>)
+                     }
+                  </div>
+                  {
+                     replyFor ? <div className="reply-for-comment">
+                        <IconButton onClick={() => this.setState({ replyFor: null })}><CloseIcon /></IconButton>
+                        <span>Đang trả lời <span>{replyFor.nameusercomment}</span></span>
+                     </div> : ""
+                  }
+                  <div className="input-box">
+                     <Dropzone onDrop={acceptedFiles => this.selectImage(acceptedFiles)}>
+                        {({ getRootProps, getInputProps }) => (
+                           <div {...getRootProps()} id="bt-select-image">
+                              <input {...getInputProps()} accept="image/*" multiple={false} />
+                              <IconButton><img src={Picture} /></IconButton>
+                           </div>
+                        )}
+                     </Dropzone>
+                     <MultiInput
+                        ref={this.commentInput}
+                        style={{
+                           minHeight: "20px",
+                           border: "none",
+                        }}
+                        onChange={value => {
+                           this.setState({
+                              commentContent: value.text,
+                              mentionSelected: value.mentionSelected,
+                              hashtagSelected: value.hashtagSelected,
+                           })
+                        }}
+                        topDown={false}
+                        placeholder={"Bình luận của bạn"}
+                        enableHashtag={true}
+                        enableMention={true}
+                        centerMode={false}
+                        value={commentContent}
+                        suggestionClass="custom-suggestion"
+                     />
+                     {
+                        (commentContent.trim() !== '' || imageSelected.length > 0) && <IconButton onClick={() => this.handleComment()}><img src={Send} /></IconButton>
+                     }
+                  </div>
                </div>
                {
-                  replyFor ? <div className="reply-for-comment">
-                     <IconButton onClick={() => this.setState({ replyFor: null })}><CloseIcon /></IconButton>
-                     <span>Đang trả lời <span>{replyFor.nameusercomment}</span></span>
-                  </div> : ""
+                  renderDetailPosted(this)
                }
-               <div className="input-box">
-                  <Dropzone onDrop={acceptedFiles => this.selectImage(acceptedFiles)}>
-                     {({ getRootProps, getInputProps }) => (
-                        <div {...getRootProps()} id="bt-select-image">
-                           <input {...getInputProps()} accept="image/*" multiple={false} />
-                           <IconButton><img src={Picture} /></IconButton>
-                        </div>
-                     )}
-                  </Dropzone>
-                  <MultiInput
-                     ref={this.commentInput}
-                     style={{
-                        minHeight: "20px",
-                        border: "none",
-                     }}
-                     onChange={value => this.setState({
-                        commentContent: value.text,
-                        mentionSelected: value.mentionSelected,
-                        hashtagSelected: value.hashtagSelected,
-                     })}
-                     topDown={false}
-                     placeholder={"Bình luận của bạn"}
-                     enableHashtag={true}
-                     enableMention={true}
-                     centerMode={false}
-                     value={commentContent}
-                     suggestionClass="custom-suggestion"
-                  />
-                  {
-                     commentContent != '' || commentContent.length > 0 || imageSelected.length > 0 ? <IconButton onClick={() => this.handleComment()}><img src={Send} /></IconButton> : ""
-                  }
-               </div>
-            </div>
-            {
-               renderDetailPosted(this)
-            }
-            {
-               renderConfirmDrawer(this)
-            }
-            {
-               renderLikeRewardDrawer(this)
-            }
-         </div >
+               {
+                  renderConfirmDrawer(this)
+               }
+               {
+                  renderLikeRewardDrawer(this)
+               }
+            </div >
+         </div>
       );
    }
 }

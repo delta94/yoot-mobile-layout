@@ -46,7 +46,6 @@ export default (state = initialState, action) => {
             });
         }
         case UPDATE_POSTED: {
-
             let userPostedsList = userPosteds[action.userId]
             if (userPostedsList) {
                 let postIndex = userPostedsList.findIndex(item => item.nfid == action.payload.nfid)
@@ -56,13 +55,8 @@ export default (state = initialState, action) => {
                 }
             }
 
-
             if (allPosteds) {
-                let postIndex = allPosteds.findIndex(item => item.nfid == action.payload.nfid)
-
-                if (postIndex >= 0) {
-                    allPosteds[postIndex] = { ...action.payload, comments: userPostedsList[postIndex].comments }
-                }
+                return {...state,allPosteds: allPosteds.map(item=>item.nfid === action.payload.nfid ? action.payload : item)}
             }
 
             if (videoPosteds) {
@@ -96,7 +90,7 @@ export default (state = initialState, action) => {
                     ...userPosteds,
                     [action.payload.nfid]: userPostedsList
                 },
-                allPosteds: allPosteds,
+                // allPosteds: allPosteds,
                 videoPosteds: videoPosteds,
                 allGroupPosteds: allGroupPosteds,
                 currentGroupPosteds: currentGroupPosteds

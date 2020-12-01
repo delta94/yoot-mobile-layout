@@ -40,6 +40,14 @@ body {
         }
     }
 }
+@media (min-width: 400px) {
+    body {
+        .wrapper {
+            width: 100%; //node
+            background: #fff;
+        }
+    }
+}
 
 
 .row {

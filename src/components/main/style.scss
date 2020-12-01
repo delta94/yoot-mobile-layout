@@ -181,7 +181,6 @@ body{
   width: 100%;
   position: fixed;
   bottom: 0px;
-  left: 0px;
   background: #fff;
   transition: height 0.2s ease-in-out;
   z-index: 1000;
@@ -1240,6 +1239,7 @@ body{
   }
   .content-main{
     background: #fff;
+    height: calc(100vh - 60px);
   }
   .friend-list{
     overflow-y: auto;
@@ -1257,4 +1257,36 @@ body{
   max-width: 600px;
   margin: auto;
   width: 100%;
+}
+@media screen and (min-width: 400px) {
+  body{
+    overflow: hidden;
+  }
+      .wrapper {
+          background: #f2f3f7 !important;
+      }
+      .fix-header{
+        left: auto;
+        margin: auto;
+        align-items: center;
+        max-width: 600px;
+      }
+      .fix-footer{
+        max-width: 600px;
+      }
+      
+      .home-page .member-list{
+        margin-bottom: 60px;
+      }
+      .comment-post {
+        .drawer-content{
+          padding: 0;
+          height: 100vh;
+          background: #fff;
+        }
+      }
+      .comment-input-text{
+        max-width: 600px;
+        left: auto;
+      }
 }

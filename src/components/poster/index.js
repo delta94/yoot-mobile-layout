@@ -1,45 +1,19 @@
 import React from "react";
 import "./style.scss";
 import {
-  togglePostDrawer,
-  toggleMediaViewerDrawer,
-  setMediaToViewer,
-  toggleCreateAlbumDrawer,
-  selectAlbumToPost,
-  setProccessDuration,
+  togglePostDrawer,  toggleMediaViewerDrawer,  setMediaToViewer,  toggleCreateAlbumDrawer,  selectAlbumToPost,  setProccessDuration,
 } from "../../actions/app";
-import {
-  setCurrentPosted,
-  createPostSuccess,
-  updatePosted,
-} from "../../actions/posted";
+import {  setCurrentPosted,  createPostSuccess,  updatePosted,} from "../../actions/posted";
 import { setJoinedGroup, setCurrentGroup } from "../../actions/group";
 import { connect } from "react-redux";
-import {
-  Drawer,
-  IconButton,
-  Button,
-  TextField,
-  InputAdornment,
-  Avatar,
-  CardHeader,
-  Divider,
-} from "@material-ui/core";
+import {  Drawer,  IconButton,  Button,  TextField,  InputAdornment,  Avatar,  CardHeader,  Divider,} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  ChevronLeft as ChevronLeftIcon,
-  Close as CloseIcon,
-  Add as AddIcon,
-  PlayCircleOutline as PlayCircleOutlineIcon,
-  Done as DoneIcon,
-  ExpandMore as ExpandMoreIcon,
+  ChevronLeft as ChevronLeftIcon,  Close as CloseIcon,  Add as AddIcon,  PlayCircleOutline as PlayCircleOutlineIcon,
+  Done as DoneIcon,  ExpandMore as ExpandMoreIcon,
 } from "@material-ui/icons";
 import ArrowForwardIosRoundedIcon from "@material-ui/icons/ArrowForwardIosRounded";
-import {
-  Privacies,
-  GroupPrivacies,
-  backgroundList,
-} from "../../constants/constants";
+import {  Privacies,  GroupPrivacies,  backgroundList,} from "../../constants/constants";
 import { objToArray, objToQuery, srcToFile } from "../../utils/common";
 import Dropzone from "react-dropzone";
 import MultiInput from "../common/multi-input";
@@ -471,7 +445,6 @@ export class Index extends React.Component {
     }
     postFormData(SOCIAL_NET_WORK_API, endPoint, data, (result) => {
       if (result && result.result === 1) {
-        console.log(result)
         if (nfid > 0) {
           this.props.updatePosted(
             { ...result.content.newsFeeds, isPendding: true },
@@ -640,20 +613,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(Index);
 const renderPostDrawer = (component) => {
   let { showPostDrawer, isPostToGroup, albumSelected } = component.props;
   let {
-    privacySelected,
-    imageSelected,
-    videoSelected,
-    groupSelected,
-    isBackgroundSelect,
-    backgroundSelected,
-    postContent,
-    isPosting,
-    mentionSelected,
-    tagedFrieds,
-    postedImage,
-    postedVideo,
-    nfid,
-    isChange,
+    privacySelected,    imageSelected,    videoSelected,    groupSelected,    isBackgroundSelect,    backgroundSelected,
+    postContent,    isPosting,    mentionSelected,    tagedFrieds,    postedImage,    postedVideo,    nfid,    isChange,
   } = component.state;
 
   let { currentGroup, currentPost } = component.props;
@@ -679,6 +640,7 @@ const renderPostDrawer = (component) => {
               className={isChange ? "bt-submit" : "bt-cancel"}
               style={{ width: "fit-content" }}
               onClick={() => component.handlePost()}
+              disabled={!isChange}
             >
               Đăng
             </Button>
@@ -822,18 +784,18 @@ const renderPostDrawer = (component) => {
             <MultiInput
               style={{
                 minHeight: "320px",
-                padding: "15px",
+                padding: "15px 15px 40px 15px",
                 background: backgroundSelected
                   ? "url(" + backgroundSelected.background + ")"
                   : "#fff",
               }}
-              onChange={(value) =>
+              onChange={(value) =>{
                 component.setState({
                   postContent: value.text,
                   mentionSelected: value.mentionSelected,
                   hashtagSelected: value.hashtagSelected,
-                  isChange: value.text != "",
-                })
+                  isChange: value.text.trim() !== "" ? true : false,
+                })}
               }
               topDown={true}
               placeholder={"Bạn viết gì đi..."}

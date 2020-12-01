@@ -262,7 +262,7 @@
             left: calc(50% - 17px);
             padding: 5px;
             background: rgba(0, 0, 0, 0.7);
-            z-index: 999;
+            z-index: 30;
           }
 
           .video-control {
@@ -689,7 +689,7 @@
   padding: 5px;
   background: rgba(0, 0, 0, 0.8) !important;
   color: #fff !important;
-  z-index: 999;
+  z-index: 30;
 }
 
 .posted-detail-drawer {
@@ -839,6 +839,7 @@
 }
 
 .comment-post {
+  overflow: hidden;
   .drawer-header {
     .post-item {
       min-width: calc(100% - 120px) !important;
