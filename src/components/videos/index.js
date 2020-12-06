@@ -1,4 +1,4 @@
-import React from "react";
+import React,{ Suspense } from "react";
 import './style.scss'
 import {
   addHeaderContent,
@@ -17,7 +17,7 @@ import {
   ChevronLeft as ChevronLeftIcon, SpaOutlined
 } from '@material-ui/icons'
 import { StickyContainer, Sticky } from 'react-sticky';
-import Post from '../post'
+// import Post from '../post'
 import $ from 'jquery'
 import { CurrentDate, SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import { objToQuery } from "../../utils/common";
@@ -25,6 +25,8 @@ import { get } from "../../api";
 import EmptyPost from '../common/empty-post'
 import moment from 'moment'
 import Loader from '../common/loader'
+
+const Post = React.lazy(() => import('../post'));
 
 const Newfeed = require('../../assets/icon/Lesson.png')
 const Group1 = require('../../assets/icon/Group1@1x.png')
@@ -142,7 +144,9 @@ class Index extends React.Component {
             videoPosteds && videoPosteds.length > 0 ? <ul className="post-list">
               {
                 videoPosteds.map((post, index) => <li key={index} >
-                  <Post data={post} history={this.props.history} userId={post.iduserpost} daskMode={true} />
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <Post data={post} index={index} history={this.props.history} userId={post.iduserpost} daskMode={true} />
+                  </Suspense>
                 </li>)
               }
             </ul> : ""

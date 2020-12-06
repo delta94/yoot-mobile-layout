@@ -64,6 +64,8 @@ const Group1 = require("../../assets/icon/Group1@1x.png");
 const NotiBw = require("../../assets/icon/NotiBw@1x.png");
 const Profile = require("../../assets/icon/Profile.png");
 
+const CurrentDateForLoad = moment(new Date()).format(CurrentDate)
+
 class Index extends React.Component {
   constructor(props) {
     super(props);
@@ -788,7 +790,7 @@ class Index extends React.Component {
 
     let param = {
       currentpage: currentpage,
-      currentdate: moment(new Date()).format(CurrentDate),
+      currentdate: CurrentDateForLoad,
       limit: 20,
       groupid: 0,
       isVideo: 0,

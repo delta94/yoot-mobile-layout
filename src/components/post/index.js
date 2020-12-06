@@ -22,7 +22,7 @@ import {
 } from "../../constants/constants";
 import {
   togglePostDrawer, toggleMediaViewerDrawer, setMediaToViewer, toggleUserDetail, toggleUserPageDrawer, setProccessDuration,
-  toggleCommentDrawer, toggleCommentImageDrawer, toggleReportComment
+  toggleCommentDrawer, toggleCommentImageDrawer, toggleReportComment, setActivePostIndex
 } from "../../actions/app";
 import { setCurrenUserDetail } from "../../actions/user";
 import {
@@ -39,7 +39,7 @@ import Loader from "../common/loader";
 import { get, post, postFormData } from "../../api";
 import { SOCIAL_NET_WORK_API, PostLinkToCoppy, CurrentDate } from "../../constants/appSettings";
 
-import { showInfo } from "../../utils/app";
+import { isMobile, showInfo } from "../../utils/app";
 import MultiInput from "../common/multi-input";
 import CustomMenu from "../common/custom-menu";
 import { APP_SETTING } from "../../constants/localStorageKeys";
@@ -286,22 +286,25 @@ class Index extends React.Component {
     let { data } = this.props;
     let video = this.player.current;
     let thumbnail = this.thumbnail.current;
+    this.props.setActivePostIndex(this.props.index?this.props.index:0)
+
     if (video) {
       this.handleSetMuted(true);
       video.play();
       video.subscribeToStateChange((state, prevState) => {
         if (state.ended == true) {
-          this.setState({
-            isPlaying: false,
-          });
+          // this.setState({
+          //   isPlaying: false,
+          // });
         }
-      });
-      this.setState({
-        isPlaying: true,
       });
       if (thumbnail) {
         $(thumbnail).fadeOut(1000);
       }
+      // this.setState({
+      //   isPlaying: true,
+      // });
+      
     }
   }
 
@@ -309,6 +312,8 @@ class Index extends React.Component {
     let video = this.player.current;
     if (video) {
       video.pause();
+      let thumbnail = this.thumbnail.current;
+      $(thumbnail).fadeIn(1000);
       this.setState({
         isPlaying: false,
       });
@@ -765,6 +770,8 @@ class Index extends React.Component {
     );
   }
 
+
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.autoPlay != this.props.autoPlay) {
       if (nextProps.autoPlay == true) {
@@ -774,6 +781,7 @@ class Index extends React.Component {
       }
     }
   }
+ 
 
   handleActiveVideo() {
     let { currentNetwork } = this.props;
@@ -845,7 +853,7 @@ class Index extends React.Component {
       isFullScreen,
       isPlaying,
     } = this.state;
-    let { profile, daskMode, data, containerRef } = this.props;
+    let { profile, daskMode, data, containerRef ,activePostIndex,index} = this.props;
 
     let PrivacyOptions = objToArray(Privacies);
     let GroupPrivacyOptions = objToArray(GroupPrivacies);
@@ -866,8 +874,12 @@ class Index extends React.Component {
         item.postid = data.newsFeedShareRoot.nfid
       })
     }
+    let canPlay = index <= (activePostIndex + 3) && index >= (activePostIndex - 2)
+    if(!isMobile()) canPlay=true
+    // let contentWidth = $(".post-box-content").innerWidth()
+    // console.log("dk",$(".post-box-content").innerWidth())
     return data && (!data.isPedding || data.isPedding === false) ? (
-      <div>
+      <div className="post-box-content">
         <ScrollTrigger
           containerRef={containerRef}
           onEnter={() => this.handleActiveVideo()}
@@ -1151,7 +1163,7 @@ class Index extends React.Component {
                         )}
                       >
                         {media.typeobject == 2 ? (
-                          <div>
+                          <div className="video-box-content">
                             <div
                               onClick={() => {
                                 this.setState({ showPostedDetail: true })
@@ -1159,20 +1171,21 @@ class Index extends React.Component {
                               }
                               }
                             >
-                              <Player
+                              {canPlay?<Player
                                 ref={index == 0 ? this.player : null}
                                 poster={media.thumbnailname}
-                                src={media.name}
+                                src={ media.name}
                                 videoWidth={media.width}
                                 videoHeight={media.height}
                                 playsInline={true}
+                                preload="metadata"
                               >
                                 <ControlBar
                                   disableDefaultControls={true}
                                   autoHide={false}
                                   className={"video-control"}
                                 ></ControlBar>
-                              </Player>
+                              </Player>:""}
                             </div>
                             {index == 0 ? (
                               <IconButton
@@ -1204,6 +1217,8 @@ class Index extends React.Component {
                               ref={index == 0 ? this.thumbnail : null}
                               style={{
                                 background: "url(" + media.thumbnailname + ")",
+                                // width: contentWidth,
+                                // height: (media.height / media.width) * contentWidth
                               }}
                               onClick={() => {
                                 this.setState({ showPostedDetail: true })
@@ -1249,7 +1264,7 @@ class Index extends React.Component {
                           cols={1}
                         >
                           {media.typeobject == 2 ? (
-                            <div>
+                            <div className="video-box-content">
                               <div
                                 onClick={() => {
                                   this.props.setMediaToViewer([media]);
@@ -1262,20 +1277,21 @@ class Index extends React.Component {
                                   this.handlePauseVideo();
                                 }}
                               >
-                                <Player
+                                {canPlay?<Player
                                   ref={this.player}
                                   poster={media.thumbnailname}
                                   src={media.name}
                                   videoWidth={media.width}
                                   videoHeight={media.height}
                                   playsInline={true}
+                                  preload="metadata"
                                 >
                                   <ControlBar
                                     disableDefaultControls={true}
                                     autoHide={false}
                                     className={"video-control"}
                                   ></ControlBar>
-                                </Player>
+                                </Player>:""}
                               </div>
                               <IconButton
                                 onClick={() => this.handleSetMuted(!isMuted)}
@@ -1298,6 +1314,8 @@ class Index extends React.Component {
                                 ref={index == 0 ? this.thumbnail : null}
                                 style={{
                                   background: "url(" + media.thumbnailname + ")",
+                                //   width: contentWidth,
+                                // height: (media.height / media.width) * contentWidth
                                 }}
                                 onClick={() => {
                                   this.props.setMediaToViewer([media]);
@@ -1514,7 +1532,7 @@ class Index extends React.Component {
                                         )}
                                       >
                                         {media.typeobject == 2 ? (
-                                          <div>
+                                          <div className="video-box-content">
                                             <div
                                               onClick={() => {
                                                 this.setState({
@@ -1525,7 +1543,7 @@ class Index extends React.Component {
                                               }
                                               }
                                             >
-                                              <Player
+                                              {canPlay?<Player
                                                 ref={
                                                   index == 0
                                                     ? this.player
@@ -1536,13 +1554,14 @@ class Index extends React.Component {
                                                 videoWidth={media.width}
                                                 videoHeight={media.height}
                                                 playsInline={true}
+                                                preload="metadata"
                                               >
                                                 <ControlBar
                                                   disableDefaultControls={true}
                                                   autoHide={false}
                                                   className={"video-control"}
                                                 ></ControlBar>
-                                              </Player>
+                                              </Player>:""}
                                             </div>
                                             {index == 0 ? (
                                               <IconButton
@@ -1591,6 +1610,8 @@ class Index extends React.Component {
                                                   "url(" +
                                                   media.thumbnailname +
                                                   ")",
+                                //                   width: contentWidth,
+                                // height: (media.height / media.width) * contentWidth
                                               }}
                                               onClick={() => {
                                                 this.setState({
@@ -1658,7 +1679,7 @@ class Index extends React.Component {
                                           cols={1}
                                         >
                                           {media.typeobject == 2 ? (
-                                            <div>
+                                            <div className="video-box-content">
                                               <div
                                                 onClick={() => {
                                                   this.props.setMediaToViewer([
@@ -1676,20 +1697,21 @@ class Index extends React.Component {
                                                   this.handlePauseVideo();
                                                 }}
                                               >
-                                                <Player
+                                                {canPlay?<Player
                                                   ref={this.player}
                                                   poster={media.thumbnailname}
                                                   src={media.name}
                                                   videoWidth={media.width}
                                                   videoHeight={media.height}
                                                   playsInline={true}
+                                                  preload="metadata"
                                                 >
                                                   <ControlBar
                                                     disableDefaultControls={true}
                                                     autoHide={false}
                                                     className={"video-control"}
                                                   ></ControlBar>
-                                                </Player>
+                                                </Player>:""}
                                               </div>
                                               <IconButton
                                                 onClick={() =>
@@ -1727,6 +1749,8 @@ class Index extends React.Component {
                                                     "url(" +
                                                     media.thumbnailname +
                                                     ")",
+                                //                     width: contentWidth,
+                                // height: (media.height / media.width) * contentWidth
                                                 }}
                                                 onClick={() => {
                                                   this.props.setMediaToViewer([
@@ -1988,7 +2012,8 @@ const mapDispatchToProps = (dispatch) => ({
   toggleGroupDetailDrawer: (isShow) => dispatch(toggleGroupDetailDrawer(isShow)),
   setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
   toggleCommentDrawer: (isShow, currentPostForComment) => dispatch(toggleCommentDrawer(isShow, currentPostForComment)),
-  toggleCommentImageDrawer: (isShow, currentImageForComment, currentPostForComment) => dispatch(toggleCommentImageDrawer(isShow, currentImageForComment, currentPostForComment))
+  toggleCommentImageDrawer: (isShow, currentImageForComment, currentPostForComment) => dispatch(toggleCommentImageDrawer(isShow, currentImageForComment, currentPostForComment)),
+  setActivePostIndex : (index) =>dispatch(setActivePostIndex(index))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

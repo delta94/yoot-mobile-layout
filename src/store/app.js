@@ -36,7 +36,8 @@ import {
     TOGGLE_COMMENT_DRAWER,
     TOGGLE_COMMENT_IMAGE_DRAWER,
     TOGGLE_SEARCH_POST_DRAWER,
-    TOGGLE_REPORT_COMMENT
+    TOGGLE_REPORT_COMMENT,
+    SET_ACTIVE_POST_INDEX
 } from '../actions/app'
 
 const initialState = {
@@ -81,7 +82,8 @@ const initialState = {
     currentImageForComment: null,
     showCommentImageDrawer: false,
     showSearchPostDrawer: false,
-    currentHashtag: null
+    currentHashtag: null,
+    activePostIndex: 0,
 };
 
 export default (state = initialState, action) => {
@@ -302,6 +304,10 @@ export default (state = initialState, action) => {
                 currentPostForComment: action.payload.data,
                 showReportPost: action.payload.isShow
             }
+        case SET_ACTIVE_POST_INDEX:
+            return Object.assign({}, state, {
+                activePostIndex: action.payload,
+            });
         default:
             return state;
     }

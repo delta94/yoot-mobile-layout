@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import moment from 'moment'
+import $ from 'jquery'
 
 export const showError = message => {
     if (!message)
@@ -76,3 +77,4 @@ export const renderVNDays = date => {
     let days = moment(date).days()
     return days > 0 ? ("Thứ " + (days + 1)) : "Chủ nhật"
 }
+export const isMobile = () => $(window).innerWidth() < 800;

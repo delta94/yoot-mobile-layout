@@ -61,6 +61,8 @@ const uploadImage = require("../../assets/icon/upload_image.png");
 const uploadVideo = require("../../assets/icon/upload_video.png");
 const defaultImage = "https://dapp.dblog.org/img/default.jpg";
 
+const CurrentDateForLoad = moment(new Date()).format(CurrentDate)
+
 class Index extends React.Component {
   constructor(props) {
     super(props);
@@ -303,7 +305,7 @@ class Index extends React.Component {
 
     let param = {
       currentpage: currentpage,
-      currentdate: moment(new Date()).format(CurrentDate),
+      currentdate: CurrentDateForLoad,
       limit: 20,
       groupid: 0,
       isVideo: 0,

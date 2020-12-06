@@ -42,6 +42,7 @@ export const TOGGLE_COMMENT_DRAWER = "app@TOGGLE_COMMENT_DRAWER"
 export const TOGGLE_COMMENT_IMAGE_DRAWER = "app@TOGGLE_COMMENT_IMAGE_DRAWER"
 export const TOGGLE_SEARCH_POST_DRAWER = "app@TOGGLE_SEARCH_POST_DRAWER"
 export const TOGGLE_REPORT_COMMENT = "app@TOGGLE_REPORT_COMMENT"
+export const SET_ACTIVE_POST_INDEX = "app@SET_ACTIVE_POST_INDEX"
 
 
 export const toggleReportComment = (isShow, data) => dispatch => {
@@ -384,6 +385,15 @@ export const toggleSeachPosts = (isShow, hashtag) => {
             type: TOGGLE_SEARCH_POST_DRAWER,
             payload: isShow,
             hashtag: hashtag
+        })
+    }
+}
+
+export const setActivePostIndex = index =>{
+    return dispatch =>{
+        dispatch({
+            type: SET_ACTIVE_POST_INDEX,
+            payload: index
         })
     }
 }
