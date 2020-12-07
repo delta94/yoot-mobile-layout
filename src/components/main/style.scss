@@ -1395,9 +1395,13 @@ body{
   .content-main{
     background: #fff;
     min-height: calc(100vh - 130px);
-    overflow: hidden;
   }
   .posted{
     padding: 10px 0 !important;
+  }
+  .job-list-drawer{
+    .drawer-detail{
+      background: #fff !important;
+    }
   }
 }

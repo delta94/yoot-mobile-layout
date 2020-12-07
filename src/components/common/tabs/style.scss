@@ -77,7 +77,7 @@
         > div{
             >div{
                 > div{
-                    overflow: scroll;
+                    overflow: auto;
                     &::-webkit-scrollbar{
                         display: none;
                     }

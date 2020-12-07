@@ -662,7 +662,7 @@ const renderScholarDrawer = (component) => {
     showScholarDrawer,
   } = component.state
   return (
-    <Drawer anchor="bottom" className="style-test-drawer" open={showScholarDrawer} onClose={() => component.setState({ showScholarDrawer: false })}>
+    <Drawer anchor="bottom" className="style-test-drawer fit-popup" open={showScholarDrawer} onClose={() => component.setState({ showScholarDrawer: false })}>
       {
         profile ? <div className="drawer-detail">
           <div className="drawer-header">
@@ -686,7 +686,7 @@ const renderScholarDrawer = (component) => {
           </div>
           <div className="filter">
           </div>
-          <div style={{ overflow: "scroll" }}>
+          <div>
             <div className="career-guidance-banner" onClick={() => component.setState({ showScholarDrawer: true })}>
               <img src="https://huongnghiepsongan.com/wp-content/uploads/2020/07/marci-angeles-YCF18toz3ds-unsplash.jpg" />
             </div>
@@ -733,7 +733,7 @@ const renderStyleTestDrawer = (component) => {
     careerHistory
   } = component.props
   return (
-    <Drawer anchor="bottom" className="style-test-drawer" open={showStyleTestPage} onClose={() => component.props.toggleStyleTestDrawer(false)}>
+    <Drawer anchor="bottom" className="style-test-drawer fit-popup" open={showStyleTestPage} onClose={() => component.props.toggleStyleTestDrawer(false)}>
       {
         profile ? <div className="drawer-detail">
           <div className="drawer-header">
@@ -757,7 +757,7 @@ const renderStyleTestDrawer = (component) => {
           </div>
           <div className="filter">
           </div>
-          <div style={{ overflow: "scroll" }}>
+          <div style={{ overflow: "auto" }}>
             <div className="style-reward">
               <Button onClick={() => component.handleGetDISCIntro()}><img src={DISC} /> Tìm hiểu DISC</Button>
             </div>
@@ -894,7 +894,7 @@ const renderDISCDrawer = (component) => {
             </div>
           </div>
           <div className="filter"></div>
-          <div className="about-DISC" style={{ overflow: "scroll", background: '#f2f3f7' }}>
+          <div className="about-DISC" style={{ overflow: "auto", background: '#f2f3f7' }}>
             <Intro fileIntro={fileIntro} videoIntro={videoIntro} videoDISCs={videoDISCs} />
           </div>
 
@@ -919,7 +919,7 @@ const renderYourJobDrawer = (component) => {
   } = component.props
 
   return (
-    <Drawer anchor="bottom" className="job-list-drawer" open={showYourJobPage} >
+    <Drawer anchor="bottom" className="job-list-drawer fit-popup" open={showYourJobPage} >
       {
         profile ? <div className="drawer-detail">
           <div className="drawer-header">
@@ -976,7 +976,7 @@ const renderYourJobDrawer = (component) => {
               </div>
             </div>
           </div>
-          <div style={{ overflow: "scroll", background: "#f2f3f7" }} id="your-job-list" onScroll={() => $("#search-job-input-ref").blur()}>
+          <div style={{ overflow: "auto", background: "#f2f3f7" }} id="your-job-list" onScroll={() => $("#search-job-input-ref").blur()}>
             {
               careerHistory
                 ?
@@ -1057,7 +1057,7 @@ const renderYourMajorsDrawer = (component) => {
   } = component.state
   // console.log("favorateSchoolIds", favorateSchoolIds.includes(157))
   return (
-    <Drawer anchor="bottom" className="job-list-drawer" open={showYourMajorsPage} onClose={() => component.props.toggleYourMajorsDrawer(false)}>
+    <Drawer anchor="bottom" className="job-list-drawer fit-popup" open={showYourMajorsPage} onClose={() => component.props.toggleYourMajorsDrawer(false)}>
       {
         profile ? <div className="drawer-detail">
           <div className="drawer-header">
@@ -1183,7 +1183,7 @@ const renderYourMajorsDrawer = (component) => {
               </Tabs>
             </div>
           </div>
-          <div style={{ overflowY: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
+          <div style={{ overflowY: "auto", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
             {
               careerList && careerList.length > 0 ? <div className="panel" style={{ borderBottom: "1px solid #f2f3f7", width: "95%", margin: "0 auto 10px" }}>
 
@@ -1328,7 +1328,7 @@ const renderSchoolNewFeedDrawer = (component) => {
           <div className="filter p00">
 
           </div>
-          <div style={{ overflow: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
+          <div style={{ overflow: "auto", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
             <img src={currentSchool.demoviewlink} style={{ width: '100%' }} />
           </div>
 
@@ -1362,7 +1362,7 @@ const renderSchoolWebsiteDrawer = (component) => {
           </div>
           <div className="filter p00">
           </div>
-          <div style={{ overflow: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
+          <div style={{ overflow: "auto", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
             <Iframe url={currentSchool.website}
               width="100%"
               height={"100%"}
@@ -1418,7 +1418,7 @@ const renderFavorateSchoolDrawer = (component) => {
           </div>
           <div className="filter p00">
           </div>
-          <div style={{ overflow: "scroll", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
+          <div style={{ overflow: "auto", background: "#fff", borderTop: "1px solid rgba(0,0,0,0,1)" }}>
             {
               favorateSchools.map((item, index) => item.ologies.map((ology, i) => ology.schools.map((school, j) => <div key={j} className="shool-item">
                 <div className="school-logo" onClick={() => component.showSchoolWebsite(school)}>
