@@ -1140,7 +1140,7 @@ const renderTagFriendDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="tag-friend-drawer"
+      className="tag-friend-drawer fit-popup"
       open={showTagFriendDrawer}
       onClose={() => component.setState({ showTagFriendDrawer: false })}
     >

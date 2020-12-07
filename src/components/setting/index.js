@@ -884,7 +884,7 @@ const renderUpdateProfileDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="update-profile-form"
+      className="update-profile-form fit-popup"
       open={showUpdateProfile}
       onClose={() => component.setState({ showUpdateProfile: false })}
     >
@@ -915,6 +915,7 @@ const renderUserHistoryDrawer = (component) => {
 
   return (
     <Drawer
+      className="fit-popup"
       anchor="bottom"
       open={showUserHistory}
       onClose={() => component.props.toggleUserHistory(false)}
@@ -953,7 +954,7 @@ const renderUserHistoryDrawer = (component) => {
           </div>
           <div className="filter"></div>
           <div
-            style={{  width: "100%" }}
+            style={{ width: "100%" }}
             id="history-list"
             onScroll={() => component.onScroll()}
           >
@@ -1322,6 +1323,7 @@ const renderFriendsForBlockDrawer = (component) => {
   let { showFriendsForBlockForm } = component.props;
   return (
     <Drawer
+      className="fit-popup"
       anchor="bottom"
       open={showFriendsForBlockForm}
       onClose={() => component.props.toggleFriendsForBlockForm(false)}
@@ -1445,8 +1447,8 @@ const renderSettingDrawer = (component) => {
   } = component.state;
   // BINH: change setting when click back button
   return (
-    <Drawer anchor="bottom" open={showSettingDrawer}>
-      <div className="drawer-detail setting-drawer">
+    <Drawer anchor="bottom" className="fit-popup" open={showSettingDrawer}>
+      <div className="drawer-detail setting-drawer fit-popup">
         <div className="drawer-header">
           <div
             className="direction"
@@ -1588,7 +1590,7 @@ const renderAutoPlaySettingDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="auto-play-setting"
+      className="auto-play-setting fit-popup"
       open={showAutoPlaySetting}
       onClose={() => component.setState({ showAutoPlaySetting: false })}
     >
@@ -1611,7 +1613,7 @@ const renderAutoPlaySettingDrawer = (component) => {
         <div className="filter"></div>
         <div
           className="detail-content"
-          style={{ overflow: "scroll", width: "100vw" }}
+          style={{ overflow: "auto" }}
         >
           <ul className="auto-option">
             <li

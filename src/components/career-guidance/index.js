@@ -1248,7 +1248,7 @@ const renderUserInfoFormDrawer = (component) => {
     phone
   } = component.state
   return (
-    <Drawer anchor="bottom" className="user-info-form" open={showUserInfoForm} onClose={() => component.props.toggleUserInfoFormDrawer(false)}>
+    <Drawer anchor="bottom" className="user-info-form fit-popup" open={showUserInfoForm} onClose={() => component.props.toggleUserInfoFormDrawer(false)}>
       {
         <div className="user-form-content">
           <IconButton className="bt-close-modal" onClick={() => component.props.toggleUserInfoFormDrawer(false)}><CloseIcon /></IconButton>

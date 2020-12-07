@@ -837,7 +837,7 @@ const renderSearchGroupDrawer = (component) => {
   } = component.state
 
   return (
-    <Drawer anchor="bottom" className="group-members" open={showMemberDrawer} >
+    <Drawer anchor="bottom" className="group-members fit-popup" open={showMemberDrawer} >
       <div className="drawer-detail">
         <div className="drawer-header">
           <div className="direction" onClick={() => component.setState({ showMemberDrawer: false })}>
@@ -964,7 +964,7 @@ const renderAllUserDrawer = (component) => {
 
 
   return (
-    <Drawer anchor="bottom" className="group-members" open={showAllMemberDrawer} >
+    <Drawer anchor="bottom" className="group-members fit-popup" open={showAllMemberDrawer} >
       <div className="drawer-detail">
         <div className="drawer-header">
           <div className="direction" onClick={() => component.setState({ showAllMemberDrawer: false, userList: [] }, () => component.getUserInGroup(0, groupDetail))}>
@@ -1027,7 +1027,7 @@ const renderAllFriendToInvite = (component) => {
   } = component.props
 
   return (
-    <Drawer anchor="bottom" className="find-friends invite-to-group" open={showAllFriendsDrawer} >
+    <Drawer anchor="bottom" className="find-friends invite-to-group fit-popup" open={showAllFriendsDrawer} >
       <div className="drawer-detail">
         <div className="drawer-header">
           <div className="direction"

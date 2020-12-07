@@ -1305,7 +1305,7 @@ const renderCropperDrawer = (component) => {
          <Drawer anchor="bottom" className="cropper-drawer" open={openAlbumBackgroundCropperDrawer} >
             {
                albumBackgroundSelected ? <div className="drawer-detail">
-                  <div className="drawer-content" style={{ overflow: "scroll", background: "#f2f3f7" }}>
+                  <div className="drawer-content" style={{ overflow: "auto", background: "#f2f3f7" }}>
                      <Cropper
                         src={albumBackgroundSelected}
                         crop={crop}

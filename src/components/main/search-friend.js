@@ -297,7 +297,7 @@ class Index extends React.Component {
         } = this.props
 
         return (
-            <Drawer anchor="bottom" className="find-friends" open={showSearchFriendDrawer} onClose={() => this.props.toggleSeachFriends(false)}>
+            <Drawer anchor="bottom" className="find-friends fit-popup" open={showSearchFriendDrawer} onClose={() => this.props.toggleSeachFriends(false)}>
                 <div className="drawer-detail fit-desktop" style={{ overflow: "hidden" }} >
                     <div className="drawer-header">
                         <div className="direction"

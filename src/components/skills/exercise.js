@@ -288,7 +288,7 @@ class Index extends React.Component {
         tabIndex: parseInt(searchParam.tabIndex)
       })
     }
-    if(window.innerHeight > 400){
+    if(window.innerWidth > 400){
       this.setState({isDesktop: true})
     }
   }

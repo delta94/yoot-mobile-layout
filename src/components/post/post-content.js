@@ -165,7 +165,7 @@ const renderSearchPostDrawer = (component) => {
 
     let srollContent = document.getElementById("search-post-scrolling")
     return (
-        <Drawer anchor="bottom" className="find-friends find-post" open={showSearchPostDrawer}>
+        <Drawer anchor="bottom" className="find-friends find-post fit-popup" open={showSearchPostDrawer}>
             <div className="drawer-detail">
                 <div className="drawer-header">
                     <div className="direction width100pc" onClick={() => component.setState({ showSearchPostDrawer: false })}>
@@ -195,7 +195,7 @@ const renderSearchPostDrawer = (component) => {
                 </div>
                 <div className="filter">
                 </div>
-                <div style={{ overflow: "scroll" }} id="search-post-scrolling">
+                <div style={{ overflow: "auto" }} id="search-post-scrolling">
                     {
                         allPost && srollContent && allPost.length > 0 ? <ul className="post-list search-post">
                             {

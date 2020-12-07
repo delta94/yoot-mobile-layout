@@ -47,6 +47,7 @@ class Index extends React.Component {
       lessions: [],
       currentLesstion: null,
       numPages: 1,
+      isDesktop:false
     };
     this.player = React.createRef()
   }
@@ -183,6 +184,9 @@ class Index extends React.Component {
     if (!sourceId) return
     this.getSourceDetail(sourceId)
     this.getLession(sourceId)
+    if(window.innerWidth > 400){
+      this.setState({isDesktop: true})
+    }
   }
   render() {
     let {
@@ -196,7 +200,7 @@ class Index extends React.Component {
     return (
       <div className="source-item-page">
         <StickyContainer className="container pb01"x>
-          <Sticky topOffset={-60} >
+          <Sticky relative={this.state.isDesktop} topOffset={-60} >
             {({ style }) => (
               <div style={{ ...style, top: "60px", zIndex: 999, background: "#fff" }}>
                 {
@@ -410,7 +414,7 @@ const renderDocumentDrawer = (component) => {
           }
         </div >
         <div className="filter"></div>
-        <div style={{ overflow: "scroll" }} >
+        <div style={{ overflow: "auto" }} >
           {
             currentDucument ? <div>
               <PDFReader

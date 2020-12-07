@@ -240,7 +240,7 @@ const renderDocumentDrawer = (component) => {
                     }
                 </div >
                 <div className="filter"></div>
-                <div style={{ overflow: "scroll" }} >
+                <div style={{ overflow: "auto" }} >
                     {
                         fileIntro ? <div>
                             <PDFReader

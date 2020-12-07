@@ -240,7 +240,6 @@ body{
 
 .setting-drawer{
     .content-form{
-      overflow-y: auto;
         padding: 10px;
         box-sizing: border-box;
         > div{
@@ -1247,7 +1246,7 @@ body{
       >div{
         background: #fff !important;
         max-width: 600px;
-        margin: auto;
+        margin: 0 auto;
         width: 100%;
       }
       }
@@ -1255,10 +1254,27 @@ body{
   }
   .fit-popup-1{
     >div:last-child{
-      background: #fff !important;
+        background: #fff !important;
         max-width: 600px;
         margin: auto;
         width: 100%;
+        li{
+          cursor: pointer;
+        }
+    }
+  }
+  .add-bt{
+    cursor: pointer;
+  }
+  .user-menu{
+    div,ul{
+      background: #fff;
+      padding: 0;
+    }
+    ul{
+      width: 100% !important;
+      margin-top: 0 !important;
+      height: 100%;
     }
   }
   .job-reward{
@@ -1267,7 +1283,7 @@ body{
   .fit-desktop{
     min-height: 100vh;
     height: fit-content;
-    overflow: unset;
+    overflow: auto;
     background: #fff !important;
     .root-input{
       background: #fff !important;
@@ -1336,13 +1352,21 @@ body{
       width: 100%;
       background: #fff;
       max-width: 600px;
+      height: unset;
     }
   }
-  #privacy-menu{
+  .drawer-form .form-content > button{
+    margin-top: 50px;
+    margin-bottom: 40px;
+  }
+  #privacy-menu,.privacy-menu{
     >div:last-child{
       height: unset !important;
       background: #fff !important;
     }
+  }
+  #history-list{
+    background: #fff;
   }
   .mobile-custom-select-modal{
     >div{
@@ -1402,6 +1426,21 @@ body{
   .job-list-drawer{
     .drawer-detail{
       background: #fff !important;
+    }
+  }
+  .exercise-scource{
+    div {
+      img{
+        height: unset !important;
+      }
+    }
+  }
+  .react-confirm-alert{
+    max-width: 600px;
+  }
+  .user-list{
+    ul{
+      background: #fff;
     }
   }
 }
