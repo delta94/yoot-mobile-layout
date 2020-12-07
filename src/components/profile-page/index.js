@@ -107,6 +107,7 @@ class Index extends React.Component {
       userDetailFolowTabIndex: 0,
       showUserDetail: false,
       allUsers: [],
+      isChangeCrop: false
     };
   }
 
@@ -336,12 +337,7 @@ class Index extends React.Component {
   };
 
   updateAvatar() {
-    let {
-      avatarToUpload,
-      rootAvatarToUpload,
-      isProccessing,
-      postContent,
-    } = this.state;
+    let { avatarToUpload, rootAvatarToUpload, isProccessing, postContent, } = this.state;
     var fr = new FileReader();
     let that = this;
     if (isProccessing == true) return;
@@ -883,6 +879,7 @@ class Index extends React.Component {
         isMuteInNewfeed: appSettings.isMuteInNewfeed
       });
     }
+    this.setState({isChangeCrop: false})
   }
 
   componentWillReceiveProps(nextProps) {
@@ -898,13 +895,22 @@ class Index extends React.Component {
     )
       this.props.addFooterContent(renderFooter(this));
   }
-
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.crop.unit==="px"){
+      console.log(prevState.crop)
+      console.log(this.state.crop)
+      console.log(this.state.isChangeCrop)
+      if((prevState.width !== this.state.width) || (prevState.height !== this.state.height)){
+        // this.setState({isChangeCrop: true})
+      }
+    }
+  }
   render() {
     let {
       showUserMenu, croppedImageUrl, numOfFriend, friends, openMediaDrawer, isLoadMore, postIndexActive, openVideoDrawer
     } = this.state;
     let { profile, userPosteds } = this.props;
-
+    profile && console.log(profile.background)
     let myPosteds = [];
     if (profile && userPosteds) {
       myPosteds = userPosteds[profile.id];
@@ -1290,7 +1296,7 @@ const mediaRootActions = (component) => ({
 
 const renderFooter = (component) => {
   let pathName = window.location.pathname;
-  let { woldNotiUnreadCount } = component.props;
+  let { woldNotiUnreadCount,notiIsChecked } = component.props;
   return pathName == "/communiti-profile" ? (
     <div className="app-footer">
       <ul>
@@ -1307,7 +1313,7 @@ const renderFooter = (component) => {
           <span>Nhóm</span>
         </li>
         <li onClick={() => component.props.history.replace("/community-noti")}>
-          {woldNotiUnreadCount > 0 ? (
+          {woldNotiUnreadCount > 0 && !notiIsChecked ? (
             <Badge
               badgeContent={woldNotiUnreadCount}
               max={99}
@@ -1358,7 +1364,7 @@ const renderUserMenuDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="user-menu full"
+      className="user-menu full fit-popup"
       open={showUserMenu}
       onClose={() => component.setState({ showUserMenu: false })}
     >
@@ -1429,7 +1435,7 @@ const renderUpdateProfileDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="update-profile-form"
+      className="update-profile-form fit-popup"
       open={showUpdateProfile}
       onClose={() => component.setState({ showUpdateProfile: false })}
     >
@@ -1984,7 +1990,7 @@ const renderAllFriendsDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="find-friends"
+      className="find-friends fit-popup"
       open={showAllFriendsDrawer}
     >
       <div className="drawer-detail">
@@ -2157,7 +2163,7 @@ const renderFriendActionsDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="friend-actions-drawer"
+      className="friend-actions-drawer fit-popup-1"
       open={showFriendActionsDrawer}
       onClose={() => component.setState({ showFriendActionsDrawer: false })}
     >
@@ -2373,23 +2379,24 @@ const renderCropperDrawer = (component) => {
 const renderUpdateBackgroundReviewDrawer = (component) => {
   let { openUploadBackgroundReview, postContent,backgroundSrc, isReviewMode, isProccessing, backgroundToUpload } = component.state;
   let { profile } = component.props;
+  console.log(component.state)
   return (
     <Drawer
       anchor="bottom"
       className="update-avatar-review-drawer"
       open={openUploadBackgroundReview}
-      onClose={() => component.setState({ openUploadBackgroundReview: false })}
     >
       <div className="drawer-detail media-drawer">
         <div className="drawer-header">
           <div
             className="direction"
             onClick={() =>
-              isReviewMode == false
+              isReviewMode === false
                 ? component.setState({ openUploadBackgroundReview: false })
                 : component.setState({
                   openBackgroundCropperDrawer: true,
                   isReviewMode: false,
+                  
                 })
             }
           >
@@ -2404,7 +2411,10 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
               {isReviewMode ? "Quay lại chỉnh sửa" : "Cập nhật ảnh đại diện"}
             </label>
           </div>
-          <Button onClick={() => component.updateBackground()}>Đăng</Button>
+          <Button onClick={() => {
+            component.updateBackground()
+          }}
+          >Đăng</Button>
         </div>
         <div className="filter"></div>
         <div
@@ -2444,10 +2454,10 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
 
 const renderBackgroundCropperDrawer = (component) => {
   let {
-    openBackgroundCropperDrawer, crop, backgroundSrc, backgroundToUpload,rootBackgroundToUpload, backgroundCroppedImage, isProccessing,
+    openBackgroundCropperDrawer, crop,isChangeCrop, backgroundSrc, backgroundToUpload, rootBackgroundToUpload, backgroundCroppedImage, isProccessing,
   } = component.state;
-  console.log(component.state)
-  console.log(component.props.profile)
+  // component.setState({isChangeCrop:false})
+  // console.log(crop.x !== 0 || crop.y !== 0||clone_crop.width !== crop.width || clone_crop.height!== crop.height)
   return (
     <Drawer
       anchor="bottom"
@@ -2488,7 +2498,7 @@ const renderBackgroundCropperDrawer = (component) => {
                   component.setState({
                     openBackgroundCropperDrawer: false,
                     isReviewMode: true,
-                    backgroundToUpload: (crop.x!==0 || crop.y !== 0) ? backgroundCroppedImage : "",
+                    backgroundToUpload: isChangeCrop && backgroundCroppedImage,
                   })
                 }
               >
@@ -2497,7 +2507,7 @@ const renderBackgroundCropperDrawer = (component) => {
               <Button
                 onClick={() =>
                   component.setState(
-                    { backgroundToUpload: (crop.x!==0 || crop.y !== 0) ? backgroundCroppedImage : "" },
+                    { backgroundToUpload: isChangeCrop && backgroundCroppedImage },
                     () => component.updateBackground()
                   )
                 }
@@ -2522,7 +2532,7 @@ const renderUserDetailDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="drawer-detail"
+      className="drawer-detail fit-popup"
       open={showUserDetail}
       onClose={() => component.setState({ showUserDetail: false })}
     >

@@ -621,7 +621,7 @@ const renderPostDrawer = (component) => {
   return (
     <div>
       <Drawer anchor="bottom" className="poster-drawer" open={showPostDrawer}>
-        <div className="drawer-detail">
+        <div className="drawer-detail comment-post">
           <div className="drawer-header">
             <div
               className="direction"
@@ -1066,7 +1066,7 @@ const renderAlbumSelectDrawer = (component) => {
       open={showAlbumSelectDrawer}
       onClose={() => component.setState({ showAlbumSelectDrawer: false })}
     >
-      <div className="drawer-detail">
+      <div className="drawer-detail fit-desktop">
         <div className="drawer-header">
           <div
             className="direction"
@@ -1308,7 +1308,7 @@ const renderGroupForPostDrawer = (component) => {
       open={showGroupForPostDrawer}
       onClose={() => component.setState({ showGroupForPostDrawer: false })}
     >
-      <div className="drawer-detail" style={{overflow: "hidden"}}>
+      <div className="drawer-detail fit-desktop" style={{overflow: "auto"}}>
         <div className="drawer-header">
           <div
             className="direction"

@@ -9,6 +9,12 @@
         img{
             max-width: 600px !important;
         }
+        >div{
+            div:last-child{
+                width: 100%;
+                height: 100%;
+            }
+        }
        }
 }
 .box {

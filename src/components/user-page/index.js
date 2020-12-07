@@ -996,7 +996,7 @@ const renderUserMenuDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="user-menu"
+      className="user-menu show-up"
       open={showUserMenu}
       onClose={() => component.setState({ showUserMenu: false })}
     >
@@ -1102,6 +1102,7 @@ const renderMediaDrawer = (component) => {
   ];
   return (
     <Drawer
+    className="fit-popup"
       anchor="bottom"
       open={openMediaDrawer}
       onClose={() => component.setState({ openMediaDrawer: false })}
@@ -1268,6 +1269,7 @@ const renderUserDetailDrawer = (component) => {
     pageFollowed,
     pageFollowing,
   } = component.state;
+  console.log(component.state)
   const handleScroll = (e) => {
     const bottom =
       e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 2;
@@ -1285,7 +1287,7 @@ const renderUserDetailDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="drawer-detail"
+      className="user-detail fit-popup"
       open={showUserDetail}
       onClose={() => component.setState({ showUserDetail: false })}
     >
@@ -1595,6 +1597,18 @@ const renderUserDetailDrawer = (component) => {
                   ) : (
                       ""
                     )}
+                </li>
+                <li className="mt10">
+                  <label style={{ display: "inline-block", width: "100%" }}>Sở thích</label>
+                  {
+                    userDetail.likes && <span>{userDetail.likes}</span>
+                  }
+                </li>
+                <li className="mt10">
+                  <label style={{ display: "inline-block", width: "100%" }}>Kỹ năng đặc biệt / tài lẻ</label>
+                  {
+                    userDetail.special && <span>{userDetail.special}</span>
+                  }
                 </li>
               </ul>
             </div>

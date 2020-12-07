@@ -108,9 +108,7 @@ class Index extends React.Component {
 
 
   getTopUser(currentpage) {
-    let {
-      topUsers
-    } = this.state
+    let { topUsers } = this.state
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
@@ -118,7 +116,7 @@ class Index extends React.Component {
     }
     let queryParam = objToQuery(param)
     get(SOCIAL_NET_WORK_API, "User/GetTopUsers" + queryParam, result => {
-      if (result.result == 1) {
+      if (result.result === 1) {
         let list = result.content.topUsers
         list.map(item => item.friendid = item.userid)
         this.setState({
@@ -147,12 +145,12 @@ class Index extends React.Component {
     }
     let queryParam = objToQuery(param)
     get(SOCIAL_NET_WORK_API, "GroupUser/GetListGroupUser" + queryParam, result => {
-      if (result.result == 1) {
+      if (result.result === 1) {
         this.setState({
           topGroups: topGroups.concat(result.content.groupUsers),
           isLoadMoreGroup: false
         })
-        if (result.content.groupUsers.length == 0) {
+        if (result.content.groupUsers.length === 0) {
           this.setState({
             isEndOfGroupList: true
           })
@@ -211,46 +209,33 @@ class Index extends React.Component {
     })
   }
 
-  onScroll() {
-    let element = $("#top-rank-content")
-    let {
-      groupCurrentPage,
-      userCurrenntPage,
-      rankTabIndex,
-      isLoadMoreGroup,
-      isEndOfGroupList,
-      isEndOfUserList
-    } = this.state
-    if (element && rankTabIndex >= 0)
-      if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
-        if (rankTabIndex == 0) {
-          if (isLoadMoreGroup == false && isEndOfUserList == false) {
+  componentDidMount() {
+    document.addEventListener("scroll", () => {
+      let element = $("html")
+      if ((element.scrollTop() + window.innerHeight + 1) >= element[0].scrollHeight) {
+        let { groupCurrentPage, tabIndex, userCurrenntPage, isLoadMoreGroup, isEndOfGroupList, isEndOfUserList } = this.state
+        
+        if (isLoadMoreGroup === false && isEndOfUserList === false) {
+          if (tabIndex === 0) {
             this.setState({
               userCurrenntPage: userCurrenntPage + 1,
               isLoadMoreGroup: true
-            }, () => {
-              this.getTopUser(userCurrenntPage + 1)
             })
+            this.getTopUser(userCurrenntPage + 1)
           }
-        }
-        else {
-          if (isLoadMoreGroup == false && isEndOfGroupList == false) {
+          else {
             this.setState({
               groupCurrentPage: groupCurrentPage + 1,
               isLoadMoreGroup: true
-            }, () => {
-              this.getTopGroup(groupCurrentPage + 1)
             })
+            this.getTopGroup(groupCurrentPage + 1)
           }
         }
       }
+    })
   }
-
   componentWillMount() {
-    let {
-      groupCurrentPage,
-      userCurrenntPage
-    } = this.state
+    let { groupCurrentPage, userCurrenntPage } = this.state
     this.getBanner()
     this.getTopUser(userCurrenntPage)
     this.getTopGroup(groupCurrentPage)
@@ -260,18 +245,8 @@ class Index extends React.Component {
     this.props.toggleFooter(true)
   }
   render() {
-    let {
-      tabIndex,
-      panners,
-      topUsers,
-      topGroups,
-      joinGroupProccessingId,
-
-    } = this.state
-    let {
-      woldNotiUnreadCount,
-      skillNotiUnreadCount
-    } = this.props
+    let { tabIndex, panners, topUsers, topGroups, joinGroupProccessingId, } = this.state
+    let { woldNotiUnreadCount, skillNotiUnreadCount } = this.props
 
     return (
       <div className="home-page" >
@@ -341,8 +316,8 @@ class Index extends React.Component {
                 aria-label="full width tabs example"
                 className="tab-header"
               >
-                <Tab label="Thành viên tích cực" {...a11yProps(0)} className="tab-item" onClick={() => tabIndex == 0 ? this.setState({ showRankDrawer: true, rankTabIndex: tabIndex }) : ""} />
-                <Tab label="Nhóm chất lượng" {...a11yProps(1)} className="tab-item" onClick={() => tabIndex == 1 ? this.setState({ showRankDrawer: true, rankTabIndex: tabIndex }) : ""} />
+                <Tab label="Thành viên tích cực" {...a11yProps(0)} className="tab-item" onClick={() => tabIndex === 0 ? this.setState({ showRankDrawer: true, rankTabIndex: tabIndex }) : ""} />
+                <Tab label="Nhóm chất lượng" {...a11yProps(1)} className="tab-item" onClick={() => tabIndex === 1 ? this.setState({ showRankDrawer: true, rankTabIndex: tabIndex }) : ""} />
               </Tabs>
             </AppBar>
             <SwipeableViews
@@ -466,6 +441,7 @@ class Index extends React.Component {
             </SwipeableViews>
           </div>
         </StickyContainer>
+
         {
           renderJoinGroupConfirm(this)
         }
@@ -654,7 +630,7 @@ const renderTopRankDrawer = (component) => {
             </Tabs>
           </AppBar>
         </div>
-        <div className="content-form" style={{ overflow: "auto" }} id="top-rank-content" onScroll={(e) => component.onScroll(e)}>
+        <div className="content-form" style={{ overflow: "auto" }}>
           <div className="member-list">
             <SwipeableViews
               index={rankTabIndex}

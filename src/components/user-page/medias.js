@@ -280,7 +280,7 @@ export class Index extends React.Component {
 
         return (
             <div className="media-drawer">
-                <Drawer anchor="bottom" open={open} >
+                <Drawer className="fit-popup" anchor="bottom" open={open} >
                     {
                         currentUser ? <div className="drawer-detail media-drawer">
                             <div className="drawer-header">

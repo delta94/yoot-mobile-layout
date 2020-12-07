@@ -501,7 +501,7 @@ class Index extends React.Component {
         return (
             userDetail ? <div className="friend-page" >
                 <Drawer anchor="bottom" className="friend-drawer" open={showFriendDrawer} onClose={() => this.onCloseDrawer()}>
-                    <div className="drawer-detail">
+                    <div className="drawer-detail fit-desktop">
                         <div className="drawer-header">
                             <div className="direction" onClick={() => this.onCloseDrawer()}>
                                 <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >

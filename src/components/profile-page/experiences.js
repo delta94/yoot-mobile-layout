@@ -1,28 +1,12 @@
 import React from 'react';
+import { IconButton, Drawer, Button, TextField, FormControl, NativeSelect, Menu, MenuItem } from '@material-ui/core'
 import {
-    IconButton,
-    Drawer,
-    Button,
-    TextField,
-    FormControl,
-    NativeSelect,
-    Menu,
-    MenuItem
-} from '@material-ui/core'
-import {
-    ChevronLeft as ChevronLeftIcon,
-    ControlPoint as ControlPointIcon,
-    PlayArrow as PlayArrowIcon,
-    ExpandMore as ExpandMoreIcon
+    ChevronLeft as ChevronLeftIcon, ControlPoint as ControlPointIcon, PlayArrow as PlayArrowIcon, ExpandMore as ExpandMoreIcon
 } from '@material-ui/icons'
 import Job from './job'
 import { Months, Years, Privacies } from '../../constants/constants'
 import { post, get } from '../../api';
-import {
-    setUserProfile,
-    getFolowedMe,
-    getMeFolowing
-} from '../../actions/user'
+import { setUserProfile, getFolowedMe, getMeFolowing } from '../../actions/user'
 import { connect } from "react-redux"
 import { Loader } from '../common/loader'
 import { SOCIAL_NET_WORK_API } from '../../constants/appSettings';
@@ -30,7 +14,6 @@ import { showNotification, objToArray, objToQuery } from '../../utils/common';
 
 
 export class Index extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -54,16 +37,7 @@ export class Index extends React.Component {
     }
 
     handleCreateExp() {
-        let {
-            companyName,
-            position,
-            description,
-            fromMonth,
-            toMonth,
-            fromYear,
-            toYear,
-            expPrivacy
-        } = this.state
+        let { companyName, position, description, fromMonth, toMonth, fromYear, toYear, expPrivacy } = this.state
         let param = {
             userid: 0,
             salary: "0",
@@ -88,7 +62,6 @@ export class Index extends React.Component {
             this.getProfile()
             this.setState({ showAddForm: false, isProcessing: false })
         })
-
     }
 
     getProfile() {
@@ -101,7 +74,6 @@ export class Index extends React.Component {
             } else {
                 showNotification("", <span className="app-noti-message">{result.message}</span>, null)
             }
-
         })
     }
 
@@ -120,22 +92,10 @@ export class Index extends React.Component {
 
     render() {
         let {
-            showAddForm,
-            companyName,
-            position,
-            description,
-            fromMonth,
-            toMonth,
-            fromYear,
-            toYear,
-            isProcessing,
-            expPrivacy,
-            showExpPrivacyList,
-            anchor
+            showAddForm, companyName, position, description, fromMonth,
+            toMonth, fromYear, toYear, isProcessing, expPrivacy, showExpPrivacyList, anchor
         } = this.state
-        let {
-            data
-        } = this.props
+        let { data } = this.props
 
         let PrivaciesOptions = objToArray(Privacies)
 
@@ -274,6 +234,7 @@ export class Index extends React.Component {
                                 <ExpandMoreIcon />
                             </IconButton>
                             <Menu
+                                id="privacy-menu"
                                 className="privacy-menu"
                                 anchorEl={anchor}
                                 keepMounted

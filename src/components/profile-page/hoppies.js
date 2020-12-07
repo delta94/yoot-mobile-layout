@@ -324,7 +324,7 @@ export default connect(null, mapDispatchToProps)(Index);
 const renderDeleteConfirm = (component) => {
     let { showDeleteConfirm, isProcessing } = component.state
     return (
-        <Drawer anchor="bottom" className="confirm-drawer" open={showDeleteConfirm} onClose={() => component.setState({ showDeleteConfirm: false })}>
+        <Drawer anchor="bottom" className="confirm-drawer show-up" open={showDeleteConfirm} onClose={() => component.setState({ showDeleteConfirm: false })}>
             <div className='jon-group-confirm'>
                 <label>Xoá thông tin sở trường.</label>
                 <p>Bạn có chắc chắn muốn xoá thông tin này không?</p>

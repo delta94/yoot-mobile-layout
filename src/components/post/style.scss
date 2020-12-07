@@ -89,6 +89,9 @@
       }
     }
     .post-actions {
+      span{
+        color: #ccc;
+      }
       > button {
         > span {
           color: #ccc;
@@ -544,7 +547,6 @@
       }
     }
     .drawer-content {
-      overflow-y: auto;
       height: 550px;
       .post-item {
         width: 100%;

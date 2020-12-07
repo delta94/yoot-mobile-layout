@@ -183,7 +183,7 @@ const Report = ({  toggleReportComment,app }) => {
          className="report-drawer"
          open={showReportPost}
       >
-         <div className="drawer-detail">
+         <div className="drawer-detail fit-desktop">
             <div className="drawer-header">
                <div
                   className="direction"

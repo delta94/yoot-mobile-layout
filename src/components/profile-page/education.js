@@ -1,17 +1,7 @@
 import React from 'react';
+import { IconButton, Drawer, Button, TextField, Menu, MenuItem } from '@material-ui/core'
 import {
-    IconButton,
-    Drawer,
-    Button,
-    TextField,
-    Menu,
-    MenuItem
-} from '@material-ui/core'
-import {
-    ChevronLeft as ChevronLeftIcon,
-    ControlPoint as ControlPointIcon,
-    PlayArrow as PlayArrowIcon,
-    ExpandMore as ExpandMoreIcon
+    ChevronLeft as ChevronLeftIcon, ControlPoint as ControlPointIcon, PlayArrow as PlayArrowIcon, ExpandMore as ExpandMoreIcon
 } from '@material-ui/icons'
 import School from './school'
 import CustomSelect from '../common/select'
@@ -21,11 +11,7 @@ import { get, post } from '../../api';
 import { SCHOOL_API } from '../../constants/appSettings';
 import { showNotification, objToArray, objToQuery } from '../../utils/common';
 import { SOCIAL_NET_WORK_API } from '../../constants/appSettings';
-import {
-    setUserProfile,
-    getFolowedMe,
-    getMeFolowing
-} from '../../actions/user'
+import { setUserProfile, getFolowedMe, getMeFolowing } from '../../actions/user'
 import { connect } from "react-redux"
 import { Loader } from '../common/loader'
 
@@ -137,17 +123,8 @@ export class Index extends React.Component {
 
     handleAddNew() {
         let {
-            schoolSelected,
-            schoolName,
-            studentID,
-            classID,
-            majors,
-            qualificationSelected,
-            graduationSelected,
-            startYear,
-            endYear,
-            isGraduted,
-            studyPrivacy
+            schoolSelected, schoolName, studentID, classID, majors, qualificationSelected,
+            graduationSelected, startYear, endYear, isGraduted, studyPrivacy
         } = this.state
         if (!schoolSelected) {
             showNotification("", <span className="app-noti-message">Vui lòng chọn trường.</span>, null)
@@ -176,7 +153,8 @@ export class Index extends React.Component {
         this.setState({
             isProccessing: true
         })
-        post(SOCIAL_NET_WORK_API, "User/UpdateUserStudyGraduation", param, () => {
+        post(SOCIAL_NET_WORK_API, "User/UpdateUserStudyGraduation", param, (result) => {
+            console.log(result)
             this.setState({ showAddForm: false, isProcessing: false })
             this.getProfile()
         })
@@ -219,28 +197,11 @@ export class Index extends React.Component {
 
     render() {
         let {
-            showAddForm,
-            classID,
-            studentID,
-            schoolSelected,
-            qualificationSelected,
-            majors,
-            schoolName,
-            isGraduted,
-            graduationSelected,
-            schoolOptions,
-            qualificationOptions,
-            graduationOptions,
-            startYear,
-            endYear,
-            studyPrivacy,
-            anchor,
-            showstudyPrivacyList,
-            isProccessing
+            showAddForm, classID, studentID, schoolSelected, qualificationSelected, majors, schoolName, isGraduted,
+            graduationSelected, schoolOptions, qualificationOptions, graduationOptions, startYear, endYear,
+            studyPrivacy, anchor, showstudyPrivacyList, isProccessing
         } = this.state
-        let {
-            data
-        } = this.props
+        let { data } = this.props
         schoolOptions = [{ value: 0, label: "Khác" }].concat(schoolOptions)
         let PrivaciesOptions = objToArray(Privacies)
         return (

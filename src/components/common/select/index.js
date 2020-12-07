@@ -52,24 +52,10 @@ class Index extends React.Component {
     }
 
     render() {
+        let { showOptions, currentValue, searchKey } = this.state
         let {
-            showOptions,
-            currentValue,
-            searchKey
-        } = this.state
-        let {
-            options,
-            value,
-            placeholder,
-            height,
-            title,
-            clearable,
-            style,
-            haveConfirm,
-            optionStyle,
-            searchable,
-            closeButtonStyle,
-            actionStyle
+            options, value, placeholder, height, title, clearable, style, haveConfirm, optionStyle,
+            searchable, closeButtonStyle, actionStyle
         } = this.props
         if (searchable && searchKey != '' && searchKey && options && options.length > 0)
             options = options.filter(item => cleanAccents(item.label.toLowerCase()).indexOf(cleanAccents(searchKey.toLowerCase())) >= 0)

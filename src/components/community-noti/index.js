@@ -1,32 +1,12 @@
 import React from "react";
 import './style.scss'
-import {
-  addHeaderContent,
-  addFooterContent,
-  toggleHeader,
-  toggleFooter,
-  toggleGroupDetailDrawer,
-  toggleCommentDrawer,
-} from '../../actions/app'
-import {
-  setWorldNoti,
-  readNoti,
-  setUnreadNotiCount
-} from '../../actions/noti'
-import {
-  setCurrentGroup
-} from '../../actions/group'
+import { addHeaderContent, addFooterContent, toggleHeader, toggleFooter, toggleGroupDetailDrawer, toggleCommentDrawer, } from '../../actions/app'
+import { setWorldNoti, readNoti, setUnreadNotiCount, notiIsChecked } from '../../actions/noti'
+import { setCurrentGroup } from '../../actions/group'
 import Noti from './noti'
 import { connect } from 'react-redux'
-import {
-  IconButton,
-  Drawer,
-  Button,
-  Badge
-} from '@material-ui/core'
-import {
-  ChevronLeft as ChevronLeftIcon
-} from '@material-ui/icons'
+import { IconButton, Drawer, Button, Badge } from '@material-ui/core'
+import { ChevronLeft as ChevronLeftIcon } from '@material-ui/icons'
 import { CurrentDate, SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import { objToQuery, showNotification } from "../../utils/common";
 import moment from 'moment'
@@ -77,7 +57,7 @@ class Index extends React.Component {
 
         this.props.setWorldNoti(result.content.notifications)
 
-        if (result.content.notifications.length == 0) {
+        if (result.content.notifications.length === 0) {
           this.setState({
             isEndOfNoti: true,
             isLoadMore: false
@@ -122,27 +102,17 @@ class Index extends React.Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.woldNotiUnreadCount != this.props.woldNotiUnreadCount || nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount)
-      this.props.addFooterContent(renderFooter(this))
-  }
-
   componentDidMount() {
     this.props.addHeaderContent(renderHeader(this))
-    this.props.addFooterContent(renderFooter(this))
     this.props.toggleHeader(true)
-    this.props.toggleFooter(true)
-    this.hanldeGetCommunityNoti(0)
+    this.props.toggleFooter(false)
 
+    if (this.props.worldNoties.length <= 0)  this.hanldeGetCommunityNoti(0)
+    this.props.notiIsChecked()
     document.addEventListener("scroll", () => {
       let element = $("html")
-      let {
-        notiCurrentPage,
-        isEndOfNoti,
-        isLoadMore
-      } = this.state
-
-      if (element.scrollTop() + window.innerHeight >= element[0].scrollHeight) {
+      let { notiCurrentPage, isEndOfNoti, isLoadMore } = this.state
+      if (element.scrollTop() + window.innerHeight + 1 >= element[0].scrollHeight) {
         if (isLoadMore == false && isEndOfNoti == false) {
           this.setState({
             notiCurrentPage: notiCurrentPage + 1,
@@ -154,13 +124,29 @@ class Index extends React.Component {
       }
     })
   }
+  // componentDidUpdate(prevProps) {
+  //   if (this.props.woldNotiUnreadCount > 0 && this.props.woldNotiUnreadCount <= 30) {
+  //     console.log('filter',this.props.worldNoties.filter(item => item.userstatus === 0).length)
+  //     console.log('number count',this.props.woldNotiUnreadCount)
+  //     if (this.props.worldNoties.filter(item => item.userstatus === 0).length < this.props.woldNotiUnreadCount) {
+  //       let { notiCurrentPage, isEndOfNoti, isLoadMore } = this.state
+  //       if (isLoadMore == false && isEndOfNoti == false) {
+  //         this.setState({
+  //           notiCurrentPage: notiCurrentPage + 1,
+  //           isLoadMore: true
+  //         }, () => {
+  //           this.hanldeGetCommunityNoti(notiCurrentPage + 1)
+  //         })
+  //       }
+  //     }
+  //   }
+  // }
   render() {
-    let {
-      worldNoties
-    } = this.props
-    let notices = worldNoties && worldNoties.filter(item => item.userstatus === 0)
+    let { worldNoties } = this.props
+    let notices = worldNoties
+    // && worldNoties.filter(item => item.userstatus === 0)
     return (
-      <div className="community-page groups-page" >
+      <div className="community-page groups-page noti-page" >
         <ul>
           {
             notices.map((noti, index) => <Noti
@@ -173,6 +159,9 @@ class Index extends React.Component {
         {
           renderConfirmDrawer(this)
         }
+        <div className="fix-footer">
+        {renderFooter(this)}
+        </div>
       </div>
     );
   }
@@ -187,6 +176,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
+  notiIsChecked: () => dispatch(notiIsChecked()),
   toggleCommentDrawer: (isShow, currentPostForComment) => dispatch(toggleCommentDrawer(isShow, currentPostForComment)),
   addHeaderContent: (headerContent) => dispatch(addHeaderContent(headerContent)),
   addFooterContent: (footerContent) => dispatch(addFooterContent(footerContent)),
@@ -215,9 +205,7 @@ const renderHeader = (component) => {
   )
 }
 const renderFooter = (component) => {
-  let {
-    woldNotiUnreadCount
-  } = component.props
+  let { woldNotiUnreadCount,notiIsChecked } = component.props
 
   return (
     <div className="app-footer">
@@ -236,7 +224,7 @@ const renderFooter = (component) => {
         </li>
         <li onClick={() => component.props.history.replace('/community-noti')}>
           {
-            woldNotiUnreadCount > 0 ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
+            woldNotiUnreadCount > 0 && !notiIsChecked ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
               <img src={NotiBw}></img>
             </Badge> : <img src={NotiBw}></img>
           }
@@ -252,12 +240,7 @@ const renderFooter = (component) => {
 }
 
 const renderConfirmDrawer = (component) => {
-  let {
-    showConfim,
-    okCallback,
-    confirmTitle,
-    confirmMessage
-  } = component.state
+  let { showConfim, okCallback, confirmTitle, confirmMessage } = component.state
   return (
     <Drawer anchor="bottom" className="confirm-drawer" open={showConfim} onClose={() => component.setState({ showConfim: false })}>
       <div className='jon-group-confirm'>

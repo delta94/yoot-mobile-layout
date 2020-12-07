@@ -8,14 +8,16 @@ import {
     GET_WORLD_NOTI_SUCCESS,
     GET_SKILL_NOTI_SUCCESS,
     SET_SKILL_NOTI,
-    SET_SKILL_UNREAD_NOTI_COUNT
+    SET_SKILL_UNREAD_NOTI_COUNT,
+    NOTI_IS_CHECKED
 } from '../actions/noti'
 
 const initialState = {
     worldNoties: [],
     skillNoties: [],
     woldNotiUnreadCount: 0,
-    skillNotiUnreadCount: 0
+    skillNotiUnreadCount: 0,
+    notiIsChecked: false
 };
 
 export default (state = initialState, action) => {
@@ -23,7 +25,8 @@ export default (state = initialState, action) => {
         worldNoties,
         skillNoties,
         woldNotiUnreadCount,
-        skillNotiUnreadCount
+        skillNotiUnreadCount,
+        
     } = state
 
     switch (action.type) {
@@ -105,6 +108,11 @@ export default (state = initialState, action) => {
             skillNotiUnreadCount = action.payload
             return Object.assign({}, state, {
                 skillNotiUnreadCount: skillNotiUnreadCount
+            })
+        }
+        case NOTI_IS_CHECKED: {
+            return Object.assign({}, state, {
+                notiIsChecked: true
             })
         }
         default:

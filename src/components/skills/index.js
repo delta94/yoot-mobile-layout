@@ -1,26 +1,13 @@
 import React from "react";
 import './style.scss'
-import {
-  addHeaderContent,
-  addFooterContent,
-  toggleHeader,
-  toggleFooter,
-} from '../../actions/app'
-import {
-  setSkillNoti,
-  setSkillUnreadNotiCount
-} from '../../actions/noti'
+import { addHeaderContent, addFooterContent, toggleHeader, toggleFooter, } from '../../actions/app'
+import { setSkillNoti, setSkillUnreadNotiCount } from '../../actions/noti'
 import { connect } from 'react-redux'
 import {
-  IconButton,
-  Badge
+  IconButton, Badge
 } from '@material-ui/core'
-import {
-  ChevronLeft as ChevronLeftIcon
-} from '@material-ui/icons'
-import {
-  get
-} from '../../api'
+import { ChevronLeft as ChevronLeftIcon } from '@material-ui/icons'
+import { get } from '../../api'
 import { SCHOOL_API, SOCIAL_NET_WORK_API } from "../../constants/appSettings";
 import { formatCurrency } from "../../utils/common";
 

@@ -41,7 +41,7 @@
     .select-list{
         width: 100%;
         overflow-x: hidden;
-        overflow-y: scroll;
+        overflow-y: auto;
         ul{
             margin: 5px 0px;
             li{

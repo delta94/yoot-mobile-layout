@@ -17,6 +17,8 @@ import Exercise from '../skills/exercise'
 import Assess from '../skills/assess'
 import CareerGuidance from '../career-guidance'
 import Album from './album'
+import $ from 'jquery'
+
 import "./style.scss";
 import { connect } from 'react-redux'
 import {
@@ -234,21 +236,12 @@ class Main extends React.Component {
   }
 
   render() {
-    let {
-      userDetailFolowTabIndex
-    } = this.state
-    let {
-      showHeader,
-      showFooter,
-      profile,
-      headerContent,
-      footerContent,
-      progressDuration,
-    } = this.props
+    let { userDetailFolowTabIndex } = this.state
+    let { showHeader, showFooter, profile, headerContent, footerContent, progressDuration, } = this.props
 
 
     return (
-      <div className="wrapper">
+      <div className="wrapper" id="check-scroll">
         <Realtime />
         <div id="proccess-bar" className={progressDuration > 0 ? "active" : ""}>
           <LoadingBar
@@ -756,44 +749,44 @@ const renderCommentDrawer = (component) => {
   let { showCommentDrawer, currentPostForComment, data } = component.props;
 
 
-    return (
-      <Drawer
-        anchor="bottom"
-        className="comment-drawer"
-        open={showCommentDrawer}
-        onClose={() => component.props.toggleCommentDrawer(false, null)}
-      >
-        {
-          currentPostForComment ? <CommentBox
-            data={currentPostForComment}
-            userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
-            onClose={() => component.props.toggleCommentDrawer(false, null)}
-            history={component.props.history}
-          /> : ""
-        }
-      </Drawer>)
+  return (
+    <Drawer
+      anchor="bottom"
+      className="comment-drawer"
+      open={showCommentDrawer}
+      onClose={() => component.props.toggleCommentDrawer(false, null)}
+    >
+      {
+        currentPostForComment ? <CommentBox
+          data={currentPostForComment}
+          userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
+          onClose={() => component.props.toggleCommentDrawer(false, null)}
+          history={component.props.history}
+        /> : ""
+      }
+    </Drawer>)
 
 };
 
 const renderCommentImageDrawer = (component) => {
   let { showCommentImageDrawer, currentPostForComment, currentImageForComment, data } = component.props;
-    return (
-      <Drawer
-        anchor="bottom"
-        className="comment-drawer"
-        open={showCommentImageDrawer}
+  return (
+    <Drawer
+      anchor="bottom"
+      className="comment-drawer"
+      open={showCommentImageDrawer}
+      onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
+    >
+      <CommentImageBox
+        data={currentPostForComment}
+        image={currentImageForComment}
+        userId={currentImageForComment ? currentImageForComment.iduserpost : 0}
         onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
-      >
-        <CommentImageBox
-          data={currentPostForComment}
-          image={currentImageForComment}
-          userId={currentImageForComment ? currentImageForComment.iduserpost : 0}
-          onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
-          onLikeImage={(reaction) => component.likeImage(reaction, currentImageForComment)}
-          onDislikeImage={() => component.dislikeImage(currentImageForComment)}
-        />
-      </Drawer>
-    )
+        onLikeImage={(reaction) => component.likeImage(reaction, currentImageForComment)}
+        onDislikeImage={() => component.dislikeImage(currentImageForComment)}
+      />
+    </Drawer>
+  )
 };
 const groups = [
   {

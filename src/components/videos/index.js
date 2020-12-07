@@ -197,7 +197,7 @@ const renderHeader = (component) => {
 }
 const renderFooter = (component) => {
   let {
-    woldNotiUnreadCount
+    woldNotiUnreadCount,notiIsChecked
   } = component.props
   return (
     <div className="app-footer dask-mode">
@@ -216,7 +216,7 @@ const renderFooter = (component) => {
         </li>
         <li onClick={() => component.props.history.replace('/community-noti')}>
           {
-            woldNotiUnreadCount > 0 ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge dask-mode"} >
+            (woldNotiUnreadCount > 0 && !notiIsChecked) ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge dask-mode"} >
               <img src={NotiBw}></img>
             </Badge> : <img src={NotiBw}></img>
           }

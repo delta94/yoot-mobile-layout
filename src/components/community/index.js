@@ -357,16 +357,16 @@ class Index extends React.Component {
       }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.woldNotiUnreadCount != this.props.woldNotiUnreadCount || nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount)
-      this.props.addFooterContent(renderFooter(this))
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.woldNotiUnreadCount != this.props.woldNotiUnreadCount || nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount)
+  //     this.props.addFooterContent(renderFooter(this))
+  // }
 
   componentWillMount() {
     this.props.addHeaderContent(renderHeader(this))
     this.props.addFooterContent(renderFooter(this))
     this.props.toggleHeader(true)
-    this.props.toggleFooter(true)
+    this.props.toggleFooter(false)
     this.handleGetPost(0)
 
 
@@ -470,6 +470,9 @@ class Index extends React.Component {
             }
           </div>
         </StickyContainer>
+        <div className="fix-footer">
+        {renderFooter(this)}
+        </div>
         {renderGroupListDrawer(this)}
         {renderCreateGroupDrawer(this)}
         {renderConfirmDrawer(this)}
@@ -525,9 +528,7 @@ const renderHeader = (component) => {
   )
 }
 const renderFooter = (component) => {
-  let {
-    woldNotiUnreadCount
-  } = component.props
+  let {    woldNotiUnreadCount,notiIsChecked  } = component.props
   return (
     <div className="app-footer">
       <ul>
@@ -545,7 +546,7 @@ const renderFooter = (component) => {
         </li>
         <li onClick={() => component.props.history.replace('/community-noti')}>
           {
-            woldNotiUnreadCount > 0 ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
+            (woldNotiUnreadCount > 0 && !notiIsChecked) ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
               <img src={NotiBw}></img>
             </Badge> : <img src={NotiBw}></img>
           }
@@ -694,7 +695,7 @@ const renderGroupListDrawer = (component) => {
 
   return (
     <Drawer anchor="bottom" className="group-drawer" open={showGroupDrawer} >
-      <div className="drawer-detail">
+      <div className="drawer-detail fit-desktop">
         <div className="drawer-header">
           <div className="direction" onClick={() => {
             setTimeout(() => {

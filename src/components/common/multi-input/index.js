@@ -2,9 +2,7 @@ import React from 'react';
 import './style.scss'
 import { EditorState, ContentState, Modifier, convertFromRaw, genKey, ContentBlock, Entity } from 'draft-js';
 import Editor, { createEditorStateWithText } from 'draft-js-plugins-editor';
-import {
-    stateFromHTML
-} from 'draft-js-import-html';
+import { stateFromHTML } from 'draft-js-import-html';
 import htmlToDraft from 'html-to-draftjs';
 import createMentionPlugin from 'draft-js-mention-plugin';
 import createHashtagPlugin from 'draft-js-hashtag-plugin';
@@ -268,13 +266,7 @@ export class Loader extends React.Component {
 export default Loader
 
 const Entry = (props) => {
-    const {
-        mention,
-        theme,
-        searchValue, // eslint-disable-line no-unused-vars
-        isFocused, // eslint-disable-line no-unused-vars
-        ...parentProps
-    } = props;
+    const { mention, theme, searchValue, isFocused, ...parentProps } = props;
 
     return (
         <div {...parentProps}>

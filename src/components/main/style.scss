@@ -558,6 +558,7 @@ body{
   .friend-list{
     max-width: 600px;
     ul{
+      
       li{
         display: flex;
         align-items: center;
@@ -619,6 +620,7 @@ body{
 
   .friend-list{
     ul{
+      background: #fff;
       li{
         display: flex;
         align-items: center;
@@ -1161,7 +1163,6 @@ body{
     }
   }
   .drawer-content{
-    overflow-y: auto;
     ul{
       padding: 10px;
       box-sizing: border-box;
@@ -1232,36 +1233,60 @@ body{
     }
   }
 }
-
-@media screen and (min-width:400px){
-  .posted{
-    padding: 10px 0 !important;
-  }
-  .content-main{
-    background: #fff;
-    height: calc(100vh - 60px);
-  }
-  .friend-list{
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: calc(100vh - 160px);
-  }
-  .drawer-detail{
-    max-width: 600px;
-    .content-form{
-      height: calc(100vh - 160px);
+@media screen and (min-width: 400px) {
+  .source-item{
+    >div{
+      height: 30vw !important;
     }
   }
-}
-.wrapper-action{
-  max-width: 600px;
-  margin: auto;
-  width: 100%;
-}
-@media screen and (min-width: 400px) {
-  body{
-    overflow: hidden;
+  .submit-bt{
+    cursor: pointer;
   }
+  .fit-popup{
+    >div:last-child{
+      >div{
+        background: #fff !important;
+        max-width: 600px;
+        margin: auto;
+        width: 100%;
+      }
+      }
+      
+  }
+  .fit-popup-1{
+    >div:last-child{
+      background: #fff !important;
+        max-width: 600px;
+        margin: auto;
+        width: 100%;
+    }
+  }
+  .job-reward{
+    background: #fff;
+  }
+  .fit-desktop{
+    min-height: 100vh;
+    height: fit-content;
+    overflow: unset;
+    background: #fff !important;
+    .root-input{
+      background: #fff !important;
+      border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    }
+    .drawer-content{
+      background: #fff;
+    }
+    
+  }
+  .content-form{
+    background: #fff;
+  }
+  .comment-post{
+    min-height: 100vh;
+    background: #fff;
+    overflow: initial;
+  }
+  
       .wrapper {
           background: #f2f3f7 !important;
       }
@@ -1277,6 +1302,7 @@ body{
       
       .home-page .member-list{
         margin-bottom: 60px;
+        padding: 10px 0;
       }
       .comment-post {
         .drawer-content{
@@ -1289,4 +1315,89 @@ body{
         max-width: 600px;
         left: auto;
       }
+  .auto-play-setting .detail-content .auto-option li{
+    cursor: pointer;
+  }
+  .noti-item{
+    cursor: pointer;
+  }
+  .confirm-drawer > div:last-child{
+    min-width: unset !important;
+    max-width: 600px !important;
+    margin: auto !important;
+  }
+  div[role=presentation]>div:last-child{
+    background: #f2f3f7;
+  }
+  .drawer-form {
+    .form-header,.form-content{
+      box-sizing: border-box;
+      margin: auto;
+      width: 100%;
+      background: #fff;
+      max-width: 600px;
+    }
+  }
+  #privacy-menu{
+    >div:last-child{
+      height: unset !important;
+      background: #fff !important;
+    }
+  }
+  .mobile-custom-select-modal{
+    >div{
+      max-width: 600px;
+      background: #fff !important;
+      margin: auto;
+    }
+  }
+  .show-up{
+    >div{
+      max-width: 600px;
+      background: #fff !important;
+      margin: auto;
+    }
+    
+  }
+  .user-detail {
+    .drawer-detail{
+      min-height: fit-content;
+    }
+  }
+  .posted-detail-drawer{
+    .drawer-content{
+      padding: 10px 0 !important;
+      background: #fff;
+    }
+  }
+  .post-item{
+    .media-grid{
+      >ul .video{
+        height: 100% !important;
+      }
+    }
+  }
+  .noti-page{
+    padding-bottom: 70px;
+    background: #fff;
+  }
+  .bt{
+    width: 100%;
+  }
+  .block-friend-form{
+    background: #fff;
+  }
+  .poster-drawer{
+    >div:last-child{
+      overflow-y: initial;
+    }
+  }
+  .content-main{
+    background: #fff;
+    min-height: calc(100vh - 130px);
+    overflow: hidden;
+  }
+  .posted{
+    padding: 10px 0 !important;
+  }
 }

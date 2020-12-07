@@ -119,7 +119,7 @@ export class Index extends React.Component {
 
         return (
             <div>
-                <Drawer anchor="bottom" open={open} onClose={() => this.props.onClose()}>
+                <Drawer className="fit-popup" anchor="bottom" open={open} onClose={() => this.props.onClose()}>
                     {
                         currentUser ? <div className="drawer-detail media-drawer">
                             <div className="drawer-header">

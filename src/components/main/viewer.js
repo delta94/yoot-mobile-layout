@@ -1212,7 +1212,7 @@ const renderUpdateInfoOfProfilePostDrawer = (component) => {
 
    return (
       <Drawer anchor="bottom" className="update-info-profile-post-drawer" open={showUpdateInfoOfProfilePost}>
-         <div className="drawer-detail">
+         <div className="drawer-detail fit-desktop">
             <div className="drawer-header">
                <div className="direction" onClick={() => component.setState({ showUpdateInfoOfProfilePost: false, postContent: "" })}>
                   <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >

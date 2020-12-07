@@ -494,7 +494,7 @@ export class Index extends React.Component {
                 })
             );
             reader.readAsDataURL(file);
-
+            
         })
 
     }
@@ -612,7 +612,7 @@ export class Index extends React.Component {
 
         return (
             <div className="media-drawer">
-                <Drawer anchor="bottom" open={open} >
+                <Drawer anchor="bottom" open={open} className="fit-popup" >
                     {
                         userDetail ? <div className="drawer-detail media-drawer">
                             <div className="drawer-header">

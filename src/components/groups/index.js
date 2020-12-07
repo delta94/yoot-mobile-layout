@@ -496,7 +496,7 @@ class Index extends React.Component {
     this.props.addHeaderContent(renderHeader(this));
     this.props.addFooterContent(renderFooter(this));
     this.props.toggleHeader(true);
-    this.props.toggleFooter(true);
+    this.props.toggleFooter(false);
     this.handleGetPost(0);
     document.addEventListener("scroll", () => {
       let element = $("html");
@@ -520,13 +520,13 @@ class Index extends React.Component {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (
-      nextProps.woldNotiUnreadCount != this.props.woldNotiUnreadCount ||
-      nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount
-    )
-      this.props.addFooterContent(renderFooter(this));
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   if (
+  //     nextProps.woldNotiUnreadCount != this.props.woldNotiUnreadCount ||
+  //     nextProps.skillNotiUnreadCount != this.props.skillNotiUnreadCount
+  //   )
+  //     this.props.addFooterContent(renderFooter(this));
+  // }
 
   render() {
     let { isLoadMore } = this.state;
@@ -625,6 +625,9 @@ class Index extends React.Component {
               )}
           </div>
         </StickyContainer>
+        <div className="fix-footer">
+        {renderFooter(this)}
+        </div>
         {renderSearchGroupDrawer(this)}
         {renderJoinGroupConfirm(this)}
         {renderCreateGroupDrawer(this)}
@@ -695,7 +698,7 @@ const renderHeader = (component) => {
 };
 
 const renderFooter = (component) => {
-  let { woldNotiUnreadCount } = component.props;
+  let { woldNotiUnreadCount,notiIsChecked } = component.props;
   return (
     <div className="app-footer">
       <ul>
@@ -712,7 +715,7 @@ const renderFooter = (component) => {
           <span style={{ color: "#f54746" }}>Nhóm</span>
         </li>
         <li onClick={() => component.props.history.replace("/community-noti")}>
-          {woldNotiUnreadCount > 0 ? (
+          {woldNotiUnreadCount > 0 && !notiIsChecked ? (
             <Badge
               badgeContent={woldNotiUnreadCount}
               max={99}
@@ -752,7 +755,7 @@ const renderSearchGroupDrawer = (component) => {
       open={showSearchGroupDrawer}
       onClose={() => component.setState({ showSearchGroupDrawer: false })}
     >
-      <div className="drawer-detail" style={{overflow: "hidden"}}>
+      <div className="drawer-detail fit-desktop" style={{overflow: "auto"}}>
         <div className="drawer-header">
           <div
             className="direction"
@@ -1153,7 +1156,7 @@ const renderGroupListDrawer = (component) => {
 
   return (
     <Drawer anchor="bottom" className="group-drawer" open={showGroupDrawer}>
-      <div className="drawer-detail">
+      <div className="drawer-detail fit-desktop">
         <div className="drawer-header">
           <div
             className="direction"
@@ -1421,7 +1424,7 @@ const renderGroupInviteDrawer = (component) => {
         component.props.setInvitedGroup(null);
       }}
     >
-      <div className="drawer-detail">
+      <div className="drawer-detail fit-desktop">
         <div className="drawer-header">
           <div
             className="direction"

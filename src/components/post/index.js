@@ -1504,165 +1504,146 @@ class Index extends React.Component {
                             <div className="media-grid">
                               {data.newsFeedShareRoot.mediaPlays.length > 1 ? (
                                 <GridList cols={maxCols}>
-                                  {data.newsFeedShareRoot.mediaPlays
-                                    .slice(0, 5)
-                                    .map((media, index) => (
-                                      <GridListTile
-                                        className={
-                                          media.typeobject == 2
-                                            ? "video"
-                                            : "image"
-                                        }
-                                        style={{
-                                          height: this.handleCellHeightCal(
-                                            index,
-                                            data.newsFeedShareRoot.mediaPlays.slice(
-                                              0,
-                                              5
-                                            ).length
-                                          ),
-                                        }}
-                                        key={media.name}
-                                        cols={this.handleColumnCal(
+                                  {data.newsFeedShareRoot.mediaPlays.slice(0, 5).map((media, index) => (
+                                    <GridListTile
+                                      className={media.typeobject == 2 ? "video" : "image"}
+                                      style={{
+                                        height: this.handleCellHeightCal(
                                           index,
-                                          data.newsFeedShareRoot.mediaPlays.slice(
-                                            0,
-                                            5
-                                          ).length
-                                        )}
-                                      >
-                                        {media.typeobject == 2 ? (
-                                          <div className="video-box-content">
-                                            <div
-                                              onClick={() => {
-                                                this.setState({
-                                                  showPostedDetail: true,
-                                                  sharedPost: data.newsFeedShareRoot
-                                                })
-                                                this.handlePauseVideo()
-                                              }
-                                              }
+                                          data.newsFeedShareRoot.mediaPlays.slice(0, 5).length
+                                        ),
+                                      }}
+                                      key={media.name}
+                                      cols={this.handleColumnCal(
+                                        index,
+                                        data.newsFeedShareRoot.mediaPlays.slice(0, 5).length
+                                      )}
+                                    >
+                                      {media.typeobject == 2 ? (
+                                        <div>
+                                          <div
+                                            onClick={() => {
+                                              this.setState({
+                                                showPostedDetail: true,
+                                                sharedPost: data.newsFeedShareRoot
+                                              })
+                                              this.handlePauseVideo()
+                                            }
+                                            }
+                                          >
+                                            <Player
+                                              ref={index == 0 ? this.player : null}
+                                              poster={media.thumbnailname}
+                                              src={media.name}
+                                              videoWidth={media.width}
+                                              videoHeight={media.height}
+                                              playsInline={true}
                                             >
-                                              {canPlay?<Player
-                                                ref={
-                                                  index == 0
-                                                    ? this.player
-                                                    : null
-                                                }
-                                                poster={media.thumbnailname}
-                                                src={media.name}
-                                                videoWidth={media.width}
-                                                videoHeight={media.height}
-                                                playsInline={true}
-                                                preload="metadata"
-                                              >
-                                                <ControlBar
-                                                  disableDefaultControls={true}
-                                                  autoHide={false}
-                                                  className={"video-control"}
-                                                ></ControlBar>
-                                              </Player>:""}
-                                            </div>
-                                            {index == 0 ? (
-                                              <IconButton
-                                                onClick={() =>
-                                                  this.handleSetMuted(!isMuted)
-                                                }
-                                                className="bt-mute"
-                                              >
-                                                {isMuted == true ? (
+                                              <ControlBar
+                                                disableDefaultControls={true}
+                                                autoHide={false}
+                                                className={"video-control"}
+                                              ></ControlBar>
+                                            </Player>
+                                          </div>
+                                          {index == 0 ? (
+                                            <IconButton
+                                              onClick={() =>
+                                                this.handleSetMuted(!isMuted)
+                                              }
+                                              className="bt-mute"
+                                            >
+                                              {isMuted == true ? (
+                                                <img
+                                                  style={{
+                                                    width: 24,
+                                                    height: 24,
+                                                  }}
+                                                  src={mute}
+                                                />
+                                              ) : (
                                                   <img
                                                     style={{
                                                       width: 24,
                                                       height: 24,
                                                     }}
-                                                    src={mute}
+                                                    src={unmute}
                                                   />
-                                                ) : (
-                                                    <img
-                                                      style={{
-                                                        width: 24,
-                                                        height: 24,
-                                                      }}
-                                                      src={unmute}
-                                                    />
-                                                  )}
+                                                )}
+                                            </IconButton>
+                                          ) : (
+                                              <IconButton
+                                                onClick={() =>
+                                                  this.handleSetMuted(!isMuted)
+                                                }
+                                                className="bt-play"
+                                              >
+                                                <PlayArrowIcon />
                                               </IconButton>
-                                            ) : (
-                                                <IconButton
-                                                  onClick={() =>
-                                                    this.handleSetMuted(!isMuted)
-                                                  }
-                                                  className="bt-play"
-                                                >
-                                                  <PlayArrowIcon />
-                                                </IconButton>
-                                              )}
-                                            <div
-                                              className="thumb"
-                                              ref={
-                                                index == 0
-                                                  ? this.thumbnail
-                                                  : null
-                                              }
-                                              style={{
-                                                background:
-                                                  "url(" +
-                                                  media.thumbnailname +
-                                                  ")",
-                                //                   width: contentWidth,
-                                // height: (media.height / media.width) * contentWidth
-                                              }}
-                                              onClick={() => {
-                                                this.setState({
-                                                  showPostedDetail: true,
-                                                  sharedPost: data.newsFeedShareRoot
-                                                })
-                                                this.handlePauseVideo()
-                                              }
+                                            )}
+                                          <div
+                                            className="thumb"
+                                            ref={
+                                              index == 0
+                                                ? this.thumbnail
+                                                : null
+                                            }
+                                            style={{
+                                              background:
+                                                "url(" +
+                                                media.thumbnailname +
+                                                ")",
+                                            }}
+                                            onClick={() => {
+                                              this.setState({
+                                                showPostedDetail: true,
+                                                sharedPost: data.newsFeedShareRoot
+                                              })
+                                              this.handlePauseVideo()
+                                            }
 
-                                              }
-                                            />
+                                            }
+                                          />
+                                        </div>
+                                      ) : (
+                                          <img
+                                            src={media.name}
+                                            alt={media.name}
+                                            onClick={() => {
+                                              this.setState({
+                                                showPostedDetail: true,
+                                                sharedPost: data.newsFeedShareRoot
+                                              })
+                                              this.handlePauseVideo()
+                                            }
+
+                                            }
+                                          />
+                                        )}
+                                      {data.newsFeedShareRoot.mediaPlays.length >
+                                        4 && index == 4 ? (
+                                          <div
+                                            className="grid-overlay"
+                                            onClick={() => {
+                                              this.setState({
+                                                showPostedDetail: true,
+                                                sharedPost: data.newsFeedShareRoot
+                                              })
+                                              this.handlePauseVideo()
+                                            }
+
+                                            }
+                                          >
+                                            <span>
+                                              {data.newsFeedShareRoot.mediaPlays
+                                                .length - 4}+
+                                              </span>
                                           </div>
                                         ) : (
-                                            <img
-                                              src={media.name}
-                                              alt={media.name}
-                                              onClick={() => {
-                                                this.setState({
-                                                  showPostedDetail: true,
-                                                  sharedPost: data.newsFeedShareRoot
-                                                })
-                                                this.handlePauseVideo()
-                                              }
-
-                                              }
-                                            />
-                                          )}
-                                        {data.newsFeedShareRoot.mediaPlays.length >
-                                          4 && index == 4 ? (
-                                            <div
-                                              className="grid-overlay"
-                                              onClick={() => {
-                                                this.setState({
-                                                  showPostedDetail: true,
-                                                  sharedPost: data.newsFeedShareRoot
-                                                })
-                                                this.handlePauseVideo()
-                                              }
-
-                                              }
-                                            >
-                                              <span>
-                                                {data.newsFeedShareRoot.mediaPlays
-                                                  .length - 4}+
-                                              </span>
-                                            </div>
-                                          ) : (
-                                            ""
-                                          )}
-                                      </GridListTile>
-                                    ))}
+                                          ""
+                                        )}
+                                    </GridListTile>
+                                  ))}
                                 </GridList>
                               ) : (
                                   <GridList cols={1}>
@@ -2113,7 +2094,7 @@ const renderShareDrawer = (component) => {
       open={showShareDrawer}
       onClose={() => component.setState({ showShareDrawer: false })}
     >
-      <div className="drawer-detail">
+      <div className="drawer-detail fit-desktop">
         <div className="drawer-header">
           <div
             className="direction"
@@ -2298,7 +2279,7 @@ const renderGroupForShareDrawer = (component) => {
       className="tag-friend-drawer"
       open={showFindGroupToShareDrawer}
     >
-      <div className="drawer-detail" style={{overflow: "hidden"}}>
+      <div className="drawer-detail fit-desktop" style={{overflow: "auto"}}>
         <div className="drawer-header">
           <div
             className="direction"
@@ -2526,14 +2507,7 @@ const renderUpdatePrivacyImageDrawer = (component) => {
 
 const renderDetailPosted = (component) => {
   let { showPostedDetail, sharedPost } = component.state;
-  let {
-    data,
-    profile,
-    daskMode,
-    openReactions,
-    anchor,
-    showLocalMenu,
-  } = component.props;
+  let { data, profile, daskMode, openReactions, anchor, showLocalMenu, } = component.props;
 
   if (sharedPost) data = sharedPost;
 
@@ -2565,7 +2539,7 @@ const renderDetailPosted = (component) => {
         <div className="filter"></div>
         <div
           className="drawer-content"
-          style={{ overflow: "auto", background: "#ededed", padding: "10px" }}
+          style={{ overflow: "auto", background: "#f2f3f7", padding: "10px" }}
         >
           {data && (
             <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
@@ -3048,7 +3022,7 @@ const renderUpdateInfoOfProfilePostDrawer = (component) => {
       className="update-info-profile-post-drawer"
       open={showUpdateInfoOfProfilePost}
     >
-      <div className="drawer-detail">
+      <div className="drawer-detail fit-desktop">
         <div className="drawer-header">
           <div
             className="direction"

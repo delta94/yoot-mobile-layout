@@ -63,8 +63,8 @@ class Index extends React.Component {
       playingIndex: null,
       inProccessing: false,
       homeworks: [],
-      reviewers: []
-
+      reviewers: [],
+      isDesktop:false
     };
     this.video = [React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]
   }
@@ -288,6 +288,9 @@ class Index extends React.Component {
         tabIndex: parseInt(searchParam.tabIndex)
       })
     }
+    if(window.innerHeight > 400){
+      this.setState({isDesktop: true})
+    }
   }
   render() {
     let {
@@ -305,7 +308,7 @@ class Index extends React.Component {
     return (
       <div className="exercise-item-page" >
         <StickyContainer className="container">
-          <Sticky topOffset={-60} >
+          <Sticky relative={this.state.isDesktop} topOffset={-60} >
             {({ style }) => (
               <div style={{ ...style, top: "60px", zIndex: 999 }}>
                 <div className="exercise-header">

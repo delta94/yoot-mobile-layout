@@ -30,18 +30,21 @@ export class Loader extends React.Component {
 
     onImageLoaded = image => {
         this.imageRef = image;
-    };
+        const { component } = this.props;
+    }
 
     onCropComplete = crop => {
         this.makeClientCrop(crop);
     };
 
     onCropChange = (crop, percentCrop) => {
-        const {component} = this.props
+        const { component } = this.props
         // You could also use percentCrop:
         // this.setState({ crop: percentCrop });
         this.setState({ crop });
-        component && component.setState({crop: crop})
+        component && component.setState({ 
+            crop: crop,
+         })
     };
 
     getCroppedImg(image, crop, fileName, extention) {
@@ -79,9 +82,7 @@ export class Loader extends React.Component {
     }
 
     async makeClientCrop(crop) {
-        let {
-            src
-        } = this.props
+        let { src } = this.props
         let fileExtention = src.split(";")[0].split(":")[1]
         if (this.imageRef && crop.width && crop.height) {
             const croppedImageUrl = await this.getCroppedImg(
@@ -99,14 +100,26 @@ export class Loader extends React.Component {
             // this.setState({ croppedImageUrl });
         }
     }
+    componentDidMount(){
+        let inititalCrop = {
+            width: 100,
+            height: 100,
+            unit: '%',
+            x:0,
+            y:0
+        }
+        this.setState({
+            crop: inititalCrop,
+        })
+        const { component } = this.props
+        component && component.setState({ 
+            isChangeCrop: true
+         })
+    }
 
     render() {
-        let {
-            src
-        } = this.props
-        let {
-            crop
-        } = this.state
+        let { src } = this.props
+        let { crop } = this.state
         return (
             <div className={"custom-cropper"}>
                 <ReactCrop
@@ -117,7 +130,7 @@ export class Loader extends React.Component {
                     onComplete={this.onCropComplete}
                     onChange={this.onCropChange}
                     keepSelection={true}
-                    ruleOfThirds={true}
+                    // ruleOfThirds={true}
                     imageStyle={{
                         maxHeight: "80vh",
                         maxWidth: "calc(100vw - 20px)"
