@@ -210,6 +210,7 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
+    window.scrollTo(0, 0);
     document.addEventListener("scroll", () => {
       let element = $("html")
       if ((element.scrollTop() + window.innerHeight + 1) >= element[0].scrollHeight) {
@@ -236,6 +237,7 @@ class Index extends React.Component {
   }
   componentWillMount() {
     let { groupCurrentPage, userCurrenntPage } = this.state
+    
     this.getBanner()
     this.getTopUser(userCurrenntPage)
     this.getTopGroup(groupCurrentPage)

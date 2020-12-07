@@ -216,7 +216,7 @@
       .media-list {
         display: flex;
         margin-top: 20px;
-        overflow-x: scroll;
+        overflow-x: auto;
         overflow-y: hidden;
         padding: 20px 0px;
         box-sizing: border-box;

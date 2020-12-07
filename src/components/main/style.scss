@@ -1235,7 +1235,7 @@ body{
 @media screen and (min-width: 400px) {
   .source-item{
     >div{
-      height: 30vw !important;
+      height: 20vw !important;
     }
   }
   .submit-bt{
@@ -1298,7 +1298,7 @@ body{
   .comment-post{
     min-height: 100vh;
     background: #fff;
-    overflow: initial;
+    overflow: auto;
   }
   
       .wrapper {
@@ -1441,4 +1441,26 @@ body{
       background: #fff;
     }
   }
+  .media-selected .media-list > div{
+    min-width: unset !important;
+    width: 200px !important;
+    height: 200px !important;
+  }
+  .confirm-drawer.type-drawer > div:last-child{
+    background: #fff;
+    border-radius: 20px !important;
+  }
+  .comment-list{
+    #btn-like{
+      width: unset !important;
+    }
+  }
+  .re-action{
+    li{
+      div{
+        width: 100%;
+      }
+    }
+  }
+  
 }

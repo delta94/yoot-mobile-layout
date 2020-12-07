@@ -645,7 +645,7 @@ const renderAddAssessDrawer = (component) => {
   } = component.state
 
   return (
-    <Drawer anchor="bottom" className="add-assess-drawer" open={showAddAssessDrawer} onClose={() => component.setState({ showAddAssessDrawer: false, currentHomeWorkVideo: null })}>
+    <Drawer anchor="bottom" className="add-assess-drawer fit-popup-1" open={showAddAssessDrawer} onClose={() => component.setState({ showAddAssessDrawer: false, currentHomeWorkVideo: null })}>
       <div className="drawer-detail" style={{ height: '70vh', overflowX: "hidden" }}>
         <div className="drawer-header">
           <div className="direction" onClick={() => component.setState({ showAddAssessDrawer: false, currentHomeWorkVideo: null })}>
@@ -655,7 +655,7 @@ const renderAddAssessDrawer = (component) => {
             </IconButton>
           </div>
         </div>
-        <div className="drawer-content" style={{ overflow: "auto"}}>
+        <div className="drawer-content">
           {
             reviewers && reviewers.length > 0 ? <ul className="assess-list">
               {
@@ -696,7 +696,7 @@ const renderApplyDrawer = (component) => {
           </div>
         </div>
         <div className="filter"></div>
-        <div className="drawer-content" style={{ overflow: "auto" }}>
+        <div className="drawer-content">
           <div className="apply-form">
             <label>{lesson.name}</label>
             <span>Bài tập: </span>
