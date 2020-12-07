@@ -1269,10 +1269,9 @@ body{
   .user-menu{
     div,ul{
       background: #fff;
-      padding: 0;
+      padding: 0 !important;
     }
     ul{
-      width: 100% !important;
       margin-top: 0 !important;
       height: 100%;
     }
@@ -1283,7 +1282,6 @@ body{
   .fit-desktop{
     min-height: 100vh;
     height: fit-content;
-    overflow: auto;
     background: #fff !important;
     .root-input{
       background: #fff !important;
