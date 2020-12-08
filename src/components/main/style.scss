@@ -1244,7 +1244,16 @@ body{
     }
   }
 }
-
+#comment-item{
+  >div:last-child{
+    padding: 5px 0 !important;
+  }
+}
+.comment-post{
+  .drawer-content{
+    padding-top: 50px !important;
+  }
+}
 
 @media screen and (min-width: 400px) {
   .source-item{
@@ -1295,6 +1304,13 @@ body{
   }
   .job-reward{
     background: #fff;
+  }
+  .find-friends{
+    .friend-list {
+      ul{
+        overflow-x: hidden
+      }
+    }
   }
   .fit-desktop{
     min-height: 100vh;
@@ -1501,5 +1517,10 @@ body{
   }
   .album-background{
     max-height: 300px;
+  }
+  .tab-header{
+    button{
+      min-width: unset !important;
+    }
   }
 }

@@ -421,7 +421,7 @@ class Index extends React.Component {
 
         return (
             userDetail ? <div className="friend-page" >
-                <Drawer anchor="bottom" className="friend-drawer find-friends fit-desktop" open={open} onClose={() => this.onCloseDrawer()}>
+                <Drawer anchor="bottom" className="friend-drawer find-friends fit-popup" open={open} onClose={() => this.onCloseDrawer()}>
                     <div className="drawer-detail">
                         <div className="drawer-header">
                             <div className="direction" onClick={() => this.onCloseDrawer()}>

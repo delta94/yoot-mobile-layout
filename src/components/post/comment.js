@@ -473,114 +473,116 @@ class Index extends React.Component {
                      </IconButton>
                   </div>
                   {
-                     data ? <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
-                        <CardHeader
-                           className="card-header"
-                           avatar={
-                              <Avatar aria-label="recipe" className="avatar">
-                                 <div className="img" style={{ background: `url("${data.avataruserpost}")` }} />
-                              </Avatar>
+                     data ?
+                        <Card id="comment-item" className={" post-item " + (daskMode ? "dask-mode" : "")}>
+                           {
+                              data.kindpost == 4 ? <div className="album-name">
+                                 <span>Album <span>{data.albumname}</span></span>
+                              </div> : ""
                            }
-                           action={
-                              <CustomMenu>
-                                 {
-                                    data.iduserpost == profile.id && data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => {
-                                       this.props.togglePostDrawer(true)
-                                       this.props.setCurrentPosted(data)
-                                    })}>Chỉnh sửa bài đăng</MenuItem> : ""
-                                 }
-                                 {
-                                    data.iduserpost == profile.id && (data.kindpost == 2 || data.kindpost == 3) ? <MenuItem onClick={() => this.setState({ showLocalMenu: false, showUpdateInfoOfProfilePost: true, postContent: data.nfcontent })}>Chỉnh sửa nội dung</MenuItem> : ""
-                                 }
-                                 {
-                                    data.iduserpost == profile.id && data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.setState({
-                                       showConfim: true,
-                                       okCallback: () => this.handleDeletePost(),
-                                       confirmTitle: "Xoá bài đăng",
-                                       confirmMessage: "Bạn có thật sự muốn xoá bài đăng này?"
-                                    }))}>Xoá bài đăng</MenuItem> : ""
-                                 }
-                                 <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => copyToClipboard(PostLinkToCoppy + data.nfid))}>Sao chép liên kết</MenuItem>
-                                 {/* {
-                  data.iduserpost != profile.id ? <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
-                } */}
-                                 {
-                                    data.iduserpost != profile.id ? <MenuItem onClick={() => this.props.toggleReportComment(true, data)}>Báo cáo vi phạm</MenuItem> : ""
-                                 }
-                              </CustomMenu>
-                           }
-                           title={<span className="poster-name">
-                              <span className="name" onClick={() => {
-                                 if (data.iduserpost == profile.id) {
-                                    this.props.history.push("/profile")
-                                 } else {
-                                    this.props.setCurrenUserDetail({ ...data, friendid: data.iduserpost })
-                                    this.props.toggleUserPageDrawer(true)
-                                 }
-                              }}>{data.nameuserpost} </span>
-                              {
-                                 data.kindpost == 4 ? <span className="mesage">{data.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
+                           <CardHeader
+                              className="card-header"
+                              avatar={
+                                 <Avatar aria-label="recipe" className="avatar">
+                                    <div className="img" style={{ background: `url("${data.avataruserpost}")` }} />
+                                 </Avatar>
                               }
-                              {
-                                 data.kindpost == 3 ? <span className="mesage">{data.titlepost.replace("{username}", " ")}</span> : ""
+                              action={
+                                 <CustomMenu>
+                                    {
+                                       data.iduserpost == profile.id && data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => {
+                                          this.props.togglePostDrawer(true)
+                                          this.props.setCurrentPosted(data)
+                                       })}>Chỉnh sửa bài đăng</MenuItem> : ""
+                                    }
+                                    {
+                                       data.iduserpost == profile.id && (data.kindpost == 2 || data.kindpost == 3) ? <MenuItem onClick={() => this.setState({ showLocalMenu: false, showUpdateInfoOfProfilePost: true, postContent: data.nfcontent })}>Chỉnh sửa nội dung</MenuItem> : ""
+                                    }
+                                    {
+                                       data.iduserpost == profile.id && data.kindpost != 2 && data.kindpost != 3 ? <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => this.setState({
+                                          showConfim: true,
+                                          okCallback: () => this.handleDeletePost(),
+                                          confirmTitle: "Xoá bài đăng",
+                                          confirmMessage: "Bạn có thật sự muốn xoá bài đăng này?"
+                                       }))}>Xoá bài đăng</MenuItem> : ""
+                                    }
+                                    <MenuItem onClick={() => this.setState({ showLocalMenu: false }, () => copyToClipboard(PostLinkToCoppy + data.nfid))}>Sao chép liên kết</MenuItem>
+                                    {/* {
+                                       data.iduserpost != profile.id ? <MenuItem onClick={() => this.setState({ showLocalMenu: false })}>Ẩn bài đăng</MenuItem> : ""
+                                    } */}
+                                    {
+                                       data.iduserpost != profile.id ? <MenuItem onClick={() => this.props.toggleReportComment(true, data)}>Báo cáo vi phạm</MenuItem> : ""
+                                    }
+                                 </CustomMenu>
                               }
-                              {
-                                 data.kindpost == 2 ? <span className="mesage">{data.titlepost.replace("{username}", " ")}</span> : ""
-                              }
-                              {
-                                 data.kindpost == 1 && data.newsFeedShareRoot ? <span className="mesage"> đã chia sẽ một bài viết</span> : ""
-                              }
-                              {
-                                 data.usersTag.length > 0 ? <span className="mesage">
-                                    <span>cùng với <b onClick={() => {
-                                       this.props.setCurrenUserDetail({ ...data.usersTag[0], friendid: data.usersTag[0].id })
+                              title={<span className="poster-name">
+                                 <span className="name" onClick={() => {
+                                    if (data.iduserpost == profile.id) {
+                                       this.props.history.push("/profile")
+                                    } else {
+                                       this.props.setCurrenUserDetail({ ...data, friendid: data.iduserpost })
                                        this.props.toggleUserPageDrawer(true)
-                                    }}>{data.usersTag[0].fullname}</b></span>
-                                    {
-                                       data.usersTag.length == 2 ? <span> và <b onClick={() => {
-                                          this.props.setCurrenUserDetail({ ...data.usersTag[1], friendid: data.usersTag[1].id })
+                                    }
+                                 }}>{data.nameuserpost} </span>
+                                 {
+                                    data.kindpost == 4 ? <span className="mesage">{data.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
+                                 }
+                                 {
+                                    data.kindpost == 3 ? <span className="mesage">{data.titlepost.replace("{username}", " ")}</span> : ""
+                                 }
+                                 {
+                                    data.kindpost == 2 ? <span className="mesage">{data.titlepost.replace("{username}", " ")}</span> : ""
+                                 }
+                                 {
+                                    data.kindpost == 1 && data.newsFeedShareRoot ? <span className="mesage"> đã chia sẽ một bài viết</span> : ""
+                                 }
+                                 {
+                                    data.usersTag.length > 0 ? <span className="mesage">
+                                       <span>cùng với <b onClick={() => {
+                                          this.props.setCurrenUserDetail({ ...data.usersTag[0], friendid: data.usersTag[0].id })
                                           this.props.toggleUserPageDrawer(true)
-                                       }}>{data.usersTag[1].fullname}</b></span> : ""
-                                    }
-                                    {
-                                       data.usersTag.length > 2 ? <span> và <b onClick={() => this.setState({ showTagsFriendDrawer: true })}>{data.usersTag.length - 1} người khác</b></span> : ""
-                                    }
-                                 </span> : ""
-                              }
-                           </span>}
-                           subheader={<div className="poster-subtitle">
-                              <div>
-                                 <img src={PrivacyOptions.find(privacy => privacy.code == data.postforid).icon1} />
-                                 <FiberManualRecordIcon />
-                                 {fromNow(moment(data.createdate), moment(new Date))}
-                              </div>
-                              {
-                                 data.groupidpost > 0 ? <div>
-                                    <img src={Group} />
-                                    <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
-                                    <span><u onClick={
-                                       () => {
-                                          this.handleGetGroupDetail(data.groupidpost)
-                                          this.props.toggleGroupDetailDrawer(true)
+                                       }}>{data.usersTag[0].fullname}</b></span>
+                                       {
+                                          data.usersTag.length == 2 ? <span> và <b onClick={() => {
+                                             this.props.setCurrenUserDetail({ ...data.usersTag[1], friendid: data.usersTag[1].id })
+                                             this.props.toggleUserPageDrawer(true)
+                                          }}>{data.usersTag[1].fullname}</b></span> : ""
                                        }
-                                    }
-                                    >{data.groupnamepost}</u></span>
-                                 </div> : ""
-                              }
-                           </div>}
-                        />
-                     </Card> : ""
+                                       {
+                                          data.usersTag.length > 2 ? <span> và <b onClick={() => this.setState({ showTagsFriendDrawer: true })}>{data.usersTag.length - 1} người khác</b></span> : ""
+                                       }
+                                    </span> : ""
+                                 }
+                              </span>}
+                              subheader={<div className="poster-subtitle">
+                                 <div>
+                                    <img src={PrivacyOptions.find(privacy => privacy.code == data.postforid).icon1} />
+                                    <FiberManualRecordIcon />
+                                    {fromNow(moment(data.createdate), moment(new Date))}
+                                 </div>
+                                 {
+                                    data.groupidpost > 0 ? <div>
+                                       <img src={Group} />
+                                       <FiberManualRecordIcon style={{ width: "6px", height: "6px" }} />
+                                       <span><u onClick={
+                                          () => {
+                                             this.handleGetGroupDetail(data.groupidpost)
+                                             this.props.toggleGroupDetailDrawer(true)
+                                          }
+                                       }
+                                       >{data.groupnamepost}</u></span>
+                                    </div> : ""
+                                 }
+                              </div>}
+                           />
+                        </Card> : ""
                   }
                </div>
                <div className="filter"></div>
                <div className="drawer-content">
                   {
                      data ? <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
-                        {
-                           data.kindpost == 4 ? <div className="album-name">
-                              <span>Album <span>{data.albumname}</span></span>
-                           </div> : ""
-                        }
+
 
                         {
                            data.nfcontent != "" ? <div
@@ -933,7 +935,7 @@ class Index extends React.Component {
                               onReaction={(reaction) => this.likePosted(reaction)}
                               onShortPress={(reaction) => data.islike == 1 ? this.dislikePosted(reaction) : this.likePosted(reaction)}
                            />
-                           {(data.postforid !== 4 && data.typegroup !== 2) && <Button onClick={() => this.props.toggleSharePost(true,data)}><img src={daskMode ? share1 : share} />Chia sẻ</Button>}
+                           {(data.postforid !== 4 && data.typegroup !== 2) && <Button onClick={() => this.props.toggleSharePost(true, data)}><img src={daskMode ? share1 : share} />Chia sẻ</Button>}
                         </CardActions>
                         {
                            daskMode ? "" : (data.numcomment > 0 ? <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>
@@ -1036,7 +1038,7 @@ const mapStateToProps = state => {
    }
 };
 const mapDispatchToProps = dispatch => ({
-   toggleSharePost: (isShow, data) => dispatch(toggleSharePost(isShow,data)),
+   toggleSharePost: (isShow, data) => dispatch(toggleSharePost(isShow, data)),
    setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
    toggleGroupDetailDrawer: (isShow) => dispatch(toggleGroupDetailDrawer(isShow)),
    toggleReportComment: (isShow, data) => dispatch(toggleReportComment(isShow, data)),
@@ -1272,7 +1274,7 @@ const renderDetailPosted = (component) => {
                         >
                            <img src={daskMode ? comment1 : comment} />Bình luận
                         </Button>
-                        <Button onClick={() => component.props.toggleSharePost(true,data)}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+                        <Button onClick={() => component.props.toggleSharePost(true, data)}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
                      </CardActions>
 
 
@@ -1340,7 +1342,7 @@ const renderDetailPosted = (component) => {
                                        onShortPress={(reaction) => media.islike == 1 ? component.dislikeImage(media) : component.likeImage(reaction, media)}
                                     />
                                     <Button onClick={() => component.setState({ showCommentDrawer: true, currentPost: data })}><img src={daskMode ? comment1 : comment} />Bình luận</Button>
-                                    <Button onClick={() => this.props.toggleSharePost(true,data)}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+                                    <Button onClick={() => this.props.toggleSharePost(true, data)}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
                                  </CardActions>
 
                               </Card>

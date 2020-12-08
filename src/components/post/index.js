@@ -22,7 +22,7 @@ import {
 } from "../../constants/constants";
 import {
   togglePostDrawer, toggleMediaViewerDrawer, setMediaToViewer, toggleUserDetail, toggleUserPageDrawer, setProccessDuration,
-  toggleCommentDrawer, toggleCommentImageDrawer, toggleReportComment, setActivePostIndex,setCurrentAlbum
+  toggleCommentDrawer, toggleCommentImageDrawer, toggleReportComment, setActivePostIndex, setCurrentAlbum, toggleSharePost
 } from "../../actions/app";
 import { setCurrenUserDetail } from "../../actions/user";
 import {
@@ -30,7 +30,7 @@ import {
 } from "../../actions/posted";
 
 import { setCurrentGroup } from '../../actions/group'
-import { toggleGroupDetailDrawer,toggleAlbumDetailDrawer } from '../../actions/app'
+import { toggleGroupDetailDrawer, toggleAlbumDetailDrawer } from '../../actions/app'
 import { fromNow, objToQuery, showNotification, } from "../../utils/common";
 import FacebookSelector from "../common/facebook-selector";
 import Comment from "./comment-item";
@@ -881,11 +881,11 @@ class Index extends React.Component {
           <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
             {data.kindpost === 4 ? (
               <div className="album-name">
-                <span onClick={()=>{
-                  this.props.setCurrentAlbum({albumid:data.albumid})
+                <span onClick={() => {
+                  this.props.setCurrentAlbum({ albumid: data.albumid })
                   this.props.toggleAlbumDetailDrawer(true)
                 }}
-                  >
+                >
                   Album <b>{data.albumname}</b>
                 </span>
               </div>
@@ -1877,13 +1877,14 @@ class Index extends React.Component {
                 <>
                   <Button
                     onClick={() =>
-                      this.setState(
-                        { showShareDrawer: true, groupSelected: null },
-                        () => {
-                          this.getFriends(0);
-                          this.getGroup(0);
-                        }
-                      )
+                      // this.setState(
+                      //   { showShareDrawer: true, groupSelected: null },
+                      //   () => {
+                      //     this.getFriends(0);
+                      //     this.getGroup(0);
+                      //   }
+                      // )
+                      this.props.toggleSharePost(true, data)
                     }
                   >
                     <img src={daskMode ? share1 : share} />
@@ -1964,8 +1965,9 @@ const mapStateToProps = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => ({
+  toggleSharePost: (isShow, data) => dispatch(toggleSharePost(isShow, data)),
   setCurrentAlbum: (album) => dispatch(setCurrentAlbum(album)),
-  toggleAlbumDetailDrawer:(isShow) => dispatch(toggleAlbumDetailDrawer(isShow)),
+  toggleAlbumDetailDrawer: (isShow) => dispatch(toggleAlbumDetailDrawer(isShow)),
   toggleReportComment: (isShow, data) => dispatch(toggleReportComment(isShow, data)),
   togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
   toggleMediaViewerDrawer: (isShow, features) =>
@@ -2750,15 +2752,16 @@ const renderDetailPosted = (component) => {
                 </Button>
                 {data.postforid != 4 ? (
                   <Button
-                    onClick={() =>
-                      component.setState(
-                        { showShareDrawer: true, groupSelected: null },
-                        () => {
-                          component.getFriends(0);
-                          component.getGroup(0);
-                        }
-                      )
-                    }
+                    onClick={() => this.props.toggleSharePost(true, data)}
+                  // onClick={() =>
+                  //   component.setState(
+                  //     { showShareDrawer: true, groupSelected: null },
+                  //     () => {
+                  //       component.getFriends(0);
+                  //       component.getGroup(0);
+                  //     }
+                  //   )
+                  // }
                   >
                     <img src={daskMode ? share1 : share} />
                     Chia sẻ
@@ -2888,19 +2891,20 @@ const renderDetailPosted = (component) => {
                       </Button>
                       {data.postforid != 4 ? (
                         <Button
-                          onClick={() =>
-                            component.setState(
-                              {
-                                showShareDrawer: true,
-                                currentImage: media,
-                                groupSelected: null,
-                              },
-                              () => {
-                                component.getFriends(0);
-                                component.getGroup(0);
-                              }
-                            )
-                          }
+                          onClick={() => this.props.toggleSharePost(true, data)}
+                        // onClick={() =>
+                        //   component.setState(
+                        //     {
+                        //       showShareDrawer: true,
+                        //       currentImage: media,
+                        //       groupSelected: null,
+                        //     },
+                        //     () => {
+                        //       component.getFriends(0);
+                        //       component.getGroup(0);
+                        //     }
+                        //   )
+                        // }
                         >
                           <img src={daskMode ? share1 : share} />
                           Chia sẻ
