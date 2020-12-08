@@ -407,7 +407,7 @@ class Index extends React.Component {
                         >
                           {({ getRootProps, getInputProps }) => (
                             <div {...getRootProps()} className="box-upload-file" id="upload-homework-bt">
-                              <input {...getInputProps()} accept={!item.EXERCISE_TYPE_FK == 3 && "video/*"} />
+                              <input {...getInputProps()} accept={!item.EXERCISE_TYPE_FK == 3 && "video/*,image/*"} />
                               {
                                 fileSelected
                                   ? <div className="file-selected">

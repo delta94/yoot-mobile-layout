@@ -663,6 +663,7 @@
         .drawer-content{
             width: 100%;
             .assess-list{
+                overflow-x: hidden;
                 li{
                     display: flex;
                     align-items: center;

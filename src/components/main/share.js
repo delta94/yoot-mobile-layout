@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 import {
    updatePosted, likePosted, dislikePosted, likeImage, dislikeImage, setCurrentPosted, deletePostSuccess, createPostSuccess
 } from "../../actions/posted";
-import { toggleSharePost, setProccessDuration } from '../../actions/app'
+import { toggleSharePost, setProccessDuration,toggleCommentDrawer } from '../../actions/app'
 import { get, postFormData } from '../../api';
 import { SOCIAL_NET_WORK_API, CurrentDate } from '../../constants/appSettings';
 import { Privacies, ReactSelectorIcon, backgroundList, GroupPrivacies, } from "../../constants/constants";
@@ -27,7 +27,7 @@ const Newfeed = require("../../assets/icon/Newfeed@1x.png");
 const Group = require("../../assets/icon/Group@1x.png");
 const search = require("../../assets/icon/Find@1x.png");
 
-const Share = ({ currentPostForComment, showShareDrawer, toggleSharePost, createPostSuccess, setProccessDuration }) => {
+const Share = ({ toggleCommentDrawer,currentPostForComment, showShareDrawer, toggleSharePost, createPostSuccess, setProccessDuration, albumSelected, profile }) => {
    const [state, setState] = useState({
       privacy: Privacies.Public,
       postContent: "",
@@ -55,7 +55,7 @@ const Share = ({ currentPostForComment, showShareDrawer, toggleSharePost, create
       privacy, postContent, tagedFrieds, isPosting, groupForShare, groupSelected, mentionSelected, hashtagSelected,
       backgroundSelected, imageSelected, videoSelected, nfid, postedImage, postedVideo,
    } = state;
-
+   const data = currentPostForComment
    const getFriends = (currentpage) => {
       let { searchKey } = state;
       let param = {
@@ -111,6 +111,7 @@ const Share = ({ currentPostForComment, showShareDrawer, toggleSharePost, create
 
    }
    const handleCloseDrawer = () => {
+
       setState({
          ...state,
          postContent: "",
@@ -120,7 +121,6 @@ const Share = ({ currentPostForComment, showShareDrawer, toggleSharePost, create
       toggleSharePost(false, currentPostForComment)
    }
    const handleShare = (groupId) => {
-      let { albumSelected, profile, data } = this.props;
       if (isPosting == true) return;
 
       setState({
@@ -187,20 +187,18 @@ const Share = ({ currentPostForComment, showShareDrawer, toggleSharePost, create
          formData.append("albumid", albumSelected.albumid.toString());
       }
 
-      this.props.setProccessDuration(80);
-      postFormData(
-         SOCIAL_NET_WORK_API,
-         "PostNewsFeed/CreateNewsFeed",
-         formData,
+      setProccessDuration(80);
+      postFormData(SOCIAL_NET_WORK_API, "PostNewsFeed/CreateNewsFeed", formData,
          (result) => {
-            if (result.result == 1) {
+            if (result && result.result === 1) {
+               createPostSuccess(result.content.newsFeeds, profile.id);
+               toggleSharePost(false)
+               toggleCommentDrawer(false)
+               setProccessDuration(20);
                setState({
                   ...state,
                   isPosting: false,
                });
-               createPostSuccess(result.content.newsFeeds, profile.id);
-               this.handleCloseDrawer(true);
-               setProccessDuration(20);
             }
          }
       );
@@ -223,7 +221,6 @@ const Share = ({ currentPostForComment, showShareDrawer, toggleSharePost, create
          }
       }
    };
-   console.log(state)
    return (
       <Drawer
          anchor="bottom"
@@ -406,12 +403,14 @@ const Share = ({ currentPostForComment, showShareDrawer, toggleSharePost, create
    );
 };
 const mapStateToProps = state => ({
-   ...state.app
+   ...state.app,
+   ...state.user
 })
 const mapActionToProps = {
    toggleSharePost,
    createPostSuccess,
-   setProccessDuration
+   setProccessDuration,
+   toggleCommentDrawer
 }
 export default connect(mapStateToProps, mapActionToProps)(Share)
 

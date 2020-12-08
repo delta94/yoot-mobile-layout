@@ -524,7 +524,7 @@ const renderResetPassDrawer = (component) => {
     resetPassEmail
   } = component.state
   return (
-    <Drawer anchor="bottom" className="reset-pass-drawer" open={showResetPassDrawer} onClose={() => component.setState({ showResetPassDrawer: false })}>
+    <Drawer anchor="bottom" className="reset-pass-drawer fit-popup-main" open={showResetPassDrawer} onClose={() => component.setState({ showResetPassDrawer: false })}>
       <div className="drawer-detail">
         <div className="sign-in-page" >
           <div className="logo"><img src={logo} /></div>

@@ -120,3 +120,25 @@
     }
   }
 }
+@media screen and (min-width: 400px){
+  .fit-popup-main{
+    >div:last-child{
+      div{
+        background: #fff !important;
+        max-width: 600px;
+        padding: 20px auto;
+        // button{
+        //   position: relative;
+        // }
+        .sign-in-form{
+          position: initial;
+          .bt-cancel{
+            position: initial;
+            margin-top: 50px;
+          }
+        }
+      }
+      }
+      
+  }
+}
