@@ -1269,7 +1269,6 @@ const renderUserDetailDrawer = (component) => {
     pageFollowed,
     pageFollowing,
   } = component.state;
-  console.log(component.state)
   const handleScroll = (e) => {
     const bottom =
       e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 2;

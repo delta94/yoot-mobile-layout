@@ -43,7 +43,8 @@ import {
    toggleUserDetail,
    toggleUserPageDrawer,
    toggleReportComment,
-   toggleGroupDetailDrawer
+   toggleGroupDetailDrawer,
+   toggleSharePost
 } from '../../actions/app'
 import {
    setCurrenUserDetail
@@ -259,10 +260,7 @@ class Index extends React.Component {
    }
 
    dislikePosted() {
-      let {
-         data,
-         userId
-      } = this.props
+      let { data, userId } = this.props
       if (!data) return
       let param = {
          postid: data.nfid,
@@ -275,10 +273,7 @@ class Index extends React.Component {
    }
 
    likeImage(reaction, image) {
-      let {
-         data,
-         userId
-      } = this.props
+      let { data, userId } = this.props
       if (!data) return
       let param = {
          postid: data.nfid,
@@ -458,24 +453,9 @@ class Index extends React.Component {
       })
    }
    render() {
-      let {
-         onClose,
-         data,
-         profile,
-         daskMode,
-         postComments
-      } = this.props
+      let { onClose, data, profile, daskMode, postComments } = this.props
       let { foloweds } = this.props.profile
-      let {
-         anchor,
-         showLocalMenu,
-         openReactions,
-         isMuted,
-         commentContent,
-         imageSelected,
-         replyFor,
-         isLoading
-      } = this.state
+      let { anchor, showLocalMenu, openReactions, isMuted, commentContent, imageSelected, replyFor, isLoading } = this.state
       let PrivacyOptions = objToArray(Privacies)
       let comments = []
       if (data && postComments && postComments[data.nfid])
@@ -953,7 +933,7 @@ class Index extends React.Component {
                               onReaction={(reaction) => this.likePosted(reaction)}
                               onShortPress={(reaction) => data.islike == 1 ? this.dislikePosted(reaction) : this.likePosted(reaction)}
                            />
-                           {(data.postforid !== 4 && data.typegroup !== 2) && <Button onClick={() => this.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>}
+                           {(data.postforid !== 4 && data.typegroup !== 2) && <Button onClick={() => this.props.toggleSharePost(true,data)}><img src={daskMode ? share1 : share} />Chia sẻ</Button>}
                         </CardActions>
                         {
                            daskMode ? "" : (data.numcomment > 0 ? <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>
@@ -1056,6 +1036,7 @@ const mapStateToProps = state => {
    }
 };
 const mapDispatchToProps = dispatch => ({
+   toggleSharePost: (isShow, data) => dispatch(toggleSharePost(isShow,data)),
    setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
    toggleGroupDetailDrawer: (isShow) => dispatch(toggleGroupDetailDrawer(isShow)),
    toggleReportComment: (isShow, data) => dispatch(toggleReportComment(isShow, data)),
@@ -1166,17 +1147,8 @@ const mediaGuestActions = (component) => [
 ]
 
 const renderDetailPosted = (component) => {
-   let {
-      showPostedDetail,
-   } = component.state
-   let {
-      data,
-      profile,
-      daskMode,
-      openReactions,
-      anchor,
-      showLocalMenu
-   } = component.props
+   let { showPostedDetail, } = component.state
+   let { data, profile, daskMode, openReactions, anchor, showLocalMenu } = component.props
 
    let PrivacyOptions = objToArray(Privacies)
 
@@ -1300,7 +1272,7 @@ const renderDetailPosted = (component) => {
                         >
                            <img src={daskMode ? comment1 : comment} />Bình luận
                         </Button>
-                        <Button onClick={() => component.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+                        <Button onClick={() => component.props.toggleSharePost(true,data)}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
                      </CardActions>
 
 
@@ -1368,7 +1340,7 @@ const renderDetailPosted = (component) => {
                                        onShortPress={(reaction) => media.islike == 1 ? component.dislikeImage(media) : component.likeImage(reaction, media)}
                                     />
                                     <Button onClick={() => component.setState({ showCommentDrawer: true, currentPost: data })}><img src={daskMode ? comment1 : comment} />Bình luận</Button>
-                                    <Button onClick={() => component.setState({ showShareDrawer: true })}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
+                                    <Button onClick={() => this.props.toggleSharePost(true,data)}><img src={daskMode ? share1 : share} />Chia sẻ</Button>
                                  </CardActions>
 
                               </Card>

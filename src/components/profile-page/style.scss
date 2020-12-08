@@ -346,7 +346,7 @@
             .friend-list{
                 margin: auto;
                 grid-template-columns: repeat(4,130px);
-                grid-template-rows: repeat(2, 160px);
+                // grid-template-rows: repeat(2, 160px);
                 .friend-item{
                     cursor: pointer;
                     .avatar{

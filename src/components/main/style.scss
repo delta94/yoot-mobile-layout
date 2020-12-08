@@ -1232,11 +1232,28 @@ body{
     }
   }
 }
+
+// B fix ---------------------------------------------------------------------------------
+
+.fix-scroll{
+  >div:last-child{
+    overflow: hidden;
+    >div{
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  }
+}
+
+
 @media screen and (min-width: 400px) {
   .source-item{
     >div{
       height: 20vw !important;
     }
+  }
+  .drawer-content{
+    li{cursor: pointer;}
   }
   .submit-bt{
     cursor: pointer;
@@ -1298,9 +1315,18 @@ body{
   .comment-post{
     min-height: 100vh;
     background: #fff;
-    overflow: auto;
+    .drawer-content{
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: unset;
+    }
   }
-  
+  .share-drawer{
+    .drawer-detail{
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  }
       .wrapper {
           background: #f2f3f7 !important;
       }
@@ -1397,6 +1423,11 @@ body{
       >ul .video{
         height: 100% !important;
       }
+      >ul{
+        li{
+          align-self: center;
+        }
+      }
     }
   }
   .noti-page{
@@ -1411,7 +1442,8 @@ body{
   }
   .poster-drawer{
     >div:last-child{
-      overflow-y: initial;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
   }
   .content-main{
@@ -1462,5 +1494,12 @@ body{
       }
     }
   }
-  
+  .album-name{
+    span{
+      cursor: pointer;
+    }
+  }
+  .album-background{
+    max-height: 300px;
+  }
 }

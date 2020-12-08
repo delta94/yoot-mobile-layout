@@ -37,7 +37,8 @@ import {
     TOGGLE_COMMENT_IMAGE_DRAWER,
     TOGGLE_SEARCH_POST_DRAWER,
     TOGGLE_REPORT_COMMENT,
-    SET_ACTIVE_POST_INDEX
+    SET_ACTIVE_POST_INDEX,
+    TOGGLE_SHARE_POST
 } from '../actions/app'
 
 const initialState = {
@@ -84,13 +85,11 @@ const initialState = {
     showSearchPostDrawer: false,
     currentHashtag: null,
     activePostIndex: 0,
+    showShareDrawer: false
 };
 
 export default (state = initialState, action) => {
-    let {
-        showHeader,
-        mediaToView
-    } = state
+    let { showHeader, mediaToView } = state
 
     switch (action.type) {
         case SET_PROCCESS_DURATION: {
@@ -169,6 +168,7 @@ export default (state = initialState, action) => {
             });
         }
         case SET_MEDIA_TO_VIEWER: {
+            console.log('payload',action.payload)
             return Object.assign({}, state, {
                 mediaToView: action.payload,
             });
@@ -303,6 +303,12 @@ export default (state = initialState, action) => {
                 ...state,
                 currentPostForComment: action.payload.data,
                 showReportPost: action.payload.isShow
+            }
+        case TOGGLE_SHARE_POST:
+            return {
+                ...state,
+                currentPostForComment: action.payload.data,
+                showShareDrawer: action.payload.isShow
             }
         case SET_ACTIVE_POST_INDEX:
             return Object.assign({}, state, {

@@ -42,9 +42,15 @@ export const TOGGLE_COMMENT_DRAWER = "app@TOGGLE_COMMENT_DRAWER"
 export const TOGGLE_COMMENT_IMAGE_DRAWER = "app@TOGGLE_COMMENT_IMAGE_DRAWER"
 export const TOGGLE_SEARCH_POST_DRAWER = "app@TOGGLE_SEARCH_POST_DRAWER"
 export const TOGGLE_REPORT_COMMENT = "app@TOGGLE_REPORT_COMMENT"
+export const TOGGLE_SHARE_POST = "app@TOGGLE_SHARE_POST"
 export const SET_ACTIVE_POST_INDEX = "app@SET_ACTIVE_POST_INDEX"
 
-
+export const toggleSharePost = (isShow, data) => dispatch => {
+    return dispatch({
+        type: TOGGLE_SHARE_POST,
+        payload: { isShow, data }
+    })
+}
 export const toggleReportComment = (isShow, data) => dispatch => {
     return dispatch({
         type: TOGGLE_REPORT_COMMENT,

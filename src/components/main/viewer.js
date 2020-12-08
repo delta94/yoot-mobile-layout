@@ -677,11 +677,7 @@ class Index extends React.Component {
 
 
    render() {
-      let {
-         showMediaViewerDrawer,
-         mediaViewerFeature,
-         mediaToView,
-
+      let { showMediaViewerDrawer, mediaViewerFeature, mediaToView,
       } = this.props
 
       let actions = {}
@@ -689,18 +685,10 @@ class Index extends React.Component {
          actions = mediaViewerFeature.actions
       }
 
-      let {
-         onSharePost
-      } = actions
+      let { onSharePost } = actions
 
       let {
-         isHideMediaHeadFoot,
-         activeMeidaSlideIndex,
-         activeItem,
-         showControl,
-         isPlaying,
-         currentPost,
-         openReactions
+         isHideMediaHeadFoot, activeMeidaSlideIndex, activeItem, showControl, isPlaying, currentPost, openReactions
       } = this.state
 
       const settings = {
@@ -718,7 +706,8 @@ class Index extends React.Component {
       if (!activeItem) {
          activeItem = mediaToView && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0 ? mediaToView[mediaViewerFeature.activeIndex] : null
       }
-
+      console.log('props',this.props)
+      console.log('state',this.state)
       return (
          <div>
             <Drawer anchor="bottom" className="custom-viewer-drawer" open={showMediaViewerDrawer} onClose={() => this.props.toggleMediaViewerDrawer(false)}>
@@ -1361,7 +1350,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
                </div>
                <div className="filter">
                </div>
-               <div className="content-form" style={{ overflow: "auto"}}>
+               <div className="content-form" style={{ overflow: "auto" }}>
                   <div className="post-content">
                      <MultiInput
                         style={{ padding: "15px 0px", border: "none" }}

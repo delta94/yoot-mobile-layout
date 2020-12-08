@@ -1,19 +1,19 @@
 import React from "react";
 import "./style.scss";
 import {
-  togglePostDrawer,  toggleMediaViewerDrawer,  setMediaToViewer,  toggleCreateAlbumDrawer,  selectAlbumToPost,  setProccessDuration,
+  togglePostDrawer, toggleMediaViewerDrawer, setMediaToViewer, toggleCreateAlbumDrawer, selectAlbumToPost, setProccessDuration,
 } from "../../actions/app";
-import {  setCurrentPosted,  createPostSuccess,  updatePosted,} from "../../actions/posted";
+import { setCurrentPosted, createPostSuccess, updatePosted, } from "../../actions/posted";
 import { setJoinedGroup, setCurrentGroup } from "../../actions/group";
 import { connect } from "react-redux";
-import {  Drawer,  IconButton,  Button,  TextField,  InputAdornment,  Avatar,  CardHeader,  Divider,} from "@material-ui/core";
+import { Drawer, IconButton, Button, TextField, InputAdornment, Avatar, CardHeader, Divider, } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  ChevronLeft as ChevronLeftIcon,  Close as CloseIcon,  Add as AddIcon,  PlayCircleOutline as PlayCircleOutlineIcon,
-  Done as DoneIcon,  ExpandMore as ExpandMoreIcon,
+  ChevronLeft as ChevronLeftIcon, Close as CloseIcon, Add as AddIcon, PlayCircleOutline as PlayCircleOutlineIcon,
+  Done as DoneIcon, ExpandMore as ExpandMoreIcon,
 } from "@material-ui/icons";
 import ArrowForwardIosRoundedIcon from "@material-ui/icons/ArrowForwardIosRounded";
-import {  Privacies,  GroupPrivacies,  backgroundList,} from "../../constants/constants";
+import { Privacies, GroupPrivacies, backgroundList, } from "../../constants/constants";
 import { objToArray, objToQuery, srcToFile } from "../../utils/common";
 import Dropzone from "react-dropzone";
 import MultiInput from "../common/multi-input";
@@ -613,8 +613,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(Index);
 const renderPostDrawer = (component) => {
   let { showPostDrawer, isPostToGroup, albumSelected } = component.props;
   let {
-    privacySelected,    imageSelected,    videoSelected,    groupSelected,    isBackgroundSelect,    backgroundSelected,
-    postContent,    isPosting,    mentionSelected,    tagedFrieds,    postedImage,    postedVideo,    nfid,    isChange,
+    privacySelected, imageSelected, videoSelected, groupSelected, isBackgroundSelect, backgroundSelected,
+    postContent, isPosting, mentionSelected, tagedFrieds, postedImage, postedVideo, nfid, isChange,
   } = component.state;
 
   let { currentGroup, currentPost } = component.props;
@@ -789,13 +789,14 @@ const renderPostDrawer = (component) => {
                   ? "url(" + backgroundSelected.background + ")"
                   : "#fff",
               }}
-              onChange={(value) =>{
+              onChange={(value) => {
                 component.setState({
                   postContent: value.text,
                   mentionSelected: value.mentionSelected,
                   hashtagSelected: value.hashtagSelected,
                   isChange: value.text.trim() !== "" ? true : false,
-                })}
+                })
+              }
               }
               topDown={true}
               placeholder={"Bạn viết gì đi..."}
@@ -920,7 +921,18 @@ const renderPostDrawer = (component) => {
                   <div className="video-list media-list">
                     {postedVideo &&
                       postedVideo.map((video, index) => (
-                        <div key={index}>
+                        <div 
+                        key={index}
+                        onClick={() => {
+                          component.props.setMediaToViewer([{ name: URL.createObjectURL(video.file) }]);
+                          component.props.toggleMediaViewerDrawer(true, {
+                            // actions: mediaGuestActions(component),
+                            showInfo: true,
+                            isvideo: true,
+                            activeIndex: 0
+                          })
+                        }}
+                        >
                           <div className="overlay">
                             <PlayCircleOutlineIcon />
                           </div>
@@ -946,10 +958,20 @@ const renderPostDrawer = (component) => {
                       ))}
                     {videoSelected &&
                       videoSelected.map((video, index) => (
-                        <div key={index}>
+                        <div
+                          key={index}
+                          onClick={() => {
+                            component.props.setMediaToViewer([{ name: URL.createObjectURL(video.file) }]);
+                            component.props.toggleMediaViewerDrawer(true, {
+                              // actions: mediaGuestActions(component),
+                              showInfo: true,
+                              isvideo: true,
+                              activeIndex: 0
+                            })
+                          }}>
                           <div className="overlay">
                             <PlayCircleOutlineIcon />
-                          </div>
+                          </div >
                           <div className="video-content">
                             <video
                               style={{
@@ -1019,7 +1041,7 @@ const renderPostPrivacyMenuDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="img-select-option"
+      className="img-select-option fit-popup-1"
       open={showPostPrivacySelectOption}
       onClose={() => component.setState({ showPostPrivacySelectOption: false })}
     >
@@ -1308,7 +1330,7 @@ const renderGroupForPostDrawer = (component) => {
       open={showGroupForPostDrawer}
       onClose={() => component.setState({ showGroupForPostDrawer: false })}
     >
-      <div className="drawer-detail fit-desktop" style={{overflow: "auto"}}>
+      <div className="drawer-detail fit-desktop" style={{ overflow: "auto" }}>
         <div className="drawer-header">
           <div
             className="direction"

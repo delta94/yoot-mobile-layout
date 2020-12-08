@@ -17,6 +17,7 @@ import Exercise from '../skills/exercise'
 import Assess from '../skills/assess'
 import CareerGuidance from '../career-guidance'
 import Album from './album'
+import Share from './share'
 import $ from 'jquery'
 
 import "./style.scss";
@@ -330,6 +331,7 @@ class Main extends React.Component {
         {renderCommentImageDrawer(this)}
         <Report history={this.props.history} />
         <Album history={this.props.history} />
+        <Share history={this.props.history}/>
       </div>
 
     );
@@ -752,7 +754,7 @@ const renderCommentDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="comment-drawer"
+      className="comment-drawer  fit-popup fix-scroll"
       open={showCommentDrawer}
       onClose={() => component.props.toggleCommentDrawer(false, null)}
     >
@@ -773,7 +775,7 @@ const renderCommentImageDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="comment-drawer"
+      className="comment-drawer  fit-popup fix-scroll"
       open={showCommentImageDrawer}
       onClose={() => component.props.toggleCommentImageDrawer(false, null, null)}
     >

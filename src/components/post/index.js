@@ -22,7 +22,7 @@ import {
 } from "../../constants/constants";
 import {
   togglePostDrawer, toggleMediaViewerDrawer, setMediaToViewer, toggleUserDetail, toggleUserPageDrawer, setProccessDuration,
-  toggleCommentDrawer, toggleCommentImageDrawer, toggleReportComment, setActivePostIndex
+  toggleCommentDrawer, toggleCommentImageDrawer, toggleReportComment, setActivePostIndex,setCurrentAlbum
 } from "../../actions/app";
 import { setCurrenUserDetail } from "../../actions/user";
 import {
@@ -30,7 +30,7 @@ import {
 } from "../../actions/posted";
 
 import { setCurrentGroup } from '../../actions/group'
-import { toggleGroupDetailDrawer } from '../../actions/app'
+import { toggleGroupDetailDrawer,toggleAlbumDetailDrawer } from '../../actions/app'
 import { fromNow, objToQuery, showNotification, } from "../../utils/common";
 import FacebookSelector from "../common/facebook-selector";
 import Comment from "./comment-item";
@@ -286,7 +286,7 @@ class Index extends React.Component {
     let { data } = this.props;
     let video = this.player.current;
     let thumbnail = this.thumbnail.current;
-    this.props.setActivePostIndex(this.props.index?this.props.index:0)
+    this.props.setActivePostIndex(this.props.index ? this.props.index : 0)
 
     if (video) {
       this.handleSetMuted(true);
@@ -304,7 +304,7 @@ class Index extends React.Component {
       // this.setState({
       //   isPlaying: true,
       // });
-      
+
     }
   }
 
@@ -781,7 +781,7 @@ class Index extends React.Component {
       }
     }
   }
- 
+
 
   handleActiveVideo() {
     let { currentNetwork } = this.props;
@@ -844,16 +844,8 @@ class Index extends React.Component {
 
 
   render() {
-    let {
-      anchor,
-      showLocalMenu,
-      openReactions,
-      visible,
-      isMuted,
-      isFullScreen,
-      isPlaying,
-    } = this.state;
-    let { profile, daskMode, data, containerRef ,activePostIndex,index} = this.props;
+    let { anchor, showLocalMenu, openReactions, visible, isMuted, isFullScreen, isPlaying, } = this.state;
+    let { profile, daskMode, data, containerRef, activePostIndex, index } = this.props;
 
     let PrivacyOptions = objToArray(Privacies);
     let GroupPrivacyOptions = objToArray(GroupPrivacies);
@@ -874,8 +866,9 @@ class Index extends React.Component {
         item.postid = data.newsFeedShareRoot.nfid
       })
     }
+    console.log(this.props)
     let canPlay = index <= (activePostIndex + 3) && index >= (activePostIndex - 2)
-    if(!isMobile()) canPlay=true
+    if (!isMobile()) canPlay = true
     // let contentWidth = $(".post-box-content").innerWidth()
     // console.log("dk",$(".post-box-content").innerWidth())
     return data && (!data.isPedding || data.isPedding === false) ? (
@@ -888,7 +881,11 @@ class Index extends React.Component {
           <Card className={"post-item " + (daskMode ? "dask-mode" : "")}>
             {data.kindpost === 4 ? (
               <div className="album-name">
-                <span>
+                <span onClick={()=>{
+                  this.props.setCurrentAlbum({albumid:data.albumid})
+                  this.props.toggleAlbumDetailDrawer(true)
+                }}
+                  >
                   Album <b>{data.albumname}</b>
                 </span>
               </div>
@@ -1171,10 +1168,10 @@ class Index extends React.Component {
                               }
                               }
                             >
-                              {canPlay?<Player
+                              {canPlay ? <Player
                                 ref={index == 0 ? this.player : null}
                                 poster={media.thumbnailname}
-                                src={ media.name}
+                                src={media.name}
                                 videoWidth={media.width}
                                 videoHeight={media.height}
                                 playsInline={true}
@@ -1185,7 +1182,7 @@ class Index extends React.Component {
                                   autoHide={false}
                                   className={"video-control"}
                                 ></ControlBar>
-                              </Player>:""}
+                              </Player> : ""}
                             </div>
                             {index == 0 ? (
                               <IconButton
@@ -1277,7 +1274,7 @@ class Index extends React.Component {
                                   this.handlePauseVideo();
                                 }}
                               >
-                                {canPlay?<Player
+                                {canPlay ? <Player
                                   ref={this.player}
                                   poster={media.thumbnailname}
                                   src={media.name}
@@ -1291,7 +1288,7 @@ class Index extends React.Component {
                                     autoHide={false}
                                     className={"video-control"}
                                   ></ControlBar>
-                                </Player>:""}
+                                </Player> : ""}
                               </div>
                               <IconButton
                                 onClick={() => this.handleSetMuted(!isMuted)}
@@ -1314,8 +1311,8 @@ class Index extends React.Component {
                                 ref={index == 0 ? this.thumbnail : null}
                                 style={{
                                   background: "url(" + media.thumbnailname + ")",
-                                //   width: contentWidth,
-                                // height: (media.height / media.width) * contentWidth
+                                  //   width: contentWidth,
+                                  // height: (media.height / media.width) * contentWidth
                                 }}
                                 onClick={() => {
                                   this.props.setMediaToViewer([media]);
@@ -1678,7 +1675,7 @@ class Index extends React.Component {
                                                   this.handlePauseVideo();
                                                 }}
                                               >
-                                                {canPlay?<Player
+                                                {canPlay ? <Player
                                                   ref={this.player}
                                                   poster={media.thumbnailname}
                                                   src={media.name}
@@ -1692,7 +1689,7 @@ class Index extends React.Component {
                                                     autoHide={false}
                                                     className={"video-control"}
                                                   ></ControlBar>
-                                                </Player>:""}
+                                                </Player> : ""}
                                               </div>
                                               <IconButton
                                                 onClick={() =>
@@ -1730,8 +1727,8 @@ class Index extends React.Component {
                                                     "url(" +
                                                     media.thumbnailname +
                                                     ")",
-                                //                     width: contentWidth,
-                                // height: (media.height / media.width) * contentWidth
+                                                  //                     width: contentWidth,
+                                                  // height: (media.height / media.width) * contentWidth
                                                 }}
                                                 onClick={() => {
                                                   this.props.setMediaToViewer([
@@ -1967,6 +1964,8 @@ const mapStateToProps = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => ({
+  setCurrentAlbum: (album) => dispatch(setCurrentAlbum(album)),
+  toggleAlbumDetailDrawer:(isShow) => dispatch(toggleAlbumDetailDrawer(isShow)),
   toggleReportComment: (isShow, data) => dispatch(toggleReportComment(isShow, data)),
   togglePostDrawer: (isShow) => dispatch(togglePostDrawer(isShow)),
   toggleMediaViewerDrawer: (isShow, features) =>
@@ -1994,7 +1993,7 @@ const mapDispatchToProps = (dispatch) => ({
   setCurrentGroup: (group) => dispatch(setCurrentGroup(group)),
   toggleCommentDrawer: (isShow, currentPostForComment) => dispatch(toggleCommentDrawer(isShow, currentPostForComment)),
   toggleCommentImageDrawer: (isShow, currentImageForComment, currentPostForComment) => dispatch(toggleCommentImageDrawer(isShow, currentImageForComment, currentPostForComment)),
-  setActivePostIndex : (index) =>dispatch(setActivePostIndex(index))
+  setActivePostIndex: (index) => dispatch(setActivePostIndex(index))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);
@@ -2078,23 +2077,15 @@ const renderConfirmDrawer = (component) => {
 
 
 const renderShareDrawer = (component) => {
-  let {
-    showShareDrawer,
-    privacy,
-    postContent,
-    tagedFrieds,
-    isPosting,
-    groupForShare,
-    groupSelected,
-  } = component.state;
+  let { showShareDrawer, privacy, postContent, tagedFrieds, isPosting, groupForShare, groupSelected, } = component.state;
   return (
     <Drawer
       anchor="bottom"
-      className="share-drawer poster-drawer"
+      className="share-drawer poster-drawer fit-popup"
       open={showShareDrawer}
       onClose={() => component.setState({ showShareDrawer: false })}
     >
-      <div className="drawer-detail fit-desktop">
+      <div className="drawer-detail">
         <div className="drawer-header">
           <div
             className="direction"
@@ -2279,7 +2270,7 @@ const renderGroupForShareDrawer = (component) => {
       className="tag-friend-drawer"
       open={showFindGroupToShareDrawer}
     >
-      <div className="drawer-detail fit-desktop" style={{overflow: "auto"}}>
+      <div className="drawer-detail fit-desktop" style={{ overflow: "auto" }}>
         <div className="drawer-header">
           <div
             className="direction"
@@ -2512,7 +2503,6 @@ const renderDetailPosted = (component) => {
   if (sharedPost) data = sharedPost;
 
   let PrivacyOptions = objToArray(Privacies);
-
   return (
     <Drawer
       anchor="bottom"
@@ -2564,16 +2554,18 @@ const renderDetailPosted = (component) => {
                 }
                 action={
                   <CustomMenu>
-                    <MenuItem
-                      onClick={() =>
-                        component.setState({ showLocalMenu: false }, () =>
-                          component.props.togglePostDrawer(true)
-                        )
-                      }
-                    >
-                      Chỉnh sửa bài đăng
+                    {data.iduserpost === profile.id &&
+                      <MenuItem
+                        onClick={() =>
+                          component.setState({ showLocalMenu: false }, () =>
+                            component.props.togglePostDrawer(true)
+                          )
+                        }
+                      >
+                        Chỉnh sửa bài đăng a
                     </MenuItem>
-                    {data.kindpost != 2 && data.kindpost != 3 ? (
+                    }
+                    {data.iduserpost === profile.id && data.kindpost !== 2 && data.kindpost !== 3 ? (
                       <MenuItem
                         onClick={() =>
                           component.setState({ showLocalMenu: false }, () =>
@@ -2595,7 +2587,7 @@ const renderDetailPosted = (component) => {
                     >
                       Sao chép liên kết
                     </MenuItem>
-                    {data.iduserpost != profile.id ? (
+                    {data.iduserpost === profile.id && (
                       <MenuItem
                         onClick={() =>
                           component.setState({ showLocalMenu: false })
@@ -2603,9 +2595,7 @@ const renderDetailPosted = (component) => {
                       >
                         Ẩn bài đăng
                       </MenuItem>
-                    ) : (
-                        ""
-                      )}
+                    )}
                     {data.iduserpost != profile.id ? (
                       <MenuItem
                         onClick={() =>

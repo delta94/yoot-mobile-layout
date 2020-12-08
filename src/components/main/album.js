@@ -568,25 +568,14 @@ class Index extends React.Component {
 
 
     render() {
-        let {
-            showAlbumDetailDrawer,
-            currentAlbum,
-            profile
-        } = this.props
-        let {
-            tabIndex,
-            isLoading,
-            albumDetail,
-            albumName,
-            posted,
-            imageInAlbum,
-            isProccesing,
-            currentImage
+        let { showAlbumDetailDrawer, currentAlbum, profile } = this.props
+        let { 
+            tabIndex, isLoading, albumDetail, albumName, posted, imageInAlbum, isProccesing, currentImage
         } = this.state
 
         return (
             <div>
-                <Drawer anchor="bottom" className="album-detail-drawer" open={showAlbumDetailDrawer} onClose={() => this.props.toggleAlbumDetailDrawer(false)}>
+                <Drawer anchor="bottom" className="album-detail-drawer fit-popup" open={showAlbumDetailDrawer} onClose={() => this.props.toggleAlbumDetailDrawer(false)}>
                     <div className="drawer-detail">
                         <div className="drawer-header">
                             <div className="direction" onClick={() => this.props.toggleAlbumDetailDrawer(false)}>
@@ -601,86 +590,86 @@ class Index extends React.Component {
                         </div>
                         <div className="filter"></div>
                         {
-                            albumDetail ? 
-                            <div 
-                            className="drawer-content" id="album-content"
-                            onScroll={() => this.onScroll(tabIndex)}>
-                                <div className="album-background">
-                                    <div style={{ background: "url(" + albumDetail.topimgname + ")" }}></div>
-                                </div>
-                                <div className="title-album">
-                                    <label>{albumDetail.albumname}</label>
-                                    <pre style={{ display: "inherit", width: "fit-content", margin: "0px auto" }}>{albumDetail.albumdescription}</pre>
-                                    <p>{albumDetail.albumfortext}</p>
-                                </div>
-                                {
-                                    albumDetail.userid == profile.id ? <div className="add-to-album" onClick={() => this.postImage(albumDetail)}>
-                                        <Avatar aria-label="recipe" className="avatar">
-                                            <div className="img" style={{ background: `url("${profile.avatar}")` }} />
-                                        </Avatar>
-                                        <span>Thêm vào album này...</span>
-                                    </div> : ""
-                                }
-                                <div className="detail">
-                                    <AppBar position="static" color="default" className="custom-tab-1">
-                                        <Tabs
-                                            value={tabIndex}
-                                            onChange={(e, value) => this.setState({ tabIndex: value })}
-                                            indicatorColor="primary"
-                                            textColor="primary"
-                                            variant="fullWidth"
-                                            aria-label="full width tabs example"
-                                            className="tab-header"
+                            albumDetail ?
+                                <div
+                                    className="drawer-content" id="album-content"
+                                    onScroll={() => this.onScroll(tabIndex)}>
+                                    <div className="album-background">
+                                        <div style={{ background: "url(" + albumDetail.topimgname + ")" }}></div>
+                                    </div>
+                                    <div className="title-album">
+                                        <label>{albumDetail.albumname}</label>
+                                        <pre style={{ display: "inherit", width: "fit-content", margin: "0px auto" }}>{albumDetail.albumdescription}</pre>
+                                        <p>{albumDetail.albumfortext}</p>
+                                    </div>
+                                    {
+                                        albumDetail.userid == profile.id ? <div className="add-to-album" onClick={() => this.postImage(albumDetail)}>
+                                            <Avatar aria-label="recipe" className="avatar">
+                                                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
+                                            </Avatar>
+                                            <span>Thêm vào album này...</span>
+                                        </div> : ""
+                                    }
+                                    <div className="detail">
+                                        <AppBar position="static" color="default" className="custom-tab-1">
+                                            <Tabs
+                                                value={tabIndex}
+                                                onChange={(e, value) => this.setState({ tabIndex: value })}
+                                                indicatorColor="primary"
+                                                textColor="primary"
+                                                variant="fullWidth"
+                                                aria-label="full width tabs example"
+                                                className="tab-header"
+                                            >
+                                                <Tab label={<i className="fas fa-th-large"></i>} {...a11yProps(0)} className="tab-item" />
+                                                <Tab label={<i className="fas fa-stream"></i>} {...a11yProps(1)} className="tab-item" />
+                                            </Tabs>
+                                        </AppBar>
+                                        <SwipeableViews
+                                            index={tabIndex}
+                                            onChangeIndex={(value) => this.setState({ tabIndex: value })}
+                                            className="tab-content"
                                         >
-                                            <Tab label={<i className="fas fa-th-large"></i>} {...a11yProps(0)} className="tab-item" />
-                                            <Tab label={<i className="fas fa-stream"></i>} {...a11yProps(1)} className="tab-item" />
-                                        </Tabs>
-                                    </AppBar>
-                                    <SwipeableViews
-                                        index={tabIndex}
-                                        onChangeIndex={(value) => this.setState({ tabIndex: value })}
-                                        className="tab-content"
-                                    >
-                                        <TabPanel value={tabIndex} index={0} className="content-box">
-                                            <div className="image-posted image-box">
-                                                <ul className="image-list">
-                                                    {
-                                                        imageInAlbum.map((item, index) => <li onClick={() => {
-                                                            this.props.setMediaToViewer(imageInAlbum)
-                                                            this.props.toggleMediaViewerDrawer(true, {
-                                                                actions: profile && albumDetail && albumDetail.userid == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
-                                                                showInfo: true,
-                                                                activeIndex: index
-                                                            })
-                                                        }} >
-                                                            <div style={{ background: "url(" + item.name + ")" }} key={index}></div>
-                                                        </li>)
-                                                    }
-                                                </ul>
-                                                {
-                                                    isLoading == true && tabIndex == 0 ? <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div> : ""
-                                                }
-                                            </div>
-                                        </TabPanel>
-                                        <TabPanel value={tabIndex} index={1} className="content-box">
-                                            <div className="album-posted">
-                                                {
-                                                    posted && posted.length > 0 ? <ul>
+                                            <TabPanel value={tabIndex} index={0} className="content-box">
+                                                <div className="image-posted image-box">
+                                                    <ul className="image-list">
                                                         {
-                                                            posted.map((post, index) => <li key={index}>
-                                                                <Post data={{ ...post, albumid: albumDetail.albumid }} history={this.props.history} />
+                                                            imageInAlbum.map((item, index) => <li onClick={() => {
+                                                                this.props.setMediaToViewer(imageInAlbum)
+                                                                this.props.toggleMediaViewerDrawer(true, {
+                                                                    actions: profile && albumDetail && albumDetail.userid == profile.id ? mediaRootActions(this) : mediaGuestActions(this),
+                                                                    showInfo: true,
+                                                                    activeIndex: index
+                                                                })
+                                                            }} >
+                                                                <div style={{ background: "url(" + item.name + ")" }} key={index}></div>
                                                             </li>)
                                                         }
-                                                    </ul> : ""
-                                                }
-                                                {
-                                                    isLoading == true && tabIndex == 1 ? <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div> : ""
-                                                }
-                                            </div>
-                                        </TabPanel>
-                                    </SwipeableViews>
-                                </div>
-                            </div> : ""
+                                                    </ul>
+                                                    {
+                                                        isLoading == true && tabIndex == 0 ? <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div> : ""
+                                                    }
+                                                </div>
+                                            </TabPanel>
+                                            <TabPanel value={tabIndex} index={1} className="content-box">
+                                                <div className="album-posted">
+                                                    {
+                                                        posted && posted.length > 0 ? <ul>
+                                                            {
+                                                                posted.map((post, index) => <li key={index}>
+                                                                    <Post data={{ ...post, albumid: albumDetail.albumid }} history={this.props.history} />
+                                                                </li>)
+                                                            }
+                                                        </ul> : ""
+                                                    }
+                                                    {
+                                                        isLoading == true && tabIndex == 1 ? <div style={{ width: "100%", height: "50px" }}><Loader type="small" width={30} height={30} /></div> : ""
+                                                    }
+                                                </div>
+                                            </TabPanel>
+                                        </SwipeableViews>
+                                    </div>
+                                </div> : ""
                         }
                     </div>
 
@@ -821,7 +810,7 @@ const renderUpdateAlbumDrawer = (component) => {
     } = component.state
 
     return (
-        <Drawer anchor="bottom" className="create-album-drawer" open={showUpdateAlbumDrawer} onClose={() => component.handleCloseUpdateDrawer()}>
+        <Drawer anchor="bottom" className="create-album-drawer fit-popup" open={showUpdateAlbumDrawer} onClose={() => component.handleCloseUpdateDrawer()}>
             <div className="drawer-detail">
                 <div className="drawer-header">
                     <div className="direction" onClick={() => component.handleCloseUpdateDrawer()}>
@@ -1072,7 +1061,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
                     </div>
                     <div className="filter">
                     </div>
-                    <div className="content-form" style={{ overflow: "auto"}}>
+                    <div className="content-form" style={{ overflow: "auto" }}>
                         <div className="post-content">
                             <MultiInput
                                 disabledInput={true}
