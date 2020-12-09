@@ -123,6 +123,7 @@
 @media screen and (min-width: 400px){
   .fit-popup-main{
     >div:last-child{
+      overflow-x: hidden;
       div{
         background: #fff !important;
         max-width: 600px;
@@ -135,6 +136,7 @@
           .bt-cancel{
             position: initial;
             margin-top: 50px;
+            width: 60% !important;
           }
         }
       }

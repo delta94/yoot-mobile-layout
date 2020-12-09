@@ -88,6 +88,7 @@ class Index extends React.Component {
       numOfFollowed: 0,
       numOfFollowing: 0,
       numOfFriend: 0,
+      isDestop: false
     };
     this.getFollowed = this.getFollowed.bind(this);
     this.getFollowing = this.getFollowing.bind(this);
@@ -529,16 +530,12 @@ class Index extends React.Component {
       this.getPosted(userDetail.friendid, 0);
       this.getNumOfFriend(userDetail.friendid);
     }
+    if (window.innerWidth > 400) {
+      this.setState({ isDestop: true })
+    }
   }
   render() {
-    let {
-      openVideoDrawer,
-      userDetail,
-      friends,
-      showFriendDrawer,
-      openMediaDrawer,
-      numOfFriend,
-    } = this.state;
+    let { openVideoDrawer, userDetail, showFriendDrawer, openMediaDrawer, numOfFriend,isDestop } = this.state;
 
     let { onClose, userPosteds } = this.props;
 
@@ -546,378 +543,385 @@ class Index extends React.Component {
     if (userDetail) {
       posteds = userPosteds[userDetail.id];
     }
+    let friends=[]
+    if(isDestop){
+      friends = this.state.friends.slice(0,8)
+    } else{
+      friends = this.state.friends.slice(0,6)
+    }
 
-    return (
-      <div className="wrapper" style={{background:"#f2f3f7"}}>
-      <div className="drawer-detail">
-        <div className="drawer-header">
-          <div
-            className="direction"
-            onClick={() =>
-              onClose ? onClose() : this.props.toggleUserPageDrawer(false)
-            }
-          >
-            <IconButton
-              style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }}
-            >
-              <ChevronLeftIcon
-                style={{ color: "#ff5a59", width: "25px", height: "25px" }}
-              />
-            </IconButton>
-            <label>Trang cá nhân</label>
-          </div>
-          {userDetail ? (
-            <div className="user-reward">
-              <div className="profile">
-                <span className="user-name">{userDetail.fullname}</span>
-                <span className="point">
-                  <span>
-                    Điểm YOOT:{" "}
-                    {new Intl.NumberFormat("de-DE").format(userDetail.mempoint)}
-                  </span>
-                </span>
-              </div>
-              <Avatar aria-label="recipe" className="avatar">
-                <div
-                  className="img"
-                  style={{ background: `url("${userDetail.avatar}")` }}
-                />
-              </Avatar>
-            </div>
-          ) : (
-              <ContentLoader
-                speed={2}
-                width={200}
-                height={42}
-                viewBox="0 0 200 42"
-                backgroundColor="#f3f3f3"
-                foregroundColor="#ecebeb"
-                style={{ height: "100%" }}
+      return(
+        <div className="wrapper" style={{ background: "#f2f3f7" }}>
+          <div className="drawer-detail">
+            <div className="drawer-header">
+              <div
+                className="direction"
+                onClick={() =>
+                  onClose ? onClose() : this.props.toggleUserPageDrawer(false)
+                }
               >
-                <rect x="7" y="6" rx="4" ry="4" width="140" height="8" />
-                <rect x="47" y="21" rx="8" ry="8" width="100" height="16" />
-                <rect x="160" y="0" rx="100" ry="100" width="40" height="40" />
-              </ContentLoader>
-            )}
-        </div>
-        <div className="filter"></div>
-        <div
-          // style={{ overflow: "auto" }}
-          onScroll={() => this.onScroll()}
-          id={"user-page-scrolling"}
-        >
-          {userDetail ? (
-            <div className="profile-page user-page">
-              <div className="none-bg">
-                <div
-                  className="cover-img"
-                  style={{ background: "url(" + userDetail.backgroundroot + ")" }}
-                ></div>
-                {userDetail.statusfriend == 10 ? (
-                  <IconButton
-                    style={{ background: "rgba(0,0,0,0.07)" }}
-                    onClick={() => this.setState({ showUserMenu: true })}
-                  >
-                    <MoreHorizIcon />
-                  </IconButton>
-                ) : (
-                    ""
-                  )}
+                <IconButton
+                  style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }}
+                >
+                  <ChevronLeftIcon
+                    style={{ color: "#ff5a59", width: "25px", height: "25px" }}
+                  />
+                </IconButton>
+                <label>Trang cá nhân</label>
               </div>
-              <div className="user-avatar">
-                <div
-                  className="img"
-                  style={{ background: "url(" + userDetail.avatarroot + ")" }}
-                ></div>
-              </div>
-
-              <div className="user-info">
-                <span className="user-name">{userDetail.fullname}</span>
-              </div>
-
-              <div className="react-reward">
-                <ul>
-                  <li>
-                    <ClickTooltip
-                      className="item like-count"
-                      title="Số lượt thích"
-                      placement="top-start"
-                    >
+              {userDetail ? (
+                <div className="user-reward">
+                  <div className="profile">
+                    <span className="user-name">{userDetail.fullname}</span>
+                    <span className="point">
                       <span>
-                        <img src={like}></img>
+                        Điểm YOOT:{" "}
+                        {new Intl.NumberFormat("de-DE").format(userDetail.mempoint)}
                       </span>
-                      <span>{userDetail.numlike}</span>
-                    </ClickTooltip>
-                  </li>
-                  <li>
-                    <ClickTooltip
-                      className="item follow-count"
-                      title="Số người theo dõi"
-                      placement="top"
-                    >
-                      <span>
-                        <img src={follower}></img>
-                      </span>
-                      <span>{userDetail.numfollow}</span>
-                    </ClickTooltip>
-                  </li>
-                  <li>
-                    <ClickTooltip
-                      className="item post-count"
-                      title="Số bài đăng"
-                      placement="top-end"
-                    >
-                      <span>
-                        <img src={donePractice}></img>
-                      </span>
-                      <span>{userDetail.numpost}</span>
-                    </ClickTooltip>
-                  </li>
-                </ul>
-              </div>
-
-              {userDetail.statusfriend != 10 ? (
-                <div className="friend-actions">
-                  {userDetail.statusfriend == 0 ||
-                    userDetail.statusfriend == 5 ? (
-                      <Button
-                        className="bt-submit"
-                        onClick={() => this.addFriend(userDetail.id)}
-                      >
-                        Kết bạn
-                      </Button>
-                    ) : (
-                      ""
-                    )}
-                  {userDetail.statusfriend == 1 ? (
-                    <Button
-                      className="bt-submit"
-                      onClick={() => this.addFriend(userDetail.id)}
-                    >
-                      Huỷ
-                    </Button>
-                  ) : (
-                      ""
-                    )}
-                  {userDetail.ismefollow == 0 ? (
-                    <Button
-                      className="bt-cancel"
-                      onClick={() => this.folowFriend(userDetail.id)}
-                    >
-                      Theo dõi
-                    </Button>
-                  ) : (
-                      ""
-                    )}
-                  {userDetail.ismefollow == 1 ? (
-                    <Button
-                      className="bt-cancel"
-                      onClick={() =>
-                        this.setState({
-                          okCallback: () => this.unFolowFriend(userDetail.id),
-                          confirmTitle: "",
-                          confirmMessage:
-                            "Bạn có chắc chắn muốn bỏ theo dõi người này không?",
-                          showConfim: true,
-                        })
-                      }
-                    >
-                      Bỏ theo dõi
-                    </Button>
-                  ) : (
-                      ""
-                    )}
-                  <IconButton
-                    className="bt-more"
-                    style={{ background: "rgba(0,0,0,0.07)" }}
-                    onClick={() => this.setState({ showUserMenu: true })}
-                  >
-                    <MoreHorizIcon />
-                  </IconButton>
+                    </span>
+                  </div>
+                  <Avatar aria-label="recipe" className="avatar">
+                    <div
+                      className="img"
+                      style={{ background: `url("${userDetail.avatar}")` }}
+                    />
+                  </Avatar>
                 </div>
               ) : (
-                  ""
+                  <ContentLoader
+                    speed={2}
+                    width={200}
+                    height={42}
+                    viewBox="0 0 200 42"
+                    backgroundColor="#f3f3f3"
+                    foregroundColor="#ecebeb"
+                    style={{ height: "100%" }}
+                  >
+                    <rect x="7" y="6" rx="4" ry="4" width="140" height="8" />
+                    <rect x="47" y="21" rx="8" ry="8" width="100" height="16" />
+                    <rect x="160" y="0" rx="100" ry="100" width="40" height="40" />
+                  </ContentLoader>
                 )}
-
-              <div className="user-profile">
-                <ul>
-                  {userDetail.userExperience &&
-                    userDetail.userExperience.length > 0 ? (
-                      <li>
-                        <img src={job} />
-                        <span className="title">
-                          Từng làm <b>{userDetail.userExperience[0].title}</b> tại{" "}
-                          <b>{userDetail.userExperience[0].companyname}</b>
-                        </span>
-                      </li>
-                    ) : (
-                      ""
-                    )}
-                  {userDetail.userStudyGraduation &&
-                    userDetail.userStudyGraduation.length > 0 ? (
-                      <li>
-                        <img src={education} />
-                        <span className="title">
-                          Từng học{" "}
-                          <b>{userDetail.userStudyGraduation[0].specialized}</b>{" "}
-                        tại{" "}
-                          <b>{userDetail.userStudyGraduation[0].schoolname}</b>
-                        </span>
-                      </li>
-                    ) : (
-                      ""
-                    )}
-                  {/* BINH: add info address */}
-                  {userDetail && userDetail.address && (
-                    <li>
-                      <img src={address} />
-                      <span className="title">
-                        Sống tại <b>{userDetail.address}</b>
-                      </span>
-                    </li>
-                  )}
-                  {userDetail.birthday ? (
-                    <li>
-                      <img src={birthday} />
-                      <span className="title">
-                        Ngày sinh <b>{userDetail.birthday}</b>
-                      </span>
-                    </li>
-                  ) : (
-                      ""
-                    )}
-                  {userDetail.gendertext ? (
-                    <li>
-                      <img src={sex} />
-                      <span className="title">
-                        Giới tính <b>{userDetail.gendertext}</b>
-                      </span>
-                    </li>
-                  ) : (
-                      ""
-                    )}
-                </ul>
-                <span
-                  className="view-detail-link"
-                  onClick={() => this.setState({ showUserDetail: true })}
-                >
-                  {">>> Xem thêm thông tin của"} {userDetail.fullname}
-                </span>
-              </div>
-
-              <div className="friend-reward">
-                <label>Bạn bè</label>
-                <span>{numOfFriend} người bạn</span>
-
-                <div className="friend-list">
-                  {friends.length > 0 &&
-                    friends.slice(0, 6).map((item, index) => (
-                      <div
-                        key={index}
-                        className="friend-item"
-                        onClick={() => {
-                          this.setState({
-                            showUserPage: true,
-                            currentUserDetail: item,
-                          });
-                        }}
-                      >
-                        <div className="avatar">
-                          <div
-                            className="image"
-                            style={{
-                              background: "url(" + item.friendavatar + ")",
-                            }}
-                          ></div>
-                        </div>
-                        <span className="name">{item.friendname}</span>
-                        {item.numfriendwith > 0 ? (
-                          <span className="mutual-friend-count">
-                            {item.numfriendwith} bạn chung
-                          </span>
-                        ) : (
-                            ""
-                          )}
-                      </div>
-                    ))}
-                </div>
-                <Button
-                  className="bt-submit"
-                  style={{ marginTop: "10px" }}
-                  onClick={() => this.setState({ showFriendDrawer: true })}
-                >
-                  Xem tất cả bạn bè
-                </Button>
-              </div>
-
-              <div className="quit-post-bt">
-                <ul>
-                  <li onClick={() => this.setState({ openMediaDrawer: true })}>
-                    <img src={uploadImage}></img>
-                    <span>Ảnh</span>
-                  </li>
-                  <li onClick={() => this.setState({ openVideoDrawer: true })}>
-                    <img src={uploadVideo}></img>
-                    <span>Video</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="posted">
-                {posteds && posteds.length > 0 ? (
-                  <ul>
-                    {posteds.map((post, index) => (
-                      <li key={index}>
-                        <Post
-                          data={post}
-                          history={this.props.history}
-                          userId={userDetail.id}
-                          containerRef={document.getElementById(
-                            "user-page-scrolling"
-                          )}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                    ""
-                  )}
-              </div>
-
-              <Friends
-                open={showFriendDrawer}
-                userDetail={userDetail}
-                onClose={() => this.setState({ showFriendDrawer: false })}
-              />
-              {renderUserMenuDrawer(this)}
-              {renderMediaDrawer(this)}
-              {renderUserPageDrawer(this)}
-              {renderConfirmDrawer(this)}
-              {renderUserDetailDrawer(this)}
-              {renderFolowRewardDrawer(this)}
-              <Medias
-                open={openMediaDrawer}
-                onClose={() => this.setState({ openMediaDrawer: false })}
-                currentUser={userDetail}
-              />
-              <Videos
-                open={openVideoDrawer}
-                onClose={() => this.setState({ openVideoDrawer: false })}
-                currentUser={userDetail}
-              />
             </div>
-          ) : (
-              <Loader type={"small"} width={30} height={30} />
-            )}
-          {/* {
+            <div className="filter"></div>
+            <div
+              // style={{ overflow: "auto" }}
+              onScroll={() => this.onScroll()}
+              id={"user-page-scrolling"}
+            >
+              {userDetail ? (
+                <div className="profile-page user-page">
+                  <div className="none-bg">
+                    <div
+                      className="cover-img"
+                      style={{ background: "url(" + userDetail.backgroundroot + ")" }}
+                    ></div>
+                    {userDetail.statusfriend == 10 ? (
+                      <IconButton
+                        style={{ background: "rgba(0,0,0,0.07)" }}
+                        onClick={() => this.setState({ showUserMenu: true })}
+                      >
+                        <MoreHorizIcon />
+                      </IconButton>
+                    ) : (
+                        ""
+                      )}
+                  </div>
+                  <div className="user-avatar">
+                    <div
+                      className="img"
+                      style={{ background: "url(" + userDetail.avatarroot + ")" }}
+                    ></div>
+                  </div>
+
+                  <div className="user-info">
+                    <span className="user-name">{userDetail.fullname}</span>
+                  </div>
+
+                  <div className="react-reward">
+                    <ul>
+                      <li>
+                        <ClickTooltip
+                          className="item like-count"
+                          title="Số lượt thích"
+                          placement="top-start"
+                        >
+                          <span>
+                            <img src={like}></img>
+                          </span>
+                          <span>{userDetail.numlike}</span>
+                        </ClickTooltip>
+                      </li>
+                      <li>
+                        <ClickTooltip
+                          className="item follow-count"
+                          title="Số người theo dõi"
+                          placement="top"
+                        >
+                          <span>
+                            <img src={follower}></img>
+                          </span>
+                          <span>{userDetail.numfollow}</span>
+                        </ClickTooltip>
+                      </li>
+                      <li>
+                        <ClickTooltip
+                          className="item post-count"
+                          title="Số bài đăng"
+                          placement="top-end"
+                        >
+                          <span>
+                            <img src={donePractice}></img>
+                          </span>
+                          <span>{userDetail.numpost}</span>
+                        </ClickTooltip>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {userDetail.statusfriend != 10 ? (
+                    <div className="friend-actions">
+                      {userDetail.statusfriend == 0 ||
+                        userDetail.statusfriend == 5 ? (
+                          <Button
+                            className="bt-submit"
+                            onClick={() => this.addFriend(userDetail.id)}
+                          >
+                            Kết bạn
+                          </Button>
+                        ) : (
+                          ""
+                        )}
+                      {userDetail.statusfriend == 1 ? (
+                        <Button
+                          className="bt-submit"
+                          onClick={() => this.addFriend(userDetail.id)}
+                        >
+                          Huỷ
+                        </Button>
+                      ) : (
+                          ""
+                        )}
+                      {userDetail.ismefollow == 0 ? (
+                        <Button
+                          className="bt-cancel"
+                          onClick={() => this.folowFriend(userDetail.id)}
+                        >
+                          Theo dõi
+                        </Button>
+                      ) : (
+                          ""
+                        )}
+                      {userDetail.ismefollow == 1 ? (
+                        <Button
+                          className="bt-cancel"
+                          onClick={() =>
+                            this.setState({
+                              okCallback: () => this.unFolowFriend(userDetail.id),
+                              confirmTitle: "",
+                              confirmMessage:
+                                "Bạn có chắc chắn muốn bỏ theo dõi người này không?",
+                              showConfim: true,
+                            })
+                          }
+                        >
+                          Bỏ theo dõi
+                        </Button>
+                      ) : (
+                          ""
+                        )}
+                      <IconButton
+                        className="bt-more"
+                        style={{ background: "rgba(0,0,0,0.07)" }}
+                        onClick={() => this.setState({ showUserMenu: true })}
+                      >
+                        <MoreHorizIcon />
+                      </IconButton>
+                    </div>
+                  ) : (
+                      ""
+                    )}
+
+                  <div className="user-profile">
+                    <ul>
+                      {userDetail.userExperience &&
+                        userDetail.userExperience.length > 0 ? (
+                          <li>
+                            <img src={job} />
+                            <span className="title">
+                              Từng làm <b>{userDetail.userExperience[0].title}</b> tại{" "}
+                              <b>{userDetail.userExperience[0].companyname}</b>
+                            </span>
+                          </li>
+                        ) : (
+                          ""
+                        )}
+                      {userDetail.userStudyGraduation &&
+                        userDetail.userStudyGraduation.length > 0 ? (
+                          <li>
+                            <img src={education} />
+                            <span className="title">
+                              Từng học{" "}
+                              <b>{userDetail.userStudyGraduation[0].specialized}</b>{" "}
+                        tại{" "}
+                              <b>{userDetail.userStudyGraduation[0].schoolname}</b>
+                            </span>
+                          </li>
+                        ) : (
+                          ""
+                        )}
+                      {/* BINH: add info address */}
+                      {userDetail && userDetail.address && (
+                        <li>
+                          <img src={address} />
+                          <span className="title">
+                            Sống tại <b>{userDetail.address}</b>
+                          </span>
+                        </li>
+                      )}
+                      {userDetail.birthday ? (
+                        <li>
+                          <img src={birthday} />
+                          <span className="title">
+                            Ngày sinh <b>{userDetail.birthday}</b>
+                          </span>
+                        </li>
+                      ) : (
+                          ""
+                        )}
+                      {userDetail.gendertext ? (
+                        <li>
+                          <img src={sex} />
+                          <span className="title">
+                            Giới tính <b>{userDetail.gendertext}</b>
+                          </span>
+                        </li>
+                      ) : (
+                          ""
+                        )}
+                    </ul>
+                    <span
+                      className="view-detail-link"
+                      onClick={() => this.setState({ showUserDetail: true })}
+                    >
+                      {">>> Xem thêm thông tin của"} {userDetail.fullname}
+                    </span>
+                  </div>
+
+                  <div className="friend-reward">
+                    <label>Bạn bè</label>
+                    <span>{numOfFriend} người bạn</span>
+
+                    <div className="friend-list">
+                      {friends.length > 0 &&
+                        friends.map((item, index) => (
+                          <div
+                            key={index}
+                            className="friend-item"
+                            onClick={() => {
+                              this.setState({
+                                showUserPage: true,
+                                currentUserDetail: item,
+                              });
+                            }}
+                          >
+                            <div className="avatar">
+                              <div
+                                className="image"
+                                style={{
+                                  background: "url(" + item.friendavatar + ")",
+                                }}
+                              ></div>
+                            </div>
+                            <span className="name">{item.friendname}</span>
+                            {item.numfriendwith > 0 ? (
+                              <span className="mutual-friend-count">
+                                {item.numfriendwith} bạn chung
+                              </span>
+                            ) : (
+                                ""
+                              )}
+                          </div>
+                        ))}
+                    </div>
+                    <Button
+                      className="bt-submit"
+                      style={{ marginTop: "10px" }}
+                      onClick={() => this.setState({ showFriendDrawer: true })}
+                    >
+                      Xem tất cả bạn bè
+                </Button>
+                  </div>
+
+                  <div className="quit-post-bt">
+                    <ul>
+                      <li onClick={() => this.setState({ openMediaDrawer: true })}>
+                        <img src={uploadImage}></img>
+                        <span>Ảnh</span>
+                      </li>
+                      <li onClick={() => this.setState({ openVideoDrawer: true })}>
+                        <img src={uploadVideo}></img>
+                        <span>Video</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="posted">
+                    {posteds && posteds.length > 0 ? (
+                      <ul>
+                        {posteds.map((post, index) => (
+                          <li key={index}>
+                            <Post
+                              data={post}
+                              history={this.props.history}
+                              userId={userDetail.id}
+                              containerRef={document.getElementById(
+                                "user-page-scrolling"
+                              )}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                        ""
+                      )}
+                  </div>
+
+                  <Friends
+                    open={showFriendDrawer}
+                    userDetail={userDetail}
+                    component={this}
+                    onClose={() => this.setState({ showFriendDrawer: false })}
+                  />
+                  {renderUserMenuDrawer(this)}
+                  {renderMediaDrawer(this)}
+                  {renderUserPageDrawer(this)}
+                  {renderConfirmDrawer(this)}
+                  {renderUserDetailDrawer(this)}
+                  {renderFolowRewardDrawer(this)}
+                  <Medias
+                    open={openMediaDrawer}
+                    onClose={() => this.setState({ openMediaDrawer: false })}
+                    currentUser={userDetail}
+                  />
+                  <Videos
+                    open={openVideoDrawer}
+                    onClose={() => this.setState({ openVideoDrawer: false })}
+                    currentUser={userDetail}
+                  />
+                </div>
+              ) : (
+                  <Loader type={"small"} width={30} height={30} />
+                )}
+              {/* {
 
             posteds && posteds.length > 0 && posteds.map((post, index) =>
               <Post data={post} key={index} history={this.props.history} containerRef={document.getElementById("user-page-scrolling")} />
             )
           } */}
+            </div>
+          </div>
         </div>
-      </div>
-      </div>
-    );
+      );
   }
 }
 
@@ -1102,7 +1106,7 @@ const renderMediaDrawer = (component) => {
   ];
   return (
     <Drawer
-    className="fit-popup"
+      className="fit-popup"
       anchor="bottom"
       open={openMediaDrawer}
       onClose={() => component.setState({ openMediaDrawer: false })}
@@ -1150,7 +1154,7 @@ const renderMediaDrawer = (component) => {
           </div>
           <div
             className="content-form"
-            style={{ overflow: "auto"}}
+            style={{ overflow: "auto" }}
           >
             <SwipeableViews
               index={mediaTabIndex}

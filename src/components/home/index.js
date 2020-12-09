@@ -1,12 +1,8 @@
 import React from "react";
 import './style.scss'
 import {
-  addHeaderContent,
-  addFooterContent,
-  toggleHeader,
-  toggleFooter,
-  toggleUserPageDrawer,
-  toggleGroupDetailDrawer
+  addHeaderContent, addFooterContent, toggleHeader,
+  toggleFooter, toggleUserPageDrawer, toggleGroupDetailDrawer
 } from '../../actions/app'
 import {
   setCurrenUserDetail,
@@ -14,10 +10,7 @@ import {
 import {
   setCurrentGroup
 } from '../../actions/group'
-import {
-  joinGroup,
-  acceptGroup
-} from '../../actions/group'
+import { joinGroup, acceptGroup } from '../../actions/group'
 import { connect } from 'react-redux'
 import { StickyContainer, Sticky } from 'react-sticky';
 import {
@@ -27,16 +20,8 @@ import {
 } from '../../constants/appSettings'
 import Slider from "react-slick";
 import {
-  AppBar,
-  Tabs,
-  Tab,
-  Avatar,
-  Button,
-  FormControlLabel,
-  Checkbox,
-  Drawer,
-  IconButton,
-  Badge
+  AppBar, Tabs, Tab, Avatar, Button, FormControlLabel,
+  Checkbox, Drawer, IconButton, Badge
 } from '@material-ui/core'
 import {
   ChevronLeft as ChevronLeftIcon
@@ -210,12 +195,11 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
-    window.scrollTo(0, 0);
     document.addEventListener("scroll", () => {
       let element = $("html")
       if ((element.scrollTop() + window.innerHeight + 1) >= element[0].scrollHeight) {
         let { groupCurrentPage, tabIndex, userCurrenntPage, isLoadMoreGroup, isEndOfGroupList, isEndOfUserList } = this.state
-        
+
         if (isLoadMoreGroup === false && isEndOfUserList === false) {
           if (tabIndex === 0) {
             this.setState({
@@ -237,7 +221,7 @@ class Index extends React.Component {
   }
   componentWillMount() {
     let { groupCurrentPage, userCurrenntPage } = this.state
-    
+
     this.getBanner()
     this.getTopUser(userCurrenntPage)
     this.getTopGroup(groupCurrentPage)
@@ -269,7 +253,6 @@ class Index extends React.Component {
                   <div>
                     <ul>
                       <li onClick={() => this.props.history.push("/community")}>
-
                         {
                           woldNotiUnreadCount > 0 ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
                             <img src={community}></img>

@@ -37,34 +37,17 @@ import {
    Close as CloseIcon
 } from '@material-ui/icons'
 import {
-   togglePostDrawer,
-   toggleMediaViewerDrawer,
-   setMediaToViewer,
-   toggleUserDetail,
-   toggleUserPageDrawer,
-   toggleReportComment,
-   toggleGroupDetailDrawer,
-   toggleSharePost
+   togglePostDrawer, toggleMediaViewerDrawer, setMediaToViewer, toggleUserDetail,
+   toggleUserPageDrawer, toggleReportComment, toggleGroupDetailDrawer, toggleSharePost
 } from '../../actions/app'
 import {
    setCurrenUserDetail
 } from '../../actions/user'
 import {
-   updatePosted,
-   likePosted,
-   dislikePosted,
-   likeImage,
-   dislikeImage,
-   setCurrentPosted,
-   deletePostSuccess,
-   changeCommentCountForPost,
-   updateCommentPosted
+   updatePosted, likePosted, dislikePosted, likeImage, dislikeImage,
+   setCurrentPosted, deletePostSuccess, changeCommentCountForPost, updateCommentPosted
 } from '../../actions/posted'
-import {
-   setComment,
-   commentSuccess,
-   replySuccess
-} from '../../actions/comment'
+import { setComment, commentSuccess, replySuccess } from '../../actions/comment'
 import { Player, ControlBar, BigPlayButton } from 'video-react';
 import { Privacies, ReactSelectorIcon, backgroundList } from '../../constants/constants'
 import FacebookSelector from '../common/facebook-selector'
@@ -343,16 +326,8 @@ class Index extends React.Component {
    }
 
    handleComment() {
-      let {
-         commentContent,
-         mentionSelected,
-         hashtagSelected,
-         imageSelected,
-         replyFor
-      } = this.state
-      let {
-         data
-      } = this.props
+      let { commentContent, mentionSelected, hashtagSelected, imageSelected, replyFor } = this.state
+      let { data } = this.props
       let formData = new FormData
 
       formData.append("content", commentContent)
@@ -412,18 +387,8 @@ class Index extends React.Component {
    }
 
    componentDidMount() {
-      let {
-         data
-      } = this.props
-      if (data) {
-         this.getComment(0, data.nfid)
-      }
-   }
-
-   componentWillReceiveProps(nextProps) {
-      if (Object.entries(nextProps.data ? nextProps.data : {}).toString() != Object.entries(this.props.data ? this.props.data : {}).toString()) {
-         this.getComment(0, nextProps.data.nfid)
-      }
+      let { data } = this.props
+      if (data) { this.getComment(0, data.nfid) }
    }
    handlePostAuth(newsFeedShareRoot, profile) {
       const { statuspost, postforid, iduserpost } = newsFeedShareRoot
@@ -730,7 +695,20 @@ class Index extends React.Component {
                                                       </Avatar>
                                                    }
                                                    title={<span className="poster-name">
-                                                      <span className="name">{data.newsFeedShareRoot.nameuserpost}</span>
+                                                      <span 
+                                                      onClick={() => {
+                                                         if (data.newsFeedShareRoot.iduserpost == profile.id) {
+                                                           this.props.history.push("/profile");
+                                                         } else {
+                                                           this.props.setCurrenUserDetail({
+                                                             ...data,
+                                                             friendid: data.newsFeedShareRoot.iduserpost,
+                                                           });
+                                                           this.props.toggleUserPageDrawer(true);
+                                                         }
+                                                       }}
+                                                      className="name"
+                                                      >{data.newsFeedShareRoot.nameuserpost}</span>
                                                       {
                                                          data.newsFeedShareRoot.kindpost == 4 ? <span>{data.newsFeedShareRoot.titlepost.replace("{usernamesend}", " ").replace("{namealbum}", data.albumname)}</span> : ""
                                                       }
@@ -940,7 +918,7 @@ class Index extends React.Component {
                         {
                            daskMode ? "" : (data.numcomment > 0 ? <Collapse in={true} timeout="auto" unmountOnExit className={"comment-container"}>
                               <CardContent className={"card-container"}>
-                                 <ul className="comment-list" onClick={() => this.setState({ showCommentDrawer: true, currentPost: data })}>
+                                 <ul className="comment-list comment-page " onClick={() => this.setState({ showCommentDrawer: true, currentPost: data })}>
                                     {
                                        comments.map((comment, index) => <Comment
                                           key={index}
@@ -948,6 +926,7 @@ class Index extends React.Component {
                                           hideReactions={false}
                                           onReply={comment => this.setState({ replyFor: comment })}
                                           posted={data}
+                                          history={this.props.history}
                                        />)
                                     }
                                  </ul>

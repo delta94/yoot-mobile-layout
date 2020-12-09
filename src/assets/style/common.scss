@@ -236,7 +236,7 @@ input{
   opacity: 0.4 !important;
 }
 input[type="date"]:not(.has-value){
-    color: #fff
+    // color: #fff
 }
 input[type="date"]:not(.has-value):before{
   color: #000 !important;

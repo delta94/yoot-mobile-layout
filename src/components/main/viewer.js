@@ -706,8 +706,7 @@ class Index extends React.Component {
       if (!activeItem) {
          activeItem = mediaToView && mediaViewerFeature && mediaViewerFeature.activeIndex >= 0 ? mediaToView[mediaViewerFeature.activeIndex] : null
       }
-      console.log('props',this.props)
-      console.log('state',this.state)
+
       return (
          <div>
             <Drawer anchor="bottom" className="custom-viewer-drawer" open={showMediaViewerDrawer} onClose={() => this.props.toggleMediaViewerDrawer(false)}>

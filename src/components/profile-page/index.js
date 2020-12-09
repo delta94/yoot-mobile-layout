@@ -1819,7 +1819,7 @@ const renderBlockFriendDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          style={{ overflowY: "auto", maxWidth: "600px" }}
+          style={{ overflowY: "auto", overflowX:"hidden", maxWidth: "600px" }}
           id="friend-blocked"
           onScroll={() => component.onBlockedScroll()}
         >
@@ -2381,7 +2381,6 @@ const renderCropperDrawer = (component) => {
 const renderUpdateBackgroundReviewDrawer = (component) => {
   let { openUploadBackgroundReview, postContent,backgroundSrc, isReviewMode, isProccessing, backgroundToUpload } = component.state;
   let { profile } = component.props;
-  console.log(component.state)
   return (
     <Drawer
       anchor="bottom"

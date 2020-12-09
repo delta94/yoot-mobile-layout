@@ -584,9 +584,9 @@ class Index extends React.Component {
                                 </IconButton>
                                 <label>Album</label>
                             </div>
-                            <IconButton className="color-gray" onClick={() => this.setState({ showUpdateAlbumDrawer: true })}>
+                            {albumDetail && albumDetail.userid === profile.id &&<IconButton className="color-gray" onClick={() => this.setState({ showUpdateAlbumDrawer: true })}>
                                 <MoreHorizIcon />
-                            </IconButton>
+                            </IconButton>}
                         </div>
                         <div className="filter"></div>
                         {
@@ -878,7 +878,7 @@ const renderAlbumPrivacyMenuDrawer = (component) => {
     } = component.state
     let privacyOptions = objToArray(Privacies)
     return (
-        <Drawer anchor="bottom" className="img-select-option" open={showAlbumPrivacySelectOption} onClose={() => component.setState({ showAlbumPrivacySelectOption: false })}>
+        <Drawer anchor="bottom" className="img-select-option fit-popup-1" open={showAlbumPrivacySelectOption} onClose={() => component.setState({ showAlbumPrivacySelectOption: false })}>
             <div className="option-header">
                 <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showAlbumPrivacySelectOption: false })}>
                     <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />

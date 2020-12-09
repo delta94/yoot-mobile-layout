@@ -290,11 +290,9 @@ class Index extends React.Component {
     let element = $("#search-groups-box");
     let { groupsCurrentPage, isLoadMoreGroup, isEndOfGroupList } = this.state;
     if (element)
-      if (
-        element.scrollTop() + element.innerHeight() >=
-        element[0].scrollHeight
-      ) {
+      if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
         if (isLoadMoreGroup == false && isEndOfGroupList == false) {
+          console.log('next page')
           this.setState(
             {
               groupsCurrentPage: groupsCurrentPage + 1,
@@ -451,19 +449,12 @@ class Index extends React.Component {
 
   groupScroll(groupTabIndex) {
     let element = $("#group-list");
-    let {
-      isLoadMoreJoinedGroups,
-      isEndOfJoinedGroup,
-      joinedGroupsCurrentPage,
-      isLoadMoreMyGroups,
-      isEndOfMyGroup,
-      myGroupsCurrentPage,
+    let { isLoadMoreJoinedGroups, isEndOfJoinedGroup, joinedGroupsCurrentPage, isLoadMoreMyGroups,
+      isEndOfMyGroup, myGroupsCurrentPage,
     } = this.state;
     if (element)
-      if (
-        element.scrollTop() + element.innerHeight() >=
-        element[0].scrollHeight
-      ) {
+      if (element.scrollTop() + element.innerHeight() + 1 >= element[0].scrollHeight) {
+        console.log('next page')
         if (groupTabIndex == 0) {
           if (isLoadMoreJoinedGroups == false && isEndOfJoinedGroup == false) {
             this.setState(
@@ -505,6 +496,7 @@ class Index extends React.Component {
 
       if (!allGroupPosteds || allGroupPosteds.length == 0) return;
       if (element.scrollTop() + window.innerHeight >= element[0].scrollHeight) {
+        console.log('next page')
         if (isLoadMore == false && isEndOfPosteds == false) {
           this.setState(
             {
@@ -626,7 +618,7 @@ class Index extends React.Component {
           </div>
         </StickyContainer>
         <div className="fix-footer">
-        {renderFooter(this)}
+          {renderFooter(this)}
         </div>
         {renderSearchGroupDrawer(this)}
         {renderJoinGroupConfirm(this)}
@@ -698,7 +690,7 @@ const renderHeader = (component) => {
 };
 
 const renderFooter = (component) => {
-  let { woldNotiUnreadCount,notiIsChecked } = component.props;
+  let { woldNotiUnreadCount, notiIsChecked } = component.props;
   return (
     <div className="app-footer">
       <ul>
@@ -740,12 +732,7 @@ const renderFooter = (component) => {
 };
 
 const renderSearchGroupDrawer = (component) => {
-  let {
-    showSearchGroupDrawer,
-    searchKey,
-    groups,
-    isLoadMoreGroup,
-  } = component.state;
+  let { showSearchGroupDrawer, searchKey, groups, isLoadMoreGroup, } = component.state;
 
 
   return (
@@ -755,7 +742,7 @@ const renderSearchGroupDrawer = (component) => {
       open={showSearchGroupDrawer}
       onClose={() => component.setState({ showSearchGroupDrawer: false })}
     >
-      <div className="drawer-detail fit-desktop" style={{overflow: "auto"}}>
+      <div className="drawer-detail fit-desktop" style={{ overflow: "auto" }}>
         <div className="drawer-header">
           <div
             className="direction"
@@ -796,7 +783,7 @@ const renderSearchGroupDrawer = (component) => {
         <div
           className="drawer-content"
           id="search-groups-box"
-          style={{ overflow: "auto"}}
+          style={{ overflow: "auto" }}
           onScroll={() => component.onSearchGroupScroll()}
         >
           <div className="my-group-list">
@@ -817,7 +804,7 @@ const renderSearchGroupDrawer = (component) => {
                   <Avatar className="avatar">
                     <div
                       className="img"
-                      style={{ background: group.thumbnail ? `url("${group.thumbnail}")`:`url("${noImageGroup}")` }}
+                      style={{ background: group.thumbnail ? `url("${group.thumbnail}")` : `url("${noImageGroup}")` }}
                     />
                   </Avatar>
                   <div className="group-info">
@@ -1146,17 +1133,12 @@ const renderCreateGroupDrawer = (component) => {
 };
 
 const renderGroupListDrawer = (component) => {
-  let {
-    showGroupDrawer,
-    joinedGroups,
-    myGroups,
-    joinedGroupsTotal,
-  } = component.props;
+  let { showGroupDrawer, joinedGroups, myGroups, joinedGroupsTotal, } = component.props;
   let { groupTabIndex } = component.state;
 
   return (
-    <Drawer anchor="bottom" className="group-drawer" open={showGroupDrawer}>
-      <div className="drawer-detail fit-desktop">
+    <Drawer anchor="bottom" className="group-drawer fix-scroll" open={showGroupDrawer}>
+      <div className="drawer-detail fit-desktop " id="group-list" onScroll={() => component.groupScroll(groupTabIndex)}>
         <div className="drawer-header">
           <div
             className="direction"
@@ -1231,9 +1213,8 @@ const renderGroupListDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          id="group-list"
-          style={{ overflow: "auto"}}
-          onScroll={() => component.groupScroll(groupTabIndex)}
+          style={{ overflow: "auto" }}
+
         >
           <SwipeableViews
             index={groupTabIndex}
@@ -1454,7 +1435,7 @@ const renderGroupInviteDrawer = (component) => {
                   <Avatar className="avatar">
                     <div
                       className="img"
-                      style={{ background: group.thumbnail ? `url("${group.thumbnail}")`:`url("${noImageGroup}")` }}
+                      style={{ background: group.thumbnail ? `url("${group.thumbnail}")` : `url("${noImageGroup}")` }}
                     />
                   </Avatar>
                   <div className="group-info">

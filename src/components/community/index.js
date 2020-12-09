@@ -382,7 +382,8 @@ class Index extends React.Component {
       } = this.props
 
       if (!allPosteds || allPosteds.length == 0) return
-      if (element.scrollTop() + window.innerHeight >= element[0].scrollHeight) {
+      if (element.scrollTop() + window.innerHeight + 1 >= element[0].scrollHeight) {
+        console.log('next page')
         if (isLoadMore == false && isEndOfPosteds == false) {
           this.setState({
             postedsCurrentPage: postedsCurrentPage + 1,
@@ -403,7 +404,6 @@ class Index extends React.Component {
       profile,
       allPosteds
     } = this.props
-
 
     return (
       <div className="community-page" >

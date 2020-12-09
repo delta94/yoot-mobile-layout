@@ -239,6 +239,7 @@ export class Loader extends React.Component {
                         plugins={plugins}
                         ref={(element) => { this.editor = element; }}
                         placeholder={placeholder}
+                        spellCheck={false}
                     />
                 </div>
                 : <div onClick={this.focus} className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
@@ -249,6 +250,7 @@ export class Loader extends React.Component {
                         ref={(element) => { this.editor = element; }}
                         placeholder={placeholder}
                         customStyleMap={styleMap}
+                        spellCheck={false}
                     />
                     <div className="mention-box">
                         <MentionSuggestions

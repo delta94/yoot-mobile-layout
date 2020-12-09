@@ -465,7 +465,7 @@ const renderFriendActionsDrawer = (component) => {
         showFriendActionsDrawer
     } = component.state
     return (
-        <Drawer anchor="bottom" className="friend-actions-drawer" open={showFriendActionsDrawer} onClose={() => component.setState({ showFriendActionsDrawer: false })}>
+        <Drawer anchor="bottom" className="friend-actions-drawer fit-popup-1" open={showFriendActionsDrawer} onClose={() => component.setState({ showFriendActionsDrawer: false })}>
             {
                 currentFriend ? 
                 <div className="drawer-content">

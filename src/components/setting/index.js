@@ -1267,7 +1267,7 @@ const renderBlockFriendDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          style={{ overflowY: "auto", maxWidth: "600px" }}
+          style={{ overflowY: "auto", overflowX:"hidden", maxWidth: "600px" }}
           id="friend-blocked"
           onScroll={() => component.onBlockedScroll()}
         >

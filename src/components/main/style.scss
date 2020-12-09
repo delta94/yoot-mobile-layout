@@ -1503,6 +1503,9 @@ body{
       width: unset !important;
     }
   }
+  .career-guidance-page{
+    height: unset;
+  }
   .re-action{
     li{
       div{
@@ -1521,6 +1524,14 @@ body{
   .tab-header{
     button{
       min-width: unset !important;
+    }
+  }
+  .sign-in-form{
+    min-height: unset;
+  }
+  .taged-friend{
+    .tag-item{
+      cursor: pointer;
     }
   }
 }

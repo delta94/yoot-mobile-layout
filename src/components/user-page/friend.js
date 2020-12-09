@@ -405,23 +405,17 @@ class Index extends React.Component {
     }
 
     render() {
-        let {
-            friendTabIndex,
-            suggestFriends,
-            isLoadMore,
-            friendsWithFriends,
-            allUsers,
-            friendsWithFriendCount,
-            allUserCount
-        } = this.state
-        let {
-            userDetail,
-            open
-        } = this.props
+        let { friendTabIndex, suggestFriends, isLoadMore, friendsWithFriends,
+            allUsers, friendsWithFriendCount, allUserCount } = this.state
+        let { userDetail, open, component } = this.props
 
         return (
             userDetail ? <div className="friend-page" >
-                <Drawer anchor="bottom" className="friend-drawer find-friends fit-popup" open={open} onClose={() => this.onCloseDrawer()}>
+                <Drawer
+                    anchor="bottom"
+                    className="friend-drawer find-friends fit-popup"
+                    open={open}
+                    onClose={() => this.onCloseDrawer()}>
                     <div className="drawer-detail">
                         <div className="drawer-header">
                             <div className="direction" onClick={() => this.onCloseDrawer()}>
@@ -485,19 +479,23 @@ class Index extends React.Component {
                                             suggestFriends && suggestFriends.length > 0 ? <ul>
                                                 {
                                                     suggestFriends.map((item, index) => <li key={index} className="friend-layout" >
-                                                        <div onClick={() => {
-                                                            this.props.setCurrenUserDetail(item)
-                                                            this.props.toggleUserPageDrawer(true)
-                                                        }}>
+                                                        <div
+                                                            onClick={() => component.setState({
+                                                                showUserPage: true,
+                                                                currentUserDetail: item,
+                                                            })}
+                                                        >
                                                             <Avatar aria-label="recipe" className="avatar">
                                                                 <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                             </Avatar>
                                                         </div>
                                                         <div className="info-action">
-                                                            <label onClick={() => {
-                                                                this.props.setCurrenUserDetail(item)
-                                                                this.props.toggleUserPageDrawer(true)
-                                                            }}>{item.friendname}</label>
+                                                            <label
+                                                                onClick={() => component.setState({
+                                                                    showUserPage: true,
+                                                                    currentUserDetail: item,
+                                                                })}
+                                                            >{item.friendname}</label>
                                                             <div className="action">
                                                                 <Button className="bt-submit" onClick={() => this.addFriend(item.friendid)}>Kết bạn</Button>
                                                                 <Button className="bt-cancel" onClick={() => this.removeSuggest(item.friendid)}>Gỡ bỏ</Button>
@@ -518,11 +516,21 @@ class Index extends React.Component {
                                         <ul>
                                             {
                                                 friendsWithFriends.map((item, index) => <li key={index} className="friend-layout">
-                                                    <div className="friend-info" >
-                                                        <Avatar aria-label="recipe" className="avatar">
+                                                    <div className="friend-info">
+                                                        <Avatar
+                                                            onClick={() => component.setState({
+                                                                showUserPage: true,
+                                                                currentUserDetail: item,
+                                                            })}
+                                                            aria-label="recipe" className="avatar">
                                                             <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                         </Avatar>
-                                                        <label>
+                                                        <label
+                                                            onClick={() => component.setState({
+                                                                showUserPage: true,
+                                                                currentUserDetail: item,
+                                                            })}
+                                                        >
                                                             <span className="name">{item.friendname}</span>
                                                             {
                                                                 item.numfriendwith > 0 ? <span className="with-friend">{item.numfriendwith} bạn chung</span> : ""
@@ -553,10 +561,20 @@ class Index extends React.Component {
                                             {
                                                 allUsers.map((item, index) => <li key={index} className="friend-layout">
                                                     <div className="friend-info" >
-                                                        <Avatar aria-label="recipe" className="avatar">
+                                                        <Avatar
+                                                        onClick={() => component.setState({
+                                                            showUserPage: true,
+                                                            currentUserDetail: item,
+                                                        })}
+                                                        aria-label="recipe" className="avatar">
                                                             <div className="img" style={{ background: `url("${item.friendavatar}")` }} />
                                                         </Avatar>
-                                                        <label>
+                                                        <label
+                                                        onClick={() => component.setState({
+                                                            showUserPage: true,
+                                                            currentUserDetail: item,
+                                                        })}
+                                                        >
                                                             <span className="name">{item.friendname}</span>
                                                             {
                                                                 item.numfriendwith > 0 ? <span className="with-friend">{item.numfriendwith} bạn chung</span> : ""
@@ -604,7 +622,7 @@ class Index extends React.Component {
                 {
                     renderFriendActionsDrawer(this)
                 }
-            </div> : ""
+            </div > : ""
         );
     }
 }
@@ -685,7 +703,7 @@ const renderFriendActionsDrawer = (component) => {
         showFriendActionsDrawer
     } = component.state
     return (
-        <Drawer anchor="bottom" className="friend-actions-drawer" open={showFriendActionsDrawer} onClose={() => component.setState({ showFriendActionsDrawer: false })}>
+        <Drawer anchor="bottom" className="friend-actions-drawer fit-popup-1" open={showFriendActionsDrawer} onClose={() => component.setState({ showFriendActionsDrawer: false })}>
             {
                 currentFriend ? <div className="drawer-content">
                     <ul>

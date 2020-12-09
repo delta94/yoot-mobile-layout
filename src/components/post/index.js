@@ -846,7 +846,6 @@ class Index extends React.Component {
   render() {
     let { anchor, showLocalMenu, openReactions, visible, isMuted, isFullScreen, isPlaying, } = this.state;
     let { profile, daskMode, data, containerRef, activePostIndex, index } = this.props;
-
     let PrivacyOptions = objToArray(Privacies);
     let GroupPrivacyOptions = objToArray(GroupPrivacies);
 
@@ -866,7 +865,6 @@ class Index extends React.Component {
         item.postid = data.newsFeedShareRoot.nfid
       })
     }
-    console.log(this.props)
     let canPlay = index <= (activePostIndex + 3) && index >= (activePostIndex - 2)
     if (!isMobile()) canPlay = true
     // let contentWidth = $(".post-box-content").innerWidth()
@@ -1382,17 +1380,18 @@ class Index extends React.Component {
                               }
                               title={
                                 <span className="poster-name">
-                                  <span className="name" onClick={() => {
-                                    if (data.newsFeedShareRoot.iduserpost == profile.id) {
-                                      this.props.history.push("/profile");
-                                    } else {
-                                      this.props.setCurrenUserDetail({
-                                        ...data,
-                                        friendid: data.newsFeedShareRoot.iduserpost,
-                                      });
-                                      this.props.toggleUserPageDrawer(true);
-                                    }
-                                  }}>
+                                  <span className="name"
+                                    onClick={() => {
+                                      if (data.newsFeedShareRoot.iduserpost == profile.id) {
+                                        this.props.history.push("/profile");
+                                      } else {
+                                        this.props.setCurrenUserDetail({
+                                          ...data,
+                                          friendid: data.newsFeedShareRoot.iduserpost,
+                                        });
+                                        this.props.toggleUserPageDrawer(true);
+                                      }
+                                    }}>
                                     {data.newsFeedShareRoot.nameuserpost}
                                   </span>
                                   {data.newsFeedShareRoot.kindpost == 4 ? (
@@ -1837,14 +1836,13 @@ class Index extends React.Component {
                           }
                           className="comment"
                         >
-                          {data.numcomment > 0
-                            ? `${data.numcomment} bình luận ` //BINH: check click bình luận
-                            : ""}
-                          {data.mediaPlays[0] && data.mediaPlays[0].numview > 0
-                            ? `${data.mediaPlays[0].numview} lượt xem `
-                            : ""}
+                          {data.numcomment > 0 && <span>{data.numcomment} bình luận&nbsp;&nbsp;&nbsp;</span>}
+
+                          {(data.mediaPlays[0] && data.mediaPlays[0].numview > 0)
+                            && <span>{data.mediaPlays[0].numview} lượt xem&nbsp;&nbsp;&nbsp;</span>
+                          }
                           {
-                            data.numshare > 0 && `${data.numshare} chia sẻ `
+                            data.numshare > 0 && <span>{data.numshare} chia sẻ&nbsp;&nbsp;&nbsp;</span>
                           }
                         </span>
                       )}
@@ -2378,7 +2376,7 @@ const renderSharePrivacyMenuDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="img-select-option"
+      className="img-select-option fit-popup-1"
       open={showSharePrivacySelectOption}
       onClose={() =>
         component.setState({ showSharePrivacySelectOption: false })

@@ -213,7 +213,7 @@
       margin-bottom: 10px;
       .grid-overlay {
         position: absolute;
-        z-index: 999;
+        z-index: 800;
         background: rgba(0, 0, 0, 0.6);
         top: 0px;
         left: 0px;
@@ -406,6 +406,13 @@
     .card-container {
       padding: 10px;
       padding-bottom: 0px;
+    }
+    ul.comment-page{
+      li{
+        >div{
+          margin-left: 20px;
+        }
+      }
     }
     ul.comment-list {
       li {

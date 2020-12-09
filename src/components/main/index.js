@@ -331,7 +331,7 @@ class Main extends React.Component {
         {renderCommentImageDrawer(this)}
         <Report history={this.props.history} />
         <Album history={this.props.history} />
-        <Share history={this.props.history}/>
+        <Share history={this.props.history} />
       </div>
 
     );
@@ -378,10 +378,7 @@ export default connect(
 
 
 const renderUserPageDrawer = (component) => {
-  let {
-    showUserPage,
-    userDetail,
-  } = component.props
+  let { showUserPage, userDetail, } = component.props
 
   return (
     <Drawer anchor="bottom" className="user-page-drawer" open={showUserPage} onClose={() => component.props.toggleUserPageDrawer(false)}>
@@ -560,7 +557,7 @@ const renderGroupPrivacyMenuDrawer = (component) => {
   } = component.state
   let groupPrivacyOptions = objToArray(GroupPrivacies)
   return (
-    <Drawer anchor="bottom" className="img-select-option" open={showGroupPrivacySelectOption} onClose={() => component.setState({ showGroupPrivacySelectOption: false })}>
+    <Drawer anchor="bottom" className="img-select-option fit-popup-1" open={showGroupPrivacySelectOption} onClose={() => component.setState({ showGroupPrivacySelectOption: false })}>
       <div className="option-header">
         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showGroupPrivacySelectOption: false })}>
           <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
@@ -595,7 +592,7 @@ const renderGroupInviteDrawer = (component) => {
           </div>
         </div>
         <div className="filter"></div>
-        <div className="drawer-content" style={{ overflow: "auto"}}>
+        <div className="drawer-content" style={{ overflow: "auto" }}>
           <div className="my-group-list">
             <ul>
               {
@@ -694,7 +691,7 @@ const renderAlbumPrivacyMenuDrawer = (component) => {
   } = component.state
   let privacyOptions = objToArray(Privacies)
   return (
-    <Drawer anchor="bottom" className="img-select-option" open={showAlbumPrivacySelectOption} onClose={() => component.setState({ showAlbumPrivacySelectOption: false })}>
+    <Drawer anchor="bottom" className="img-select-option fit-popup-1" open={showAlbumPrivacySelectOption} onClose={() => component.setState({ showAlbumPrivacySelectOption: false })}>
       <div className="option-header">
         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => component.setState({ showAlbumPrivacySelectOption: false })}>
           <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
@@ -759,12 +756,13 @@ const renderCommentDrawer = (component) => {
       onClose={() => component.props.toggleCommentDrawer(false, null)}
     >
       {
-        currentPostForComment ? <CommentBox
+        currentPostForComment &&
+        <CommentBox
           data={currentPostForComment}
           userId={currentPostForComment ? currentPostForComment.iduserpost : 0}
           onClose={() => component.props.toggleCommentDrawer(false, null)}
           history={component.props.history}
-        /> : ""
+        />
       }
     </Drawer>)
 

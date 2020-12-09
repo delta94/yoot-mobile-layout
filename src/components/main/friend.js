@@ -222,20 +222,13 @@ class Index extends React.Component {
 
     handleScroll() {
         let element = $("#friend-content")
-        let {
-            isLoadMore,
-            isEndOfSuggestFriends,
-            friendTabIndex,
-            suggestFriendCurrentPage,
-            isEndOfQueues,
-            queuesCurrentPage,
-            isEndOfWaitings,
-            waitingCurrentPage,
-            friendsCurrentPage,
-            isEndOfFriends
+        let { isLoadMore, isEndOfSuggestFriends, friendTabIndex,
+            suggestFriendCurrentPage, isEndOfQueues, queuesCurrentPage,
+            isEndOfWaitings, waitingCurrentPage, friendsCurrentPage, isEndOfFriends
         } = this.state
         if (element && friendTabIndex >= 0)
-            if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
+            if (element.scrollTop() + element.innerHeight() + 1 >= element[0].scrollHeight) {
+                console.log('next page')
                 if (friendTabIndex == 0) {
                     if (isLoadMore == false && isEndOfSuggestFriends == false) {
                         this.setState({
@@ -482,26 +475,14 @@ class Index extends React.Component {
     }
 
     render() {
-        let {
-            friendTabIndex,
-            friends,
-            suggestFriends,
-            queues,
-            waitings,
-            isLoadMore,
-            queueCount,
-            friendCount,
-            waitingCount
-        } = this.state
-        let {
-            userDetail,
-            showFriendDrawer
-        } = this.props
+        let { friendTabIndex, friends, suggestFriends, queues, waitings,
+            isLoadMore, queueCount, friendCount, waitingCount } = this.state
+        let { userDetail, showFriendDrawer } = this.props
 
         return (
             userDetail ? <div className="friend-page" >
-                <Drawer anchor="bottom" className="friend-drawer fit-popup" open={showFriendDrawer} onClose={() => this.onCloseDrawer()}>
-                    <div className="drawer-detail fit-desktop">
+                <Drawer anchor="bottom" className="friend-drawer fit-popup fix-scroll" open={showFriendDrawer} onClose={() => this.onCloseDrawer()}>
+                    <div className="drawer-detail fit-desktop " id="friend-content" onScroll={()=>this.handleScroll()}>
                         <div className="drawer-header">
                             <div className="direction" onClick={() => this.onCloseDrawer()}>
                                 <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
@@ -517,7 +498,7 @@ class Index extends React.Component {
                                 placeholder="Nhập tên bạn bè để tìm kiếm"
                                 className="search-box"
                                 style={{
-                                    display:"flex",
+                                    display: "flex",
                                     maxWidth: "600px",
                                     margin: "0px 0px 10px 10px",
                                 }}
@@ -550,11 +531,11 @@ class Index extends React.Component {
                                     <Tab label="Gợi ý" {...a11yProps(0)} className="tab-item" />
                                     <Tab label="Lời mời" {...a11yProps(1)} className="tab-item" />
                                     <Tab label="Đã gửi" {...a11yProps(2)} className="tab-item" />
-                                    <Tab label="bạn bè" {...a11yProps(3)} className="tab-item" />
+                                    <Tab label="Bạn bè" {...a11yProps(3)} className="tab-item" />
                                 </Tabs>
                             </AppBar>
                         </div>
-                        <div className="content-form" style={{ overflow: "auto"}} id="friend-content" onScroll={() => this.handleScroll()}>
+                        <div className="content-form"  >
                             <SwipeableViews
                                 index={friendTabIndex}
                                 onChangeIndex={(value) => this.setState({ friendTabIndex: value })}
