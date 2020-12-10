@@ -47,9 +47,10 @@ class Index extends React.Component {
       lessions: [],
       currentLesstion: null,
       numPages: 1,
-      isDesktop:false
+      isDesktop: false
     };
     this.player = React.createRef()
+    this.ref = React.createRef()
   }
 
   goback() {
@@ -174,7 +175,6 @@ class Index extends React.Component {
       video.seek(player.currentTime + seconds)
     }
   }
-
   componentDidMount() {
     this.props.addHeaderContent(renderHeader(this))
     this.props.addFooterContent(renderFooter(this))
@@ -184,10 +184,21 @@ class Index extends React.Component {
     if (!sourceId) return
     this.getSourceDetail(sourceId)
     this.getLession(sourceId)
-    if(window.innerWidth > 400){
-      this.setState({isDesktop: true})
+    if (window.innerWidth > 400) {
+      this.setState({ isDesktop: true })
     }
   }
+
+  cancel() {
+    let presstimer = null
+    setTimeout(() => {
+      console.log('cancel')
+      this.setState({ isHide: true })
+    }, 3000);
+    clearTimeout();
+  }
+
+
   render() {
     let {
       srouceDetail,
@@ -195,11 +206,9 @@ class Index extends React.Component {
       currentLesstion,
       isPlaying,
     } = this.state
-
-
     return (
       <div className="source-item-page">
-        <StickyContainer className="container pb01"x>
+        <StickyContainer className="container pb01" x>
           <Sticky relative={this.state.isDesktop} topOffset={-60} >
             {({ style }) => (
               <div style={{ ...style, top: "60px", zIndex: 999, background: "#fff" }}>
@@ -215,7 +224,11 @@ class Index extends React.Component {
                       <span>+ {srouceDetail.totalpoint * (srouceDetail.numfinish / srouceDetail.numtotal)} <img src={Coins_Y} /></span>
                     </div>
                     {
-                      currentLesstion ? <div className="video">
+                      currentLesstion && <div className="video"
+                        onClick={() => isPlaying == true ? this.handlePauseVideo() : this.handlePlayVideo()}
+                        onTouchStart={() => this.setState({ isHide: false })}
+                        onTouchEnd={() => this.cancel()}
+                      >
                         <Player
                           ref={this.player}
                           // poster={media.thumbnailname}
@@ -223,32 +236,69 @@ class Index extends React.Component {
                           playsInline={true}
 
                         >
-                          <ControlBar autoHide={true} >
-                            <div className="custom-bt-control-bar">
-                              <IconButton onClick={() => this.handleChangeCurrentTime(-10)}><Replay10Icon /></IconButton>
-                              <IconButton onClick={() => isPlaying == true ? this.handlePauseVideo() : this.handlePlayVideo()}>
-                                {
-                                  isPlaying == true ? <PauseIcon /> : <PlayArrowIcon />
-                                }
-                              </IconButton>
-                              <IconButton onClick={() => this.handleChangeCurrentTime(10)}><Forward10Icon /></IconButton>
-                            </div>
-                            <div className="fullscreen-overlay" onClick={() => {
-                              this.handlePauseVideo()
-                              this.props.setMediaToViewer([{ ...currentLesstion, name: currentLesstion.linkvideo }])
-                              this.props.toggleMediaViewerDrawer(true, {
-                                showInfo: false,
-                                activeIndex: 0,
-                                isvideo: true,
-                                videoCurrentTime: this.player.current.getState().player.currentTime,
-                                onCloseVideo: (time) => setTimeout(() => {
-                                  this.handleChangeCurrentTime(time - this.player.current.getState().player.currentTime)
-                                }, 300)
-                              })
-                            }}></div>
+                          <ControlBar ref={this.ref} autoHide={true} >
+                            {/* {!this.state.isDesktop &&
+                              <>
+                                <div className="custom-bt-control-bar" onClick={() => isPlaying == true ? this.handlePauseVideo() : this.handlePlayVideo()}>
+                                  <IconButton onClick={(e) => { e.stopPropagation(); this.handleChangeCurrentTime(-10) }}><Replay10Icon /></IconButton>
+                                  <IconButton onClick={() => isPlaying == true ? this.handlePauseVideo() : this.handlePlayVideo()}>
+                                    {
+                                      isPlaying == true ? <PauseIcon /> : <PlayArrowIcon />
+                                    }
+                                  </IconButton>
+                                  <IconButton onClick={(e) => { e.stopPropagation(); this.handleChangeCurrentTime(10) }}><Forward10Icon /></IconButton>
+                                </div>
+                                <div className="fullscreen-overlay" onClick={() => {
+                                  this.handlePauseVideo()
+                                  this.props.setMediaToViewer([{ ...currentLesstion, name: currentLesstion.linkvideo }])
+                                  this.props.toggleMediaViewerDrawer(true, {
+                                    showInfo: false,
+                                    activeIndex: 0,
+                                    isvideo: true,
+                                    videoCurrentTime: this.player.current.getState().player.currentTime,
+                                    onCloseVideo: (time) => setTimeout(() => {
+                                      this.handleChangeCurrentTime(time - this.player.current.getState().player.currentTime)
+                                    }, 300)
+                                  })
+                                }}>
+                                </div>
+                              </>
+                            } */}
                           </ControlBar>
+
                         </Player>
-                      </div> : ""
+                        {/* {this.state.isDesktop &&
+                          <> */}
+                        <div
+                          onTouchStart={() => this.setState({ isHide: false })}
+                          onTouchEnd={() => this.cancel()}
+                          className={this.state.isHide ? "custom-bt-control-bar hide-bar" : "custom-bt-control-bar"} id="desktop-bar">
+                          <IconButton onClick={(e) => { e.stopPropagation(); this.handleChangeCurrentTime(-10) }}><Replay10Icon /></IconButton>
+                          <IconButton onClick={() => isPlaying == true ? this.handlePauseVideo() : this.handlePlayVideo()}>
+                            {
+                              isPlaying == true ? <PauseIcon /> : <PlayArrowIcon />
+                            }
+                          </IconButton>
+                          <IconButton onClick={(e) => { e.stopPropagation(); this.handleChangeCurrentTime(10) }}><Forward10Icon /></IconButton>
+                        </div>
+                        <div className="fullscreen-overlay" onClick={() => {
+                          this.handlePauseVideo()
+                          this.props.setMediaToViewer([{ ...currentLesstion, name: currentLesstion.linkvideo }])
+                          this.props.toggleMediaViewerDrawer(true, {
+                            showInfo: false,
+                            activeIndex: 0,
+                            isvideo: true,
+                            videoCurrentTime: this.player.current.getState().player.currentTime,
+                            onCloseVideo: (time) => setTimeout(() => {
+                              this.handleChangeCurrentTime(time - this.player.current.getState().player.currentTime)
+                            }, 300)
+                          })
+                        }}>
+                        </div>
+                        {/* </>
+                        } */}
+
+                      </div>
                     }
 
                     {

@@ -116,12 +116,14 @@
         .video{
             .custom-bt-control-bar{
                 position: fixed;
-                top: calc(50% - 10px);
-                width: 44%;
-                left: 28%;
+                width: 100%;
+                top: 90px;
+                left: 0;
+                bottom: 90px;
+                right: 0;
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
+                justify-content: space-around;
                 button{
                     color: #fff;
                     background: rgba(43, 51, 63, 0.7);

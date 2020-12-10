@@ -232,8 +232,8 @@ class Index extends React.Component {
   }
   render() {
     let { tabIndex, panners, topUsers, topGroups, joinGroupProccessingId, } = this.state
-    let { woldNotiUnreadCount, skillNotiUnreadCount } = this.props
-
+    let { woldNotiUnreadCount, skillNotiUnreadCount,notiIsChecked } = this.props
+    console.log(this.props)
     return (
       <div className="home-page" >
         <div className="home-slider">
@@ -254,7 +254,7 @@ class Index extends React.Component {
                     <ul>
                       <li onClick={() => this.props.history.push("/community")}>
                         {
-                          woldNotiUnreadCount > 0 ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
+                          woldNotiUnreadCount > 0 && !notiIsChecked ? <Badge badgeContent={woldNotiUnreadCount} max={99} className={"custom-badge"} >
                             <img src={community}></img>
                           </Badge> : <img src={community}></img>
                         }

@@ -779,7 +779,7 @@ const renderPostDrawer = (component) => {
             </div>
           )}
           <div
-            className="drawer-content"
+            className="drawer-content" id="new-post-drawer"
           >
             <MultiInput
               style={{

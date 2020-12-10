@@ -1,4 +1,7 @@
 .root-input{
+    div{
+        overflow-wrap:anywhere;
+    }
      position: relative;
      border: 1px solid rgba(0, 0, 0, 0.15);
      padding: 10px;
