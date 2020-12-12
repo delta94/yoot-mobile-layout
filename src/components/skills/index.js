@@ -76,7 +76,7 @@ class Index extends React.Component {
         {
           allSource && allSource.length > 0 ? <ul>
             {
-              allSource.map((source, index) => <li key={index} className="source-item" onClick={() => this.props.history.push("/skills/" + source.ID)}>
+              allSource.map((source, index) => <li key={index} className="source-item" id="source-item-desktop" onClick={() => this.props.history.push("/skills/" + source.ID)}>
                 <div style={{ background: "url(" + source.IMAGE + ")" }}>
                   <div>
                     <div className="reward">

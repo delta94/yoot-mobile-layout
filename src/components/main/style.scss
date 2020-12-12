@@ -1263,13 +1263,30 @@ body{
     padding-top: 50px !important;
   }
 }
-
-@media screen and (min-width: 400px) {
-  .source-item{
-    >div{
-      height: 20vw !important;
-    }
+.video{
+  &:hover #desktop-bar{
+    opacity: 1;
   }
+  position: relative !important;
+  #desktop-bar{
+      top: 0;
+      left: 0;
+      bottom: 0;
+      left: 0;
+      max-width: 20rem;
+      opacity: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+  }
+}
+#list-member{
+  background: #fff;
+  overflow-x: hidden !important;
+  height: calc(100% - 60px) !important;
+}
+@media screen and (min-width: 400px) {
   .drawer-content{
     li{cursor: pointer;}
   }
@@ -1309,6 +1326,10 @@ body{
     ul{
       margin-top: 0 !important;
       height: 100%;
+      width: 100%;
+      li{
+        margin: 10px;
+      }
     }
   }
   .job-reward{
@@ -1401,7 +1422,7 @@ body{
       width: 100%;
       background: #fff;
       max-width: 600px;
-      height: unset;
+      // height: unset;
     }
   }
   .drawer-form .form-content > button{
@@ -1543,29 +1564,50 @@ body{
       cursor: pointer;
     }
   }
-  .video{
-    &:hover #desktop-bar{
-      opacity: 1;
-    }
-    position: relative !important;
-    #desktop-bar{
-        top: 0;
-        left: 0;
-        bottom: 0;
-        left: 0;
-        max-width: 20rem;
-        opacity: 0;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-    }
-  }
+  
   .custom-viewer-drawer{
     .video-react-video{
       top: 50%;
       transform: translateY(-50%);
       max-height: 100vh;
     }
+  }
+  #add-school{
+    >div:last-child{
+      >div{
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .form-header,.form-content{
+        height: initial !important;
+        background: #fff;
+      }
+      .bg-overlay.full-screen{
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+    
+  }
+  .comment-info{
+    .info{
+      label{
+        cursor: pointer;
+      }
+      
+    }
+  }
+  
+}
+
+@media screen and (min-width: 600px){
+  #source-item-desktop > div{
+    height: 30vw;
+  }
+}
+@media screen and (min-width: 900px){
+  #source-item-desktop > div{
+    height: 20vw;
   }
 }

@@ -121,7 +121,8 @@ class Index extends React.Component {
                   <div className="comment-info">
                      <div className="info">
                         <label
-                           onClick={() => {
+                           onClick={(e) => {
+                              e.stopPropagation()
                               if (comment.idusercomment === profile.id) {
                                  this.props.history.push("/profile");
                                  this.props.toggleCommentDrawer(false)

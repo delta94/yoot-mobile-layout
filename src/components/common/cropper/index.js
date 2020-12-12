@@ -43,7 +43,8 @@ export class Loader extends React.Component {
         // this.setState({ crop: percentCrop });
         this.setState({ crop });
         component && component.setState({ 
-            crop: crop,
+            crop: percentCrop,
+            isChangeCrop: (percentCrop.width < 100 || percentCrop.height < 100) ? true : false
          })
     };
 

@@ -90,18 +90,8 @@ export class Index extends React.Component {
     handleUpdate() {
         let { item } = this.props
         if (!item) return
-        let {
-            schoolSelected,
-            schoolName,
-            studentID,
-            classID,
-            majors,
-            qualificationSelected,
-            graduationSelected,
-            startYear,
-            endYear,
-            isGraduted,
-            studyPrivacy
+        let { schoolSelected, schoolName, studentID, classID, majors, qualificationSelected,
+            graduationSelected, startYear, endYear, isGraduted, studyPrivacy
         } = this.state
         if (!schoolSelected) {
             showNotification("", <span className="app-noti-message">Vui lòng chọn trường.</span>, null)
@@ -131,6 +121,7 @@ export class Index extends React.Component {
         this.setState({
             isProcessing: true
         })
+        console.log(param)
         post(SOCIAL_NET_WORK_API, "User/UpdateUserStudyGraduation", param, () => {
             this.setState({ showUpdateForm: false, isProcessing: false })
             this.getProfile()
@@ -158,15 +149,12 @@ export class Index extends React.Component {
 
     getProfile() {
         get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
-            if (result.result == 1) {
+            if (result && result.result === 1) {
                 this.props.setUserProfile(result.content.user)
                 this.props.getFolowedMe(0)
                 this.props.getMeFolowing(0)
                 this.setState({ isUpdatePreccessing: false })
-            } else {
-                showNotification("", <span className="app-noti-message">{result.message}</span>, null)
-            }
-
+            } 
         })
     }
 
@@ -188,31 +176,13 @@ export class Index extends React.Component {
 
     render() {
         let {
-            showLocalMenu,
-            anchor,
-            showUpdateForm,
-            classID,
-            studentID,
-            schoolSelected,
-            majors,
-            schoolName,
-            isGraduted,
-            qualificationSelected,
-            startYear,
-            endYear,
-            studyPrivacy,
-            graduationSelected,
-            showstudyPrivacyList,
-            isProcessing
+            showLocalMenu, anchor, showUpdateForm, classID, studentID, schoolSelected, majors, schoolName, isGraduted,
+            qualificationSelected, startYear, endYear, studyPrivacy, graduationSelected, showstudyPrivacyList, isProcessing
         } = this.state
-        let {
-            item,
-            schoolOptions,
-            qualificationOptions,
-            graduationOptions
-        } = this.props
+        let { item, schoolOptions, qualificationOptions, graduationOptions } = this.props
         let PrivaciesOptions = objToArray(Privacies)
         return (
+            //update học vấn
             <li className="job school">
                 <img src={school} />
                 <div>
@@ -228,7 +198,7 @@ export class Index extends React.Component {
                     <MenuItem onClick={() => this.setState({ showLocalMenu: false, showDeleteSchoolConfirm: true })}>Xoá</MenuItem>
                 </CustomMenu>
 
-                <Drawer anchor="bottom" className="drawer-form" open={showUpdateForm} onClose={() => this.setState({ showUpdateForm: false })}>
+                <Drawer anchor="bottom" className="drawer-form" id="add-school" open={showUpdateForm} onClose={() => this.setState({ showUpdateForm: false })}>
                     <div className="form-header">
                         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => this.handleClose()}>
                             <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />

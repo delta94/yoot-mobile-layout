@@ -137,6 +137,7 @@ export class Index extends React.Component {
         }
 
         let param = {
+            id: 0,
             schoolid: schoolSelected.value,
             schoolname: schoolSelected.value != 0 ? schoolSelected.label : schoolName,
             codestudent: studentID,
@@ -153,27 +154,19 @@ export class Index extends React.Component {
         this.setState({
             isProccessing: true
         })
-        post(SOCIAL_NET_WORK_API, "User/UpdateUserStudyGraduation", param, (result) => {
-            console.log(result)
-            this.setState({ showAddForm: false, isProcessing: false })
-            this.getProfile()
-        })
-    }
 
-    getProfile() {
-        get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
-            if (result.result == 1) {
-                this.props.setUserProfile(result.content.user)
-                this.props.getFolowedMe(0)
-                this.props.getMeFolowing(0)
-                this.setState({ isProccessing: false })
-            } else {
-                showNotification("", <span className="app-noti-message">{result.message}</span>, null)
+        post(SOCIAL_NET_WORK_API, "User/UpdateUserStudyGraduation", param, (result) => {
+            if (result) {
+                if (result.result === 1) {
+                    this.props.setUserProfile(result.content.user)
+                    this.setState({ showAddForm: false, isProcessing: false })
+                } else {
+                    showNotification("", <span className="app-noti-message">{result.message}</span>, null)
+                }
             }
 
         })
     }
-
 
     handleClose() {
         let { isChange } = this.state
@@ -205,6 +198,7 @@ export class Index extends React.Component {
         schoolOptions = [{ value: 0, label: "Khác" }].concat(schoolOptions)
         let PrivaciesOptions = objToArray(Privacies)
         return (
+            //add Học Vấn
             <div className="content-box">
                 <label>
                     <img src={require('../../assets/icon/Arrow@1x.png')} style={{ width: "15px", height: "15px", margin: "0px 4px" }} />
@@ -225,7 +219,7 @@ export class Index extends React.Component {
                         />)
                     }
                 </ul>
-                <Drawer anchor="bottom" className="drawer-form" open={showAddForm} onClose={() => this.setState({ showAddForm: false })}>
+                <Drawer anchor="bottom" className="drawer-form" id="add-school" open={showAddForm} onClose={() => this.setState({ showAddForm: false })}>
                     <div className="form-header">
                         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => this.handleClose()}>
                             <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />

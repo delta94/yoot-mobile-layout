@@ -6,7 +6,7 @@ import {
   toggleMediaViewerDrawer, toggleUserPageDrawer, toggleSeachFriends, setCurrentFriendId,
 } from "../../actions/app";
 import { setMePosted, likePosted, setUserPosted } from "../../actions/posted";
-import { setUserProfile, getFolowedMe, getMeFolowing, unFollowFriend, followFriend, } from "../../actions/user";
+import { setUserProfile, getFolowedMe, getMeFolowing, unFollowFriend, followFriend } from "../../actions/user";
 import { setCurrenUserDetail } from "../../actions/user";
 import {
   PhotoCamera as PhotoCameraIcon, ChevronLeft as ChevronLeftIcon, MoreHoriz as MoreHorizIcon, PlayArrow as PlayArrowIcon,
@@ -37,7 +37,7 @@ import $ from "jquery";
 import Medias from "./medias";
 import Videos from "./videos";
 import Post from "../post";
-import { result } from "lodash";
+import { result, stubFalse } from "lodash";
 import ClickTooltip from "../common/click-tooltip";
 import { APP_SETTING } from "../../constants/localStorageKeys";
 import FolowReward from './following'
@@ -107,7 +107,8 @@ class Index extends React.Component {
       userDetailFolowTabIndex: 0,
       showUserDetail: false,
       allUsers: [],
-      isChangeCrop: false
+      isChangeCrop: false,
+      backgroundToUpload: "",
     };
   }
 
@@ -370,29 +371,80 @@ class Index extends React.Component {
         }
 
         formData.append("content", postContent ? postContent : "");
-        formData.append(
-          "avatarroot_0_" + img.width + "_" + img.height,
-          rootAvatarToUpload
-        );
+        formData.append("avatarroot_0_" + img.width + "_" + img.height, rootAvatarToUpload);
 
-        postFormData(
-          SOCIAL_NET_WORK_API,
-          "User/UpdateAvatar",
-          formData,
-          (result) => {
+        postFormData(SOCIAL_NET_WORK_API, "User/UpdateAvatar", formData, (result) => {
+          
+          console.log(result)
+          if (result && result.result === 1) {
+            console.log('res', result)
+            // that.props.updateAvatarProfile(result.content.avatar, result.content.avatarroot)
             that.getProfile();
-            that.setState({
-              openCropperDrawer: false,
-              openUploadAvatarReview: false,
-              isReviewMode: false,
-              isProccessing: false,
-            });
           }
+
+          that.setState({
+            openCropperDrawer: false,
+            openUploadAvatarReview: false,
+            isReviewMode: false,
+            isProccessing: false,
+          });
+        }
         );
       };
       img.src = fr.result;
     };
     fr.readAsDataURL(rootAvatarToUpload);
+  }
+
+  updateBackground() {
+    let { backgroundToUpload, rootBackgroundToUpload, isProccessing, postContent, } = this.state;
+
+    var fr = new FileReader();
+    let that = this;
+    if (isProccessing == true) return;
+    this.setState({
+      isProccessing: true,
+    });
+    fr.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        const formData = new FormData();
+        if (backgroundToUpload) {
+          console.log('backgroundToUpload', backgroundToUpload)
+          let backgroundFileToUpload = new File([backgroundToUpload.file], backgroundToUpload.file.name,
+            {
+              type: backgroundToUpload.file.type,
+              lastModified: new Date(),
+              part: backgroundToUpload.file.name,
+            }
+          );
+          formData.append(
+            "avatarcut_1_" + backgroundToUpload.width + "_" + backgroundToUpload.height, backgroundFileToUpload
+          );
+        } else {
+          console.log('UPDATE ROOT BACKGROUND', rootBackgroundToUpload)
+          formData.append("avatarcut_1_" + img.width + "_" + img.height, rootBackgroundToUpload);
+        }
+        formData.append("content", postContent ? postContent : "");
+        formData.append("avatarroot_0_" + img.width + "_" + img.height, rootBackgroundToUpload);
+
+        postFormData(SOCIAL_NET_WORK_API, "User/UpdateBackground", formData, (result) => {
+          if (result && result.result === 1) {
+            // that.props.updateBackGroundProfile(result.content.background, result.content.backgroundroot)
+            that.getProfile();
+          }
+          that.setState({
+            openBackgroundCropperDrawer: false,
+            openUploadBackgroundReview: false,
+            isReviewMode: false,
+            isProccessing: false,
+          });
+        }
+        );
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(rootBackgroundToUpload);
   }
 
   onSelectBackgroundFile = (files) => {
@@ -412,57 +464,7 @@ class Index extends React.Component {
     }
   };
 
-  updateBackground() {
-    let { backgroundToUpload, rootBackgroundToUpload, isProccessing, postContent, } = this.state;
 
-    var fr = new FileReader();
-    let that = this;
-    if (isProccessing == true) return;
-    this.setState({
-      isProccessing: true,
-    });
-    fr.onload = function () {
-      var img = new Image();
-      img.onload = function () {
-        const formData = new FormData();
-        if (backgroundToUpload) {
-          let backgroundFileToUpload = new File(
-            [backgroundToUpload.file],
-            backgroundToUpload.file.name,
-            {
-              type: backgroundToUpload.file.type,
-              lastModified: new Date(),
-              part: backgroundToUpload.file.name,
-            }
-          );
-          formData.append(
-            "avatarcut_1_" + backgroundToUpload.width + "_" + backgroundToUpload.height, backgroundFileToUpload
-          );
-        } else {
-          formData.append("avatarcut_1_" + img.width + "_" + img.height, rootBackgroundToUpload);
-        }
-        formData.append("content", postContent ? postContent : "");
-        formData.append("avatarroot_0_" + img.width + "_" + img.height, rootBackgroundToUpload);
-
-        postFormData(
-          SOCIAL_NET_WORK_API,
-          "User/UpdateBackground",
-          formData,
-          (result) => {
-            that.getProfile();
-            that.setState({
-              openBackgroundCropperDrawer: false,
-              openUploadBackgroundReview: false,
-              isReviewMode: false,
-              isProccessing: false,
-            });
-          }
-        );
-      };
-      img.src = fr.result;
-    };
-    fr.readAsDataURL(rootBackgroundToUpload);
-  }
 
   getProfile() {
     get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", (result) => {
@@ -606,11 +608,7 @@ class Index extends React.Component {
   }
 
   changePassword() {
-    let {
-      oldPassForChange,
-      newPassForChange,
-      confirmPassForChange,
-    } = this.state;
+    let { oldPassForChange, newPassForChange, confirmPassForChange, } = this.state;
     if (!oldPassForChange || oldPassForChange == "") {
       showNotification(
         "",
@@ -879,7 +877,7 @@ class Index extends React.Component {
         isMuteInNewfeed: appSettings.isMuteInNewfeed
       });
     }
-    this.setState({isChangeCrop: false})
+    this.setState({ isChangeCrop: false })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -895,16 +893,14 @@ class Index extends React.Component {
     )
       this.props.addFooterContent(renderFooter(this));
   }
-  componentDidUpdate(prevProps, prevState){
-    if(prevState.crop.unit==="px"){
-      console.log(prevState.crop)
-      console.log(this.state.crop)
-      console.log(this.state.isChangeCrop)
-      if((prevState.width !== this.state.width) || (prevState.height !== this.state.height)){
-        // this.setState({isChangeCrop: true})
-      }
-    }
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   console.log('prev',prevState)
+  //   if (prevState.crop !== this.state.crop) {
+  //     console.log('change')
+  //     console.log(prevState.crop)
+  //     console.log(this.state.crop)
+  //   }
+  // }
   render() {
     let {
       showUserMenu, croppedImageUrl, numOfFriend, friends, openMediaDrawer, isLoadMore, postIndexActive, openVideoDrawer
@@ -1295,7 +1291,7 @@ const mediaRootActions = (component) => ({
 
 const renderFooter = (component) => {
   let pathName = window.location.pathname;
-  let { woldNotiUnreadCount,notiIsChecked } = component.props;
+  let { woldNotiUnreadCount, notiIsChecked } = component.props;
   return pathName == "/communiti-profile" ? (
     <div className="app-footer">
       <ul>
@@ -1433,7 +1429,7 @@ const renderUpdateProfileDrawer = (component) => {
   let { profile } = component.props;
   return (
     <Drawer
-    className="fit-popup"
+      className="fit-popup"
       anchor="bottom"
       className="update-profile-form fit-popup"
       open={showUpdateProfile}
@@ -1467,7 +1463,7 @@ const renderUserHistoryDrawer = (component) => {
 
   return (
     <Drawer
-    className="fit-popup"
+      className="fit-popup"
       anchor="bottom"
       open={showUserHistory}
       onClose={() => component.props.toggleUserHistory(false)}
@@ -1819,7 +1815,7 @@ const renderBlockFriendDrawer = (component) => {
         </div>
         <div
           className="content-form"
-          style={{ overflowY: "auto", overflowX:"hidden", maxWidth: "600px" }}
+          style={{ overflowY: "auto", overflowX: "hidden", maxWidth: "600px" }}
           id="friend-blocked"
           onScroll={() => component.onBlockedScroll()}
         >
@@ -1875,7 +1871,7 @@ const renderFriendsForBlockDrawer = (component) => {
   let { showFriendsForBlockForm } = component.props;
   return (
     <Drawer
-    className="fit-popup"
+      className="fit-popup"
       anchor="bottom"
       open={showFriendsForBlockForm}
       onClose={() => component.props.toggleFriendsForBlockForm(false)}
@@ -2035,7 +2031,7 @@ const renderAllFriendsDrawer = (component) => {
           />
         </div>
         <div
-          style={{ overflow: "auto"}}
+          style={{ overflow: "auto" }}
           id="all-user-list"
           onScroll={() => component.onAllUserScroll()}
         >
@@ -2170,73 +2166,73 @@ const renderFriendActionsDrawer = (component) => {
       onClose={() => component.setState({ showFriendActionsDrawer: false })}
     >
       <div className="wrapper-action">
-      <div className="title-more-action">Tác vụ</div>
-      {currentFriend ? (
-        <div className="drawer-content">
-          <ul>
-            {currentFriend.ismefollow == 1 ? (
+        <div className="title-more-action">Tác vụ</div>
+        {currentFriend ? (
+          <div className="drawer-content">
+            <ul>
+              {currentFriend.ismefollow == 1 ? (
+                <li
+                  onClick={() =>
+                    component.setState({
+                      okCallback: () =>
+                        component.unFolowFriend(currentFriend.friendid),
+                      confirmTitle: "",
+                      confirmMessage:
+                        "Bạn có chắc muốn bỏ theo dõi người này không?",
+                      showConfim: true,
+                    })
+                  }
+                >
+                  <label>Bỏ theo dõi ( {currentFriend.friendname} )</label>
+                  <span>
+                    Không nhìn thấy các hoạt động của nhau nữa nhưng vẫn là bạn
+                    bè.
+                </span>
+                </li>
+              ) : (
+                  <li onClick={() => component.folowFriend(currentFriend.friendid)}>
+                    <label>Theo dõi ( {currentFriend.friendname} )</label>
+                    <span>Nhìn thấy các hoạt động của nhau.</span>
+                  </li>
+                )}
               <li
                 onClick={() =>
                   component.setState({
                     okCallback: () =>
-                      component.unFolowFriend(currentFriend.friendid),
+                      component.bandFriend(currentFriend.friendid),
                     confirmTitle: "",
                     confirmMessage:
-                      "Bạn có chắc muốn bỏ theo dõi người này không?",
+                      "Bạn có chắc chắn muốn chặn người này không? Bạn và người bị chặn sẽ không thể nhìn thấy nhau, đồng thời nếu đang là bạn bè, việc chặn này cũng sẽ huỷ kết bạn của nhau.",
                     showConfim: true,
                   })
                 }
               >
-                <label>Bỏ theo dõi ( {currentFriend.friendname} )</label>
-                <span>
-                  Không nhìn thấy các hoạt động của nhau nữa nhưng vẫn là bạn
-                  bè.
-                </span>
+                <label>Chặn ( {currentFriend.friendname} )</label>
+                <span>Bạn và người này sẽ không nhìn thấy nhau.</span>
               </li>
-            ) : (
-                <li onClick={() => component.folowFriend(currentFriend.friendid)}>
-                  <label>Theo dõi ( {currentFriend.friendname} )</label>
-                  <span>Nhìn thấy các hoạt động của nhau.</span>
-                </li>
-              )}
-            <li
-              onClick={() =>
-                component.setState({
-                  okCallback: () =>
-                    component.bandFriend(currentFriend.friendid),
-                  confirmTitle: "",
-                  confirmMessage:
-                    "Bạn có chắc chắn muốn chặn người này không? Bạn và người bị chặn sẽ không thể nhìn thấy nhau, đồng thời nếu đang là bạn bè, việc chặn này cũng sẽ huỷ kết bạn của nhau.",
-                  showConfim: true,
-                })
-              }
-            >
-              <label>Chặn ( {currentFriend.friendname} )</label>
-              <span>Bạn và người này sẽ không nhìn thấy nhau.</span>
-            </li>
-          </ul>
-          <div className="destroy-action">
-            <Button
-              className="btn-destroy"
-              onClick={() =>
-                component.setState({
-                  showFriendActionsDrawer: false,
-                  okCallback: () =>
-                    component.removeFriend(currentFriend.friendid),
-                  confirmTitle: "",
-                  confirmMessage: "Bạn có chắc muốn hủy kết bạn không?",
-                  showConfim: true,
-                })
-              }
-            >
-              Huỷ kết bạn
+            </ul>
+            <div className="destroy-action">
+              <Button
+                className="btn-destroy"
+                onClick={() =>
+                  component.setState({
+                    showFriendActionsDrawer: false,
+                    okCallback: () =>
+                      component.removeFriend(currentFriend.friendid),
+                    confirmTitle: "",
+                    confirmMessage: "Bạn có chắc muốn hủy kết bạn không?",
+                    showConfim: true,
+                  })
+                }
+              >
+                Huỷ kết bạn
             </Button>
+            </div>
           </div>
-        </div>
-      ) : (
-          ""
-        )}
-        </div>
+        ) : (
+            ""
+          )}
+      </div>
     </Drawer>
   );
 };
@@ -2295,7 +2291,7 @@ const renderUpdateAvatarReviewDrawer = (component) => {
           <div className="profile-page">
             <div
               className="cover-img"
-              style={{ background: "url(" + profile.avatar + ")" }}
+              style={{ background: "url(" + profile.background + ")" }}
             ></div>
             <div
               className="user-avatar"
@@ -2329,6 +2325,7 @@ const renderCropperDrawer = (component) => {
         <div className="drawer-detail">
           <div className="drawer-content" style={{ background: "#f2f3f7" }}>
             <Cropper
+              component={component}
               src={src}
               crop={crop}
               onCropped={(file) => component.setState({ croppedImage: file })}
@@ -2342,6 +2339,7 @@ const renderCropperDrawer = (component) => {
                   component.setState({
                     openCropperDrawer: false,
                     isReviewMode: false,
+                    openUploadAvatarReview: false
                   })
                 }
               >
@@ -2379,8 +2377,9 @@ const renderCropperDrawer = (component) => {
 };
 
 const renderUpdateBackgroundReviewDrawer = (component) => {
-  let { openUploadBackgroundReview, postContent,backgroundSrc, isReviewMode, isProccessing, backgroundToUpload } = component.state;
+  let { openUploadBackgroundReview, postContent, backgroundSrc, isReviewMode, isProccessing, backgroundToUpload } = component.state;
   let { profile } = component.props;
+  console.log(component.state)
   return (
     <Drawer
       anchor="bottom"
@@ -2397,7 +2396,7 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
                 : component.setState({
                   openBackgroundCropperDrawer: true,
                   isReviewMode: false,
-                  
+
                 })
             }
           >
@@ -2455,7 +2454,8 @@ const renderUpdateBackgroundReviewDrawer = (component) => {
 
 const renderBackgroundCropperDrawer = (component) => {
   let {
-    openBackgroundCropperDrawer, crop,isChangeCrop, backgroundSrc, backgroundToUpload, rootBackgroundToUpload, backgroundCroppedImage, isProccessing,
+    openBackgroundCropperDrawer, crop, isChangeCrop, backgroundSrc, backgroundToUpload, rootBackgroundToUpload,
+    backgroundCroppedImage, isProccessing,
   } = component.state;
   // component.setState({isChangeCrop:false})
   // console.log(crop.x !== 0 || crop.y !== 0||clone_crop.width !== crop.width || clone_crop.height!== crop.height)
@@ -2489,6 +2489,7 @@ const renderBackgroundCropperDrawer = (component) => {
                 onClick={() => component.setState({
                   openBackgroundCropperDrawer: false,
                   isReviewMode: false,
+                  openUploadBackgroundReview: false
                 })
                 }
               >
@@ -2569,7 +2570,7 @@ const renderUserDetailDrawer = (component) => {
             </div>
           </div>
           <div className="filter"></div>
-          <div style={{height: "100%" }}>
+          <div style={{ height: "100%" }}>
             <AppBar position="static" color="default" className={"custom-tab"}>
               <Tabs
                 value={userDetailFolowTabIndex}

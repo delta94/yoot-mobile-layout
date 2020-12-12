@@ -69,18 +69,10 @@ export class Index extends React.Component {
     }
 
     handleUpdate() {
+        let { item } = this.props
         let {
-            item
-        } = this.props
-        let {
-            companyName,
-            position,
-            description,
-            fromMonth,
-            toMonth,
-            fromYear,
-            toYear,
-            expPrivacy
+            companyName, position, description, fromMonth, toMonth,
+            fromYear, toYear, expPrivacy
         } = this.state
         if (!item) return
         let param = {
@@ -157,19 +149,8 @@ export class Index extends React.Component {
 
     render() {
         let {
-            showLocalMenu,
-            anchor,
-            showUpdateForm,
-            companyName,
-            position,
-            description,
-            fromMonth,
-            toMonth,
-            fromYear,
-            toYear,
-            isProcessing,
-            expPrivacy,
-            showExpPrivacyList,
+            showLocalMenu, anchor, showUpdateForm, companyName, position, description, fromMonth, toMonth, fromYear, toYear,
+            isProcessing, expPrivacy, showExpPrivacyList,
         } = this.state
         let {
             item
@@ -177,6 +158,7 @@ export class Index extends React.Component {
 
         let PrivaciesOptions = objToArray(Privacies)
         return (
+            //profile Kinh nghiệm làm việc update
             <li className="job">
                 <img src={job} />
                 <div>
@@ -191,7 +173,7 @@ export class Index extends React.Component {
                     <MenuItem onClick={() => this.setState({ showLocalMenu: false, showDeleteExpConfirm: true })}>Xoá</MenuItem>
                 </CustomMenu>
 
-                <Drawer anchor="bottom" className="drawer-form" open={showUpdateForm} onClose={() => this.setState({ showUpdateForm: false })}>
+                <Drawer anchor="bottom" className="drawer-form fit-popup" open={showUpdateForm} onClose={() => this.setState({ showUpdateForm: false })}>
                     <div className="form-header">
                         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => this.handleClose()}>
                             <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />

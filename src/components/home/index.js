@@ -97,35 +97,36 @@ class Index extends React.Component {
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 27
+      limit: 10
     }
     let queryParam = objToQuery(param)
-    get(SOCIAL_NET_WORK_API, "User/GetTopUsers" + queryParam, result => {
-      if (result.result === 1) {
-        let list = result.content.topUsers
-        list.map(item => item.friendid = item.userid)
-        this.setState({
-          topUsers: topUsers.concat(list),
-          isLoadMoreGroup: false
-        })
-        if (result.content.topUsers.length == 0) {
+    if (!this.state.isEndOfUserList) {
+      get(SOCIAL_NET_WORK_API, "User/GetTopUsers" + queryParam, result => {
+        if (result.result === 1) {
+          let list = result.content.topUsers
+          list.map(item => item.friendid = item.userid)
           this.setState({
-            isEndOfUserList: true
+            topUsers: topUsers.concat(list),
+            isLoadMoreGroup: false
           })
+          if (result.content.topUsers.length === 0) {
+            this.setState({
+              isEndOfUserList: true
+            })
+          }
         }
-      }
-    })
+      })
+    }
+
   }
 
   getTopGroup(currentpage) {
     if (currentpage < 0) return
-    let {
-      topGroups
-    } = this.state
+    let { topGroups } = this.state
     let param = {
       currentpage: currentpage,
       currentdate: moment(new Date).format(CurrentDate),
-      limit: 27,
+      limit: 10,
       skin: 'TopGroup'
     }
     let queryParam = objToQuery(param)
@@ -194,31 +195,7 @@ class Index extends React.Component {
     })
   }
 
-  componentDidMount() {
-    document.addEventListener("scroll", () => {
-      let element = $("html")
-      if ((element.scrollTop() + window.innerHeight + 1) >= element[0].scrollHeight) {
-        let { groupCurrentPage, tabIndex, userCurrenntPage, isLoadMoreGroup, isEndOfGroupList, isEndOfUserList } = this.state
-
-        if (isLoadMoreGroup === false && isEndOfUserList === false) {
-          if (tabIndex === 0) {
-            this.setState({
-              userCurrenntPage: userCurrenntPage + 1,
-              isLoadMoreGroup: true
-            })
-            this.getTopUser(userCurrenntPage + 1)
-          }
-          else {
-            this.setState({
-              groupCurrentPage: groupCurrentPage + 1,
-              isLoadMoreGroup: true
-            })
-            this.getTopGroup(groupCurrentPage + 1)
-          }
-        }
-      }
-    })
-  }
+  
   componentWillMount() {
     let { groupCurrentPage, userCurrenntPage } = this.state
 
@@ -232,8 +209,9 @@ class Index extends React.Component {
   }
   render() {
     let { tabIndex, panners, topUsers, topGroups, joinGroupProccessingId, } = this.state
-    let { woldNotiUnreadCount, skillNotiUnreadCount,notiIsChecked } = this.props
-    console.log(this.props)
+    let { woldNotiUnreadCount, skillNotiUnreadCount, notiIsChecked } = this.props
+    const bestTopUsers = topUsers.slice(0, 10)
+    const bestTopGroups = topGroups.slice(0, 10)
     return (
       <div className="home-page" >
         <div className="home-slider">
@@ -313,7 +291,7 @@ class Index extends React.Component {
               <TabPanel value={tabIndex} index={0} className="content-box">
                 <div className="top-members">
                   {
-                    topUsers ? topUsers.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} style={{ position: 'relative' }}>
+                    bestTopUsers ? bestTopUsers.map((item, key) => <div key={key} className={"member " + ("color-" + key % 3)} style={{ position: 'relative' }}>
                       <div className="overlay" onClick={() => {
                         this.props.setCurrenUserDetail(item)
                         this.props.toggleUserPageDrawer(true)
@@ -360,7 +338,7 @@ class Index extends React.Component {
               <TabPanel value={tabIndex} index={1} >
                 <div className="top-groups">
                   {
-                    topGroups ? topGroups.map((item, key) =>
+                    bestTopGroups ? bestTopGroups.map((item, key) =>
                       <div
                         className="group-item"
                         key={key}
@@ -571,21 +549,32 @@ const renderJoinGroupConfirm = (component) => {
 
 const renderTopRankDrawer = (component) => {
 
-  let {
-    rankTabIndex,
-    panners,
-    topUsers,
-    topGroups,
-    joinGroupProccessingId,
-    showRankDrawer,
-    isLoadMoreGroup
-  } = component.state
-
-
-
+  let { rankTabIndex, panners, topUsers, topGroups, joinGroupProccessingId, showRankDrawer, isLoadMoreGroup,groupCurrentPage,
+    tabIndex, userCurrenntPage, isEndOfGroupList, isEndOfUserList } = component.state
+  let scrollRef
+  const onScroll = () => {
+    if (scrollRef) {
+       const { scrollTop, scrollHeight, clientHeight } = scrollRef;
+       if (scrollTop + clientHeight + 1 >= scrollHeight) {
+          console.log('next page')
+          if (rankTabIndex === 0) {
+            component.setState({
+              userCurrenntPage: userCurrenntPage + 1,
+            })
+            component.getTopUser(userCurrenntPage + 1)
+          }
+          else {
+            component.setState({
+              groupCurrentPage: groupCurrentPage + 1,
+            })
+            component.getTopGroup(groupCurrentPage + 1)
+          }
+       }
+    }
+ };
   return (
-    <Drawer anchor="bottom" className="top-rank-drawer" open={showRankDrawer} onClose={() => component.setState({ showRankDrawer: false })}>
-      <div className="drawer-detail">
+    <Drawer anchor="bottom" className="top-rank-drawer fit-popup fix-scroll" open={showRankDrawer} onClose={() => component.setState({ showRankDrawer: false })}>
+      <div className="drawer-detail" onScroll={onScroll} ref={(node)=>scrollRef = node}>
         <div className="drawer-header">
           <div className="direction" onClick={() => component.setState({
             showRankDrawer: false,

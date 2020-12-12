@@ -66,7 +66,8 @@ export class Index extends React.Component {
 
     getProfile() {
         get(SOCIAL_NET_WORK_API, "User/Index?forFriendId=0", result => {
-            if (result.result == 1) {
+            if (result && result.result == 1) {
+                console.log(result.content.user)
                 this.props.setUserProfile(result.content.user)
                 this.props.getFolowedMe(0)
                 this.props.getMeFolowing(0)
@@ -100,6 +101,7 @@ export class Index extends React.Component {
         let PrivaciesOptions = objToArray(Privacies)
 
         return (
+            //Profile page Kinh nghiệm làm việc Add
             <div className="content-box">
                 <label>
                     <img src={require('../../assets/icon/Arrow@1x.png')} style={{ width: "15px", height: "15px", margin: "0px 4px" }} />
@@ -114,7 +116,7 @@ export class Index extends React.Component {
                         data.userExperience.map((item, index) => <Job key={index} item={item} />)
                     }
                 </ul>
-                <Drawer anchor="bottom" className="drawer-form" open={showAddForm} onClose={() => this.setState({ showAddForm: false })}>
+                <Drawer anchor="bottom" className="drawer-form fit-popup" open={showAddForm} onClose={() => this.setState({ showAddForm: false })}>
                     <div className="form-header">
                         <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} onClick={() => this.handleClose()}>
                             <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />

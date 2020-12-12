@@ -822,23 +822,23 @@ class Index extends React.Component {
   }
 
   handlePostAuth(newsFeedShareRoot, profile) {
-    const { statuspost, postforid, iduserpost } = newsFeedShareRoot
-    const { foloweds, id } = profile
-    if (iduserpost === id) {
-      return true
-    }
-    else if (statuspost === 3) {
-      return false
-    }
-    else if (postforid === 4) {
-      return false
-    }
-    else if (postforid === 3 && foloweds.length <= 0) {
-      return false
-    }
-    else if (postforid === 3 && foloweds.some(item => item.status !== 10)) {
-      return false
-    } else return true
+      const { statuspost, postforid, iduserpost } = newsFeedShareRoot
+      const { foloweds, id } = profile
+      if (iduserpost === id) {
+        return true
+      }
+      else if (statuspost === 3) {
+        return false
+      }
+      else if (postforid === 4) {
+        return false
+      }
+      else if (postforid === 3 && (foloweds &&foloweds.length <= 0)) {
+        return false
+      }
+      else if (postforid === 3 && (foloweds && foloweds.some(item => item.status !== 10))) {
+        return false
+      } else return true
   }
 
 

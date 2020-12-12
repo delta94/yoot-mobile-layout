@@ -281,36 +281,11 @@ class Index extends React.Component {
     })
   }
 
-  onScroll() {
-    let element = $("#all-user-in-group")
-    let {
-      isLoadMoreUser,
-      isEndOfUserList,
-      userCurrenntPage,
-      groupDetail
-    } = this.state
-    if (element)
-      if (element.scrollTop() + element.innerHeight() >= element[0].scrollHeight) {
-        if (isLoadMoreUser == false && isEndOfUserList == false) {
-          this.setState({
-            userCurrenntPage: userCurrenntPage + 1,
-            isLoadMoreUser: true
-          }, () => {
-            this.getUserInGroup(userCurrenntPage + 1, groupDetail)
-          })
-        }
 
-      }
-  }
 
   addFriend(friendId) {
-    let {
-      userList,
-      managerList,
-    } = this.state
-    let param = {
-      friendid: friendId
-    }
+    let { userList, managerList, } = this.state
+    let param = { friendid: friendId }
     get(SOCIAL_NET_WORK_API, "Friends/AddOrDeleteInviateFriends" + objToQuery(param), (result) => {
       if (result && result.result == 1) {
         let userIndex = userList.findIndex(item => item.memberid == friendId)
@@ -552,9 +527,7 @@ class Index extends React.Component {
   }
 
   componentDidMount() {
-    let {
-      currentGroup
-    } = this.props
+    let { currentGroup } = this.props
     if (currentGroup) {
       this.handleGetGroupDetail(this.props.currentGroup)
       this.handleGetPost(0, this.props.currentGroup)
@@ -564,239 +537,231 @@ class Index extends React.Component {
   }
 
   render() {
-    let {
-      groupDetail,
-      activeMenuIndex,
-      contentHeight,
-      showMoreDescription
-    } = this.state
-    let {
-      profile,
-      currentGroupPosteds
-    } = this.props
+    let { groupDetail, activeMenuIndex, contentHeight, showMoreDescription } = this.state
+    let { profile, currentGroupPosteds } = this.props
 
 
     let groupPrivacyOptions = objToArray(GroupPrivacies)
 
 
     return (
-      <div className="wrapper" style={{background:"#f2f3f7"}}>
-      <div className="drawer-detail">
-        <div className="drawer-header">
-          <div className="direction" onClick={() => {
-            this.props.toggleGroupDetailDrawer(false)
-            this.props.setCurrentGroup(null)
-            this.props.setCurrentGroupPosted(null)
-          }}>
-            <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
-              <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-            </IconButton>
-            <label>Hội nhóm</label>
-          </div>
-          {
-            profile ? <div className="user-reward">
-              <div className="profile">
-                <span className="user-name">{profile.fullname}</span>
-                <span className="point">
-                  <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
-                </span>
+      <div className="wrapper" style={{ background: "#f2f3f7" }}>
+        <div className="drawer-detail">
+          <div className="drawer-header">
+            <div className="direction" onClick={() => {
+              this.props.toggleGroupDetailDrawer(false)
+              this.props.setCurrentGroup(null)
+              this.props.setCurrentGroupPosted(null)
+            }}>
+              <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
+                <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
+              </IconButton>
+              <label>Hội nhóm</label>
+            </div>
+            {
+              profile ? <div className="user-reward">
+                <div className="profile">
+                  <span className="user-name">{profile.fullname}</span>
+                  <span className="point">
+                    <span>Điểm YOOT: {new Intl.NumberFormat('de-DE').format(profile.mempoint)}</span>
+                  </span>
 
-              </div>
-              <Avatar aria-label="recipe" className="avatar">
-                <div className="img" style={{ background: `url("${profile.avatar}")` }} />
-              </Avatar>
-            </div> : <ContentLoader
-              speed={2}
-              width={200}
-              height={42}
-              viewBox="0 0 200 42"
-              backgroundColor="#f3f3f3"
-              foregroundColor="#ecebeb"
-              style={{ height: "100%" }}
-            >
-                <rect x="7" y="6" rx="4" ry="4" width="140" height="8" />
-                <rect x="47" y="21" rx="8" ry="8" width="100" height="16" />
-                <rect x="160" y="0" rx="100" ry="100" width="40" height="40" />
-              </ContentLoader>
-          }
-        </div>
-        <div className="filter">
-        </div>
-        <div className="drawer-content" id="group-page-scrolling" >
-          {
-            groupDetail ? <div className="group-detail-content">
-              <div className="group-background" style={{ background: `url("${groupDetail.backgroundimage}")` }}>
-                <IconButton onClick={() => this.setState({ showGroupMenu: true })}><MoreHorizIcon /></IconButton>
-                <div className="actions">
-                  {
-                    groupDetail.status == 0 ? <Button className="bt-submit" onClick={() => this.props.joinGroup(groupDetail.groupid, () => {
-                      this.handleGetGroupDetail(groupDetail)
-                    })}>Tham gia</Button> : ""
-                  }
-                  {
-                    groupDetail.status == 2 ? <Button className="bt-submit" onClick={() => this.props.acceptGroup(groupDetail.groupid, () => {
-                      this.handleGetGroupDetail(groupDetail)
-                    }, null, groupDetail)}>Chấp nhận</Button> : ""
-                  }
-                  {
-                    groupDetail.status == 2 ? <Button className="bt-cancel" onClick={() => this.props.joinGroup(groupDetail.groupid, () => {
-                      this.props.toggleGroupDetailDrawer(false)
-                      this.props.setCurrentGroup(null)
-                    })}>Từ chối</Button> : ""
-                  }
                 </div>
-              </div>
-              <div className="group-name">
-                <span>{groupDetail.groupname.toLowerCase()}</span>
-              </div>
-              <div className="group-info">
-                <div className="group-menu">
-                  <ul>
-                    <li><Button className={activeMenuIndex == 0 ? "bt-submit" : ""} onClick={() => this.onClickMenu(0)}>Mô tả</Button></li>
-                    <li><Button className={activeMenuIndex == 1 ? "bt-submit" : ""} onClick={() => this.onClickMenu(1)}>Nội quy</Button></li>
-                    <li><Button className={activeMenuIndex == 2 ? "bt-submit" : ""} onClick={() => this.onClickMenu(2)}>Ban quản trị</Button></li>
-                  </ul>
-                </div>
-                <AnimateHeight
-                  duration={300}
-                  height={contentHeight > 0 ? contentHeight : $(`#info-content-${0}`).height()}
-                  className={"animation-height"}
-                >
-                  {
-                    activeMenuIndex === 0 ? <div id="info-content-0">
-                      <ShowMoreText
-                        lines={5}
-                        more={<span><span>&#8811;</span> Xem thêm</span>}
-                        less={<span><span>&#8811;</span> Rút gọn</span>}
-                        className='content-css'
-                        anchorClass='toggle-button blued'
-                        expanded={showMoreDescription}
-                        onClick={() => {
-                          this.onClickMenu(0)
-                        }}
-                      >
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: groupDetail.description
-                              .replace(/\n/g, ` <br />`)
-                          }}
-                        ></div>
-                      </ShowMoreText>
-                      <div className="group-reward">
-                        <ul>
-                          <li><FiberManualRecordIcon /> {groupPrivacyOptions.find(item => item.code == groupDetail.typegroup).label}</li>
-                          <li><FiberManualRecordIcon /> {groupDetail.nummember} thành viên</li>
-                          <li><FiberManualRecordIcon /> {groupDetail.numpost} bài đăng</li>
-                          <li><FiberManualRecordIcon /> Đã tạo ngày {moment(groupDetail.createdate).format("DD/MM/YYYY")}</li>
-                        </ul>
-                      </div>
-                    </div> : ""
-                  }
-                  {
-                    activeMenuIndex === 1 ? <div id="info-content-1" style={{ minHeight: "10px" }}>
-                      {
-                        groupDetail.groupUserPolicies[0] ? <pre>
-                          {
-                            groupDetail.groupUserPolicies[0].description
-                          }
-                        </pre> : ""
-                      }
-                    </div> : ""
-                  }
-                  {
-                    activeMenuIndex === 2 ? <div id="info-content-2">
-                      <div className="manager-list">
-                        {
-                          groupDetail.managers.length > 0 ? <ul>
-                            {
-                              groupDetail.managers.map((item, index) => <li key={index}>
-                                <Avatar className="avatar">
-                                  <div className="img" style={{ background: `url("${item.avatar}")` }} />
-                                </Avatar>
-                                <div className="name">
-                                  <span>{item.nameuser}</span>
-                                  {
-                                    item.isadmin == 2 ? <p className="blued">Người sáng lập</p> : <p>Quản trị viên</p>
-                                  }
-                                </div>
-                              </li>)
-                            }
-                          </ul> : ""
-                        }
-                      </div>
-                    </div> : ""
-                  }
-                </AnimateHeight>
-              </div>
-              {
-                groupDetail.status != 0 && groupDetail.status != 2 ? <div className="actions">
-                  <ul>
-                    <li>
-                      <Button onClick={() => {
-                        this.props.setCurrentGroup(groupDetail)
-                        this.props.togglePostDrawer(true, true)
-                      }}>
-                        <img src={createPost} />
-                        <span>Tạo bài đăng</span>
-                      </Button>
-                    </li>
-                    <li>
-                      <Button onClick={() => this.setState({ showAllFriendsDrawer: true }, () => this.getFriends(0))}>
-                        <img src={NewGr} />
-                        <span>Mời bạn bè</span>
-                      </Button>
-                    </li>
-                    <li>
-                      <Button onClick={() => this.setState({ showMemberDrawer: true })}>
-                        <img src={Members} />
-                        <span>DS thành viên</span>
-                      </Button>
-                    </li>
-                  </ul>
-                </div> : ""
-              }
-              <div className="posted">
-                {
-                  currentGroupPosteds && currentGroupPosteds.length > 0 ? <ul>
+                <Avatar aria-label="recipe" className="avatar">
+                  <div className="img" style={{ background: `url("${profile.avatar}")` }} />
+                </Avatar>
+              </div> : <ContentLoader
+                speed={2}
+                width={200}
+                height={42}
+                viewBox="0 0 200 42"
+                backgroundColor="#f3f3f3"
+                foregroundColor="#ecebeb"
+                style={{ height: "100%" }}
+              >
+                  <rect x="7" y="6" rx="4" ry="4" width="140" height="8" />
+                  <rect x="47" y="21" rx="8" ry="8" width="100" height="16" />
+                  <rect x="160" y="0" rx="100" ry="100" width="40" height="40" />
+                </ContentLoader>
+            }
+          </div>
+          <div className="filter">
+          </div>
+          <div className="drawer-content" id="group-page-scrolling" >
+            {
+              groupDetail ? <div className="group-detail-content">
+                <div className="group-background" style={{ background: `url("${groupDetail.backgroundimage}")` }}>
+                  {groupDetail.status !== 0 && <IconButton onClick={() => this.setState({ showGroupMenu: true })}><MoreHorizIcon /></IconButton>}
+                  <div className="actions" style={{ overflowX: "hidden" }}>
                     {
-                      currentGroupPosteds.map((post, index) => <li key={index} >
-                        <Post data={post} history={this.props.history} userId={post.iduserpost} containerRef={document.getElementById("group-page-scrolling")} />
-                      </li>)
+                      groupDetail.status == 0 ? <Button className="bt-submit" onClick={() => this.props.joinGroup(groupDetail.groupid, () => {
+                        this.handleGetGroupDetail(groupDetail)
+                      })}>Tham gia</Button> : ""
                     }
-                  </ul> : ""
+                    {
+                      groupDetail.status == 2 ? <Button className="bt-submit" onClick={() => this.props.acceptGroup(groupDetail.groupid, () => {
+                        this.handleGetGroupDetail(groupDetail)
+                      }, null, groupDetail)}>Chấp nhận</Button> : ""
+                    }
+                    {
+                      groupDetail.status == 2 ? <Button className="bt-cancel" onClick={() => this.props.joinGroup(groupDetail.groupid, () => {
+                        this.props.toggleGroupDetailDrawer(false)
+                        this.props.setCurrentGroup(null)
+                      })}>Từ chối</Button> : ""
+                    }
+                  </div>
+                </div>
+                <div className="group-name">
+                  <span>{groupDetail.groupname.toLowerCase()}</span>
+                </div>
+                <div className="group-info">
+                  <div className="group-menu">
+                    <ul>
+                      <li><Button className={activeMenuIndex == 0 ? "bt-submit" : ""} onClick={() => this.onClickMenu(0)}>Mô tả</Button></li>
+                      <li><Button className={activeMenuIndex == 1 ? "bt-submit" : ""} onClick={() => this.onClickMenu(1)}>Nội quy</Button></li>
+                      <li><Button className={activeMenuIndex == 2 ? "bt-submit" : ""} onClick={() => this.onClickMenu(2)}>Ban quản trị</Button></li>
+                    </ul>
+                  </div>
+                  <AnimateHeight
+                    duration={300}
+                    height={contentHeight > 0 ? contentHeight : $(`#info-content-${0}`).height()}
+                    className={"animation-height"}
+                  >
+                    {
+                      activeMenuIndex === 0 ? <div id="info-content-0">
+                        <ShowMoreText
+                          lines={5}
+                          more={<span><span>&#8811;</span> Xem thêm</span>}
+                          less={<span><span>&#8811;</span> Rút gọn</span>}
+                          className='content-css'
+                          anchorClass='toggle-button blued'
+                          expanded={showMoreDescription}
+                          onClick={() => {
+                            this.onClickMenu(0)
+                          }}
+                        >
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: groupDetail.description
+                                .replace(/\n/g, ` <br />`)
+                            }}
+                          ></div>
+                        </ShowMoreText>
+                        <div className="group-reward">
+                          <ul>
+                            <li><FiberManualRecordIcon /> {groupPrivacyOptions.find(item => item.code == groupDetail.typegroup).label}</li>
+                            <li><FiberManualRecordIcon /> {groupDetail.nummember} thành viên</li>
+                            <li><FiberManualRecordIcon /> {groupDetail.numpost} bài đăng</li>
+                            <li><FiberManualRecordIcon /> Đã tạo ngày {moment(groupDetail.createdate).format("DD/MM/YYYY")}</li>
+                          </ul>
+                        </div>
+                      </div> : ""
+                    }
+                    {
+                      activeMenuIndex === 1 ? <div id="info-content-1" style={{ minHeight: "10px" }}>
+                        {
+                          groupDetail.groupUserPolicies[0] ? <pre>
+                            {
+                              groupDetail.groupUserPolicies[0].description
+                            }
+                          </pre> : ""
+                        }
+                      </div> : ""
+                    }
+                    {
+                      activeMenuIndex === 2 ? <div id="info-content-2">
+                        <div className="manager-list">
+                          {
+                            groupDetail.managers.length > 0 ? <ul>
+                              {
+                                groupDetail.managers.map((item, index) => <li key={index}>
+                                  <Avatar className="avatar">
+                                    <div className="img" style={{ background: `url("${item.avatar}")` }} />
+                                  </Avatar>
+                                  <div className="name">
+                                    <span>{item.nameuser}</span>
+                                    {
+                                      item.isadmin == 2 ? <p className="blued">Người sáng lập</p> : <p>Quản trị viên</p>
+                                    }
+                                  </div>
+                                </li>)
+                              }
+                            </ul> : ""
+                          }
+                        </div>
+                      </div> : ""
+                    }
+                  </AnimateHeight>
+                </div>
+                {
+                  groupDetail.status != 0 && groupDetail.status != 2 ? <div className="actions">
+                    <ul>
+                      <li>
+                        <Button onClick={() => {
+                          this.props.setCurrentGroup(groupDetail)
+                          this.props.togglePostDrawer(true, true)
+                        }}>
+                          <img src={createPost} />
+                          <span>Tạo bài đăng</span>
+                        </Button>
+                      </li>
+                      <li>
+                        <Button onClick={() => this.setState({ showAllFriendsDrawer: true }, () => this.getFriends(0))}>
+                          <img src={NewGr} />
+                          <span>Mời bạn bè</span>
+                        </Button>
+                      </li>
+                      <li>
+                        <Button onClick={() => this.setState({ showMemberDrawer: true })}>
+                          <img src={Members} />
+                          <span>DS thành viên</span>
+                        </Button>
+                      </li>
+                    </ul>
+                  </div> : ""
                 }
-              </div>
-            </div> : ""
-          }
-          {/* <div style={{ height: "50px", background: "#fff", zIndex: 0 }}>
+                <div className="posted">
+                  {
+                    currentGroupPosteds && currentGroupPosteds.length > 0 ? <ul>
+                      {
+                        currentGroupPosteds.map((post, index) => <li key={index} >
+                          <Post data={post} history={this.props.history} userId={post.iduserpost} containerRef={document.getElementById("group-page-scrolling")} />
+                        </li>)
+                      }
+                    </ul> : ""
+                  }
+                </div>
+              </div> : ""
+            }
+            {/* <div style={{ height: "50px", background: "#fff", zIndex: 0 }}>
             {
               <Loader type="small" style={{ background: "#fff" }} width={30} height={30} />
             }
           </div> */}
 
+          </div>
+          {
+            renderSearchGroupDrawer(this)
+          }
+          {
+            renderAllUserDrawer(this)
+          }
+          {
+            renderAllFriendToInvite(this)
+          }
+          {
+            renderGroupMenu(this)
+          }
+          {
+            renderConfirmDrawer(this)
+          }
+          {
+            renderNotiDrawer(this)
+          }
+          {
+            renderUpdateGroupDrawer(this)
+          }
         </div>
-        {
-          renderSearchGroupDrawer(this)
-        }
-        {
-          renderAllUserDrawer(this)
-        }
-        {
-          renderAllFriendToInvite(this)
-        }
-        {
-          renderGroupMenu(this)
-        }
-        {
-          renderConfirmDrawer(this)
-        }
-        {
-          renderNotiDrawer(this)
-        }
-        {
-          renderUpdateGroupDrawer(this)
-        }
-      </div>
       </div>
     );
   }
@@ -827,18 +792,11 @@ export default connect(
 )(Index);
 
 const renderSearchGroupDrawer = (component) => {
-  let {
-    showMemberDrawer,
-    groupDetail,
-    userList,
-    userCount,
-    managerCount,
-    managerList
-  } = component.state
+  let { showMemberDrawer, groupDetail, userList, userCount, managerCount, managerList } = component.state
 
   return (
     <Drawer anchor="bottom" className="group-members fit-popup" open={showMemberDrawer} >
-      <div className="drawer-detail">
+      <div className="drawer-detail" style={{ overflow: "hidden" }}>
         <div className="drawer-header">
           <div className="direction" onClick={() => component.setState({ showMemberDrawer: false })}>
             <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
@@ -850,7 +808,7 @@ const renderSearchGroupDrawer = (component) => {
         <div className="filter">
 
         </div>
-        <StickyContainer className="drawer-content" style={{ overflow: "auto"}} relative={true}>
+        <StickyContainer className="drawer-content" id="list-member" style={{ overflow: "auto" }} relative={true}>
           <Sticky relative={true}>
             {({ style }) => (
               <div style={{ ...style, zIndex: 999 }}>
@@ -955,17 +913,25 @@ const renderSearchGroupDrawer = (component) => {
 }
 
 const renderAllUserDrawer = (component) => {
-  let {
-    showAllMemberDrawer,
-    groupDetail,
-    userList,
-    userCount,
-  } = component.state
-
-
+  let { showAllMemberDrawer, groupDetail, userList, userCount, userCurrenntPage } = component.state
+  let scrollRef
+  const onScroll = () => {
+    if (scrollRef) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef;
+      if (scrollTop + clientHeight + 1 >= scrollHeight) {
+        console.log('next page')
+        component.setState({
+          userCurrenntPage: userCurrenntPage + 1,
+          isLoadMoreUser: true
+        }, () => {
+          component.getUserInGroup(userCurrenntPage + 1, groupDetail)
+        })
+      }
+    }
+  };
   return (
     <Drawer anchor="bottom" className="group-members fit-popup" open={showAllMemberDrawer} >
-      <div className="drawer-detail">
+      <div className="drawer-detail" style={{ overflow: "hidden" }}>
         <div className="drawer-header">
           <div className="direction" onClick={() => component.setState({ showAllMemberDrawer: false, userList: [] }, () => component.getUserInGroup(0, groupDetail))}>
             <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
@@ -977,7 +943,7 @@ const renderAllUserDrawer = (component) => {
         <div className="filter">
 
         </div>
-        <div className="drawer-content" id="all-user-in-group" style={{ overflow: "auto"}} onScroll={() => component.onScroll()}>
+        <div className="drawer-content" onScroll={onScroll} ref={node => scrollRef = node} id="list-member" style={{ overflow: "auto" }}>
           {
             userList && userList.length > 0 ? <div className="user-list">
               <ul>
@@ -1018,13 +984,8 @@ const renderAllUserDrawer = (component) => {
 }
 
 const renderAllFriendToInvite = (component) => {
-  let {
-    friends,
-    showAllFriendsDrawer
-  } = component.state
-  let {
-    profile
-  } = component.props
+  let {    friends,    showAllFriendsDrawer  } = component.state
+  let {    profile  } = component.props
 
   return (
     <Drawer anchor="bottom" className="find-friends invite-to-group fit-popup" open={showAllFriendsDrawer} >
@@ -1089,13 +1050,10 @@ const renderAllFriendToInvite = (component) => {
 }
 
 const renderGroupMenu = (component) => {
-  let {
-    showGroupMenu,
-    groupDetail
-  } = component.state
+  let {    showGroupMenu,    groupDetail  } = component.state
 
   return (
-    <Drawer anchor="bottom" className="group-menu" open={showGroupMenu} onClose={() => component.setState({ showGroupMenu: false })}>
+    <Drawer anchor="bottom" className="group-menu fit-popup-1" open={showGroupMenu} onClose={() => component.setState({ showGroupMenu: false })}>
       <div className="menu-content">
         <div className="menu-header">
           <div className="direction" onClick={() => component.setState({ showGroupMenu: false })}>
