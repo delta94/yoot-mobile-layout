@@ -1249,7 +1249,7 @@ body{
 #new-post-drawer{
   .root-input{
     >div:first-child{
-      min-height: 320px;
+      min-height: auto;
     }
   }
 }
@@ -1258,11 +1258,7 @@ body{
     padding: 5px 0 !important;
   }
 }
-.comment-post{
-  .drawer-content{
-    padding-top: 50px !important;
-  }
-}
+
 .video{
   &:hover #desktop-bar{
     opacity: 1;
@@ -1290,6 +1286,7 @@ body{
   .drawer-content{
     li{cursor: pointer;}
   }
+
   .submit-bt{
     cursor: pointer;
   }
@@ -1399,7 +1396,6 @@ body{
       }
       .comment-input-text{
         max-width: 600px;
-        left: auto;
       }
   .auto-play-setting .detail-content .auto-option li{
     cursor: pointer;
@@ -1467,7 +1463,8 @@ body{
   .post-item{
     .media-grid{
       >ul .video{
-        height: 100% !important;
+        // video nằm giừa
+        // height: 100% !important;
       }
       >ul{
         li{
@@ -1598,12 +1595,24 @@ body{
       
     }
   }
-  
+  #proccess-bar{
+    left: unset !important;
+    margin: auto;
+    max-width: 600px;
+  }
+  #folow-reward-list{
+    height: auto !important;
+  }
 }
 
 @media screen and (min-width: 600px){
   #source-item-desktop > div{
     height: 30vw;
+  }
+  .comment-post{
+    .drawer-content{
+      // margin-top: 50px !important;
+    }
   }
 }
 @media screen and (min-width: 900px){

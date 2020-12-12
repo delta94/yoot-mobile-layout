@@ -3402,9 +3402,11 @@ const renderReportSuccessAlert = (component) => {
           </div>
         )}
         {orderReasonText.length > 0 && (
+          <div>
           <Button className="btn-reason" disabled>
             {orderReasonText}
           </Button>
+          </div>
         )}
         <div className="warning-css">
           <div className='line-css' />
@@ -3551,7 +3553,7 @@ const renderLikeRewardDrawer = (component) => {
   return (
     <Drawer
       anchor="bottom"
-      className="like-reward-drawed"
+      className="like-reward-drawed fit-popup"
       open={showLikeRewardDrawer}
       onClose={() => component.setState({ showLikeRewardDrawer: false })}
     >

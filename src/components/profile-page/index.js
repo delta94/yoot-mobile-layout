@@ -374,7 +374,7 @@ class Index extends React.Component {
         formData.append("avatarroot_0_" + img.width + "_" + img.height, rootAvatarToUpload);
 
         postFormData(SOCIAL_NET_WORK_API, "User/UpdateAvatar", formData, (result) => {
-          
+
           console.log(result)
           if (result && result.result === 1) {
             console.log('res', result)
@@ -850,6 +850,9 @@ class Index extends React.Component {
           );
         }
       }
+      if (window.innerWidth > 400) {
+        this.setState({ isDestop: true })
+      }
     });
 
     let searchParam = jsonFromUrlParams(window.location.search);
@@ -903,12 +906,18 @@ class Index extends React.Component {
   // }
   render() {
     let {
-      showUserMenu, croppedImageUrl, numOfFriend, friends, openMediaDrawer, isLoadMore, postIndexActive, openVideoDrawer
+      showUserMenu, croppedImageUrl, numOfFriend, friends, openMediaDrawer, isLoadMore, postIndexActive,
+      isDestop, openVideoDrawer
     } = this.state;
     let { profile, userPosteds } = this.props;
     let myPosteds = [];
     if (profile && userPosteds) {
       myPosteds = userPosteds[profile.id];
+    }
+    if (isDestop) {
+      friends = this.state.friends.slice(0, 8)
+    } else {
+      friends = this.state.friends.slice(0, 6)
     }
     return profile && (
       <div className="profile-page">
@@ -1101,7 +1110,7 @@ class Index extends React.Component {
           <span>{numOfFriend} người bạn</span>
           {friends && friends.length > 0 ? (
             <div className="friend-list">
-              {friends.slice(0, 6).map((item, index) => (
+              {friends.map((item, index) => (
                 <div
                   key={index}
                   className="friend-item"

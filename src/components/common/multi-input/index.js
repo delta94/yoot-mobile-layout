@@ -53,9 +53,8 @@ export class Loader extends React.Component {
 
         let { mentionIdSelected } = this.state
         let { maxLength, unit } = this.props
-
+        // if(maxLength && )
         let outputString = editorState.getCurrentContent().getPlainText("")
-
         // let isOver = false
         // if (unit == "Word") {
         //     if (outputString.length > 0 && outputString.match(/\S+/g).length > maxLength) {
@@ -220,7 +219,7 @@ export class Loader extends React.Component {
         if (centerMode == true) {
             plugins = []
         }
-
+         const{maxLength} =this.props
         return (
             topDown == false ?
                 <div onClick={this.focus} className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
@@ -239,7 +238,7 @@ export class Loader extends React.Component {
                         plugins={plugins}
                         ref={(element) => { this.editor = element; }}
                         placeholder={placeholder}
-                        autoComplete="none"
+                        maxLength={maxLength && maxLength}
                     />
                 </div>
                 : <div onClick={this.focus} className={"root-input" + (centerMode ? " center-mode" : "")} style={style}>
@@ -250,7 +249,7 @@ export class Loader extends React.Component {
                         ref={(element) => { this.editor = element; }}
                         placeholder={placeholder}
                         customStyleMap={styleMap}
-                        autoComplete="none"
+                        maxLength={maxLength && maxLength}
                     />
                     <div className="mention-box">
                         <MentionSuggestions
@@ -259,7 +258,6 @@ export class Loader extends React.Component {
                             onAddMention={this.onAddMention}
                             entryComponent={Entry}
                             className={suggestionClass}
-                            
                         />
                     </div>
                 </div>

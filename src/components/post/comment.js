@@ -1373,7 +1373,7 @@ const renderLikeRewardDrawer = (component) => {
    return (
       <Drawer
          anchor="bottom"
-         className="like-reward-drawed"
+         className="like-reward-drawed fit-popup"
          open={showLikeRewardDrawer}
          onClose={() => component.setState({ showLikeRewardDrawer: false })}
       >

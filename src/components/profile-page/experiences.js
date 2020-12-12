@@ -158,7 +158,7 @@ export class Index extends React.Component {
                             <div className='input-field'>
                                 <label>Ngày bắt đầu</label>
                                 <div>
-                                    <FormControl variant="outlined" className={"custom-select ml20 "}>
+                                    <FormControl  variant="outlined" className={"custom-select ml20 "}>
                                         <NativeSelect
                                             id="demo-customized-select-native"
                                             value={fromMonth}

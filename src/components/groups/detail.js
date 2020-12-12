@@ -553,9 +553,10 @@ class Index extends React.Component {
               this.props.setCurrentGroup(null)
               this.props.setCurrentGroupPosted(null)
             }}>
+              {(groupDetail && groupDetail.status == 0) && 
               <IconButton style={{ background: "rgba(255,255,255,0.8)", padding: "8px" }} >
                 <ChevronLeftIcon style={{ color: "#ff5a59", width: "25px", height: "25px" }} />
-              </IconButton>
+              </IconButton>}
               <label>Hội nhóm</label>
             </div>
             {

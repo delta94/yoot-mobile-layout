@@ -16,11 +16,11 @@ const unfriend = require("../../assets/icon/unfriend@1x.png");
 const unfollow = require("../../assets/icon/unfollow@1x.png");
 
 
-const Report = ({  toggleReportComment,app }) => {
-   if(!app.currentPostForComment){
+const Report = ({ toggleReportComment, app }) => {
+   if (!app.currentPostForComment) {
       return null
    }
-   const { currentPostForComment,showReportPost } = app
+   const { currentPostForComment, showReportPost } = app
    const [state, setState] = useState(
       {
          reasonSelected: {},
@@ -60,13 +60,11 @@ const Report = ({  toggleReportComment,app }) => {
    }
 
    const handleReportPost = () => {
-      let {
-         reasonSelected,
-         orderReasonText,
-         willBlock,
-         willUnfriend,
-         willUnfollow,
-      } = state;
+      let { reasonSelected, orderReasonText, willBlock, willUnfriend, willUnfollow, } = state;
+      if(orderReasonText.length> 20){
+         alert("Vui lòng chỉ nhập ít hơn 20 chữ")
+         return
+      }
       const { currentPostForComment } = app
       if (reasonSelected || orderReasonText !== "") {
          let param = {
@@ -84,7 +82,8 @@ const Report = ({  toggleReportComment,app }) => {
             param,
             (result) => {
                if (result && result.result === 1) {
-                  setState({...state,
+                  setState({
+                     ...state,
                      showReportSuccessAlert: true,
                   });
                   if (willBlock === true) {
@@ -196,7 +195,7 @@ const Report = ({  toggleReportComment,app }) => {
                         willUnfollow: false,
                         willUnfriend: false,
                      })
-                     toggleReportComment(false,currentPostForComment)
+                     toggleReportComment(false, currentPostForComment)
                   }
                   }
                >
@@ -303,60 +302,63 @@ const Report = ({  toggleReportComment,app }) => {
    );
 }
 
-const ReportSuccessAlert = ({state,setState}) => {
+const ReportSuccessAlert = ({ state, setState }) => {
    let {
-     showReportSuccessAlert,
-     reasonSelected,
-     orderReasonText,
+      showReportSuccessAlert,
+      reasonSelected,
+      orderReasonText,
    } = state;
    return (
-     <Drawer
-       anchor="bottom"
-       className="confirm-drawer report-success-alert"
-       open={showReportSuccessAlert}
-       onClose={() =>
-         setState({...state,
-           showReportSuccessAlert: false,
-           showReportPostDrawer: false,
-           showReportGroupDrawer: false,
-           orderReasonText: "",
-           reasonSelected: null,
-           willBlock: false,
-           willUnfollow: false,
-           willUnfriend: false,
-         })
-       }
-     >
-       <div
-         className="jon-group-confirm"
-         onClick={() => setState({ ...state,showReportSuccessAlert: false })}
-       >
-         <div>
-           <img src={report} />
+      <Drawer
+         anchor="bottom"
+         className="confirm-drawer report-success-alert"
+         open={showReportSuccessAlert}
+         onClose={() =>
+            setState({
+               ...state,
+               showReportSuccessAlert: false,
+               showReportPostDrawer: false,
+               showReportGroupDrawer: false,
+               orderReasonText: "",
+               reasonSelected: null,
+               willBlock: false,
+               willUnfollow: false,
+               willUnfriend: false,
+            })
+         }
+      >
+         <div
+            className="jon-group-confirm"
+            onClick={() => setState({ ...state, showReportSuccessAlert: false })}
+         >
+            <div>
+               <img src={report} />
+            </div>
+            <span>Bạn đã báo cáo bài đăng này có dấu hiệu</span>
+            {reasonSelected && (
+               <div>
+                  <Button className="btn-reason" disabled>
+                     {reasonSelected.issuename}
+                  </Button>
+               </div>
+            )}
+            {orderReasonText.length > 0 && (
+               <div>
+                  <Button className="btn-reason" disabled>
+                     {orderReasonText}
+                  </Button>
+               </div>
+            )}
+            <div className="warning-css">
+               <div className='line-css' />
+               <img src={thank} />
+            </div>
+            <p>Cảm ơn bạn đã báo cáo.</p>
+            <p>Bài viết đã được gửi đến quản trị YOOT</p>
          </div>
-         <span>Bạn đã báo cáo bài đăng này có dấu hiệu</span>
-         {reasonSelected && (
-           <div>
-             <Button className="btn-reason" disabled>
-               {reasonSelected.issuename}
-             </Button>
-           </div>
-         )}
-         {orderReasonText.length > 0 && (
-           <Button className="btn-reason" disabled>
-             {orderReasonText}
-           </Button>
-         )}
-         <div className="warning-css">
-           <div className='line-css' />
-           <img src={thank} />
-         </div>
-         <p>Cảm ơn bạn đã báo cáo.</p>
-         <p>Bài viết đã được gửi đến quản trị YOOT</p>
-       </div>
-     </Drawer>
+      </Drawer>
    );
- };
+};
 const mapActionToProps = {
    toggleReportComment
 }
@@ -364,4 +366,4 @@ const mapStateToProps = state => ({
    app: state.app
 })
 
-export default connect(mapStateToProps,mapActionToProps)(Report)
+export default connect(mapStateToProps, mapActionToProps)(Report)
